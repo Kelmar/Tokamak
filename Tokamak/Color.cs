@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Graphite
+using Tokamak.Mathematics;
+
+namespace Tokamak
 {
     public struct Color
     {
@@ -131,27 +133,35 @@ namespace Graphite
         /// <summary>
         /// Gets a color from Hue, Saturation, Value, and Alpha values
         /// </summary>
-        public static Color FromHSV(in Vector3 v) => FromHSV(v.X, v.Y, v.Z, Byte.MaxValue);
+        public static Color FromHSV(in Vector3 v) => FromHSV(v.X, v.Y, v.Z, 1f);
 
         /// <summary>
         /// Gets a color from Hue, Saturation, Value, and Alpha values
         /// </summary>
-        public static Color FromHSV(in Vector4 v) => FromHSV(v.X, v.Y, v.Z, v.W.ToByteRange());
+        public static Color FromHSV(in Vector4 v) => FromHSV(v.X, v.Y, v.Z, v.W);
 
+        /// <summary>
+        /// Linerarly interpolate between two colors.
+        /// </summary>
+        /// <param name="dist">Distance from color 1 to color 2.</param>
+        /// <param name="c1">Color 1</param>
+        /// <param name="c2">Color 2</param>
+        /// <returns>Mixed color between the two colors.</returns>
         public static Color Lerp(double dist, in Color c1, in Color c2)
         {
             dist = MathX.Clamp(dist, 0, 1);
-            double onemin = 1 - dist;
+            double oneMinus = 1 - dist;
 
             return new Color
             {
-                Red   = (byte)Math.Round(c1.Red   * onemin + c2.Red   * dist),
-                Green = (byte)Math.Round(c1.Green * onemin + c2.Green * dist),
-                Blue  = (byte)Math.Round(c1.Blue  * onemin + c2.Blue  * dist),
-                Alpha = (byte)Math.Round(c1.Alpha * onemin + c2.Alpha * dist)
+                Red   = (byte)Math.Round(c1.Red   * oneMinus + c2.Red   * dist),
+                Green = (byte)Math.Round(c1.Green * oneMinus + c2.Green * dist),
+                Blue  = (byte)Math.Round(c1.Blue  * oneMinus + c2.Blue  * dist),
+                Alpha = (byte)Math.Round(c1.Alpha * oneMinus + c2.Alpha * dist)
             };
         }
 
+        // Convert to/from Vector4
         public static explicit operator Vector4(in Color c) => new Vector4(c.Red, c.Green, c.Blue, c.Alpha) / BYTE_MAX_F;
         public static explicit operator Color(in Vector4 v) => new Color(v.X.ToByteRange(), v.Y.ToByteRange(), v.Z.ToByteRange(), v.W.ToByteRange());
     }

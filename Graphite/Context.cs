@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
+using Tokamak;
+using Tokamak.Mathematics;
+
 namespace Graphite
 {
     public class Context
@@ -17,6 +20,8 @@ namespace Graphite
         public void SetViewport(int x, int y)
         {
             m_renderer.SetViewport(x, y);
+
+            
         }
 
         private void FlattenPath(Path path)

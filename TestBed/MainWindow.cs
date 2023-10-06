@@ -10,6 +10,8 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
+using Tokamak;
+
 using Graphite;
 
 namespace TestBed

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Numerics;
 
+using Tokamak;
+
 namespace Graphite
 {
     public interface IRenderer : IDisposable

@@ -1,9 +1,7 @@
 ﻿using Mathmatic = OpenTK.Mathematics;
 using Numeric = System.Numerics;
 
-using Tokamak;
-
-namespace Graphite.OGL
+namespace Tokamak.OGL
 {
     public static class NumericConvert
     {

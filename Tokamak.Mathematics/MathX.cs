@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Graphite
+namespace Tokamak.Mathematics
 {
     /// <summary>
     /// Contains various math functions.

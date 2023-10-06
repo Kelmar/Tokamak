@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31702.278
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokamak", "Tokamak\Tokamak.csproj", "{E1D3B836-DF7E-4F48-9E66-381B4BF95114}"
 EndProject
@@ -11,7 +11,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBed", "TestBed\TestBed.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graphite.OGL", "Graphite.OGL\Graphite.OGL.csproj", "{A9E6B382-A400-4075-BB33-E0941218306E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphiteTests", "GraphiteTests\GraphiteTests.csproj", "{399A40C8-6A1F-4A0F-B765-1613B3A1D22B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraphiteTests", "GraphiteTests\GraphiteTests.csproj", "{399A40C8-6A1F-4A0F-B765-1613B3A1D22B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokamak.Mathematics", "Tokamak.Mathematics\Tokamak.Mathematics.csproj", "{96086C6A-B33D-428B-85D3-31598CE05762}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D8EE3E93-D017-494B-8E12-76C3C685C209}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathematicsTests", "MathematicsTests\MathematicsTests.csproj", "{343CAC6D-E6B4-4F4B-B81C-4E56CC67A120}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Drivers", "Drivers", "{5859A128-E628-4FC7-AA18-1D6CB70357ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.OGL", "Tokamak.OGL\Tokamak.OGL.csproj", "{478B64C5-2711-452B-AE48-F77C4C04749E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,9 +49,26 @@ Global
 		{399A40C8-6A1F-4A0F-B765-1613B3A1D22B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{399A40C8-6A1F-4A0F-B765-1613B3A1D22B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{399A40C8-6A1F-4A0F-B765-1613B3A1D22B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96086C6A-B33D-428B-85D3-31598CE05762}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96086C6A-B33D-428B-85D3-31598CE05762}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96086C6A-B33D-428B-85D3-31598CE05762}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96086C6A-B33D-428B-85D3-31598CE05762}.Release|Any CPU.Build.0 = Release|Any CPU
+		{343CAC6D-E6B4-4F4B-B81C-4E56CC67A120}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{343CAC6D-E6B4-4F4B-B81C-4E56CC67A120}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{343CAC6D-E6B4-4F4B-B81C-4E56CC67A120}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{343CAC6D-E6B4-4F4B-B81C-4E56CC67A120}.Release|Any CPU.Build.0 = Release|Any CPU
+		{478B64C5-2711-452B-AE48-F77C4C04749E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{478B64C5-2711-452B-AE48-F77C4C04749E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{478B64C5-2711-452B-AE48-F77C4C04749E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{478B64C5-2711-452B-AE48-F77C4C04749E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{399A40C8-6A1F-4A0F-B765-1613B3A1D22B} = {D8EE3E93-D017-494B-8E12-76C3C685C209}
+		{343CAC6D-E6B4-4F4B-B81C-4E56CC67A120} = {D8EE3E93-D017-494B-8E12-76C3C685C209}
+		{478B64C5-2711-452B-AE48-F77C4C04749E} = {5859A128-E628-4FC7-AA18-1D6CB70357ED}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {05871E1D-40C8-45D6-A51D-0E321A9A7D4F}

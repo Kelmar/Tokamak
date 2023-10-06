@@ -8,6 +8,10 @@ using OpenTK.Mathematics;
 
 using Numerics = System.Numerics;
 
+using Tokamak;
+
+using PrimitiveType = OpenTK.Graphics.OpenGL.PrimitiveType;
+
 namespace Graphite.OGL
 {
     public class Renderer : IRenderer

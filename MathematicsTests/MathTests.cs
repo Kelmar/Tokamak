@@ -2,7 +2,7 @@ using System.Numerics;
 
 using NUnit.Framework;
 
-using Graphite;
+using Tokamak.Mathematics;
 
 namespace GraphiteTests
 {
@@ -21,7 +21,7 @@ namespace GraphiteTests
 
             float res = MathX.Cross(v1, v2);
 
-            Assert.AreEqual(50, res);
+            Assert.That(res, Is.EqualTo(50));
         }
     }
 }
