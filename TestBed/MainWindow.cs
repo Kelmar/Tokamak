@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using OpenTK.Graphics.OpenGL4;
 
@@ -13,6 +9,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Tokamak;
 
 using Graphite;
+using Tokamak.Mathematics;
 
 namespace TestBed
 {
@@ -22,8 +19,8 @@ namespace TestBed
 
         private static readonly Color TransRed = new Color(255, 0, 0, 128);
 
-        private readonly IRenderer m_render;
-        private readonly Context m_context;
+        private readonly Device m_device;
+        private readonly Canvas m_canvas;
 
         private decimal m_miter = 3;
         private bool m_trans = false;
@@ -31,8 +28,8 @@ namespace TestBed
         public MainWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {
-            m_render = new Graphite.OGL.Renderer();
-            m_context = new Context(m_render);
+            m_device = new Tokamak.OGL.GLDevice();
+            m_canvas = new Canvas(m_device);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -40,11 +37,13 @@ namespace TestBed
             if (KeyboardState.IsKeyDown(Keys.Escape))
                 Close();
 
+            /*
             if (KeyboardState.IsKeyReleased(Keys.W))
                 m_render.WireFrame = !m_render.WireFrame;
 
             if (KeyboardState.IsKeyReleased(Keys.D))
                 m_render.Debug = !m_render.Debug;
+            */
 
             if (KeyboardState.IsKeyReleased(Keys.T))
                 m_trans = !m_trans;
@@ -69,7 +68,7 @@ namespace TestBed
         {
             base.OnLoad();
 
-            GL.ClearColor(0, 0, 0, 1);
+            
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -86,34 +85,37 @@ namespace TestBed
                 //LineJoin = LineJoin.Bevel
             };
 
-            var p1 = new Path();
+            Rect r = new Rect(200, 200, 100, 100);
+            m_canvas.StrokeRect(pen, r);
 
-            p1.MoveTo(50, 50);
-            p1.LineTo(500, 50);
-            p1.LineTo(500, 500);
-            p1.Closed = true;
+            //var p1 = new Path();
 
-            m_context.StrokePath(pen, p1);
+            //p1.MoveTo(50, 50);
+            //p1.LineTo(500, 50);
+            //p1.LineTo(500, 500);
+            //p1.Closed = true;
 
-            //var p2 = new Path();
-            //p2.Rect(200, 200, 100, 100);
+            //m_canvas.StrokePath(pen, p1);
 
-            //m_context.StrokePath(pen, p2);
+            ////var p2 = new Path();
+            ////p2.Rect(200, 200, 100, 100);
 
-            var p3 = new Path();
-            //p3.Rect(50, 50, 450, 450);
-            p3.MoveTo(550, 50);
-            p3.LineTo(950, 50);
-            p3.LineTo(950, 500);
-            p3.LineTo(1200, 750);
-            p3.LineTo(1450, 500);
-            p3.LineTo(1450, 50);
+            ////m_context.StrokePath(pen, p2);
 
-            pen.Color = m_trans ? TransRed : Color.LiteRed;
+            //var p3 = new Path();
+            ////p3.Rect(50, 50, 450, 450);
+            //p3.MoveTo(550, 50);
+            //p3.LineTo(950, 50);
+            //p3.LineTo(950, 500);
+            //p3.LineTo(1200, 750);
+            //p3.LineTo(1450, 500);
+            //p3.LineTo(1450, 50);
 
-            m_context.StrokePath(pen, p3);
+            //pen.Color = m_trans ? TransRed : Color.LiteRed;
 
-            m_context.Flush();
+            //m_canvas.StrokePath(pen, p3);
+
+            m_canvas.Flush();
 
             SwapBuffers();
         }
@@ -123,10 +125,7 @@ namespace TestBed
             base.OnResize(e);
 
             if (e.Width > 0 && e.Height > 0)
-            {
-                GL.Viewport(0, 0, e.Width, e.Height);
-                m_context.SetViewport(e.Width, e.Height);
-            }
+                m_device.Viewport = new Rect(0, 0, e.Width, e.Height);
         }
     }
 }

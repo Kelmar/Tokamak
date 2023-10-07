@@ -9,19 +9,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graphite", "Graphite\Graphi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBed", "TestBed\TestBed.csproj", "{7F755E0D-F9B9-4A91-A106-D1FA76D7460D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graphite.OGL", "Graphite.OGL\Graphite.OGL.csproj", "{A9E6B382-A400-4075-BB33-E0941218306E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraphiteTests", "GraphiteTests\GraphiteTests.csproj", "{399A40C8-6A1F-4A0F-B765-1613B3A1D22B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokamak.Mathematics", "Tokamak.Mathematics\Tokamak.Mathematics.csproj", "{96086C6A-B33D-428B-85D3-31598CE05762}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D8EE3E93-D017-494B-8E12-76C3C685C209}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathematicsTests", "MathematicsTests\MathematicsTests.csproj", "{343CAC6D-E6B4-4F4B-B81C-4E56CC67A120}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathematicsTests", "MathematicsTests\MathematicsTests.csproj", "{343CAC6D-E6B4-4F4B-B81C-4E56CC67A120}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Drivers", "Drivers", "{5859A128-E628-4FC7-AA18-1D6CB70357ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.OGL", "Tokamak.OGL\Tokamak.OGL.csproj", "{478B64C5-2711-452B-AE48-F77C4C04749E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokamak.OGL", "Tokamak.OGL\Tokamak.OGL.csproj", "{478B64C5-2711-452B-AE48-F77C4C04749E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +39,6 @@ Global
 		{7F755E0D-F9B9-4A91-A106-D1FA76D7460D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F755E0D-F9B9-4A91-A106-D1FA76D7460D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F755E0D-F9B9-4A91-A106-D1FA76D7460D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9E6B382-A400-4075-BB33-E0941218306E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9E6B382-A400-4075-BB33-E0941218306E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9E6B382-A400-4075-BB33-E0941218306E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9E6B382-A400-4075-BB33-E0941218306E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{399A40C8-6A1F-4A0F-B765-1613B3A1D22B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{399A40C8-6A1F-4A0F-B765-1613B3A1D22B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{399A40C8-6A1F-4A0F-B765-1613B3A1D22B}.Release|Any CPU.ActiveCfg = Release|Any CPU

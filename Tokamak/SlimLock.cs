@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Graphite
+namespace Tokamak
 {
     public class SlimLock : IDisposable
     {
