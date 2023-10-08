@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-
+using Tokamak.Buffer;
 using Tokamak.Mathematics;
 
 namespace Tokamak
@@ -37,7 +37,7 @@ namespace Tokamak
             WorldMatrix = m_worldMatrixStack.Pop();
         }
 
-        public abstract IVertexBuffer<T> GetVertexBuffer<T>()
+        public abstract IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
             where T : struct;
 
         public abstract void Activate(IVertexBuffer buffer);

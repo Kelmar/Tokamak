@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using OpenTK.Graphics.OpenGL;
-
+using OpenTK.Graphics.OpenGL4;
+using Tokamak.Buffer;
 using Tokamak.Formats;
 
 namespace Tokamak.OGL
@@ -15,9 +15,13 @@ namespace Tokamak.OGL
 
         private readonly VectorFormat.Info m_layoutInfo;
 
-        public VertexBuffer()
+        private readonly BufferUsageHint m_usageHint;
+
+        public VertexBuffer(BufferType type)
         {
             m_layoutInfo = VectorFormat.GetLayoutOf<T>();
+
+            m_usageHint = type.ToGLType();
 
             m_vba = GL.GenVertexArray();
             GL.BindVertexArray(m_vba);
@@ -51,11 +55,11 @@ namespace Tokamak.OGL
             Activate();
             var verts = data.ToArray();
 
-            GL.BufferData(BufferTarget.ArrayBuffer, verts.Count() * m_layoutInfo.Size, verts, BufferUsageHint.StreamDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, verts.Count() * m_layoutInfo.Size, verts, m_usageHint);
 
             foreach (var item in m_layoutInfo.Items)
             {
-                GL.VertexAttribPointer(item.Index, item.Count, VertexAttribPointerType.Float, false, item.Stride, item.Offset);
+                GL.VertexAttribPointer(item.Index, item.Count, item.BaseType.ToGLType(), false, item.Stride, item.Offset);
                 GL.EnableVertexAttribArray(item.Index);
             }
         }

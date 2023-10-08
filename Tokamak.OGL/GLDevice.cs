@@ -1,11 +1,9 @@
-﻿using System;
-using System.Numerics;
-
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL;
 
 using TokPrimType = Tokamak.PrimitiveType;
-using GLPrimType = OpenTK.Graphics.OpenGL.PrimitiveType;
+
 using Tokamak.Mathematics;
+using Tokamak.Buffer;
 
 namespace Tokamak.OGL
 {
@@ -26,10 +24,10 @@ namespace Tokamak.OGL
             }
         }
 
-        public override IVertexBuffer<T> GetVertexBuffer<T>()
+        public override IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
             where T : struct
         {
-            return new VertexBuffer<T>();
+            return new VertexBuffer<T>(type);
         }
 
         public override void Activate(IVertexBuffer buffer)
@@ -42,24 +40,9 @@ namespace Tokamak.OGL
             
         }
 
-        private GLPrimType ToGLPrim(TokPrimType primType)
-        {
-            return primType switch
-            {
-                TokPrimType.PointList => GLPrimType.Points,
-                TokPrimType.LineList => GLPrimType.Lines,
-                TokPrimType.LineStrip => GLPrimType.LineStrip,
-                TokPrimType.TrangleList => GLPrimType.Triangles,
-                TokPrimType.TrangleStrip => GLPrimType.TriangleStrip,
-                _ => GLPrimType.Points
-            };
-        }
-
         public override void DrawArrays(TokPrimType primative, int vertexOffset, int vertexCount)
         {
-            GLPrimType prim = ToGLPrim(primative);
-
-            GL.DrawArrays(prim, vertexOffset, vertexCount);
+            GL.DrawArrays(primative.ToGLPrimitive(), vertexOffset, vertexCount);
         }
     }
 }

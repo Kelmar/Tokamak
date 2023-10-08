@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Runtime.Intrinsics;
 
 using Tokamak.Formats;
 using Tokamak.Mathematics;
-
-using Point = Tokamak.Mathematics.Point;
 
 namespace Graphite
 {

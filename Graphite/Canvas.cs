@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Tokamak;
+using Tokamak.Buffer;
 using Tokamak.Formats;
 using Tokamak.Mathematics;
 
@@ -17,7 +19,7 @@ namespace Graphite
     /// The canvas is designed to be reused between frame calls so that it does
     /// not allocate memory several times over and over again.
     /// </remarks>
-    public class Canvas
+    public class Canvas : IDisposable
     {
         private enum CallType
         {
@@ -30,10 +32,17 @@ namespace Graphite
         private readonly List<VectorFormatPCT> m_vectors = new List<VectorFormatPCT>(128);
 
         private readonly Device m_device;
+        private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
         public Canvas(Device device)
         {
             m_device = device;
+            m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dyanmic);
+        }
+
+        public void Dispose()
+        {
+            m_vertexBuffer.Dispose();
         }
 
         public void StrokeRect(Pen pen, in Rect rect)
@@ -63,8 +72,7 @@ namespace Graphite
 
         public void Flush()
         {
-            var verts = m_device.GetVertexBuffer<VectorFormatPCT>();
-            verts.Set(m_vectors);
+            m_vertexBuffer.Set(m_vectors);
 
             foreach (var call in m_calls)
                 m_device.DrawArrays(PrimitiveType.TrangleStrip, call.VertexOffset, call.VertexCount);

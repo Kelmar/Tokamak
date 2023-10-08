@@ -5,7 +5,7 @@ using System.Numerics;
 
 using Tokamak.Mathematics;
 
-namespace Tokamak
+namespace Tokamak.Buffer
 {
     public interface IVertexBuffer : IDisposable
     {

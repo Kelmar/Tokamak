@@ -7,9 +7,9 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Tokamak;
+using Tokamak.Mathematics;
 
 using Graphite;
-using Tokamak.Mathematics;
 
 namespace TestBed
 {
@@ -30,6 +30,17 @@ namespace TestBed
         {
             m_device = new Tokamak.OGL.GLDevice();
             m_canvas = new Canvas(m_device);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                m_canvas.Dispose();
+                m_device.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
