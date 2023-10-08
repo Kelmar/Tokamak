@@ -49,7 +49,7 @@ namespace Tokamak.Formats
                 (
                     from field in fields
                     let offset = Marshal.OffsetOf(Type, field.Name)
-                    let attr = Type.GetCustomAttribute<FormatDescriptorAttribute>()
+                    let attr = field.GetCustomAttribute<FormatDescriptorAttribute>()
                     orderby offset
                     select new ItemInfo
                     {

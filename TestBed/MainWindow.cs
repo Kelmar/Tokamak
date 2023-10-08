@@ -78,8 +78,6 @@ namespace TestBed
         protected override void OnLoad()
         {
             base.OnLoad();
-
-            
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)

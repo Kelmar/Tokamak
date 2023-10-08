@@ -80,7 +80,7 @@ namespace Graphite
 
             m_bevelCount = 0;
 
-            for (int index1 = 0; index0 < m_stroke.Points.Count; index0 = index1++)
+            for (int index1 = 0; index1 < m_stroke.Points.Count; index0 = index1++)
             {
                 StrokePoint p0 = m_stroke.Points[index0];
                 StrokePoint p1 = m_stroke.Points[index1];
