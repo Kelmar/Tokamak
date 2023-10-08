@@ -8,7 +8,7 @@ https://torque3d.org/
 
 # TODOS
 - [ ] Abstractions
-  - [ ] OpenGL
+  - [ ] OpenGL (in progress)
   - [ ] DirectX
   - [ ] Metal
   - [ ] Vulkan
