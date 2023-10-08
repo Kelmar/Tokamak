@@ -30,14 +30,9 @@ namespace Tokamak.OGL
             return new VertexBuffer<T>(type);
         }
 
-        public override void Activate(IVertexBuffer buffer)
+        public override IShaderFactory GetShaderFactory()
         {
-            
-        }
-
-        public override void Activate(IShader shader)
-        {
-            
+            return new ShaderFactory();
         }
 
         public override void DrawArrays(TokPrimType primative, int vertexOffset, int vertexCount)

@@ -40,9 +40,7 @@ namespace Tokamak
         public abstract IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
             where T : struct;
 
-        public abstract void Activate(IVertexBuffer buffer);
-
-        public abstract void Activate(IShader shader);
+        public abstract IShaderFactory GetShaderFactory();
 
         public abstract void DrawArrays(PrimitiveType primitive, int vertexOffset, int vertexCount);
     }

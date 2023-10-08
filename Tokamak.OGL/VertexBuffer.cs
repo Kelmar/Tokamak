@@ -44,7 +44,7 @@ namespace Tokamak.OGL
                 GL.DeleteVertexArray(m_vba);
         }
 
-        private void Activate()
+        public void Activate()
         {
             GL.BindVertexArray(m_vba);
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_vbo);

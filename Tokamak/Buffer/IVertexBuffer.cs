@@ -7,7 +7,7 @@ using Tokamak.Mathematics;
 
 namespace Tokamak.Buffer
 {
-    public interface IVertexBuffer : IDisposable
+    public interface IVertexBuffer : IDeviceResource
     {
     }
 
