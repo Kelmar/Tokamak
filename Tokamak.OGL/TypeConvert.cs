@@ -2,10 +2,12 @@
 
 using OpenTK.Graphics.OpenGL4;
 
+using Tokamak.Buffer;
+
 using GLPrimType = OpenTK.Graphics.OpenGL4.PrimitiveType;
 using TPrimType = Tokamak.PrimitiveType;
 using FormatType = Tokamak.Formats.FormatBaseType;
-using Tokamak.Buffer;
+using TokPixelFormat = Tokamak.Formats.PixelFormat;
 
 namespace Tokamak.OGL
 {
@@ -49,6 +51,32 @@ namespace Tokamak.OGL
                 BufferType.Volatile => BufferUsageHint.StaticDraw,
                 BufferType.Immutable => BufferUsageHint.StaticDraw,
                 _ => throw new Exception($"Unknown buffer type {type}")
+            };
+        }
+
+        public static PixelFormat ToGlPixelFormat(this TokPixelFormat type)
+        {
+            return type switch
+            {
+                TokPixelFormat.FormatA8 => PixelFormat.Alpha,
+                TokPixelFormat.FormatR5G6B5 => PixelFormat.Rgb,
+                TokPixelFormat.FormatR5G5B5A1 => PixelFormat.Rgba,
+                TokPixelFormat.FormatR8G8B8 => PixelFormat.Rgb,
+                TokPixelFormat.FormatR8G8B8A8 => PixelFormat.Rgba,
+                _ => throw new Exception($"Unknown PixelFormat: {type}")
+            };
+        }
+
+        public static PixelType ToGlPixelType(this TokPixelFormat type)
+        {
+            return type switch
+            {
+                TokPixelFormat.FormatA8 => PixelType.UnsignedByte,
+                TokPixelFormat.FormatR5G6B5 => PixelType.UnsignedShort565,
+                TokPixelFormat.FormatR5G5B5A1 => PixelType.UnsignedShort5551,
+                TokPixelFormat.FormatR8G8B8 => PixelType.UnsignedByte,
+                TokPixelFormat.FormatR8G8B8A8 => PixelType.UnsignedByte,
+                _ => throw new Exception($"Unknown PixelFormat: {type}")
             };
         }
     }

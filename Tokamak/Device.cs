@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+
 using Tokamak.Buffer;
+using Tokamak.Formats;
 using Tokamak.Mathematics;
 
 namespace Tokamak
@@ -39,6 +41,8 @@ namespace Tokamak
 
         public abstract IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
             where T : struct;
+
+        public abstract ITextureObject GetTextureObject(PixelFormat format, Point size);
 
         public abstract IShaderFactory GetShaderFactory();
 

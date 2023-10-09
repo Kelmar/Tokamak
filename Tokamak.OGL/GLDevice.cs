@@ -1,9 +1,10 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 
-using TokPrimType = Tokamak.PrimitiveType;
-
 using Tokamak.Mathematics;
 using Tokamak.Buffer;
+
+using TokPrimType = Tokamak.PrimitiveType;
+using TokPixelFormat = Tokamak.Formats.PixelFormat;
 
 namespace Tokamak.OGL
 {
@@ -29,6 +30,11 @@ namespace Tokamak.OGL
             where T : struct
         {
             return new VertexBuffer<T>(type);
+        }
+
+        public override ITextureObject GetTextureObject(TokPixelFormat format, Point size)
+        {
+            return new TextureObject(format, size);
         }
 
         public override IShaderFactory GetShaderFactory()
