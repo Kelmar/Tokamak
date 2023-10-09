@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Numerics;
 
-using Tokamak.Formats;
 using Tokamak.Mathematics;
 
 namespace Graphite

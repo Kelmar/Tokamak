@@ -78,8 +78,8 @@ void main()
 
             var factory = m_device.GetShaderFactory();
 
-            factory.AddShaderSource(Tokamak.ShaderType.Vertex, VERTEX);
-            factory.AddShaderSource(Tokamak.ShaderType.Fragment, FRAGMENT);
+            factory.AddShaderSource(ShaderType.Vertex, VERTEX);
+            factory.AddShaderSource(ShaderType.Fragment, FRAGMENT);
 
             m_shader = factory.Build();
         }

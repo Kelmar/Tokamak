@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Tokamak;
+﻿using Tokamak;
 
 namespace Graphite
 {
@@ -16,7 +10,7 @@ namespace Graphite
 
         public float Width { get; set; } = 1;
 
-        public float MiterLimit { get; set; } = 2;
+        public float MiterLimit { get; set; } = 20;
 
         public Color Color { get; set; }
     }

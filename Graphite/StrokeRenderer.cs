@@ -98,9 +98,6 @@ namespace Graphite
                     p1.MiterDirection *= scale;
                 }
 
-                // Clear all flags but corner flags.
-                p1.Flags &= PointFlags.Corner;
-
                 float cross = MathX.Cross(p1.Direction, p0.Direction);
 
                 if (cross > 0)

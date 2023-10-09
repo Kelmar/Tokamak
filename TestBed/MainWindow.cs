@@ -1,7 +1,4 @@
-﻿using System;
-using System.Numerics;
-
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -23,7 +20,6 @@ namespace TestBed
         private readonly Device m_device;
         private readonly Canvas m_canvas;
 
-        private decimal m_miter = 3;
         private bool m_trans = false;
 
         public MainWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
@@ -62,19 +58,6 @@ namespace TestBed
             if (KeyboardState.IsKeyReleased(Keys.T))
                 m_trans = !m_trans;
 
-            decimal oldMiter = m_miter;
-
-            if (KeyboardState.IsKeyReleased(Keys.Up))
-                m_miter = Math.Min(m_miter + 0.1m, 3);
-
-            if (KeyboardState.IsKeyReleased(Keys.Down))
-                m_miter = Math.Max(m_miter - 0.1m, 0.1m);
-
-            if (m_miter != oldMiter)
-            {
-                Title = String.Format("GL Test : Miter:{0}", m_miter);
-            }
-
             base.OnUpdateFrame(e);
         }
 
@@ -94,7 +77,6 @@ namespace TestBed
             {
                 Width = 40,
                 Color = m_trans ? TransWhite : Color.DarkRed,
-                MiterLimit = (float)m_miter,
                 //LineJoin = LineJoin.Bevel
             };
 
