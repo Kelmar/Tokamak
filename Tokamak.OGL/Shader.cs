@@ -87,13 +87,13 @@ namespace Tokamak.OGL
         public void Set(string name, in SNum.Matrix3x2 mat)
         {
             var m = mat.ToOpenTK();
-            GL.UniformMatrix3x2(GetLocation(name), false, ref m);
+            GL.UniformMatrix3x2(GetLocation(name), true, ref m);
         }
 
         public void Set(string name, in SNum.Matrix4x4 mat)
         {
             var m = mat.ToOpenTK();
-            GL.UniformMatrix4(GetLocation(name), false, ref m);
+            GL.UniformMatrix4(GetLocation(name), true, ref m);
         }
     }
 }

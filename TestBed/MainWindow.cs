@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 using OpenTK.Graphics.OpenGL4;
 
@@ -21,6 +22,7 @@ namespace TestBed
 
         private readonly Device m_device;
         private readonly Canvas m_canvas;
+        private readonly IShader m_shader;
 
         private decimal m_miter = 3;
         private bool m_trans = false;
@@ -30,12 +32,20 @@ namespace TestBed
         {
             m_device = new Tokamak.OGL.GLDevice();
             m_canvas = new Canvas(m_device);
+
+            using var shaderFact = m_device.GetShaderFactory();
+
+            shaderFact.AddShaderSource(Tokamak.ShaderType.Vertex, TestShaders.VERTEX);
+            shaderFact.AddShaderSource(Tokamak.ShaderType.Fragment, TestShaders.FRAGMENT);
+
+            m_shader = shaderFact.Build();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
+                m_shader?.Dispose();
                 m_canvas.Dispose();
                 m_device.Dispose();
             }
@@ -85,11 +95,14 @@ namespace TestBed
             base.OnRenderFrame(args);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Disable(EnableCap.CullFace);
+
+            m_shader.Activate();
 
             Pen pen = new Pen
             {
                 Width = 40,
-                Color = m_trans ? TransWhite : Color.White,
+                Color = m_trans ? TransWhite : Color.DarkRed,
                 MiterLimit = (float)m_miter,
                 //LineJoin = LineJoin.Bevel
             };
@@ -105,11 +118,6 @@ namespace TestBed
             //p1.Closed = true;
 
             //m_canvas.StrokePath(pen, p1);
-
-            ////var p2 = new Path();
-            ////p2.Rect(200, 200, 100, 100);
-
-            ////m_context.StrokePath(pen, p2);
 
             //var p3 = new Path();
             ////p3.Rect(50, 50, 450, 450);
@@ -135,6 +143,11 @@ namespace TestBed
 
             if (e.Width > 0 && e.Height > 0)
                 m_device.Viewport = new Rect(0, 0, e.Width, e.Height);
+
+            var mat = Matrix4x4.CreateOrthographicOffCenter(0, e.Width, e.Height, 0, -1, 1);
+
+            m_shader.Activate();
+            m_shader.Set("projection", mat);
         }
     }
 }

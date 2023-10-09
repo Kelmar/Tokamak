@@ -2,7 +2,7 @@
 
 using OpenTK.Graphics.OpenGL4;
 
-using GLPrimType = OpenTK.Graphics.OpenGL.PrimitiveType;
+using GLPrimType = OpenTK.Graphics.OpenGL4.PrimitiveType;
 using TPrimType = Tokamak.PrimitiveType;
 using FormatType = Tokamak.Formats.FormatBaseType;
 using Tokamak.Buffer;

@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL4;
 
 using TokPrimType = Tokamak.PrimitiveType;
 
@@ -12,6 +12,7 @@ namespace Tokamak.OGL
         public GLDevice()
         {
             GL.ClearColor(0, 0, 0, 1);
+            GL.Disable(EnableCap.DepthTest);
         }
 
         public override Rect Viewport 
@@ -19,7 +20,7 @@ namespace Tokamak.OGL
             get => base.Viewport; 
             set
             {
-                GL.Viewport(value.Left, value.Top, value.Extent.X, value.Extent.Y);
+                GL.Viewport(value.Left, value.Top, value.Extent.X, value.Extent.Y);           
                 base.Viewport = value;
             }
         }

@@ -61,21 +61,18 @@ namespace Tokamak.Formats
                     }
                 ).ToList();
 
+                int stride = firstPass.Count() > 1 ? Size : 0;
+
                 return firstPass
                     .Select((item, index) => new ItemInfo
                     {
                         Index = index,
                         Offset = item.Offset,
-                        Stride = ComputeStride(item, firstPass),
+                        Stride = stride,
                         BaseType = item.BaseType,
                         Count = item.Count
                     })
                     .ToList();
-            }
-
-            private int ComputeStride(ItemInfo item, List<ItemInfo> allItems)
-            {
-                return allItems.Where(i => i != item).Sum(i => Marshal.SizeOf(i.DeclaringType));
             }
 
             /// <summary>

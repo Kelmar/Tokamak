@@ -21,6 +21,8 @@ namespace Tokamak
     /// 
     /// Metal looks to be able to transpile stuff that is 
     /// compiled with an LLVM IR shader?
+    /// 
+    /// SPIR-V
     /// </remarks>
     public interface IShaderFactory : IDisposable
     {
