@@ -22,7 +22,6 @@ namespace TestBed
 
         private readonly Device m_device;
         private readonly Canvas m_canvas;
-        private readonly IShader m_shader;
 
         private decimal m_miter = 3;
         private bool m_trans = false;
@@ -34,18 +33,12 @@ namespace TestBed
             m_canvas = new Canvas(m_device);
 
             using var shaderFact = m_device.GetShaderFactory();
-
-            shaderFact.AddShaderSource(Tokamak.ShaderType.Vertex, TestShaders.VERTEX);
-            shaderFact.AddShaderSource(Tokamak.ShaderType.Fragment, TestShaders.FRAGMENT);
-
-            m_shader = shaderFact.Build();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                m_shader?.Dispose();
                 m_canvas.Dispose();
                 m_device.Dispose();
             }
@@ -97,8 +90,6 @@ namespace TestBed
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Disable(EnableCap.CullFace);
 
-            m_shader.Activate();
-
             Pen pen = new Pen
             {
                 Width = 40,
@@ -142,12 +133,10 @@ namespace TestBed
             base.OnResize(e);
 
             if (e.Width > 0 && e.Height > 0)
+            {
                 m_device.Viewport = new Rect(0, 0, e.Width, e.Height);
-
-            var mat = Matrix4x4.CreateOrthographicOffCenter(0, e.Width, e.Height, 0, -1, 1);
-
-            m_shader.Activate();
-            m_shader.Set("projection", mat);
+                m_canvas.SetSize(e.Width, e.Height);
+            }
         }
     }
 }

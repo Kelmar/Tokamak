@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 using Tokamak;
 using Tokamak.Buffer;
@@ -21,6 +22,39 @@ namespace Graphite
     /// </remarks>
     public class Canvas : IDisposable
     {
+        public const string VERTEX = @"#version 450
+
+uniform mat4 projection;
+
+layout(location = 0) in vec3 Point;
+layout(location = 1) in vec4 Color;
+layout(location = 2) in vec2 TexCoord;
+
+layout(location = 0) out vec4 fsin_Color;
+layout(location = 1) out vec2 fsin_TexCoord;
+
+void main()
+{
+    gl_Position = vec4(Point, 1.0) * projection;
+    fsin_Color = Color;
+    fsin_TexCoord = TexCoord;
+}
+";
+
+
+        public const string FRAGMENT = @"#version 450
+
+layout(location = 0) in vec4 fsin_Color;
+layout(location = 1) in vec2 fsin_TexCoord;
+
+layout(location = 0) out vec4 fsout_Color;
+
+void main()
+{
+    fsout_Color = fsin_Color;
+}
+";
+
         private enum CallType
         {
             Debug = 0,
@@ -32,17 +66,34 @@ namespace Graphite
         private readonly List<VectorFormatPCT> m_vectors = new List<VectorFormatPCT>(128);
 
         private readonly Device m_device;
+        private readonly IShader m_shader;
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
         public Canvas(Device device)
         {
             m_device = device;
             m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dyanmic);
+
+            var factory = m_device.GetShaderFactory();
+
+            factory.AddShaderSource(Tokamak.ShaderType.Vertex, VERTEX);
+            factory.AddShaderSource(Tokamak.ShaderType.Fragment, FRAGMENT);
+
+            m_shader = factory.Build();
         }
 
         public void Dispose()
         {
+            m_shader?.Dispose();
             m_vertexBuffer.Dispose();
+        }
+
+        public void SetSize(int width, int height)
+        {
+            var mat = Matrix4x4.CreateOrthographicOffCenter(0, width, height, 0, -1, 1);
+
+            m_shader.Activate();
+            m_shader.Set("projection", mat);
         }
 
         public void StrokeRect(Pen pen, in Rect rect)
@@ -72,6 +123,8 @@ namespace Graphite
 
         public void Flush()
         {
+            m_shader.Activate();
+
             m_vertexBuffer.Set(m_vectors);
 
             foreach (var call in m_calls)
