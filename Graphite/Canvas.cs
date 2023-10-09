@@ -22,6 +22,8 @@ namespace Graphite
     /// </remarks>
     public class Canvas : IDisposable
     {
+        // For now we have some fairly basic shaders for testing the canvas out.
+
         public const string VERTEX = @"#version 450
 
 uniform mat4 projection;
