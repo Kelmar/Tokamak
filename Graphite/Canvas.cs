@@ -108,6 +108,7 @@ void main()
             {
                 VertexOffset = m_vectors.Count,
                 VertexCount = vects.Count(),
+                Texture = texture
             };
 
             m_vectors.AddRange(vects);
@@ -152,16 +153,16 @@ void main()
                 },
                 new VectorFormatPCT
                 {
-                    Point = new Vector3(p.X + texture.Size.X, p.Y + texture.Size.Y, 0),
-                    Color = color,
-                    TexCoord = new Vector2(1, 1)
-                },
-                new VectorFormatPCT
-                {
                     Point = new Vector3(p.X, p.Y + texture.Size.Y, 0),
                     Color = color,
                     TexCoord = new Vector2(0, 1)
-                }
+                },
+                new VectorFormatPCT
+                {
+                    Point = new Vector3(p.X + texture.Size.X, p.Y + texture.Size.Y, 0),
+                    Color = color,
+                    TexCoord = new Vector2(1, 1)
+                }                
             };
 
             AddCall(vects, texture);
@@ -177,7 +178,7 @@ void main()
 
             foreach (var call in m_calls)
             {
-                if (call.Texture != last)
+                //if (call.Texture != last)
                 {
                     if (call.Texture != null)
                         call.Texture.Activate();
@@ -190,7 +191,7 @@ void main()
                 m_device.DrawArrays(PrimitiveType.TrangleStrip, call.VertexOffset, call.VertexCount);
             }
 
-            if (last != null)
+            //if (last != null)
                 m_device.ClearBoundTexture();
 
             m_vectors.Clear();

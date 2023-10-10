@@ -47,6 +47,7 @@ namespace Tokamak.OGL
         {
             Activate();
 
+            // This causes a hard crash if you don't get the format right.
             GL.TexImage2D(
                 TextureTarget.Texture2D,
                 mipLevel,
@@ -57,6 +58,8 @@ namespace Tokamak.OGL
                 m_glFormat,
                 m_glType,
                 data);
+
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
     }
 }

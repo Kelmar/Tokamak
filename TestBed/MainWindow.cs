@@ -1,4 +1,8 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using System.IO;
+
+using StbImageSharp;
+
+using OpenTK.Graphics.OpenGL4;
 
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -8,6 +12,8 @@ using Tokamak;
 using Tokamak.Mathematics;
 
 using Graphite;
+using Tokamak.Buffer;
+using Microsoft.Win32;
 
 namespace TestBed
 {
@@ -19,6 +25,7 @@ namespace TestBed
 
         private readonly Device m_device;
         private readonly Canvas m_canvas;
+        private readonly ITextureObject m_texture;
 
         private bool m_trans = false;
 
@@ -29,6 +36,8 @@ namespace TestBed
             m_canvas = new Canvas(m_device);
 
             using var shaderFact = m_device.GetShaderFactory();
+
+            m_texture = LoadTexture();
         }
 
         protected override void Dispose(bool disposing)
@@ -40,6 +49,20 @@ namespace TestBed
             }
 
             base.Dispose(disposing);
+        }
+
+        private ITextureObject LoadTexture()
+        {
+            StbImage.stbi_set_flip_vertically_on_load(1);
+
+            using var s = File.OpenRead("resources/container.png");
+            ImageResult image = ImageResult.FromStream(s);
+
+            ITextureObject rval = m_device.GetTextureObject(Tokamak.Formats.PixelFormat.FormatR8G8B8, new Point(image.Width, image.Height));
+
+            rval.Set(0, image.Data);
+
+            return rval;
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -82,6 +105,8 @@ namespace TestBed
 
             Rect r = new Rect(200, 200, 100, 100);
             m_canvas.StrokeRect(pen, r);
+
+            m_canvas.DrawImage(m_texture, new Point(500, 500));
 
             //var p1 = new Path();
 
