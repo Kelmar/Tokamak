@@ -43,14 +43,14 @@ namespace Tokamak.OGL
             GL.BindTexture(TextureTarget.Texture2D, m_handle);
         }
 
-        public void Set(int mipLevel, byte[] data)
+        public void Set(byte[] data)
         {
             Activate();
 
             // This causes a hard crash if you don't get the format right.
             GL.TexImage2D(
                 TextureTarget.Texture2D,
-                mipLevel,
+                0,
                 m_glInternal,
                 Size.X,
                 Size.Y,

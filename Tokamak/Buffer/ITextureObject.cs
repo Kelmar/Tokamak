@@ -9,6 +9,6 @@ namespace Tokamak.Buffer
 
         Point Size { get; }
 
-        void Set(int mipLevel, byte[] data);
+        void Set(byte[] data);
     }
 }
