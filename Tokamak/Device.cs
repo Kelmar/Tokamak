@@ -44,6 +44,8 @@ namespace Tokamak
 
         public abstract ITextureObject GetTextureObject(PixelFormat format, Point size);
 
+        public abstract void ClearBoundTexture();
+
         public abstract IShaderFactory GetShaderFactory();
 
         public abstract void DrawArrays(PrimitiveType primitive, int vertexOffset, int vertexCount);

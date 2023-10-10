@@ -11,26 +11,25 @@ namespace Tokamak.OGL
     internal class TextureObject : ITextureObject
     {
         private readonly int m_handle;
-        private readonly int m_buffer;
 
         private readonly GlPixelFormat m_glFormat;
         private readonly PixelType m_glType;
+        private readonly PixelInternalFormat m_glInternal;
 
         public TextureObject(TokPixelFormat format, Point size)
         {
             m_handle = GL.GenTexture();
-            m_buffer = GL.GenBuffer();
 
             Format = format;
             Size = size;
 
             m_glFormat = Format.ToGlPixelFormat();
             m_glType = Format.ToGlPixelType();
+            m_glInternal = Format.ToGlInternalFormat();
         }
 
         public void Dispose()
         {
-            GL.DeleteBuffer(m_buffer);
             GL.DeleteTexture(m_handle);
         }
 
@@ -40,6 +39,7 @@ namespace Tokamak.OGL
 
         public void Activate()
         {
+            GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, m_handle);
         }
 
@@ -47,21 +47,16 @@ namespace Tokamak.OGL
         {
             Activate();
 
-            GL.BindBuffer(BufferTarget.PixelUnpackBuffer, m_buffer);
-            GL.BufferData(BufferTarget.PixelUnpackBuffer, data.Length, data, BufferUsageHint.StreamDraw);
-
-            GL.TexSubImage2D(
+            GL.TexImage2D(
                 TextureTarget.Texture2D,
                 mipLevel,
-                0,
-                0,
+                m_glInternal,
                 Size.X,
                 Size.Y,
+                0,
                 m_glFormat,
                 m_glType,
                 data);
-
-            GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
         }
     }
 }

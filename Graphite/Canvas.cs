@@ -51,9 +51,11 @@ layout(location = 1) in vec2 fsin_TexCoord;
 
 layout(location = 0) out vec4 fsout_Color;
 
+uniform sampler2D texture0;
+
 void main()
 {
-    fsout_Color = fsin_Color;
+    fsout_Color = texture(texture0, fsin_TexCoord) * fsin_Color;
 }
 ";
 
@@ -98,6 +100,21 @@ void main()
             m_shader.Set("projection", mat);
         }
 
+        public void AddCall(IEnumerable<VectorFormatPCT> vectors, ITextureObject texture = null)
+        {
+            var vects = vectors.ToList();
+
+            var call = new CanvasCall
+            {
+                VertexOffset = m_vectors.Count,
+                VertexCount = vects.Count(),
+            };
+
+            m_vectors.AddRange(vects);
+
+            m_calls.Add(call);
+        }
+
         public void StrokeRect(Pen pen, in Rect rect)
         {
             var stroke = new Stroke();
@@ -112,25 +129,69 @@ void main()
 
             var renderer = new StrokeRenderer(stroke);
 
-            var call = new CanvasCall
+            AddCall(renderer.Vectors);
+        }
+
+        public void DrawImage(ITextureObject texture, Point p)
+        {
+            Vector4 color = (Vector4)Color.White;
+
+            var vects = new VectorFormatPCT[4]
             {
-                VertexOffset = m_vectors.Count,
-                VertexCount = renderer.Vectors.Count(),
+                new VectorFormatPCT
+                {
+                    Point = p,
+                    Color = color,
+                    TexCoord = new Vector2(0, 0),
+                },
+                new VectorFormatPCT
+                {
+                    Point = new Vector3(p.X + texture.Size.X, p.Y, 0),
+                    Color = color,
+                    TexCoord = new Vector2(1, 0),
+                },
+                new VectorFormatPCT
+                {
+                    Point = new Vector3(p.X + texture.Size.X, p.Y + texture.Size.Y, 0),
+                    Color = color,
+                    TexCoord = new Vector2(1, 1)
+                },
+                new VectorFormatPCT
+                {
+                    Point = new Vector3(p.X, p.Y + texture.Size.Y, 0),
+                    Color = color,
+                    TexCoord = new Vector2(0, 1)
+                }
             };
 
-            m_vectors.AddRange(renderer.Vectors);
-
-            m_calls.Add(call);
+            AddCall(vects, texture);
         }
 
         public void Flush()
         {
+            ITextureObject last = null;
+
             m_shader.Activate();
 
             m_vertexBuffer.Set(m_vectors);
 
             foreach (var call in m_calls)
+            {
+                if (call.Texture != last)
+                {
+                    if (call.Texture != null)
+                        call.Texture.Activate();
+                    else
+                        m_device.ClearBoundTexture();
+
+                    last = call.Texture;
+                }
+
                 m_device.DrawArrays(PrimitiveType.TrangleStrip, call.VertexOffset, call.VertexCount);
+            }
+
+            if (last != null)
+                m_device.ClearBoundTexture();
 
             m_vectors.Clear();
             m_calls.Clear();

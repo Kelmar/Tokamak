@@ -17,10 +17,5 @@ namespace Tokamak
         void Set(string name, in Matrix3x2 value);
 
         void Set(string name, in Matrix4x4 value);
-
-        dynamic this[string name]
-        {
-            set { Set(name, value); }
-        }
     }
 }
