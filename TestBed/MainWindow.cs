@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 using StbImageSharp;
 
@@ -9,11 +10,10 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Tokamak;
+using Tokamak.Buffer;
 using Tokamak.Mathematics;
 
 using Graphite;
-using Tokamak.Buffer;
-using Microsoft.Win32;
 
 namespace TestBed
 {
@@ -26,8 +26,11 @@ namespace TestBed
         private readonly Device m_device;
         private readonly Canvas m_canvas;
         private readonly ITextureObject m_texture;
+        private readonly Font m_font;
 
         private bool m_trans = false;
+
+        private readonly ITextureObject m_letter;
 
         public MainWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
@@ -38,12 +41,19 @@ namespace TestBed
             using var shaderFact = m_device.GetShaderFactory();
 
             m_texture = LoadTexture();
+
+            string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
+            m_font = m_canvas.GetFont(path, 8);
+
+            m_letter = m_font.DrawGlyph('G');
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
+                m_letter.Dispose();
+                m_font.Dispose();
                 m_canvas.Dispose();
                 m_device.Dispose();
             }
@@ -60,7 +70,7 @@ namespace TestBed
 
             ITextureObject rval = m_device.GetTextureObject(Tokamak.Formats.PixelFormat.FormatR8G8B8, new Point(image.Width, image.Height));
 
-            rval.Set(0, image.Data);
+            rval.Set(image.Data);
 
             return rval;
         }
@@ -107,6 +117,8 @@ namespace TestBed
             m_canvas.StrokeRect(pen, r);
 
             m_canvas.DrawImage(m_texture, new Point(500, 500));
+
+            m_canvas.DrawImage(m_letter, new Point(500, 10));
 
             //var p1 = new Path();
 

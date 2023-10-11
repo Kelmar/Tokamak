@@ -32,6 +32,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{8E037282-7
 		docs\Torque.md = docs\Torque.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{F043E15E-2E44-49EA-81D3-49CF88896C2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeTypeWrapper", "FreeTypeWrapper\FreeTypeWrapper.csproj", "{89F18EA9-213F-4C28-AED7-98E3008EDABE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +70,10 @@ Global
 		{478B64C5-2711-452B-AE48-F77C4C04749E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{478B64C5-2711-452B-AE48-F77C4C04749E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{478B64C5-2711-452B-AE48-F77C4C04749E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89F18EA9-213F-4C28-AED7-98E3008EDABE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89F18EA9-213F-4C28-AED7-98E3008EDABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89F18EA9-213F-4C28-AED7-98E3008EDABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89F18EA9-213F-4C28-AED7-98E3008EDABE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,6 +83,7 @@ Global
 		{343CAC6D-E6B4-4F4B-B81C-4E56CC67A120} = {D8EE3E93-D017-494B-8E12-76C3C685C209}
 		{478B64C5-2711-452B-AE48-F77C4C04749E} = {5859A128-E628-4FC7-AA18-1D6CB70357ED}
 		{8E037282-74EC-454D-94F8-5D6207B3E972} = {B1FD1B91-527C-47F9-8F1D-78F6A1108420}
+		{89F18EA9-213F-4C28-AED7-98E3008EDABE} = {F043E15E-2E44-49EA-81D3-49CF88896C2F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {05871E1D-40C8-45D6-A51D-0E321A9A7D4F}

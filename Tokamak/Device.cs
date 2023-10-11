@@ -28,6 +28,8 @@ namespace Tokamak
 
         virtual public Rect Viewport { get; set; }
 
+        public IList<Monitor> Monitors { get; protected set; }
+
         public void PushWorldMatrix(in Matrix4x4 newMatrix)
         {
             m_worldMatrixStack.Push(WorldMatrix);

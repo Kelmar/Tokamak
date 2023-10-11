@@ -90,7 +90,7 @@ namespace Tokamak.OGL
                 TokPixelFormat.FormatR5G6B5 => PixelInternalFormat.Rgb,
                 TokPixelFormat.FormatR5G5B5A1 => PixelInternalFormat.Rgb5A1,
                 TokPixelFormat.FormatR8G8B8 => PixelInternalFormat.Rgb,
-                TokPixelFormat.FormatR8G8B8A8 => PixelInternalFormat.Rgba,
+                TokPixelFormat.FormatR8G8B8A8 => PixelInternalFormat.Rgba8,
                 _ => throw new Exception($"Unknown PixelFormat: {type}")
             };
         }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
+using FreeTypeWrapper;
+
 using Tokamak;
 using Tokamak.Buffer;
 using Tokamak.Formats;
@@ -66,6 +68,8 @@ void main()
             Stroke = 10
         }
 
+        private readonly FTLibrary m_ftLibrary;
+
         private readonly List<CanvasCall> m_calls = new List<CanvasCall>(128);
         private readonly List<VectorFormatPCT> m_vectors = new List<VectorFormatPCT>(128);
 
@@ -75,6 +79,8 @@ void main()
 
         public Canvas(Device device)
         {
+            m_ftLibrary = new FTLibrary();
+
             m_device = device;
             m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dyanmic);
 
@@ -90,6 +96,15 @@ void main()
         {
             m_shader?.Dispose();
             m_vertexBuffer.Dispose();
+
+            m_ftLibrary.Dispose();
+        }
+
+        public Font GetFont(string filename, float size)
+        {
+            var dpi = m_device.Monitors.FirstOrDefault()?.DPI ?? new Point(192, 192);
+            var face = m_ftLibrary.GetFace(filename, size, dpi);
+            return new Font(m_device, face);
         }
 
         public void SetSize(int width, int height)
@@ -133,6 +148,7 @@ void main()
             AddCall(renderer.Vectors);
         }
 
+        // This is a simple test function for now.
         public void DrawImage(ITextureObject texture, Point p)
         {
             Vector4 color = (Vector4)Color.White;
