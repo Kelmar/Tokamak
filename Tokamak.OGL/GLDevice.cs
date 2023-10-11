@@ -11,6 +11,9 @@ using Tokamak.Buffer;
 using TokPrimType = Tokamak.PrimitiveType;
 using TokPixelFormat = Tokamak.Formats.PixelFormat;
 using System.Runtime.InteropServices;
+using Silk.NET.Windowing;
+using System.Numerics;
+using Silk.NET.Maths;
 
 namespace Tokamak.OGL
 {
@@ -57,36 +60,32 @@ namespace Tokamak.OGL
             get => base.Viewport;
             set
             {
-                GL.Viewport(value.Left, value.Top, (uint)value.Extent.X, (uint)value.Extent.Y);
+                GL.Viewport(value.Left, value.Top, (uint)value.Size.X, (uint)value.Size.Y);
                 base.Viewport = value;
             }
         }
 
         private IEnumerable<Monitor> EnumerateMonitors()
         {
-            yield return new Monitor
-            {
-                DPI = new Point(192, 192),
-                RawDPI = new Point(192, 192),
-                WorkArea = new Rect(Point.Zero, new Point(3840, 2160))
-            };
+            var platform = Window.GetWindowPlatform(false);
 
-#if false
-            var mons = OpenTK.Windowing.Desktop.Monitors.GetMonitors();
+            if (platform == null)
+                throw new Exception("Unable to get window platform.");
 
-            foreach (var m in mons)
+            foreach (var m in platform.GetMonitors())
             {
-                var loc = new Point(m.WorkArea.Min.X, m.WorkArea.Min.Y);
-                var size = new Point(m.WorkArea.Size.X, m.WorkArea.Size.Y);
+                // Silk doesn't return the DPI info yet, hard coded for now.
 
                 yield return new Monitor
                 {
-                    DPI = new Point((int)Math.Round(m.HorizontalDpi), (int)Math.Round(m.VerticalDpi)),
-                    RawDPI = new System.Numerics.Vector2(m.HorizontalRawDpi, m.VerticalRawDpi),
-                    WorkArea = new Rect(loc, size)
+                    Index = m.Index,
+                    IsMain = m.Index == 0, // For now we assume it's the first monitor
+                    Gamma = m.Gamma,
+                    DPI = new Point(192, 192),
+                    RawDPI = new Vector2(192, 192),
+                    WorkArea = m.Bounds
                 };
             }
-#endif
         }
 
         public override IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)

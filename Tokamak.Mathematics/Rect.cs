@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
+using Silk.NET.Maths;
+
 namespace Tokamak.Mathematics
 {
     /// <summary>
@@ -28,31 +30,31 @@ namespace Tokamak.Mathematics
         public Rect(Point location, Point extent)
         {
             Location = location;
-            Extent = extent;
+            Size = extent;
         }
 
         public Rect(int x, int y, int width, int height)
         {
             Location = new Point(x, y);
-            Extent = new Point(width, height);
+            Size = new Point(width, height);
         }
 
         public Point Location { get; set; }
 
-        public Point Extent { get; set; }
+        public Point Size { get; set; }
 
         public int Left => Location.X;
 
         public int Top => Location.Y;
 
-        public int Right => Location.X + Extent.X;
+        public int Right => Location.X + Size.X;
 
-        public int Bottom => Location.Y + Extent.Y;
+        public int Bottom => Location.Y + Size.Y;
 
         /// <summary>
         /// Gets a boolean indicating if this rectangle is valid or not.
         /// </summary>
-        public bool IsValid => Extent.X > 0 && Extent.Y > 0;
+        public bool IsValid => Size.X > 0 && Size.Y > 0;
 
         /// <summary>
         /// Get the rectangle that intersects with the supplied rectangle and this rectangle.
@@ -79,8 +81,8 @@ namespace Tokamak.Mathematics
         {
             int x = Left + by.X;
             int y = Top + by.Y;
-            int w = Extent.X - 2 * by.X;
-            int h = Extent.Y - 2 * by.Y;
+            int w = Size.X - 2 * by.X;
+            int h = Size.Y - 2 * by.Y;
 
             return new Rect(x, y, w, h);
         }
@@ -92,6 +94,9 @@ namespace Tokamak.Mathematics
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(Point p) => (Left >= p.X) && (Top >= p.Y) && (p.X <= Right) && (p.Y <= Bottom);
+
+        public static implicit operator Rectangle<int>(in Rect r) => new Rectangle<int>(r.Location, r.Size);
+        public static implicit operator Rect(in Rectangle<int> r) => new Rect(r.Origin, r.Size);
 
     }
 }

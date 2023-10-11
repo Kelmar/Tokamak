@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
+
+using Silk.NET.Maths;
 
 using Tokamak.Mathematics;
 
@@ -11,6 +8,21 @@ namespace Tokamak
 {
     public class Monitor
     {
+        /// <summary>
+        /// The index of the monitor.
+        /// </summary>
+        public int Index { get; set; }
+
+        /// <summary>
+        /// Gets the flag indicating if this is the main monitor or not.
+        /// </summary>
+        public bool IsMain { get; set; }
+
+        /// <summary>
+        /// Gets the gamma setting for this monitor.
+        /// </summary>
+        public float Gamma { get; set; }
+
         /// <summary>
         /// The dots per inch of the monitor.
         /// </summary>
@@ -41,6 +53,6 @@ namespace Tokamak
         /// 
         /// Values can be negative for positions so watch out!
         /// </remarks>
-        public Rect WorkArea { get; set; }
+        public Rectangle<int> WorkArea { get; set; }
     }
 }
