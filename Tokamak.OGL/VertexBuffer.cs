@@ -1,66 +1,73 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
-using OpenTK.Graphics.OpenGL4;
+using Silk.NET.OpenGL;
+
 using Tokamak.Buffer;
 using Tokamak.Formats;
 
 namespace Tokamak.OGL
 {
     internal class VertexBuffer<T> : IVertexBuffer<T>
-        where T : struct
+        where T : unmanaged
     {
-        private readonly int m_vba;
-        private readonly int m_vbo;
+        private readonly uint m_vba;
+        private readonly uint m_vbo;
 
         private readonly VectorFormat.Info m_layoutInfo;
+        private readonly GLDevice m_parent;
 
-        private readonly BufferUsageHint m_usageHint;
+        private readonly BufferUsageARB m_usageHint;
 
-        public VertexBuffer(BufferType type)
+        public VertexBuffer(GLDevice device, BufferType type)
         {
+            m_parent = device;
+
             m_layoutInfo = VectorFormat.GetLayoutOf<T>();
 
             m_usageHint = type.ToGLType();
 
-            m_vba = GL.GenVertexArray();
-            GL.BindVertexArray(m_vba);
+            m_vba = m_parent.GL.GenVertexArray();
+            m_parent.GL.BindVertexArray(m_vba);
 
-            m_vbo = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, m_vbo);
+            m_vbo = m_parent.GL.GenBuffer();
+            m_parent.GL.BindBuffer(BufferTargetARB.ArrayBuffer, m_vbo);
         }
 
         public void Dispose()
         {
             if (m_vbo != 0)
             {
-                GL.BindVertexArray(m_vba);
+                m_parent.GL.BindVertexArray(m_vba);
 
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.DeleteBuffers(1, new int[] { m_vbo });
+                m_parent.GL.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
+                m_parent.GL.DeleteBuffer(m_vbo);
             }
 
             if (m_vba != 0)
-                GL.DeleteVertexArray(m_vba);
+                m_parent.GL.DeleteVertexArray(m_vba);
         }
 
         public void Activate()
         {
-            GL.BindVertexArray(m_vba);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, m_vbo);
+            m_parent.GL.BindVertexArray(m_vba);
+            m_parent.GL.BindBuffer(BufferTargetARB.ArrayBuffer, m_vbo);
         }
 
-        public void Set(IEnumerable<T> data)
+        public unsafe void Set(IEnumerable<T> data)
         {
             Activate();
             var verts = data.ToArray();
 
-            GL.BufferData(BufferTarget.ArrayBuffer, verts.Count() * m_layoutInfo.Size, verts, m_usageHint);
+            var vertSpan = new ReadOnlySpan<T>(verts);
+
+            m_parent.GL.BufferData(BufferTargetARB.ArrayBuffer, vertSpan, m_usageHint);
 
             foreach (var item in m_layoutInfo.Items)
             {
-                GL.VertexAttribPointer(item.Index, item.Count, item.BaseType.ToGLType(), false, item.Stride, item.Offset);
-                GL.EnableVertexAttribArray(item.Index);
+                m_parent.GL.VertexAttribPointer((uint)item.Index, item.Count, item.BaseType.ToGLType(), false, (uint)item.Stride, (void*)item.Offset);
+                m_parent.GL.EnableVertexAttribArray((uint)item.Index);
             }
         }
     }

@@ -1,8 +1,11 @@
 ﻿using System;
 
-using OpenTK.Graphics.OpenGL4;
+//using OpenTK.Graphics.OpenGL4;
+using Silk.NET.OpenGL;
 
-using GLShaderType = OpenTK.Graphics.OpenGL4.ShaderType;
+//using GLShaderType = OpenTK.Graphics.OpenGL4.ShaderType;
+
+using GLShaderType = Silk.NET.OpenGL.ShaderType;
 
 namespace Tokamak.OGL
 {
@@ -11,8 +14,12 @@ namespace Tokamak.OGL
     /// </summary>
     internal class ShaderCompiler : IDisposable
     {
-        public ShaderCompiler(ShaderType type, string source)
+        private readonly GLDevice m_device;
+
+        public ShaderCompiler(GLDevice device, ShaderType type, string source)
         {
+            m_device = device;
+
             Type = type switch
             {
                 ShaderType.Fragment => GLShaderType.FragmentShader,
@@ -22,9 +29,9 @@ namespace Tokamak.OGL
                 _ => throw new Exception($"Unknown shader type: {type}")
             };
 
-            Handle = GL.CreateShader(Type);
-            
-            GL.ShaderSource(Handle, source);
+            Handle = m_device.GL.CreateShader(Type);
+
+            m_device.GL.ShaderSource(Handle, source);
 
             Compile();
         }
@@ -32,22 +39,22 @@ namespace Tokamak.OGL
         public void Dispose()
         {
             if (Handle != 0)
-                GL.DeleteShader(Handle);
+                m_device.GL.DeleteShader(Handle);
         }
 
         public GLShaderType Type { get; }
 
-        public int Handle { get; }
+        public uint Handle { get; }
 
         private void Compile()
         {
-            GL.CompileShader(Handle);
+            m_device.GL.CompileShader(Handle);
 
-            GL.GetShader(Handle, ShaderParameter.CompileStatus, out int status);
+            m_device.GL.GetShader(Handle, GLEnum.CompileStatus, out int status);
 
-            if (status != (int)All.True)
+            if (status == 0)
             {
-                string infoLog = GL.GetShaderInfoLog(Handle);
+                string infoLog = m_device.GL.GetShaderInfoLog(Handle);
                 throw new Exception($"Error compiling shader {Type}: {infoLog}");
             }
         }

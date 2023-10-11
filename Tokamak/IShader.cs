@@ -14,8 +14,8 @@ namespace Tokamak
 
         void Set(string name, in Vector4 value);
 
-        void Set(string name, in Matrix3x2 value);
+        void Set(string name, Matrix3x2 value);
 
-        void Set(string name, in Matrix4x4 value);
+        void Set(string name, Matrix4x4 value);
     }
 }

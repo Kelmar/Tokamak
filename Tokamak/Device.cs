@@ -42,7 +42,7 @@ namespace Tokamak
         }
 
         public abstract IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
-            where T : struct;
+            where T : unmanaged;
 
         public abstract ITextureObject GetTextureObject(PixelFormat format, Point size);
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using OpenTK.Graphics.OpenGL4;
+//using OpenTK.Graphics.OpenGL4;
 
 namespace Tokamak.OGL
 {
@@ -9,10 +9,12 @@ namespace Tokamak.OGL
         private readonly List<ShaderCompiler> m_compilers = new List<ShaderCompiler>();
 
         private Shader m_shader;
+        private GLDevice m_device;
 
-        public ShaderFactory()
+        public ShaderFactory(GLDevice device)
         {
-            m_shader = new Shader();
+            m_device = device;
+            m_shader = new Shader(device);
         }
 
         public void Dispose()
@@ -31,7 +33,7 @@ namespace Tokamak.OGL
 
         public void AddShaderSource(ShaderType type, string source)
         {
-            var comp  = new ShaderCompiler(type, source);
+            var comp  = new ShaderCompiler(m_device, type, source);
 
             m_compilers.Add(comp);
         }
@@ -39,13 +41,13 @@ namespace Tokamak.OGL
         public IShader Build()
         {
             foreach (var comp in m_compilers)
-                GL.AttachShader(m_shader.Handle, comp.Handle);
+                m_device.GL.AttachShader(m_shader.Handle, comp.Handle);
 
             m_shader.Link();
 
             foreach (var comp in m_compilers)
             {
-                GL.DetachShader(m_shader.Handle, comp.Handle);
+                m_device.GL.DetachShader(m_shader.Handle, comp.Handle);
                 comp.Dispose();
             }
 

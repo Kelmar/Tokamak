@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
@@ -18,7 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTK" Version="4.8.1" />
+    <PackageReference Include="Silk.NET.Core" Version="2.17.1" />
+    <PackageReference Include="Silk.NET.Windowing" Version="2.17.1" />
+    <PackageReference Include="Silk.NET.Windowing.Common" Version="2.17.1" />
     <PackageReference Include="StbImageSharp" Version="2.27.13" />
   </ItemGroup>
 

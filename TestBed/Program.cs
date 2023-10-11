@@ -1,7 +1,6 @@
 ﻿using System;
 
-using OpenTK.Mathematics;
-using OpenTK.Windowing.Desktop;
+using Silk.NET.Windowing;
 
 namespace TestBed
 {
@@ -9,14 +8,8 @@ namespace TestBed
     {
         static void Main(string[] args)
         {
-            var winSettings = new NativeWindowSettings
-            {
-                Size = new Vector2i(1920, 1080),
-                Title = "OpenGL Test",
-                APIVersion = new Version(4, 1)
-            };
+            using var window = new MainWindow();
 
-            using var window = new MainWindow(GameWindowSettings.Default, winSettings);
             window.Run();
         }
     }

@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTK" Version="4.8.1" />
+    <PackageReference Include="Silk.NET.Core" Version="2.17.1" />
+    <PackageReference Include="Silk.NET.OpenGL" Version="2.17.1" />
   </ItemGroup>
 
   <ItemGroup>

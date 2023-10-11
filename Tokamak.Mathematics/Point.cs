@@ -7,6 +7,14 @@ namespace Tokamak.Mathematics
     /// </summary>
     public struct Point
     {
+        private static Point s_zero = new Point(0, 0);
+
+        private static Point s_one = new Point(1, 1);
+
+        public static ref readonly Point Zero => ref s_zero;
+
+        public static ref readonly Point One => ref s_one;
+
         public Point()
         {
         }

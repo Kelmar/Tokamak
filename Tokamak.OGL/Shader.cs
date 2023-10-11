@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-using OpenTK.Graphics.OpenGL4;
+using Silk.NET.Maths;
+
+using Silk.NET.OpenGL;
 
 using SNum = System.Numerics;
-using TKNum = OpenTK.Mathematics;
 
 namespace Tokamak.OGL
 {
@@ -13,38 +14,41 @@ namespace Tokamak.OGL
     {
         private readonly IDictionary<string, int> m_uniforms = new Dictionary<string, int>();
 
-        public Shader()
+        private readonly GLDevice m_parent;
+
+        public Shader(GLDevice device)
         {
-            Handle = GL.CreateProgram();
+            m_parent = device;
+            Handle = m_parent.GL.CreateProgram();
         }
 
         public void Dispose()
         {
             if (Handle != 0)
-                GL.DeleteProgram(Handle);
+                m_parent.GL.DeleteProgram(Handle);
         }
 
-        internal int Handle { get; }
+        internal uint Handle { get; }
 
         internal void Link()
         {
-            GL.LinkProgram(Handle);
+            m_parent.GL.LinkProgram(Handle);
 
-            GL.GetProgram(Handle, GetProgramParameterName.LinkStatus, out int status);
+            m_parent.GL.GetProgram(Handle, ProgramPropertyARB.LinkStatus, out int status);
 
-            if (status != (int)All.True)
+            if (status == 0) //(int)All.True)
             {
-                string infoLog = GL.GetProgramInfoLog(Handle);
+                string infoLog = m_parent.GL.GetProgramInfoLog(Handle);
                 throw new Exception($"Error linking GLSL shader: {infoLog}");
             }
 
             // Find all the uniform locations for this program and save them for later use.
-            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int uniformCount);
+            m_parent.GL.GetProgram(Handle, ProgramPropertyARB.ActiveUniforms, out int uniformCount);
 
-            for (int i = 0; i < uniformCount; ++i)
+            for (uint i = 0; i < uniformCount; ++i)
             {
-                string key = GL.GetActiveUniform(Handle, i, out _, out _);
-                int loc = GL.GetUniformLocation(Handle, key);
+                string key = m_parent.GL.GetActiveUniform(Handle, i, out _, out _);
+                int loc = m_parent.GL.GetUniformLocation(Handle, key);
 
                 m_uniforms[key] = loc;
             }
@@ -52,7 +56,7 @@ namespace Tokamak.OGL
 
         public void Activate()
         {
-            GL.UseProgram(Handle);
+            m_parent.GL.UseProgram(Handle);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -61,39 +65,39 @@ namespace Tokamak.OGL
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Set(string name, int value)
         {
-            GL.Uniform1(GetLocation(name), value);
+            m_parent.GL.Uniform1(GetLocation(name), value);
         }
 
         public void Set(string name, float value)
         {
-            GL.Uniform1(GetLocation(name), value);
+            m_parent.GL.Uniform1(GetLocation(name), value);
         }
 
         public void Set(string name, in SNum.Vector2 vector)
         {
-            GL.Uniform2(GetLocation(name), vector.X, vector.Y);
+            m_parent.GL.Uniform2(GetLocation(name), vector);
         }
 
         public void Set(string name, in SNum.Vector3 vector)
         {
-            GL.Uniform3(GetLocation(name), vector.X, vector.Y, vector.Z);
+            m_parent.GL.Uniform3(GetLocation(name), vector);
         }
 
         public void Set(string name, in SNum.Vector4 vector)
         {
-            GL.Uniform4(GetLocation(name), vector.X, vector.Y, vector.Z, vector.W);
+            m_parent.GL.Uniform4(GetLocation(name), vector);
         }
 
-        public void Set(string name, in SNum.Matrix3x2 mat)
+        public unsafe void Set(string name, SNum.Matrix3x2 mat)
         {
-            var m = mat.ToOpenTK();
-            GL.UniformMatrix3x2(GetLocation(name), true, ref m);
+            //var m = mat.ToOpenTK();
+            m_parent.GL.UniformMatrix3x2(GetLocation(name), 1, true, (float*)&mat);
         }
 
-        public void Set(string name, in SNum.Matrix4x4 mat)
+        public unsafe void Set(string name, SNum.Matrix4x4 mat)
         {
-            var m = mat.ToOpenTK();
-            GL.UniformMatrix4(GetLocation(name), true, ref m);
+            //var m = mat.ToOpenTK();
+            m_parent.GL.UniformMatrix4(GetLocation(name), 1, true, (float*)&mat);
         }
     }
 }

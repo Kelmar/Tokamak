@@ -1,10 +1,11 @@
 ﻿using System;
 
-using OpenTK.Graphics.OpenGL4;
+using Silk.NET.OpenGL;
 
 using Tokamak.Buffer;
 
-using GLPrimType = OpenTK.Graphics.OpenGL4.PrimitiveType;
+using GLPrimType = Silk.NET.OpenGL.PrimitiveType;
+
 using TPrimType = Tokamak.PrimitiveType;
 using FormatType = Tokamak.Formats.FormatBaseType;
 using TokPixelFormat = Tokamak.Formats.PixelFormat;
@@ -42,14 +43,14 @@ namespace Tokamak.OGL
             };
         }
 
-        public static BufferUsageHint ToGLType(this BufferType type)
+        public static BufferUsageARB ToGLType(this BufferType type)
         {
             return type switch
             {
-                BufferType.Static => BufferUsageHint.StaticDraw,
-                BufferType.Dyanmic => BufferUsageHint.StreamDraw,
-                BufferType.Volatile => BufferUsageHint.StaticDraw,
-                BufferType.Immutable => BufferUsageHint.StaticDraw,
+                BufferType.Static => BufferUsageARB.StaticDraw,
+                BufferType.Dyanmic => BufferUsageARB.StreamDraw,
+                BufferType.Volatile => BufferUsageARB.StaticDraw,
+                BufferType.Immutable => BufferUsageARB.StaticDraw,
                 _ => throw new Exception($"Unknown buffer type {type}")
             };
         }
@@ -80,17 +81,17 @@ namespace Tokamak.OGL
             };
         }
 
-        public static PixelInternalFormat ToGlInternalFormat(this TokPixelFormat type)
+        public static InternalFormat ToGlInternalFormat(this TokPixelFormat type)
         {
             // Apparently there is no R5G6B5 format here.....
 
             return type switch
             {
-                TokPixelFormat.FormatA8 => PixelInternalFormat.R8,
-                TokPixelFormat.FormatR5G6B5 => PixelInternalFormat.Rgb,
-                TokPixelFormat.FormatR5G5B5A1 => PixelInternalFormat.Rgb5A1,
-                TokPixelFormat.FormatR8G8B8 => PixelInternalFormat.Rgb8,
-                TokPixelFormat.FormatR8G8B8A8 => PixelInternalFormat.Rgba8,
+                TokPixelFormat.FormatA8 => InternalFormat.R8,
+                TokPixelFormat.FormatR5G6B5 => InternalFormat.Rgb,
+                TokPixelFormat.FormatR5G5B5A1 => InternalFormat.Rgb5A1,
+                TokPixelFormat.FormatR8G8B8 => InternalFormat.Rgb8,
+                TokPixelFormat.FormatR8G8B8A8 => InternalFormat.Rgba8,
                 _ => throw new Exception($"Unknown PixelFormat: {type}")
             };
         }

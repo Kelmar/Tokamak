@@ -3,11 +3,9 @@ using System.IO;
 
 using StbImageSharp;
 
-using OpenTK.Graphics.OpenGL4;
-
-using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+using Silk.NET.Maths;
+using Silk.NET.OpenGL;
+using Silk.NET.Windowing;
 
 using Tokamak;
 using Tokamak.Buffer;
@@ -15,27 +13,54 @@ using Tokamak.Mathematics;
 
 using Graphite;
 
+
 namespace TestBed
 {
-    public class MainWindow : GameWindow
+    public class MainWindow : IDisposable
     {
         private static readonly Color TransWhite = new Color(255, 255, 255, 128);
 
         private static readonly Color TransRed = new Color(255, 0, 0, 128);
 
-        private readonly Device m_device;
-        private readonly Canvas m_canvas;
-        private readonly ITextureObject m_texture;
-        private readonly Font m_font;
+        private readonly IWindow m_silkWindow;
+
+        private Tokamak.OGL.GLDevice m_device;
+        private Canvas m_canvas;
+        private ITextureObject m_texture;
+        private Font m_font;
 
         private bool m_trans = false;
 
-        private readonly ITextureObject m_letter;
+        private ITextureObject m_letter;
 
-        public MainWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
-            : base(gameWindowSettings, nativeWindowSettings)
+        public MainWindow()
         {
-            m_device = new Tokamak.OGL.GLDevice();
+            var options = WindowOptions.Default;
+            //options.ShouldSwapAutomatically = true;
+            options.Size = new Vector2D<int>(1920, 1080);
+            options.Title = "OpenGL Test SILK!";
+            //options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(4, 1));
+
+            m_silkWindow = Window.Create(options);
+
+            m_silkWindow.Load += OnLoad;
+            m_silkWindow.Closing += OnClosing;
+            m_silkWindow.Update += OnUpdateFrame;
+            m_silkWindow.Render += OnRenderFrame;
+            m_silkWindow.Resize += OnResize;
+        }
+
+        private void OnClosing()
+        {
+            m_letter.Dispose();
+            m_font.Dispose();
+            m_canvas.Dispose();
+            m_device.Dispose();
+        }
+
+        private void OnLoad()
+        {
+            m_device = new Tokamak.OGL.GLDevice(m_silkWindow);
             m_canvas = new Canvas(m_device);
 
             using var shaderFact = m_device.GetShaderFactory();
@@ -46,20 +71,16 @@ namespace TestBed
             m_font = m_canvas.GetFont(path, 8);
 
             m_letter = m_font.DrawGlyph('G');
+
+            OnResize(m_silkWindow.Size);
         }
 
-        protected override void Dispose(bool disposing)
+        public void Dispose()
         {
-            if (disposing)
-            {
-                m_letter.Dispose();
-                m_font.Dispose();
-                m_canvas.Dispose();
-                m_device.Dispose();
-            }
-
-            base.Dispose(disposing);
+            m_silkWindow.Dispose();
         }
+
+        public void Run() => m_silkWindow.Run();
 
         private ITextureObject LoadTexture()
         {
@@ -79,10 +100,10 @@ namespace TestBed
             return rval;
         }
 
-        protected override void OnUpdateFrame(FrameEventArgs e)
+        protected void OnUpdateFrame(double delta)
         {
-            if (KeyboardState.IsKeyDown(Keys.Escape))
-                Close();
+            //if (KeyboardState.IsKeyDown(Keys.Escape))
+            //    Close();
 
             /*
             if (KeyboardState.IsKeyReleased(Keys.W))
@@ -92,24 +113,15 @@ namespace TestBed
                 m_render.Debug = !m_render.Debug;
             */
 
-            if (KeyboardState.IsKeyReleased(Keys.T))
-                m_trans = !m_trans;
-
-            base.OnUpdateFrame(e);
+            //if (KeyboardState.IsKeyReleased(Keys.T))
+            //    m_trans = !m_trans;
         }
 
-        protected override void OnLoad()
+        protected void OnRenderFrame(double delta)
         {
-            base.OnLoad();
-        }
-
-        protected override void OnRenderFrame(FrameEventArgs args)
-        {
-            base.OnRenderFrame(args);
-
             // TODO: Abstract this GL call.
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            
+            m_device.GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
             Pen pen = new Pen
             {
                 Width = 40,
@@ -148,17 +160,15 @@ namespace TestBed
 
             m_canvas.Flush();
 
-            SwapBuffers();
+            //m_silkWindow.SwapBuffers();
         }
 
-        protected override void OnResize(ResizeEventArgs e)
+        protected void OnResize(Vector2D<int> size)
         {
-            base.OnResize(e);
-
-            if (e.Width > 0 && e.Height > 0)
+            if (size.X > 0 && size.Y > 0)
             {
-                m_device.Viewport = new Rect(0, 0, e.Width, e.Height);
-                m_canvas.SetSize(e.Width, e.Height);
+                m_device.Viewport = new Rect(0, 0, size.X, size.Y);
+                m_canvas.SetSize(size.X, size.Y);
             }
         }
     }
