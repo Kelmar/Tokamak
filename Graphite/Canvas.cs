@@ -53,11 +53,14 @@ layout(location = 1) in vec2 fsin_TexCoord;
 
 layout(location = 0) out vec4 fsout_Color;
 
+uniform int is8Bit;
 uniform sampler2D texture0;
 
 void main()
 {
-    fsout_Color = texture(texture0, fsin_TexCoord) * fsin_Color;
+    vec4 tx = texture(texture0, fsin_TexCoord);
+
+    fsout_Color = is8Bit != 0 ? vec4(fsin_Color.rgb, fsin_Color.a * tx.r) : tx * fsin_Color;
 }
 ";
 
@@ -197,7 +200,14 @@ void main()
                 //if (call.Texture != last)
                 {
                     if (call.Texture != null)
+                    {
+                        if (call.Texture.Format == PixelFormat.FormatA8)
+                            m_shader.Set("is8Bit", 1);
+                        else
+                            m_shader.Set("is8Bit", 0);
+
                         call.Texture.Activate();
+                    }
                     else
                         m_device.ClearBoundTexture();
 
@@ -208,7 +218,10 @@ void main()
             }
 
             //if (last != null)
+            {
+                m_shader.Set("is8Bit", 0);
                 m_device.ClearBoundTexture();
+            }
 
             m_vectors.Clear();
             m_calls.Clear();

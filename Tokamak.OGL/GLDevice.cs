@@ -18,9 +18,15 @@ namespace Tokamak.OGL
 
         public GLDevice()
         {
+            // Need to figure out how to abstract these.
             GL.ClearColor(0, 0, 0, 1);
             GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            GL.Enable(EnableCap.Blend);
 
+            // A good blending function for 2D font antialiasing.
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
+            
             // Create a default 1x1 white texture as not all drivers will do this.
             m_whiteTexture = new TextureObject(TokPixelFormat.FormatR8G8B8A8, new Point(1, 1));
 

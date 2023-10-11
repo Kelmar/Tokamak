@@ -107,9 +107,9 @@ namespace TestBed
         {
             base.OnRenderFrame(args);
 
+            // TODO: Abstract this GL call.
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Disable(EnableCap.CullFace);
-
+            
             Pen pen = new Pen
             {
                 Width = 40,
@@ -122,7 +122,7 @@ namespace TestBed
 
             m_canvas.DrawImage(m_texture, new Point(500, 500));
 
-            m_canvas.DrawImage(m_letter, new Point(500, 10));
+            m_canvas.DrawImage(m_letter, new Point(510, 510));
 
             //var p1 = new Path();
 
