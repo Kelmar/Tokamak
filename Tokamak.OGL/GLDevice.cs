@@ -22,8 +22,6 @@ namespace Tokamak.OGL
         {
             GL = GL.GetApi(context);
 
-            GL.DebugMessageCallback(DebugCallback, IntPtr.Zero);
-
             // Need to figure out how to abstract these.
             GL.ClearColor(0, 0, 0, 1);
             GL.Disable(EnableCap.DepthTest);
@@ -43,12 +41,6 @@ namespace Tokamak.OGL
             m_whiteTexture.Set(bits);
 
             Monitors = EnumerateMonitors().ToList();
-        }
-
-        private void DebugCallback(GLEnum source, GLEnum type, int id, GLEnum severity, int length, nint message, nint userParam)
-        {
-            string msg = Marshal.PtrToStringAnsi(message);
-            Console.WriteLine("DEBUG: %s", msg);
         }
 
         public override void Dispose()
