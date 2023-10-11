@@ -32,22 +32,14 @@ namespace Graphite
         {
             int height = (int)Math.Ceiling(m_face.FontExtents.MaxBitmap.Y);
             int width = (int)Math.Ceiling(m_face.FontExtents.MaxBitmap.X);
-            int pitch = width * 4;
-            int size = height * pitch;
-            int offset = 0;
 
-            var bitmap = new byte[size];
+            var size = new Point(width, height);
 
-            m_face.RenderGlyph(c, (data, row) =>
-            {
-                int toCopy = Math.Min(pitch, data.Length);
-                Array.Copy(data, 0, bitmap, offset, toCopy);
-                offset += pitch;
-            });
+            var bitmap = new Bitmap(size, Tokamak.Formats.PixelFormat.FormatA8);
 
-            var rval = m_device.GetTextureObject(
-                Tokamak.Formats.PixelFormat.FormatR8G8B8A8, 
-                new Point(width, height));
+            m_face.RenderGlyph(c, bitmap);
+
+            var rval = m_device.GetTextureObject(bitmap.Format, bitmap.Size);
 
             rval.Set(bitmap);
 

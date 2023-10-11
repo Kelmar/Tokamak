@@ -23,8 +23,12 @@ namespace Tokamak.OGL
 
             // Create a default 1x1 white texture as not all drivers will do this.
             m_whiteTexture = new TextureObject(TokPixelFormat.FormatR8G8B8A8, new Point(1, 1));
-            var bytes = new byte[] { 255, 255, 255, 255 };
-            m_whiteTexture.Set(bytes);
+
+            var bits = new Bitmap(new Point(1, 1), TokPixelFormat.FormatR8G8B8A8);
+
+            Array.Fill<byte>(bits.Data, 255);
+
+            m_whiteTexture.Set(bits);
 
             Monitors = EnumerateMonitors().ToList();
         }

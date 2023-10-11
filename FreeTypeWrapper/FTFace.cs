@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 using FreeTypeSharp.Native;
 
+using Tokamak.Buffer;
+
 using static FreeTypeSharp.Native.FT;
 
 namespace FreeTypeWrapper
@@ -271,7 +273,7 @@ namespace FreeTypeWrapper
         /// </remarks>
         /// <param name="c">Character to render</param>
         /// <param name="blitRow">Row blitting function</param>
-        public GlyphMetrics RenderGlyph(char c, Action<byte[], int> blitRow)
+        public GlyphMetrics RenderGlyph(char c, Bitmap bitmap)
         {
             if (Char.IsHighSurrogate(c))
                 throw new Exception("Not supported yet.");
@@ -287,27 +289,15 @@ namespace FreeTypeWrapper
 
             SafeExecute(() => FT_Render_Glyph(glyph, FT_Render_Mode.FT_RENDER_MODE_NORMAL));
 
-            // Probably a better way to do this without all the buffer copies.
-
-            Action<byte[], byte[]> swizzler = (FT_Pixel_Mode)CurrentGlyph.bitmap.pixel_mode switch
-            {
-                FT_Pixel_Mode.FT_PIXEL_MODE_MONO => Swizzle1Bit,
-                FT_Pixel_Mode.FT_PIXEL_MODE_BGRA => SwizzleBGRA,
-                _ => SwizzleGrey
-            };
+            FT_Pixel_Mode pixelMode = (FT_Pixel_Mode)CurrentGlyph.bitmap.pixel_mode;
 
             int pixelWidth = (int)CurrentGlyph.bitmap.width;
-            byte[] outRow = new byte[pixelWidth * 4];
-            byte[] inRow = new byte[CurrentGlyph.bitmap.pitch];
-            int offset = 0;
+            int bitPitch = CurrentGlyph.bitmap.pitch;
+            int bitSize = bitPitch * (int)CurrentGlyph.bitmap.rows;
 
-            for (int i = 0; i < CurrentGlyph.bitmap.rows; ++i, offset += CurrentGlyph.bitmap.pitch)
-            {
-                Marshal.Copy(CurrentGlyph.bitmap.buffer + offset, inRow, 0, CurrentGlyph.bitmap.pitch);
+            Span<byte> glyphBits = new Span<byte>((byte*)CurrentGlyph.bitmap.buffer, bitSize);
 
-                swizzler(inRow, outRow);
-                blitRow(outRow, i);
-            }
+            bitmap.Blit(glyphBits, new Tokamak.Mathematics.Point(0, 0), pixelWidth, bitPitch);
 
             return GetCurrentGlyphMetrics();
         }

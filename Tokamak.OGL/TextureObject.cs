@@ -1,5 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 
+using System;
+
 using Tokamak.Buffer;
 using Tokamak.Mathematics;
 
@@ -21,7 +23,7 @@ namespace Tokamak.OGL
             m_handle = GL.GenTexture();
 
             Format = format;
-            Size = size;
+            Size = new Point(MathX.NextPow2(size.X), MathX.NextPow2(size.Y));
 
             m_glFormat = Format.ToGlPixelFormat();
             m_glType = Format.ToGlPixelType();
@@ -43,9 +45,15 @@ namespace Tokamak.OGL
             GL.BindTexture(TextureTarget.Texture2D, m_handle);
         }
 
-        public void Set(byte[] data)
+        public void Set(Bitmap bitmap)
         {
             Activate();
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            byte[] damnIt = new byte[bitmap.Data.Length];
+            Array.Copy(bitmap.Data, damnIt, bitmap.Data.Length);
 
             // This causes a hard crash if you don't get the format right.
             GL.TexImage2D(
@@ -57,9 +65,9 @@ namespace Tokamak.OGL
                 0,
                 m_glFormat,
                 m_glType,
-                data);
+                bitmap.Data);
 
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
     }
 }

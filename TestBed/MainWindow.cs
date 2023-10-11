@@ -68,9 +68,13 @@ namespace TestBed
             using var s = File.OpenRead("resources/container.png");
             ImageResult image = ImageResult.FromStream(s);
 
-            ITextureObject rval = m_device.GetTextureObject(Tokamak.Formats.PixelFormat.FormatR8G8B8, new Point(image.Width, image.Height));
+            Point size = new Point(image.Width, image.Height);
 
-            rval.Set(image.Data);
+            var bits = new Bitmap(size, Tokamak.Formats.PixelFormat.FormatR8G8B8);
+            bits.Blit(image.Data, new Point(0, 0), image.Width, image.Width * 3);
+
+            ITextureObject rval = m_device.GetTextureObject(bits.Format, bits.Size);
+            rval.Set(bits);
 
             return rval;
         }

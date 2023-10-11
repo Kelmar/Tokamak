@@ -187,5 +187,18 @@ namespace Tokamak.Mathematics
         /// Convert radians to degrees.
         /// </summary>
         public static double RadToDeg(double r) => r / MathF.PI * 180;
+
+        /// <summary>
+        /// Gets the next power of 2 for the given value.
+        /// </summary>
+        public static int NextPow2(int value)
+        {
+            int v = 2;
+
+            while (v < value)
+                v <<= 1;
+
+            return v;
+        }
     }
 }

@@ -9,6 +9,6 @@ namespace Tokamak.Buffer
 
         Point Size { get; }
 
-        void Set(byte[] data);
+        void Set(Bitmap bitmap);
     }
 }

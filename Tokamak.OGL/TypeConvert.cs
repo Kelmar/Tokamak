@@ -58,7 +58,7 @@ namespace Tokamak.OGL
         {
             return type switch
             {
-                TokPixelFormat.FormatA8 => PixelFormat.Alpha,
+                TokPixelFormat.FormatA8 => PixelFormat.Red,
                 TokPixelFormat.FormatR5G6B5 => PixelFormat.Rgb,
                 TokPixelFormat.FormatR5G5B5A1 => PixelFormat.Rgba,
                 TokPixelFormat.FormatR8G8B8 => PixelFormat.Rgb,
@@ -89,7 +89,7 @@ namespace Tokamak.OGL
                 TokPixelFormat.FormatA8 => PixelInternalFormat.R8,
                 TokPixelFormat.FormatR5G6B5 => PixelInternalFormat.Rgb,
                 TokPixelFormat.FormatR5G5B5A1 => PixelInternalFormat.Rgb5A1,
-                TokPixelFormat.FormatR8G8B8 => PixelInternalFormat.Rgb,
+                TokPixelFormat.FormatR8G8B8 => PixelInternalFormat.Rgb8,
                 TokPixelFormat.FormatR8G8B8A8 => PixelInternalFormat.Rgba8,
                 _ => throw new Exception($"Unknown PixelFormat: {type}")
             };
