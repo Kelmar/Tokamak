@@ -28,6 +28,8 @@ namespace Tokamak.OGL
             Format = format;
             Size = new Point(MathX.NextPow2(size.X), MathX.NextPow2(size.Y));
 
+            Bitmap = new Bitmap(Size, Format);
+
             m_glFormat = Format.ToGlPixelFormat();
             m_glType = Format.ToGlPixelType();
             m_glInternal = Format.ToGlInternalFormat();
@@ -36,11 +38,14 @@ namespace Tokamak.OGL
         public void Dispose()
         {
             m_parent.GL.DeleteTexture(m_handle);
+            Bitmap.Dispose();
         }
 
         public TokPixelFormat Format { get; }
 
         public Point Size { get; }
+
+        public Bitmap Bitmap { get; }
 
         public void Activate()
         {
@@ -48,19 +53,15 @@ namespace Tokamak.OGL
             m_parent.GL.BindTexture(TextureTarget.Texture2D, m_handle);
         }
 
-        public void Set(Bitmap bitmap)
+        public void Refresh()
         {
             Activate();
 
             m_parent.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             m_parent.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
-            byte[] damnIt = new byte[bitmap.Data.Length];
-            Array.Copy(bitmap.Data, damnIt, bitmap.Data.Length);
+            var span = new ReadOnlySpan<byte>(Bitmap.Data);
 
-            var span = new ReadOnlySpan<byte>(bitmap.Data);
-
-            // This causes a hard crash if you don't get the format right.
             m_parent.GL.TexImage2D(
                 TextureTarget.Texture2D,
                 0,

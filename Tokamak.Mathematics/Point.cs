@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 using Silk.NET.Maths;
 
@@ -35,6 +36,21 @@ namespace Tokamak.Mathematics
 
         public override string ToString() => $"({X},{Y})";
 
+        public static Point Ceiling(in Vector2 v)
+        {
+            return new Point((int)Math.Ceiling(v.X), (int)Math.Ceiling(v.Y));
+        }
+
+        public static Point Floor(in Vector2 v)
+        {
+            return new Point((int)Math.Floor(v.X), (int)Math.Floor(v.Y));
+        }
+
+        public static Point Round(in Vector2 v)
+        {
+            return new Point((int)Math.Round(v.X), (int)Math.Round(v.Y));
+        }
+
         // More specific to less specific, require a cast.
         public static explicit operator Point(Vector2 v) => new Point((int)v.X, (int)v.Y);
         public static explicit operator Point(Vector3 v) => new Point((int)v.X, (int)v.Y);
@@ -47,5 +63,17 @@ namespace Tokamak.Mathematics
 
         public static implicit operator Point(Vector2D<int> p) => new Point(p.X, p.Y);
         public static implicit operator Vector2D<int>(Point p) => new Vector2D<int>(p.X, p.Y);
+
+        public static Point operator +(in Point p) => p;
+
+        public static Point operator -(in Point p) => new Point(-p.X, -p.Y);
+
+        public static Point operator +(in Point rhs, in Point lhs) => new Point(rhs.X + lhs.X, rhs.Y + lhs.Y);
+
+        public static Point operator -(in Point rhs, in Point lhs) => new Point(rhs.X - lhs.X, rhs.Y - lhs.Y);
+
+        public static bool operator ==(in Point rhs, in Point lhs) => (rhs.X == lhs.X && rhs.Y == lhs.Y);
+
+        public static bool operator !=(in Point rhs, in Point lhs) => (rhs.X != lhs.X || rhs.Y != lhs.Y);
     }
 }

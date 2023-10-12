@@ -98,5 +98,18 @@ namespace Tokamak.Mathematics
         public static implicit operator Rectangle<int>(in Rect r) => new Rectangle<int>(r.Location, r.Size);
         public static implicit operator Rect(in Rectangle<int> r) => new Rect(r.Origin, r.Size);
 
+        public static Rect operator +(in Rect r, in Point p)
+        {
+            Rect rval = r;
+            rval.Location += p;
+            return rval;
+        }
+
+        public static Rect operator -(in Rect r, in Point p)
+        {
+            Rect rval = r;
+            rval.Location -= p;
+            return rval;
+        }
     }
 }

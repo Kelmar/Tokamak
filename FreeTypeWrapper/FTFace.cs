@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using FreeTypeSharp.Native;
 
 using Tokamak.Buffer;
+using Tokamak.Mathematics;
 
 using static FreeTypeSharp.Native.FT;
 
@@ -22,16 +23,25 @@ namespace FreeTypeWrapper
         /// </summary>
         public const float POINTS_PER_INCH = 72f;
 
+        private readonly IntPtr m_unmanaged;
         private readonly IntPtr m_handle;
         private readonly FT_FaceRec* m_faceRec;
 
         private bool m_disposed = false;
 
-        internal FTFace(IntPtr handle, float size, in Vector2 dpi)
+        internal FTFace(byte[] data, FTLibrary lib, float size, in Vector2 dpi)
         {
-            Debug.Assert(handle != IntPtr.Zero, "Invalid handle");
+            // Allocate a chunk of unmanaged memory for FreeType to work with that the GC won't muck around with.
 
-            m_handle = handle;
+            m_unmanaged = Marshal.AllocHGlobal(data.Length);
+            Marshal.Copy(data, 0, m_unmanaged, data.Length);
+
+            IntPtr h = IntPtr.Zero;
+
+            SafeExecute(() => FT_New_Memory_Face(lib.Handle, m_unmanaged, data.Length, 0, out h));
+
+            m_handle = h;
+
             m_faceRec = (FT_FaceRec*)m_handle;
 
             Size = size;
@@ -62,6 +72,7 @@ namespace FreeTypeWrapper
             {
                 // Maybe log this if there's a problem, but not much we can do if it fails....
                 FT_Done_Face(m_handle);
+                Marshal.FreeHGlobal(m_unmanaged);
             }
 
             m_disposed = true;
@@ -117,7 +128,7 @@ namespace FreeTypeWrapper
         /// <summary>
         /// Gets the current glyph slot.
         /// </summary>
-        public FT_GlyphSlotRec CurrentGlyph => *FaceRecRaw.glyph;
+        public FT_GlyphSlotRec Glyph => *FaceRecRaw.glyph;
 
         /// <summary>
         /// Indicates that the face contains outline glyphs.
@@ -253,51 +264,63 @@ namespace FreeTypeWrapper
             }
         }
 
-        public GlyphMetrics GetCurrentGlyphMetrics()
-        {
-            return new GlyphMetrics
-            {
-                Size = new Vector2(FaceRecRaw.glyph->metrics.width, FaceRecRaw.glyph->metrics.height),
-                HorizontalBearing = new Vector2(FaceRecRaw.glyph->metrics.horiBearingX, FaceRecRaw.glyph->metrics.horiBearingY),
-                VerticalBearing = new Vector2(FaceRecRaw.glyph->metrics.vertBearingX, FaceRecRaw.glyph->metrics.vertBearingY),
-                VerticalAdvance = (int)FaceRecRaw.glyph->metrics.vertAdvance
-            };
-        }
-
-        /// <summary>
-        /// Renders a glyph using the supplied blitRow callback.
-        /// </summary>
-        /// <remarks>
-        /// The callback should take a byte[] array which is in RGBA format and blit
-        /// it to the given row of the destination bitmap.
-        /// </remarks>
-        /// <param name="c">Character to render</param>
-        /// <param name="blitRow">Row blitting function</param>
-        public GlyphMetrics RenderGlyph(char c, Bitmap bitmap)
+        public void SetGlyph(char c)
         {
             if (Char.IsHighSurrogate(c))
                 throw new Exception("Not supported yet.");
 
-            int loadFlags = FT_LOAD_FORCE_AUTOHINT; //| FT_LOAD_RENDER;
+            int loadFlags = FT_LOAD_FORCE_AUTOHINT;
 
-            if (HasColor)
-                loadFlags |= FT_LOAD_COLOR;
+            //if (HasColor)
+            //    loadFlags |= FT_LOAD_COLOR;
 
-            SafeExecute(() => FT_Load_Char(m_handle, c, loadFlags));
+            FT_Error err = FT_Load_Char(m_handle, c, loadFlags);
+            if (err != FT_Error.FT_Err_Ok)
+                    throw new FreeTypeException(err);
 
+            //SafeExecute(() => FT_Load_Char(m_handle, c, loadFlags));
+        }
+
+        public GlyphMetrics GetCurrentGlyphMetrics()
+        {
+            float pixelPerEm = (Size / POINTS_PER_INCH) * DPI.Y;
+
+            float pixelsPerUnit = pixelPerEm * EmsPerUnit;
+
+            return new GlyphMetrics
+            {
+                BitSize = new Point((int)Glyph.bitmap.width, (int)Glyph.bitmap.rows),
+                Size = new Vector2(Glyph.metrics.width, Glyph.metrics.height) * pixelsPerUnit,
+                Advance = new Vector2(Glyph.advance.x, Glyph.advance.y) * pixelsPerUnit,
+                HorizontalBearing = new Vector2(Glyph. metrics.horiBearingX, Glyph.metrics.horiBearingY) * pixelsPerUnit,
+                VerticalBearing = new Vector2(Glyph.metrics.vertBearingX, Glyph.metrics.vertBearingY) * pixelsPerUnit,
+                VerticalAdvance = Glyph.metrics.vertAdvance * pixelsPerUnit
+            };
+        }
+
+        /// <summary>
+        /// Renders the current glyph to a bitmap.
+        /// </summary>
+        public GlyphMetrics RenderGlyph(Bitmap bitmap, in Point location)
+        {
             IntPtr glyph = (IntPtr)FaceRecRaw.glyph;
 
             SafeExecute(() => FT_Render_Glyph(glyph, FT_Render_Mode.FT_RENDER_MODE_NORMAL));
 
-            FT_Pixel_Mode pixelMode = (FT_Pixel_Mode)CurrentGlyph.bitmap.pixel_mode;
+            if (Glyph.bitmap.buffer != 0)
+            {
+                FT_Pixel_Mode pixelMode = (FT_Pixel_Mode)Glyph.bitmap.pixel_mode;
 
-            int pixelWidth = (int)CurrentGlyph.bitmap.width;
-            int bitPitch = CurrentGlyph.bitmap.pitch;
-            int bitSize = bitPitch * (int)CurrentGlyph.bitmap.rows;
+                int pixelWidth = (int)Glyph.bitmap.width;
+                int bitPitch = Glyph.bitmap.pitch;
+                int bitSize = bitPitch * (int)Glyph.bitmap.rows;
 
-            Span<byte> glyphBits = new Span<byte>((byte*)CurrentGlyph.bitmap.buffer, bitSize);
+                Span<byte> glyphBits = new Span<byte>((byte*)Glyph.bitmap.buffer, bitSize);
 
-            bitmap.Blit(glyphBits, new Tokamak.Mathematics.Point(0, 0), pixelWidth, bitPitch);
+                Point p = new Point(location.X + Glyph.bitmap_left, location.Y - Glyph.bitmap_top);
+
+                bitmap.Blit(glyphBits, p, pixelWidth, bitPitch);
+            }
 
             return GetCurrentGlyphMetrics();
         }

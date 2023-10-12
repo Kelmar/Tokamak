@@ -31,8 +31,6 @@ namespace TestBed
 
         private bool m_trans = false;
 
-        private ITextureObject m_letter;
-
         public MainWindow()
         {
             var options = WindowOptions.Default;
@@ -52,7 +50,6 @@ namespace TestBed
 
         private void OnClosing()
         {
-            m_letter.Dispose();
             m_font.Dispose();
             m_canvas.Dispose();
             m_device.Dispose();
@@ -67,10 +64,11 @@ namespace TestBed
 
             m_texture = LoadTexture();
 
-            string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
-            m_font = m_canvas.GetFont(path, 8);
-
-            m_letter = m_font.DrawGlyph('G');
+            //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
+            //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/dnk.ttf");
+            //string path = "C:\\Users\\kfire\\AppData\\Local\\Microsoft\\Windows\\Fonts\\dreamscar.ttf";
+            string path = Path.Combine(Environment.SystemDirectory, "../Fonts/segoeui.ttf");
+            m_font = m_canvas.GetFont(path, 12);
 
             OnResize(m_silkWindow.Size);
         }
@@ -91,11 +89,11 @@ namespace TestBed
 
             Point size = new Point(image.Width, image.Height);
 
-            var bits = new Bitmap(size, Tokamak.Formats.PixelFormat.FormatR8G8B8);
-            bits.Blit(image.Data, new Point(0, 0), image.Width, image.Width * 3);
+            ITextureObject rval = m_device.GetTextureObject(Tokamak.Formats.PixelFormat.FormatR8G8B8, size);
 
-            ITextureObject rval = m_device.GetTextureObject(bits.Format, bits.Size);
-            rval.Set(bits);
+            rval.Bitmap.Blit(image.Data, new Point(0, 0), image.Width, image.Width * 3);
+
+            rval.Refresh();
 
             return rval;
         }
@@ -134,7 +132,13 @@ namespace TestBed
 
             m_canvas.DrawImage(m_texture, new Point(500, 500));
 
-            m_canvas.DrawImage(m_letter, new Point(510, 510));
+            int baseLine = 40;
+
+            //m_canvas.DrawText(m_font, new Point(510, 510), "A crate");
+            m_canvas.DrawText(m_font, new Point(50, baseLine), "The quick brown fox jumps over the lazy dog.");
+            //m_canvas.DrawText(m_font, new Point(50, baseLine), "A");
+
+            m_canvas.DrawText(m_font, new Point(50, baseLine + m_font.LineSpacing), "AV");
 
             //var p1 = new Path();
 

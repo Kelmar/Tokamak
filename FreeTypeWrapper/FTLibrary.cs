@@ -36,6 +36,8 @@ namespace FreeTypeWrapper
             m_disposed = true;
         }
 
+        internal IntPtr Handle => m_handle;
+
         public void Dispose()
         {
             Dispose(true);
@@ -84,23 +86,9 @@ namespace FreeTypeWrapper
         /// <param name="length">The length of the data to read.</param>
         /// <param name="offset">Starting offset into the array to read.</param>
         /// <returns></returns>
-        public FTFace GetFace(float size, in Vector2 dpi, byte[] data, int length = 0, int offset = 0)
+        public FTFace GetFace(float size, in Vector2 dpi, in ReadOnlySpan<byte> data)
         {
-            if (length == 0)
-                length = data.Length;
-
-            IntPtr handle = IntPtr.Zero;
-
-            fixed (byte* dataPtr = data)
-            {
-                IntPtr dataVal = new IntPtr(dataPtr);
-                SafeExecute(() => FT_New_Memory_Face(m_handle, dataVal, length, offset, out handle));
-            }
-
-            if (handle == IntPtr.Zero)
-                throw new Exception("Unknown error trying to load font face.");
-
-            return new FTFace(handle, size, dpi);
+            return new FTFace(data.ToArray(), this, size, dpi);
         }
     }
 }

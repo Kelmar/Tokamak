@@ -64,11 +64,15 @@ void main()
 }
 ";
 
-        private enum CallType
+        private class CanvasCall
         {
-            Debug = 0,
-            DebugPoint = 1,
-            Stroke = 10
+            public PrimitiveType Type { get; set; }
+
+            public int VertexOffset { get; set; }
+
+            public int VertexCount { get; set; }
+
+            public ITextureObject Texture { get; set; }
         }
 
         private readonly FTLibrary m_ftLibrary;
@@ -118,12 +122,13 @@ void main()
             m_shader.Set("projection", mat);
         }
 
-        public void AddCall(IEnumerable<VectorFormatPCT> vectors, ITextureObject texture = null)
+        private void AddCall(PrimitiveType type, IEnumerable<VectorFormatPCT> vectors, ITextureObject texture = null)
         {
             var vects = vectors.ToList();
 
             var call = new CanvasCall
             {
+                Type = type,
                 VertexOffset = m_vectors.Count,
                 VertexCount = vects.Count(),
                 Texture = texture
@@ -132,6 +137,26 @@ void main()
             m_vectors.AddRange(vects);
 
             m_calls.Add(call);
+        }
+
+        private VectorFormatPCT BuildVector(Pen pen, Point p, Vector2 texCoord)
+        {
+            return new VectorFormatPCT
+            {
+                Point = new Vector3(p.X, p.Y, 0),
+                Color = (Vector4)(pen?.Color ?? Color.White),
+                TexCoord = texCoord
+            };
+        }
+
+        private VectorFormatPCT BuildVector(Pen pen, int x, int y, Vector2 texCoord)
+        {
+            return new VectorFormatPCT
+            {
+                Point = new Vector3(x, y, 0),
+                Color = (Vector4)(pen?.Color ?? Color.White),
+                TexCoord = texCoord
+            };
         }
 
         public void StrokeRect(Pen pen, in Rect rect)
@@ -148,7 +173,7 @@ void main()
 
             var renderer = new StrokeRenderer(stroke);
 
-            AddCall(renderer.Vectors);
+            AddCall(PrimitiveType.TrangleStrip, renderer.Vectors);
         }
 
         // This is a simple test function for now.
@@ -181,10 +206,46 @@ void main()
                     Point = new Vector3(p.X + texture.Size.X, p.Y + texture.Size.Y, 0),
                     Color = color,
                     TexCoord = new Vector2(1, 1)
-                }                
+                }
             };
 
-            AddCall(vects, texture);
+            AddCall(PrimitiveType.TrangleStrip, vects, texture);
+        }
+
+        public void DrawText(Font font, in Point location, string text)
+        {
+            Point cursor = location;
+            char prev = '\0';
+
+            foreach (var c in text)
+            {
+                Glyph g = font.GetGlyph(c);
+
+                Vector2 tl = g.TopLeftUV;
+                Vector2 br = g.BotRightUV;
+
+                float kerning = prev != '\0' ? font.GetKerning(prev, c) : 0;
+
+                Pen pen = null;
+
+                var texture = font.GetSheet(g.SheetNumber);
+
+                var p = new Point(cursor.X + g.Bearing.X, cursor.Y - g.Bearing.Y);
+
+                var vectors = new VectorFormatPCT[4]
+                {
+                    BuildVector(pen, p.X, p.Y, tl),
+                    BuildVector(pen, p.X, p.Y + g.Size.Y, new Vector2(tl.X, br.Y)),
+                    BuildVector(pen, p.X + g.Size.X, p.Y, new Vector2(br.X, tl.Y)),
+                    BuildVector(pen, p.X + g.Size.X, p.Y + g.Size.Y, br)
+                };
+
+                AddCall(PrimitiveType.TrangleStrip, vectors, texture);
+
+                cursor.X += g.Size.X + g.Bearing.X;
+
+                prev = c;
+            }
         }
 
         public void Flush()
@@ -214,7 +275,7 @@ void main()
                     last = call.Texture;
                 }
 
-                m_device.DrawArrays(PrimitiveType.TrangleStrip, call.VertexOffset, call.VertexCount);
+                m_device.DrawArrays(call.Type, call.VertexOffset, call.VertexCount);
             }
 
             //if (last != null)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Diagnostics;
 
 using Tokamak.Formats;
@@ -6,17 +7,16 @@ using Tokamak.Mathematics;
 
 namespace Tokamak.Buffer
 {
-    public class Bitmap
+    public class Bitmap : IDisposable
     {
-        private readonly int m_pixelSize;
+        private readonly int m_bytesPerPixel;
 
         public Bitmap(in Point size, PixelFormat format)
         {
-            //Size = new Point(MathX.NextPow2(size.X), MathX.NextPow2(size.Y));
             Size = size;
             Format = format;
 
-            m_pixelSize = Format switch
+            m_bytesPerPixel = Format switch
             {
                 PixelFormat.FormatA8 => 1,
                 PixelFormat.FormatR8G8B8 => 3,
@@ -24,10 +24,18 @@ namespace Tokamak.Buffer
                 _ => throw new Exception($"Unsupported bitmap format {Format}")
             };
 
-            Pitch = MathX.NextPow2(Size.X) * m_pixelSize;
+            Pitch = MathX.NextPow2(Size.X) * m_bytesPerPixel;
             int len = Pitch * MathX.NextPow2(Size.Y);
-            Data = new byte[len];
+
+            Data = ArrayPool<byte>.Shared.Rent(len);
         }
+
+        public void Dispose()
+        {
+            ArrayPool<byte>.Shared.Return(Data);
+        }
+
+        public bool Dirty { get; private set; }
 
         public Point Size { get; }
 
@@ -36,6 +44,16 @@ namespace Tokamak.Buffer
         public PixelFormat Format { get; }
 
         public byte[] Data { get; }
+
+        public void Clear()
+        {
+            Array.Fill<byte>(Data, 0);
+        }
+
+        public void NotDirty()
+        {
+            Dirty = false;
+        }
 
         public void Blit(in Span<byte> data, in Point loc, int width, int pitch)
         {
@@ -46,12 +64,12 @@ namespace Tokamak.Buffer
                 width = Size.X - loc.X;
 
             int height = data.Length / pitch;
-            int copySize = width * m_pixelSize;
+            int copySize = width * m_bytesPerPixel;
 
             if (height + loc.Y > Size.Y)
                 height = Size.Y - loc.Y;
 
-            int outOffset = (loc.Y * Size.X + loc.X) * m_pixelSize;
+            int outOffset = (loc.Y * Size.X + loc.X) * m_bytesPerPixel;
             int inOffset = 0;
 
             for (int y = 0; y < height; ++y)
@@ -64,6 +82,8 @@ namespace Tokamak.Buffer
                 outOffset += Pitch;
                 inOffset += pitch;
             }
+
+            Dirty = true;
         }
 
         public void Blit(Bitmap source, in Point loc)
@@ -74,19 +94,21 @@ namespace Tokamak.Buffer
                 width = Size.X - loc.X;
 
             int height = source.Size.Y;
-            int copySize = width * m_pixelSize;
+            int copySize = width * m_bytesPerPixel;
 
             if (height + loc.Y > Size.Y)
                 height = Size.Y - loc.Y;
 
             int inOffset = 0;
-            int outOffset = (loc.Y * Size.X + loc.X) * m_pixelSize;
+            int outOffset = (loc.Y * Size.X + loc.X) * m_bytesPerPixel;
 
             for (int y = 0; y < height; ++y)
             {
                 Array.Copy(source.Data, inOffset, Data, outOffset, copySize);
                 inOffset += source.Pitch;
             }
+
+            Dirty = true;
         }
     }
 }
