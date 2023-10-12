@@ -17,8 +17,10 @@ https://torque3d.org/
   - [ ] Sound
 - [ ] Graphite (2D Graphics)
   - [X] Basic line drawing
-  - [ ] Bitmap drawing (in progress)
+  - [ ] Bitmap drawing (basic blits working)
   - [ ] Text renderering (in progress)
+	- [X] Basics for debugging
+	- [ ] Advanced formatting and layout
   - [ ] Complex shape drawing
   - [ ] Animation
 - [ ] In engine UI
