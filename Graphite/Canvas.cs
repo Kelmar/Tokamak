@@ -23,7 +23,7 @@ namespace Graphite
     /// The canvas is designed to be reused between frame calls so that it does
     /// not allocate memory several times over and over again.
     /// </remarks>
-    public class Canvas : IDisposable
+    public class Canvas : IRenderable
     {
         // For now we have some fairly basic shaders for testing the canvas out.
 
@@ -94,18 +94,18 @@ void main()
             m_device = device;
             m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dyanmic);
 
-            var factory = m_device.GetShaderFactory();
+            using var factory = m_device.GetShaderFactory();
 
             factory.AddShaderSource(ShaderType.Vertex, VERTEX);
             factory.AddShaderSource(ShaderType.Fragment, FRAGMENT);
+
+            m_shader = factory.Build();
 
             m_uiState = new RenderState
             {
                 CullFaces = false,
                 UseDepthTest = false
             };
-
-            m_shader = factory.Build();
         }
 
         public void Dispose()
@@ -123,9 +123,9 @@ void main()
             return new Font(m_device, face);
         }
 
-        public void SetSize(int width, int height)
+        public void Resize(in Point size)
         {
-            var mat = Matrix4x4.CreateOrthographicOffCenter(0, width, height, 0, -1, 1);
+            var mat = Matrix4x4.CreateOrthographicOffCenter(0, size.X, size.Y, 0, -1, 1);
 
             m_shader.Activate();
             m_shader.Set("projection", mat);
@@ -275,7 +275,7 @@ void main()
             }
         }
 
-        public void Flush()
+        public void Render()
         {
             m_device.SetRenderState(m_uiState);
 

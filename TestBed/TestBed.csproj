@@ -8,14 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="lorem.txt" />
     <None Remove="resources\container.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="lorem.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="resources\container.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

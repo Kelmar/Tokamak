@@ -48,7 +48,7 @@ namespace Tokamak.OGL
             return type switch
             {
                 BufferType.Static => BufferUsageARB.StaticDraw,
-                BufferType.Dyanmic => BufferUsageARB.StreamDraw,
+                BufferType.Dyanmic => BufferUsageARB.DynamicDraw,
                 BufferType.Volatile => BufferUsageARB.StaticDraw,
                 BufferType.Immutable => BufferUsageARB.StaticDraw,
                 _ => throw new Exception($"Unknown buffer type {type}")

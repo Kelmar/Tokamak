@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 
-using StbImageSharp;
-
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 
@@ -11,41 +9,32 @@ using Tokamak.Buffer;
 using Tokamak.Mathematics;
 
 using Graphite;
-
+using System.Collections.Generic;
 
 namespace TestBed
 {
     public class MainWindow : IDisposable
     {
-        private static readonly Color TransWhite = new Color(255, 255, 255, 128);
-
-        private static readonly Color TransRed = new Color(255, 0, 0, 128);
-
         private readonly IWindow m_silkWindow;
 
         private Device m_device;
         private Canvas m_canvas;
-        private ITextureObject m_texture;
         private Font m_font;
+        private Scene m_scene;
 
-        private bool m_trans = false;
+        private readonly List<IRenderable> m_renderers = new List<IRenderable>();
 
         private int m_frameCount;
         private DateTime m_lastCheck = DateTime.UtcNow;
         private float m_fps;
 
-        private string[] m_lorem;
-
         public MainWindow()
         {
-            m_lorem = File.ReadAllLines("lorem.txt");
-
             var options = WindowOptions.Default;
-            //options.ShouldSwapAutomatically = true;
             options.Size = new Vector2D<int>(1920, 1080);
             options.Title = "OpenGL Test SILK!";
             options.VSync = false;
-            //options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(4, 1));
+            options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(4, 1));
 
             m_silkWindow = Window.Create(options);
 
@@ -56,11 +45,9 @@ namespace TestBed
             m_silkWindow.Resize += OnResize;
         }
 
-        private void OnClosing()
+        public void Dispose()
         {
-            m_font.Dispose();
-            m_canvas.Dispose();
-            m_device.Dispose();
+            m_silkWindow.Dispose();
         }
 
         private void OnLoad()
@@ -70,44 +57,34 @@ namespace TestBed
 
             using var shaderFact = m_device.GetShaderFactory();
 
-            m_texture = LoadTexture();
-
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/dnk.ttf");
             //string path = "C:\\Users\\kfire\\AppData\\Local\\Microsoft\\Windows\\Fonts\\dreamscar.ttf";
             string path = Path.Combine(Environment.SystemDirectory, "../Fonts/segoeui.ttf");
             m_font = m_canvas.GetFont(path, 12);
 
+            m_scene = new Scene(m_device);
+
+            m_renderers.Add(m_scene);
+            m_renderers.Add(m_canvas);
+
             OnResize(m_silkWindow.Size);
         }
 
-        public void Dispose()
+        private void OnClosing()
         {
-            m_silkWindow.Dispose();
+            m_scene.Dispose();
+            m_font.Dispose();
+            m_canvas.Dispose();
+            m_device.Dispose();
         }
 
         public void Run() => m_silkWindow.Run();
 
-        private ITextureObject LoadTexture()
-        {
-            StbImage.stbi_set_flip_vertically_on_load(1);
-
-            using var s = File.OpenRead("resources/container.png");
-            ImageResult image = ImageResult.FromStream(s);
-
-            Point size = new Point(image.Width, image.Height);
-
-            ITextureObject rval = m_device.GetTextureObject(Tokamak.Formats.PixelFormat.FormatR8G8B8, size);
-
-            rval.Bitmap.Blit(image.Data, new Point(0, 0), image.Width, image.Width * 3);
-
-            rval.Refresh();
-
-            return rval;
-        }
-
         protected void OnUpdateFrame(double delta)
         {
+            ComputeFPS();
+
             //if (KeyboardState.IsKeyDown(Keys.Escape))
             //    Close();
 
@@ -123,20 +100,7 @@ namespace TestBed
             //    m_trans = !m_trans;
         }
 
-        protected void RenderTextWall(Pen pen, int baseLine)
-        {
-            foreach (var line in m_lorem)
-            {
-                baseLine += m_font.LineSpacing;
-
-                if (baseLine > m_silkWindow.Size.Y)
-                    break;
-
-                m_canvas.DrawText(pen, m_font, new Point(5, baseLine), line);
-            }
-        }
-
-        protected void OnRenderFrame(double delta)
+        private void ComputeFPS()
         {
             ++m_frameCount;
 
@@ -147,55 +111,23 @@ namespace TestBed
                 m_frameCount = 0;
                 m_lastCheck = DateTime.UtcNow;
             }
+        }
 
+        protected void OnRenderFrame(double delta)
+        {
             m_device.ClearBuffers(GlobalBuffer.ColorBuffer | GlobalBuffer.DepthBuffer);
 
             Pen pen = new Pen
             {
                 Width = 40,
-                Color = Color.White // m_trans ? TransWhite : Color.DarkRed,
+                Color = Color.White
                 //LineJoin = LineJoin.Bevel
             };
 
-            Rect r = new Rect(200, 200, 100, 100);
-            m_canvas.StrokeRect(pen, r);
+            m_canvas.DrawText(pen, m_font, new Point(5, 30), String.Format("FPS: {0:000.0}", m_fps));
 
-            m_canvas.DrawImage(m_texture, new Point(500, 500));
-
-            int baseLine = 40;
-
-            //m_canvas.DrawText(pen, m_font, new Point(50, baseLine), "The quick brown fox jumps over the lazy dog.");
-            //m_canvas.DrawText(pen, m_font, new Point(50, baseLine + m_font.LineSpacing), "AV");
-
-            m_canvas.DrawText(pen, m_font, new Point(50, baseLine), String.Format("FPS: {0:000.0}", m_fps));
-
-            RenderTextWall(pen, baseLine);
-
-            //var p1 = new Path();
-
-            //p1.MoveTo(50, 50);
-            //p1.LineTo(500, 50);
-            //p1.LineTo(500, 500);
-            //p1.Closed = true;
-
-            //m_canvas.StrokePath(pen, p1);
-
-            //var p3 = new Path();
-            ////p3.Rect(50, 50, 450, 450);
-            //p3.MoveTo(550, 50);
-            //p3.LineTo(950, 50);
-            //p3.LineTo(950, 500);
-            //p3.LineTo(1200, 750);
-            //p3.LineTo(1450, 500);
-            //p3.LineTo(1450, 50);
-
-            //pen.Color = m_trans ? TransRed : Color.LiteRed;
-
-            //m_canvas.StrokePath(pen, p3);
-
-            m_canvas.Flush();
-
-            //m_silkWindow.SwapBuffers();
+            foreach (var r in m_renderers)
+                r.Render();
         }
 
         protected void OnResize(Vector2D<int> size)
@@ -203,7 +135,11 @@ namespace TestBed
             if (size.X > 0 && size.Y > 0)
             {
                 m_device.Viewport = new Rect(0, 0, size.X, size.Y);
-                m_canvas.SetSize(size.X, size.Y);
+
+                Point s = new Point(size.X, size.Y);
+
+                foreach (var r in m_renderers)
+                    r.Resize(s);
             }
         }
     }

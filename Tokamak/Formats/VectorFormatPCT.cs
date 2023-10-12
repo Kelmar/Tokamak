@@ -9,7 +9,7 @@ namespace Tokamak.Formats
         [FormatDescriptor(FormatBaseType.Float, 3)]
         public Vector3 Point;
 
-        [FormatDescriptor(FormatBaseType.Float, 3)]
+        [FormatDescriptor(FormatBaseType.Float, 4)]
         public Vector4 Color;
 
         [FormatDescriptor(FormatBaseType.Float, 2)]
