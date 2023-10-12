@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Numerics;
 
 using FreeTypeWrapper;
@@ -84,6 +85,8 @@ void main()
         private readonly IShader m_shader;
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
+        private readonly RenderState m_uiState;
+
         public Canvas(Device device)
         {
             m_ftLibrary = new FTLibrary();
@@ -95,6 +98,12 @@ void main()
 
             factory.AddShaderSource(ShaderType.Vertex, VERTEX);
             factory.AddShaderSource(ShaderType.Fragment, FRAGMENT);
+
+            m_uiState = new RenderState
+            {
+                CullFaces = false,
+                UseDepthTest = false
+            };
 
             m_shader = factory.Build();
         }
@@ -212,10 +221,14 @@ void main()
             AddCall(PrimitiveType.TrangleStrip, vects, texture);
         }
 
-        public void DrawText(Font font, in Point location, string text)
+        public void DrawText(Pen pen, Font font, in Point location, string text)
         {
             Point cursor = location;
             char prev = '\0';
+
+            var glyphPolys = new List<Tuple<Glyph, VectorFormatPCT[]>>(text.Length);
+
+            var vectors = new List<VectorFormatPCT>(text.Length * 6);
 
             foreach (var c in text)
             {
@@ -226,30 +239,46 @@ void main()
 
                 float kerning = prev != '\0' ? font.GetKerning(prev, c) : 0;
 
-                Pen pen = null;
-
-                var texture = font.GetSheet(g.SheetNumber);
-
                 var p = new Point(cursor.X + g.Bearing.X, cursor.Y - g.Bearing.Y);
 
-                var vectors = new VectorFormatPCT[4]
-                {
-                    BuildVector(pen, p.X, p.Y, tl),
-                    BuildVector(pen, p.X, p.Y + g.Size.Y, new Vector2(tl.X, br.Y)),
-                    BuildVector(pen, p.X + g.Size.X, p.Y, new Vector2(br.X, tl.Y)),
-                    BuildVector(pen, p.X + g.Size.X, p.Y + g.Size.Y, br)
-                };
+                var detail = new Tuple<Glyph, VectorFormatPCT[]>(g, 
+                    new VectorFormatPCT[6]
+                    {
+                        BuildVector(pen, p.X, p.Y, tl),
+                        BuildVector(pen, p.X, p.Y + g.Size.Y, new Vector2(tl.X, br.Y)),
+                        BuildVector(pen, p.X + g.Size.X, p.Y, new Vector2(br.X, tl.Y)),
+                        BuildVector(pen, p.X, p.Y + g.Size.Y, new Vector2(tl.X, br.Y)),
+                        BuildVector(pen, p.X + g.Size.X, p.Y, new Vector2(br.X, tl.Y)),
+                        BuildVector(pen, p.X + g.Size.X, p.Y + g.Size.Y, br)
+                    }
+                );
 
-                AddCall(PrimitiveType.TrangleStrip, vectors, texture);
+                glyphPolys.Add(detail);
 
                 cursor.X += g.Size.X + g.Bearing.X;
 
                 prev = c;
             }
+
+            var grouped =
+                from gPoly in glyphPolys
+                group gPoly by gPoly.Item1.SheetNumber into grp
+                select grp
+            ;
+
+            foreach (var grp in grouped)
+            {
+                var texture = font.GetSheet(grp.Key);
+                var grpVects = grp.SelectMany(i => i.Item2).ToList();
+
+                AddCall(PrimitiveType.TrangleList, grpVects, texture);
+            }
         }
 
         public void Flush()
         {
+            m_device.SetRenderState(m_uiState);
+
             ITextureObject last = null;
 
             m_shader.Activate();
@@ -258,7 +287,7 @@ void main()
 
             foreach (var call in m_calls)
             {
-                //if (call.Texture != last)
+                if (call.Texture != last)
                 {
                     if (call.Texture != null)
                     {
@@ -278,7 +307,7 @@ void main()
                 m_device.DrawArrays(call.Type, call.VertexOffset, call.VertexCount);
             }
 
-            //if (last != null)
+            if (last != null)
             {
                 m_shader.Set("is8Bit", 0);
                 m_device.ClearBoundTexture();

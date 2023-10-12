@@ -28,6 +28,8 @@ namespace Tokamak
 
         virtual public Rect Viewport { get; set; }
 
+        public abstract void SetRenderState(RenderState state);
+
         public IList<Monitor> Monitors { get; protected set; }
 
         public void PushWorldMatrix(in Matrix4x4 newMatrix)
@@ -40,6 +42,8 @@ namespace Tokamak
         {
             WorldMatrix = m_worldMatrixStack.Pop();
         }
+
+        public abstract void ClearBuffers(GlobalBuffer buffers);
 
         public abstract IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
             where T : unmanaged;

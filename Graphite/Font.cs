@@ -90,13 +90,13 @@ namespace Graphite
 
                 var metrics = m_face.GetCurrentGlyphMetrics();
 
-                if (m_sheetIndex.X + m_face.Glyph.bitmap.width > m_currentSheet.Size.X)
+                if (m_sheetIndex.X + m_face.Glyph.bitmap.width >= m_currentSheet.Size.X)
                 {
                     // Wrap to next line....
                     m_sheetIndex.X  = 0;
                     m_sheetIndex.Y += m_face.LineSpacing;
 
-                    if (m_sheetIndex.Y > m_currentSheet.Size.Y)
+                    if (m_sheetIndex.Y >= m_currentSheet.Size.Y)
                         AddSheet(); // Need a new sheet!
                 }
 

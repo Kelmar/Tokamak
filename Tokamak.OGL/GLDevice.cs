@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 using Silk.NET.OpenGL;
 using Silk.NET.Core.Contexts;
+using Silk.NET.Windowing;
 
 using Tokamak.Mathematics;
 using Tokamak.Buffer;
 
 using TokPrimType = Tokamak.PrimitiveType;
 using TokPixelFormat = Tokamak.Formats.PixelFormat;
-using System.Runtime.InteropServices;
-using Silk.NET.Windowing;
-using System.Numerics;
-using Silk.NET.Maths;
 
 namespace Tokamak.OGL
 {
@@ -25,10 +23,16 @@ namespace Tokamak.OGL
         {
             GL = GL.GetApi(context);
 
+            var defaultState = new RenderState
+            {
+                CullFaces = false,
+                UseDepthTest = false,
+                ClearColor = Color.Black
+            };
+
+            SetRenderState(defaultState);
+
             // Need to figure out how to abstract these.
-            GL.ClearColor(0, 0, 0, 1);
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
             GL.Enable(EnableCap.Blend);
 
             // A good blending function for 2D font antialiasing.
@@ -85,8 +89,34 @@ namespace Tokamak.OGL
             }
         }
 
+        public override void SetRenderState(RenderState state)
+        {
+            if (state.UseDepthTest)
+                GL.Enable(EnableCap.DepthTest);
+            else
+                GL.Disable(EnableCap.DepthTest);
+
+            if (state.CullFaces)
+                GL.Enable(EnableCap.CullFace);
+            else
+                GL.Disable(EnableCap.CullFace);
+
+            GL.ClearColor(state.ClearColor.Red, state.ClearColor.Green, state.ClearColor.Blue, state.ClearColor.Alpha);
+        }
+
+        public override void ClearBuffers(GlobalBuffer buffers)
+        {
+            ClearBufferMask flags = 0;
+
+            flags |= buffers.HasFlag(GlobalBuffer.ColorBuffer) ? ClearBufferMask.ColorBufferBit : 0;
+            flags |= buffers.HasFlag(GlobalBuffer.DepthBuffer) ? ClearBufferMask.DepthBufferBit : 0;
+            flags |= buffers.HasFlag(GlobalBuffer.StencilBuffer) ? ClearBufferMask.StencilBufferBit : 0;
+
+            if ((int)flags != 0)
+                GL.Clear(flags);
+        }
+
         public override IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
-            //where T : unmanaged
         {
             return new VertexBuffer<T>(this, type);
         }

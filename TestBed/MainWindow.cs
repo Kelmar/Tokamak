@@ -4,7 +4,6 @@ using System.IO;
 using StbImageSharp;
 
 using Silk.NET.Maths;
-using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
 using Tokamak;
@@ -24,19 +23,28 @@ namespace TestBed
 
         private readonly IWindow m_silkWindow;
 
-        private Tokamak.OGL.GLDevice m_device;
+        private Device m_device;
         private Canvas m_canvas;
         private ITextureObject m_texture;
         private Font m_font;
 
         private bool m_trans = false;
 
+        private int m_frameCount;
+        private DateTime m_lastCheck = DateTime.UtcNow;
+        private float m_fps;
+
+        private string[] m_lorem;
+
         public MainWindow()
         {
+            m_lorem = File.ReadAllLines("lorem.txt");
+
             var options = WindowOptions.Default;
             //options.ShouldSwapAutomatically = true;
             options.Size = new Vector2D<int>(1920, 1080);
             options.Title = "OpenGL Test SILK!";
+            options.VSync = false;
             //options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(4, 1));
 
             m_silkWindow = Window.Create(options);
@@ -115,15 +123,37 @@ namespace TestBed
             //    m_trans = !m_trans;
         }
 
+        protected void RenderTextWall(Pen pen, int baseLine)
+        {
+            foreach (var line in m_lorem)
+            {
+                baseLine += m_font.LineSpacing;
+
+                if (baseLine > m_silkWindow.Size.Y)
+                    break;
+
+                m_canvas.DrawText(pen, m_font, new Point(5, baseLine), line);
+            }
+        }
+
         protected void OnRenderFrame(double delta)
         {
-            // TODO: Abstract this GL call.
-            m_device.GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            ++m_frameCount;
+
+            if (m_lastCheck != DateTime.UtcNow)
+            {
+                var diff = DateTime.UtcNow - m_lastCheck;
+                m_fps = (float)(m_frameCount / diff.TotalSeconds);
+                m_frameCount = 0;
+                m_lastCheck = DateTime.UtcNow;
+            }
+
+            m_device.ClearBuffers(GlobalBuffer.ColorBuffer | GlobalBuffer.DepthBuffer);
 
             Pen pen = new Pen
             {
                 Width = 40,
-                Color = m_trans ? TransWhite : Color.DarkRed,
+                Color = Color.White // m_trans ? TransWhite : Color.DarkRed,
                 //LineJoin = LineJoin.Bevel
             };
 
@@ -134,11 +164,12 @@ namespace TestBed
 
             int baseLine = 40;
 
-            //m_canvas.DrawText(m_font, new Point(510, 510), "A crate");
-            m_canvas.DrawText(m_font, new Point(50, baseLine), "The quick brown fox jumps over the lazy dog.");
-            //m_canvas.DrawText(m_font, new Point(50, baseLine), "A");
+            //m_canvas.DrawText(pen, m_font, new Point(50, baseLine), "The quick brown fox jumps over the lazy dog.");
+            //m_canvas.DrawText(pen, m_font, new Point(50, baseLine + m_font.LineSpacing), "AV");
 
-            m_canvas.DrawText(m_font, new Point(50, baseLine + m_font.LineSpacing), "AV");
+            m_canvas.DrawText(pen, m_font, new Point(50, baseLine), String.Format("FPS: {0:000.0}", m_fps));
+
+            RenderTextWall(pen, baseLine);
 
             //var p1 = new Path();
 

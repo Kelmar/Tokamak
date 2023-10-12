@@ -74,7 +74,7 @@ namespace Tokamak.Buffer
 
             for (int y = 0; y < height; ++y)
             {
-                Span<byte> inData = data.Slice(inOffset, pitch);
+                Span<byte> inData = data.Slice(inOffset, copySize);
                 Span<byte> outData = new Span<byte>(Data, outOffset, copySize);
 
                 inData.CopyTo(outData);
