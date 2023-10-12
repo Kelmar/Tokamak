@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 using Silk.NET.Maths;
@@ -7,14 +8,16 @@ using Silk.NET.Windowing;
 using Tokamak;
 using Tokamak.Buffer;
 using Tokamak.Mathematics;
+using Tokamak.Scenes;
 
 using Graphite;
-using System.Collections.Generic;
 
 namespace TestBed
 {
     public class MainWindow : IDisposable
     {
+        private const float ROT_AMOUNT = 0.5f;
+
         private readonly IWindow m_silkWindow;
 
         private Device m_device;
@@ -24,9 +27,12 @@ namespace TestBed
 
         private readonly List<IRenderable> m_renderers = new List<IRenderable>();
 
+        private TestObject m_test;
+
         private int m_frameCount;
         private DateTime m_lastCheck = DateTime.UtcNow;
         private float m_fps;
+        private float m_rot;
 
         public MainWindow()
         {
@@ -64,6 +70,10 @@ namespace TestBed
             m_font = m_canvas.GetFont(path, 12);
 
             m_scene = new Scene(m_device);
+            m_test = new TestObject(m_device);
+
+            m_scene.AddObject(m_test);
+            m_scene.Camera.Location = new System.Numerics.Vector3(0, 0, 30);
 
             m_renderers.Add(m_scene);
             m_renderers.Add(m_canvas);
@@ -98,6 +108,10 @@ namespace TestBed
 
             //if (KeyboardState.IsKeyReleased(Keys.T))
             //    m_trans = !m_trans;
+
+            m_rot += (float)(ROT_AMOUNT * delta);
+
+            m_test.Rotation = new System.Numerics.Vector3(0, (float)m_rot, 0);
         }
 
         private void ComputeFPS()

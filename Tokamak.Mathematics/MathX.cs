@@ -93,6 +93,32 @@ namespace Tokamak.Mathematics
         public static double Clamp(double v, double min, double max) => Math.Max(Math.Min(v, max), min);
 
         /// <summary>
+        /// Wraps a value around a given max value.
+        /// </summary>
+        /// <param name="v"></param>
+        /// <param name="max"></param>
+        public static float WrapF(float v, float max)
+        {
+            while (v > max)
+                v -= max;
+
+            return v;
+        }
+
+        /// <summary>
+        /// Wraps a value around a given max value.
+        /// </summary>
+        /// <param name="v"></param>
+        /// <param name="max"></param>
+        public static double Wrap(double v, double max)
+        {
+            while (v > max)
+                v -= max;
+
+            return v;
+        }
+
+        /// <summary>
         /// Converts a floating point value from 0 to 1 into a byte from 0 to 255
         /// </summary>
         public static byte ToByteRange(this float v) => (byte)(ClampF(v, 0, 1) * Byte.MaxValue);

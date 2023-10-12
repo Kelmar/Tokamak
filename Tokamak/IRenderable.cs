@@ -2,7 +2,7 @@
 
 using Tokamak.Mathematics;
 
-namespace Graphite
+namespace Tokamak
 {
     public interface IRenderable : IDisposable
     {

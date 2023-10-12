@@ -1,16 +1,10 @@
-﻿using Graphite;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
-using Tokamak;
 using Tokamak.Mathematics;
 
-namespace TestBed
+namespace Tokamak.Scenes
 {
     public class Scene : IDisposable, IRenderable
     {
@@ -58,7 +52,9 @@ void main()
 
         private readonly RenderState m_sceneState;
 
-        private readonly TestObject m_test;
+        private readonly List<SceneObject> m_objects = new List<SceneObject>();
+
+        private Camera m_camera = new Camera();
 
         public Scene(Device device)
         {
@@ -76,21 +72,33 @@ void main()
                 CullFaces = false,
                 UseDepthTest = false
             };
-
-            m_test = new TestObject(m_device);
         }
 
         public void Dispose()
         {
-            m_test.Dispose();
+            foreach (var obj in m_objects)
+                obj.Dispose();
+
             m_shader.Dispose();
         }
 
         public Matrix4x4 Projection { get; private set; }
 
-        public Matrix4x4 View { get; private set; }
+        public Camera Camera 
+        {
+            get => m_camera;
+            set => m_camera = value ?? new Camera();
+        }
 
-        public Matrix4x4 Model { get; private set; }
+        public void AddObject(SceneObject obj)
+        {
+            m_objects.Add(obj);
+        }
+
+        public void RemoveObject(SceneObject obj)
+        {
+            m_objects.Remove(obj);
+        }
 
         public void Resize(in Point size)
         {
@@ -98,16 +106,6 @@ void main()
             float h = size.Y;
 
             Projection = Matrix4x4.CreatePerspectiveFieldOfView((float)MathX.DegToRad(45), w / h, 0.1f, 100f);
-
-            var camPos = new Vector3(0, 0, 30);
-            var camTarget = Vector3.Zero;
-            var camDir = Vector3.Normalize(camPos - camTarget);
-            var camRight = Vector3.Normalize(Vector3.Cross(Vector3.UnitY, camDir));
-            var camUp = Vector3.Cross(camDir, camRight);
-
-            View = Matrix4x4.CreateLookAt(camPos, camTarget, camUp);
-
-            Model = Matrix4x4.Identity;
         }
 
         public void Render()
@@ -116,11 +114,14 @@ void main()
 
             m_shader.Activate();
 
-            m_shader.Set("model", Model);
-            m_shader.Set("view", View);
             m_shader.Set("projection", Projection);
+            m_shader.Set("view", m_camera.View);
 
-            m_test.Render();
+            foreach (var obj in m_objects)
+            {
+                m_shader.Set("model", obj.Model);
+                obj.Render();
+            }
         }
     }
 }

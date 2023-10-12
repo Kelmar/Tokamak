@@ -4,10 +4,11 @@ using System.Numerics;
 using Tokamak;
 using Tokamak.Buffer;
 using Tokamak.Formats;
+using Tokamak.Scenes;
 
 namespace TestBed
 {
-    public class TestObject : IDisposable
+    public class TestObject : SceneObject
     {
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
         private readonly Device m_device;
@@ -29,9 +30,10 @@ namespace TestBed
             m_vertexBuffer.Set(data);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             m_vertexBuffer.Dispose();
+            base.Dispose();
         }
 
         private VectorFormatPCT BuildVector(float x, float y, float z, Vector2 texCoord = default)
@@ -44,7 +46,7 @@ namespace TestBed
             };
         }
 
-        public void Render()
+        public override void Render()
         {
             m_vertexBuffer.Activate();
             m_device.DrawArrays(PrimitiveType.TrangleStrip, 0, 4);
