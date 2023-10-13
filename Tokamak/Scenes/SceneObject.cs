@@ -9,13 +9,13 @@ namespace Tokamak.Scenes
         {
         }
 
-        public Vector3 Location { get; set; } = Vector3.Zero;
+        virtual public Vector3 Location { get; set; } = Vector3.Zero;
 
-        public Vector3 Scale { get; set; } = Vector3.One;
+        virtual public Vector3 Scale { get; set; } = Vector3.One;
 
-        public Vector3 Rotation { get; set; } = Vector3.Zero;
+        virtual public Vector3 Rotation { get; set; } = Vector3.Zero;
 
-        public Matrix4x4 Model
+        virtual public Matrix4x4 Model
         {
             get
             {

@@ -1,0 +1,102 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+
+namespace Tokamak.Readers.FBX
+{
+    internal class Property
+    {
+        public PropertyType Type { get; internal set; }
+
+        public object Data { get; internal set; }
+
+        public int AsInt() => Convert.ToInt32(Data);
+
+        public string AsString() => Convert.ToString(Data);
+
+        public override string ToString()
+        {
+            if (Type == PropertyType.RawBinary)
+                return "[RAW BINARY]";
+
+            switch (Type)
+            {
+            case PropertyType.FloatArray:
+                return DumpArray<float>();
+
+            case PropertyType.DoubleArray:
+                return DumpArray<double>();
+
+            case PropertyType.LongArray:
+                return DumpArray<long>();
+
+            case PropertyType.IntArray:
+                return DumpArray<int>();
+
+            case PropertyType.BoolArray:
+                return DumpArray<bool>();
+            }
+
+            return Data?.ToString() ?? "[NULL]";
+        }
+
+        public IEnumerable<T> AsEnumerable<T>()
+            where T : unmanaged
+        {
+            return Type switch
+            {
+                PropertyType.FloatArray => ConvertTo<float, T>(),
+                PropertyType.DoubleArray => ConvertTo<double, T>(),
+                PropertyType.LongArray => ConvertTo<long, T>(),
+                PropertyType.IntArray => ConvertTo<int, T>(),
+                PropertyType.BoolArray => ConvertTo<bool, T>(),
+                _ => throw new Exception($"Not an array type {Type}")
+            };
+        }
+
+        private IEnumerable<TTo> ConvertTo<TFrom, TTo>()
+            where TFrom : unmanaged
+            where TTo : unmanaged
+        {
+            Type t = typeof(TTo);
+
+            var rdr = (IEnumerable<TFrom>)Data;
+            return rdr.Select(i => (TTo)Convert.ChangeType(i, t));
+        }
+
+        private IEnumerable<T> GetReader<T>()
+            where T : unmanaged
+        {
+            return (IEnumerable<T>)Data;
+        }
+
+        private string DumpArray<T>()
+            where T : struct
+        {
+            IEnumerable<T> items = (Data as IEnumerable<T>) ?? new List<T>();
+
+            int count = items.Count();
+            string itemStr = String.Join(", ", items.Take(Math.Min(count, 10)));
+
+            return $"{typeof(T).Name}[{count}]: {itemStr}";
+        }
+    }
+
+    public enum PropertyType :  byte
+    {
+        SignedShort = (byte)'Y',
+        Boolean     = (byte)'C',
+        SignedInt   = (byte)'I',
+        Float       = (byte)'F',
+        Double      = (byte)'D',
+        SignedLong  = (byte)'L',
+        FloatArray  = (byte)'f',
+        DoubleArray = (byte)'d',
+        LongArray   = (byte)'l',
+        IntArray    = (byte)'i',
+        BoolArray   = (byte)'b',
+        String      = (byte)'S',
+        RawBinary   = (byte)'R',
+    }
+}

@@ -34,7 +34,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{8E037282-7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{F043E15E-2E44-49EA-81D3-49CF88896C2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeTypeWrapper", "FreeTypeWrapper\FreeTypeWrapper.csproj", "{89F18EA9-213F-4C28-AED7-98E3008EDABE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeTypeWrapper", "FreeTypeWrapper\FreeTypeWrapper.csproj", "{89F18EA9-213F-4C28-AED7-98E3008EDABE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Readers", "Tokamak.Readers\Tokamak.Readers.csproj", "{0E0C9C58-3D01-4862-BF0B-4F9CD7E713B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,6 +76,10 @@ Global
 		{89F18EA9-213F-4C28-AED7-98E3008EDABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89F18EA9-213F-4C28-AED7-98E3008EDABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89F18EA9-213F-4C28-AED7-98E3008EDABE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E0C9C58-3D01-4862-BF0B-4F9CD7E713B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E0C9C58-3D01-4862-BF0B-4F9CD7E713B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E0C9C58-3D01-4862-BF0B-4F9CD7E713B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E0C9C58-3D01-4862-BF0B-4F9CD7E713B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

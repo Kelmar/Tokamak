@@ -1,38 +1,51 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Numerics;
 
 using Tokamak;
 using Tokamak.Buffer;
 using Tokamak.Formats;
+using Tokamak.Readers.FBX;
 using Tokamak.Scenes;
 
 namespace TestBed
 {
     public class TestObject : SceneObject
     {
+        public const string FILE = "cube.fbx";
+
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
+        private readonly IElementBuffer m_elementBuffer;
+
+        private readonly Mesh m_mesh;
+
         private readonly Device m_device;
 
         public TestObject(Device device)
         {
             m_device = device;
 
+            using var reader = new FBXReader(File.OpenRead(FILE));
+            m_mesh = reader.Import().FirstOrDefault();
+
+            if (m_mesh == null)
+                throw new Exception($"Unable to load mesh.");
+
             m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Static);
+            m_elementBuffer = m_device.GetElementBuffer(BufferType.Static);
 
-            var data = new VectorFormatPCT[4]
-            {
-                BuildVector( 5f, 5f, 0),
-                BuildVector( 5f,-5f, 0),
-                BuildVector(-5f, 5f, 0),
-                BuildVector(-5f,-5f, 0)
-            };
-
-            m_vertexBuffer.Set(data);
+            m_mesh.ToVertexBuffer(m_vertexBuffer);
+            m_mesh.ToElementsBuffer(m_elementBuffer);
         }
 
         public override void Dispose()
         {
+            m_mesh.Dispose();
+
+            m_elementBuffer.Dispose();
             m_vertexBuffer.Dispose();
+
             base.Dispose();
         }
 
@@ -49,7 +62,11 @@ namespace TestBed
         public override void Render()
         {
             m_vertexBuffer.Activate();
-            m_device.DrawArrays(PrimitiveType.TrangleStrip, 0, 4);
+            //m_elementBuffer.Activate();
+
+            m_device.DrawElements(PrimitiveType.TrangleList, m_mesh.Indicies.Count);
+
+            //m_device.DrawArrays(PrimitiveType.TrangleStrip, 0, m_mesh.Verts.Count);
         }
     }
 }

@@ -126,6 +126,11 @@ namespace Tokamak.OGL
             return new TextureObject(this, format, size);
         }
 
+        public override IElementBuffer GetElementBuffer(BufferType type)
+        {
+            return new ElementBuffer(this, type);
+        }
+
         public override void ClearBoundTexture()
         {
             // Reset to our 1x1 white texture to keep samplers in shaders happy.
@@ -140,6 +145,11 @@ namespace Tokamak.OGL
         public override void DrawArrays(TokPrimType primative, int vertexOffset, int vertexCount)
         {
             GL.DrawArrays(primative.ToGLPrimitive(), vertexOffset, (uint)vertexCount);
+        }
+
+        public override void DrawElements(TokPrimType primitive, int length)
+        {
+            GL.DrawElements(primitive.ToGLPrimitive(), (uint)length, DrawElementsType.UnsignedInt, 0);
         }
     }
 }

@@ -118,6 +118,21 @@ namespace Tokamak.Mathematics
             return v;
         }
 
+        public static Vector2 ToVector2(this float[] a)
+        {
+            return new Vector2(a.Length > 0 ? a[0] : 0, a.Length > 1 ? a[1] : 0);
+        }
+
+        public static Vector3 ToVector3(this float[] a)
+        {
+            return new Vector3(a.Length > 0 ? a[0] : 0, a.Length > 1 ? a[1] : 0, a.Length > 2 ? a[2] : 0);
+        }
+
+        public static Vector4 ToVector4(this float[] a)
+        {
+            return new Vector4(a.Length > 0 ? a[0] : 0, a.Length > 1 ? a[1] : 0, a.Length > 2 ? a[2] : 0, a.Length > 3 ? a[3] : 0);
+        }
+
         /// <summary>
         /// Converts a floating point value from 0 to 1 into a byte from 0 to 255
         /// </summary>

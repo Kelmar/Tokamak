@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
 using Silk.NET.Maths;
@@ -75,5 +76,17 @@ namespace Tokamak.Mathematics
         public static bool operator ==(in Point rhs, in Point lhs) => (rhs.X == lhs.X && rhs.Y == lhs.Y);
 
         public static bool operator !=(in Point rhs, in Point lhs) => (rhs.X != lhs.X || rhs.Y != lhs.Y);
+
+        public override bool Equals([NotNullWhen(true)] object obj)
+        {
+            var p = (Point)obj;
+
+            return this == p;
+        }
+
+        public override int GetHashCode()
+        {
+            return X ^ Y;
+        }
     }
 }
