@@ -36,7 +36,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{F0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeTypeWrapper", "FreeTypeWrapper\FreeTypeWrapper.csproj", "{89F18EA9-213F-4C28-AED7-98E3008EDABE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Readers", "Tokamak.Readers\Tokamak.Readers.csproj", "{0E0C9C58-3D01-4862-BF0B-4F9CD7E713B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokamak.Readers", "Tokamak.Readers\Tokamak.Readers.csproj", "{0E0C9C58-3D01-4862-BF0B-4F9CD7E713B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Vulkan", "Tokamak.Vulkan\Tokamak.Vulkan.csproj", "{835E39DC-7FD6-4490-83C8-7EEA6ADCABD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,6 +82,10 @@ Global
 		{0E0C9C58-3D01-4862-BF0B-4F9CD7E713B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E0C9C58-3D01-4862-BF0B-4F9CD7E713B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E0C9C58-3D01-4862-BF0B-4F9CD7E713B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{835E39DC-7FD6-4490-83C8-7EEA6ADCABD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{835E39DC-7FD6-4490-83C8-7EEA6ADCABD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{835E39DC-7FD6-4490-83C8-7EEA6ADCABD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{835E39DC-7FD6-4490-83C8-7EEA6ADCABD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +96,7 @@ Global
 		{478B64C5-2711-452B-AE48-F77C4C04749E} = {5859A128-E628-4FC7-AA18-1D6CB70357ED}
 		{8E037282-74EC-454D-94F8-5D6207B3E972} = {B1FD1B91-527C-47F9-8F1D-78F6A1108420}
 		{89F18EA9-213F-4C28-AED7-98E3008EDABE} = {F043E15E-2E44-49EA-81D3-49CF88896C2F}
+		{835E39DC-7FD6-4490-83C8-7EEA6ADCABD7} = {5859A128-E628-4FC7-AA18-1D6CB70357ED}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {05871E1D-40C8-45D6-A51D-0E321A9A7D4F}

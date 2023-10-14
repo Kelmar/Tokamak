@@ -16,6 +16,8 @@ namespace TestBed
 {
     public class MainWindow : IDisposable
     {
+        private const bool USE_VULKAN = true;
+
         private const float ROT_AMOUNT = 0.5f;
 
         private readonly IWindow m_silkWindow;
@@ -40,7 +42,15 @@ namespace TestBed
             options.Size = new Vector2D<int>(1920, 1080);
             options.Title = "OpenGL Test SILK!";
             options.VSync = false;
-            options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(4, 1));
+
+            if (USE_VULKAN)
+            {
+                options.API = new GraphicsAPI(ContextAPI.Vulkan, new APIVersion(1, 0));
+            }
+            else
+            {
+                options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(4, 1));
+            }
 
             m_silkWindow = Window.Create(options);
 
@@ -58,7 +68,16 @@ namespace TestBed
 
         private void OnLoad()
         {
-            m_device = new Tokamak.OGL.GLDevice(m_silkWindow);
+            if (USE_VULKAN)
+            {
+                var log = new ConsoleLog<Tokamak.Vulkan.VkDevice>();
+                m_device = new Tokamak.Vulkan.VkDevice(log, m_silkWindow);
+            }
+            else
+            {
+                m_device = new Tokamak.OGL.GLDevice(m_silkWindow);
+            }
+
             m_canvas = new Canvas(m_device);
 
             using var shaderFact = m_device.GetShaderFactory();
@@ -70,9 +89,9 @@ namespace TestBed
             m_font = m_canvas.GetFont(path, 12);
 
             m_scene = new Scene(m_device);
-            m_test = new TestObject(m_device);
+            //m_test = new TestObject(m_device);
 
-            m_scene.AddObject(m_test);
+            //m_scene.AddObject(m_test);
             m_scene.Camera.Location = new System.Numerics.Vector3(0, 0, 10);
 
             m_renderers.Add(m_scene);
@@ -111,7 +130,7 @@ namespace TestBed
 
             m_rot += (float)(ROT_AMOUNT * delta);
 
-            //m_test.Rotation = new System.Numerics.Vector3(0, (float)m_rot, 0);
+            m_test.Rotation = new System.Numerics.Vector3(0, (float)m_rot, 0);
         }
 
         private void ComputeFPS()

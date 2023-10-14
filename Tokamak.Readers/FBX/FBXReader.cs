@@ -143,17 +143,16 @@ namespace Tokamak.Readers.FBX
                 .Select(v => v.Properties[0])
                 .SelectMany(p => p.AsEnumerable<int>());
 
-            var polys = ToPolys(indexValues);
+            rval.Mesh.Indicies = ToPolys(indexValues)
+                .SelectMany(p => p.SplitIntoTriangles())
+                .SelectMany(p => p.Indices)
+                .ToList();
 
-            // Now we have to split these polygons into triangles....
-
-            //rval.Mesh.Indicies
-
+            /*
             var normals = mesh
                 .GetChildren("LayerElementNormal")
                 .SelectMany(n => n.GetChildren("Normals"));
 
-            /*
             rval.Mesh.Normals = normals
                 .Select(n => n.Properties[0])
                 .SelectMany(p => p.AsEnumerable<float>())

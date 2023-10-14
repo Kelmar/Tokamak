@@ -50,6 +50,7 @@ namespace Tokamak.OGL
         public override void Dispose()
         {
             m_whiteTexture.Dispose();
+            GL.Dispose();
 
             base.Dispose();
         }

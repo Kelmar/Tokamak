@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
@@ -36,6 +36,7 @@
     <ProjectReference Include="..\Graphite\Graphite.csproj" />
     <ProjectReference Include="..\Tokamak.OGL\Tokamak.OGL.csproj" />
     <ProjectReference Include="..\Tokamak.Readers\Tokamak.Readers.csproj" />
+    <ProjectReference Include="..\Tokamak.Vulkan\Tokamak.Vulkan.csproj" />
     <ProjectReference Include="..\Tokamak\Tokamak.csproj" />
   </ItemGroup>
 
