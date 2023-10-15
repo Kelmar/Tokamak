@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 
-using Silk.NET.Core.Contexts;
 using Silk.NET.Vulkan;
 using Silk.NET.Windowing;
 
 using Tokamak.Buffer;
+using Tokamak.Config;
 using Tokamak.Formats;
 using Tokamak.Logging;
 using Tokamak.Mathematics;
@@ -19,12 +16,23 @@ namespace Tokamak.Vulkan
 {
     public unsafe class VkPlatform : Platform
     {
+        private const string VK_VALIDATE_CALLS_CONFIG = "Vk.ValidateCalls";
+        private const string VK_DEBUG_CONFIG = "Vk.DebugCalls";
+
+        private const string VK_VALIDATE_LAYER_NAME = "VK_LAYER_KHRONOS_validation";
+        private const string KV_DEBUG_LAYER_NAME = "";
+
         private readonly ILogger m_log;
+        private readonly IConfigReader m_config;
         private readonly Instance m_instance;
 
-        public VkPlatform(ILogger<VkPlatform> log, IWindow window)
+        public VkPlatform(
+            ILogger<VkPlatform> log,
+            IConfigReader config,
+            IWindow window)
         {
             m_log = log;
+            m_config = config;
 
             if (window.VkSurface == null)
             {
@@ -55,7 +63,26 @@ namespace Tokamak.Vulkan
         {
             using var s = m_log.BeginScope(new { Phase = "InitVK" });
 
-            //var layers = VkLayerProperties.Enumerate(this).ToList();
+            var layers = VkLayerProperties.Enumerate(this).ToList();
+            var enableLayers = new List<string>();
+
+            if (m_config.Get(VK_VALIDATE_CALLS_CONFIG, false))
+            {
+                if (!layers.Any(l => l.LayerName == VK_VALIDATE_LAYER_NAME))
+                    m_log.Warn($"{VK_VALIDATE_CALLS_CONFIG} is set, but validation layer not installed for Vulkan");
+                else
+                    enableLayers.Add(VK_VALIDATE_LAYER_NAME);
+            }
+
+            if (m_config.Get(VK_DEBUG_CONFIG, false))
+            {
+                if (!layers.Any(l => l.LayerName == KV_DEBUG_LAYER_NAME))
+                    m_log.Warn($"{VK_DEBUG_CONFIG} is set, but validation layer not installed for Vulkan");
+                else
+                    enableLayers.Add(KV_DEBUG_LAYER_NAME);
+            }
+
+            using var pEnableLayers = new VkStringArray(enableLayers);
 
             using var appName = new VkString("Test Application");
             using var engName = new VkString("Tokamak");
@@ -78,9 +105,9 @@ namespace Tokamak.Vulkan
                 Flags = InstanceCreateFlags.None,
                 PApplicationInfo = &appInfo,
                 EnabledExtensionCount = 0,
-                EnabledLayerCount = 0,
+                EnabledLayerCount = pEnableLayers.Length,
                 PpEnabledExtensionNames = null,
-                PpEnabledLayerNames = null
+                PpEnabledLayerNames = pEnableLayers.Pointer
             };
 
             var result = Vk.CreateInstance(info, null, out instance);

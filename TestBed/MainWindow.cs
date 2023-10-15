@@ -11,6 +11,7 @@ using Tokamak.Mathematics;
 using Tokamak.Scenes;
 
 using Graphite;
+using Tokamak.Config;
 
 namespace TestBed
 {
@@ -71,7 +72,9 @@ namespace TestBed
             if (USE_VULKAN)
             {
                 var log = new ConsoleLog<Tokamak.Vulkan.VkPlatform>();
-                m_device = new Tokamak.Vulkan.VkPlatform(log, m_silkWindow);
+                var conf = new BasicConfigReader();
+
+                m_device = new Tokamak.Vulkan.VkPlatform(log, conf, m_silkWindow);
             }
             else
             {

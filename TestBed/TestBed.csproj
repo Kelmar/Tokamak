@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <None Remove="blox.fbx" />
+    <None Remove="config.txt" />
     <None Remove="cube.fbx" />
     <None Remove="resources\container.png" />
   </ItemGroup>
@@ -38,6 +39,12 @@
     <ProjectReference Include="..\Tokamak.Readers\Tokamak.Readers.csproj" />
     <ProjectReference Include="..\Tokamak.Vulkan\Tokamak.Vulkan.csproj" />
     <ProjectReference Include="..\Tokamak\Tokamak.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="config.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

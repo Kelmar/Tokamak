@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Tokamak.Vulkan
+namespace Tokamak.Vulkan.NativeWrapper
 {
+    /// <summary>
+    /// Managed interface to an unmanaged string.
+    /// </summary>
     internal unsafe sealed class VkString : IDisposable
     {
         public VkString(string value)
@@ -19,6 +22,6 @@ namespace Tokamak.Vulkan
 
         public string Value { get; }
 
-        public byte *Pointer { get; }
+        public byte* Pointer { get; }
     }
 }
