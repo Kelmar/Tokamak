@@ -14,13 +14,13 @@ namespace Tokamak.OGL
     {
         private readonly uint m_handle;
 
-        private readonly GLDevice m_parent;
+        private readonly GLPlatform m_parent;
 
         private readonly GlPixelFormat m_glFormat;
         private readonly PixelType m_glType;
         private readonly InternalFormat m_glInternal;
 
-        public TextureObject(GLDevice device, TokPixelFormat format, Point size)
+        public TextureObject(GLPlatform device, TokPixelFormat format, Point size)
         {
             m_parent = device;
             m_handle = m_parent.GL.GenTexture();

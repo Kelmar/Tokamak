@@ -11,7 +11,7 @@ https://torque3d.org/
   - [ ] OpenGL (in progress)
   - [ ] DirectX
   - [ ] Metal
-  - [ ] Vulkan
+  - [ ] Vulkan (in progress)
   - [ ] OS level GUI objects (e.g. the main window/screen)
   - [ ] Direct hardware input (e.g. DirectInput)
   - [ ] Sound

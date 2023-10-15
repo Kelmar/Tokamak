@@ -20,9 +20,9 @@ namespace TestBed
 
         private readonly Mesh m_mesh;
 
-        private readonly Device m_device;
+        private readonly Platform m_device;
 
-        public TestObject(Device device)
+        public TestObject(Platform device)
         {
             m_device = device;
 

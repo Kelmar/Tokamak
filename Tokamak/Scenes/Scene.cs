@@ -47,7 +47,7 @@ void main()
     fsout_Color = is8Bit != 0 ? vec4(fsin_Color.rgb, fsin_Color.a * tx.r) : tx * fsin_Color;
 }
 ";
-        private readonly Device m_device;
+        private readonly Platform m_device;
         private readonly IShader m_shader;
 
         private readonly RenderState m_sceneState;
@@ -56,7 +56,7 @@ void main()
 
         private Camera m_camera = new Camera();
 
-        public Scene(Device device)
+        public Scene(Platform device)
         {
             m_device = device;
 

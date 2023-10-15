@@ -14,9 +14,9 @@ namespace Tokamak.OGL
     /// </summary>
     internal class ShaderCompiler : IDisposable
     {
-        private readonly GLDevice m_device;
+        private readonly GLPlatform m_device;
 
-        public ShaderCompiler(GLDevice device, ShaderType type, string source)
+        public ShaderCompiler(GLPlatform device, ShaderType type, string source)
         {
             m_device = device;
 

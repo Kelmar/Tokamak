@@ -80,13 +80,13 @@ void main()
         private readonly List<CanvasCall> m_calls = new List<CanvasCall>(128);
         private readonly List<VectorFormatPCT> m_vectors = new List<VectorFormatPCT>(128);
 
-        private readonly Device m_device;
+        private readonly Platform m_device;
         private readonly IShader m_shader;
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
         private readonly RenderState m_uiState;
 
-        public Canvas(Device device)
+        public Canvas(Platform device)
         {
             m_ftLibrary = new FTLibrary();
 

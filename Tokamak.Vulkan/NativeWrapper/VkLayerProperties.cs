@@ -20,7 +20,7 @@ namespace Tokamak.Vulkan.NativeWrapper
 
         public string Description { get; set; }
 
-        public static unsafe IEnumerable<VkLayerProperties> Enumerate(VkDevice device)
+        public static unsafe IEnumerable<VkLayerProperties> Enumerate(VkPlatform device)
         {
             uint layerCnt = 0;
             uint* cnt = &layerCnt;

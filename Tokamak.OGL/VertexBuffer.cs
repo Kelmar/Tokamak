@@ -16,11 +16,11 @@ namespace Tokamak.OGL
         private readonly uint m_vbo;
 
         private readonly VectorFormat.Info m_layoutInfo;
-        private readonly GLDevice m_parent;
+        private readonly GLPlatform m_parent;
 
         private readonly BufferUsageARB m_usageHint;
 
-        public VertexBuffer(GLDevice device, BufferType type)
+        public VertexBuffer(GLPlatform device, BufferType type)
         {
             m_parent = device;
 

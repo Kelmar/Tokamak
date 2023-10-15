@@ -9,9 +9,9 @@ namespace Tokamak.OGL
         private readonly List<ShaderCompiler> m_compilers = new List<ShaderCompiler>();
 
         private Shader m_shader;
-        private GLDevice m_device;
+        private GLPlatform m_device;
 
-        public ShaderFactory(GLDevice device)
+        public ShaderFactory(GLPlatform device)
         {
             m_device = device;
             m_shader = new Shader(device);

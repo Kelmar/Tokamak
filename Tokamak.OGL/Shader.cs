@@ -14,9 +14,9 @@ namespace Tokamak.OGL
     {
         private readonly IDictionary<string, int> m_uniforms = new Dictionary<string, int>();
 
-        private readonly GLDevice m_parent;
+        private readonly GLPlatform m_parent;
 
-        public Shader(GLDevice device)
+        public Shader(GLPlatform device)
         {
             m_parent = device;
             Handle = m_parent.GL.CreateProgram();

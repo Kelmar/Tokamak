@@ -16,9 +16,9 @@ namespace Tokamak.Vulkan
 {
     internal class TextureObject : ITextureObject
     {
-        private readonly VkDevice m_parent;
+        private readonly VkPlatform m_parent;
 
-        public TextureObject(VkDevice device, TokPixelFormat format, Point size)
+        public TextureObject(VkPlatform device, TokPixelFormat format, Point size)
         {
             m_parent = device;
 

@@ -17,12 +17,12 @@ using Tokamak.Vulkan.NativeWrapper;
 
 namespace Tokamak.Vulkan
 {
-    public unsafe class VkDevice : Device
+    public unsafe class VkPlatform : Platform
     {
         private readonly ILogger m_log;
         private readonly Instance m_instance;
 
-        public VkDevice(ILogger<VkDevice> log, IWindow window)
+        public VkPlatform(ILogger<VkPlatform> log, IWindow window)
         {
             m_log = log;
 

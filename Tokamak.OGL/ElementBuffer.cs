@@ -13,11 +13,11 @@ namespace Tokamak.OGL
     internal class ElementBuffer : IElementBuffer
     {
         private readonly uint m_ebo;
-        private readonly GLDevice m_parent;
+        private readonly GLPlatform m_parent;
 
         private readonly BufferUsageARB m_usageHint;
 
-        public ElementBuffer(GLDevice device, BufferType type)
+        public ElementBuffer(GLPlatform device, BufferType type)
         {
             m_parent = device;
 

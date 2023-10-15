@@ -8,9 +8,9 @@ namespace Tokamak.Vulkan
 {
     internal class ShaderFactory : IShaderFactory
     {
-        private readonly Device m_device;
+        private readonly Platform m_device;
 
-        public ShaderFactory(VkDevice device)
+        public ShaderFactory(VkPlatform device)
         {
             m_device = device;
         }

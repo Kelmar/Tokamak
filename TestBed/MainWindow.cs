@@ -22,7 +22,7 @@ namespace TestBed
 
         private readonly IWindow m_silkWindow;
 
-        private Device m_device;
+        private Platform m_device;
         private Canvas m_canvas;
         private Font m_font;
         private Scene m_scene;
@@ -70,12 +70,12 @@ namespace TestBed
         {
             if (USE_VULKAN)
             {
-                var log = new ConsoleLog<Tokamak.Vulkan.VkDevice>();
-                m_device = new Tokamak.Vulkan.VkDevice(log, m_silkWindow);
+                var log = new ConsoleLog<Tokamak.Vulkan.VkPlatform>();
+                m_device = new Tokamak.Vulkan.VkPlatform(log, m_silkWindow);
             }
             else
             {
-                m_device = new Tokamak.OGL.GLDevice(m_silkWindow);
+                m_device = new Tokamak.OGL.GLPlatform(m_silkWindow);
             }
 
             m_canvas = new Canvas(m_device);

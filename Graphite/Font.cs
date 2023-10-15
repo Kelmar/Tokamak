@@ -16,7 +16,7 @@ namespace Graphite
     {
         private const int CACHE_SHEET_SIZE = 512;
 
-        private readonly Device m_device;
+        private readonly Platform m_device;
         private readonly FTFace m_face;
 
         private readonly List<ITextureObject> m_cacheSheets = new List<ITextureObject>(4);
@@ -25,7 +25,7 @@ namespace Graphite
         private ITextureObject m_currentSheet;
         private Point m_sheetIndex;
 
-        internal Font(Device device, FTFace face)
+        internal Font(Platform device, FTFace face)
         {
             m_device = device;
             m_face = face;
