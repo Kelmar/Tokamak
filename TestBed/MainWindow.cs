@@ -17,9 +17,10 @@ namespace TestBed
 {
     public class MainWindow : IDisposable
     {
-        private const bool USE_VULKAN = true;
-
         private const float ROT_AMOUNT = 0.5f;
+
+        private readonly IConfigReader m_config;
+        private readonly string m_driver;
 
         private readonly IWindow m_silkWindow;
 
@@ -39,18 +40,26 @@ namespace TestBed
 
         public MainWindow()
         {
+            m_config = new BasicConfigReader();
+            m_driver = m_config.Get("Tok.Driver", "Vulkan");
+
             var options = WindowOptions.Default;
             options.Size = new Vector2D<int>(1920, 1080);
             options.Title = "OpenGL Test SILK!";
             options.VSync = false;
 
-            if (USE_VULKAN)
+            switch (m_driver.ToUpper())
             {
+            case "VULKAN":
                 options.API = new GraphicsAPI(ContextAPI.Vulkan, new APIVersion(1, 0));
-            }
-            else
-            {
+                break;
+
+            case "OPENGL":
                 options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(4, 1));
+                break;
+
+            default:
+                throw new Exception($"Unknown driver: {m_driver}");
             }
 
             m_silkWindow = Window.Create(options);
@@ -69,16 +78,19 @@ namespace TestBed
 
         private void OnLoad()
         {
-            if (USE_VULKAN)
+            switch (m_driver.ToUpper())
             {
+            case "VULKAN":
                 var log = new ConsoleLog<Tokamak.Vulkan.VkPlatform>();
-                var conf = new BasicConfigReader();
+                m_device = new Tokamak.Vulkan.VkPlatform(log, m_config, m_silkWindow);
+                break;
 
-                m_device = new Tokamak.Vulkan.VkPlatform(log, conf, m_silkWindow);
-            }
-            else
-            {
+            case "OPENGL":
                 m_device = new Tokamak.OGL.GLPlatform(m_silkWindow);
+                break;
+
+            default:
+                throw new Exception("Unknown driver");
             }
 
             m_canvas = new Canvas(m_device);
