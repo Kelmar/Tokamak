@@ -7,6 +7,9 @@ using Silk.NET.Core.Native;
 
 namespace Tokamak.Vulkan.NativeWrapper
 {
+    /// <summary>
+    /// Managed wrapper around an unmanaged array of strings.
+    /// </summary>
     internal unsafe class VkStringArray : IDisposable
     {
         public VkStringArray(IEnumerable<string> values)
@@ -22,7 +25,7 @@ namespace Tokamak.Vulkan.NativeWrapper
         public void Dispose()
         {
             if (Pointer != null)
-                Marshal.FreeHGlobal((nint)Pointer);
+                SilkMarshal.Free((nint)Pointer);
 
             GC.SuppressFinalize(this);
         }

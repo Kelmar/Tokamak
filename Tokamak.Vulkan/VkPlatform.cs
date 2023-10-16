@@ -19,16 +19,18 @@ namespace Tokamak.Vulkan
 {
     public unsafe class VkPlatform : Platform
     {
-        private const string VK_VALIDATE_CALLS_CONFIG = "Vk.ValidateCalls";
-        //private const string VK_DEBUG_CONFIG = "Vk.DebugCalls";
+        internal const string VK_VALIDATE_CALLS_CONFIG = "Vk.ValidateCalls";
+        //internal const string VK_DEBUG_CONFIG = "Vk.DebugCalls";
 
-        private const string VK_VALIDATE_LAYER_NAME = "VK_LAYER_KHRONOS_validation";
-        //private const string KV_DEBUG_LAYER_NAME = "";
+        internal const string VK_VALIDATE_LAYER_NAME = "VK_LAYER_KHRONOS_validation";
+        //internal const string KV_DEBUG_LAYER_NAME = "";
 
         private readonly ILogger m_log;
         private readonly IConfigReader m_config;
 
         private readonly List<VkDevice> m_devices = new List<VkDevice>();
+
+        private DrawSurface m_surface = null;
 
         public VkPlatform(IWindow window)
         {
@@ -54,6 +56,8 @@ namespace Tokamak.Vulkan
             foreach (var dev in m_devices)
                 dev.Dispose();
 
+            m_surface.Dispose();
+
             if (Instance.Handle != IntPtr.Zero)
                 Vk.DestroyInstance(Instance, null);
 
@@ -62,13 +66,18 @@ namespace Tokamak.Vulkan
             base.Dispose();
         }
 
-        public Vk Vk { get; }
+        internal Vk Vk { get; }
 
-        public Instance Instance { get; private set; }
+        internal Instance Instance { get; private set; }
+
+        internal DrawSurface Surface => m_surface;
 
         private void InitVK(IVkSurface surface)
         {
             CreateInstance(surface);
+
+            m_surface = new DrawSurface(this, surface);
+
             EnumerateDevices();
 
             var device = SelectDevice();

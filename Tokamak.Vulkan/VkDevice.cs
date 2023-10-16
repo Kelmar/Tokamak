@@ -1,10 +1,16 @@
-﻿using Silk.NET.Vulkan;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
+using Silk.NET.Core.Native;
+using Silk.NET.Vulkan;
+
+using Tokamak.Config;
 using Tokamak.Vulkan.NativeWrapper;
+
+using NativeDevice = Silk.NET.Vulkan.Device;
+using NativeQueue = Silk.NET.Vulkan.Queue;
 
 namespace Tokamak.Vulkan
 {
@@ -14,8 +20,10 @@ namespace Tokamak.Vulkan
 
         private readonly List<VkQueueFamilyProperties> m_queueProps = new List<VkQueueFamilyProperties>();
 
-        private Silk.NET.Vulkan.Device m_logicalDevice;
-        private Queue m_graphicsQueue;
+        private NativeDevice m_logicalDevice;
+
+        private NativeQueue m_graphicsQueue;
+        private NativeQueue m_surfaceQueue;
 
         private VkDevice(VkPlatform platform, VkPhysicalDevice device)
         {
@@ -35,6 +43,8 @@ namespace Tokamak.Vulkan
         }
 
         public VkPhysicalDevice PhysicalDevice { get; }
+
+        public bool Initialized => m_logicalDevice.Handle != 0;
 
         public static IEnumerable<VkDevice> EnumerateAll(VkPlatform platform)
         {
@@ -65,36 +75,83 @@ namespace Tokamak.Vulkan
             return m_queueProps;
         }
 
+        private IEnumerable<string> GetEnabledLayers()
+        {
+            var config = Platform.Services.Find<IConfigReader>();
+
+            if (config.Get(VkPlatform.VK_VALIDATE_CALLS_CONFIG, false))
+                yield return VkPlatform.VK_VALIDATE_LAYER_NAME;
+        }
+
+        private IEnumerable<string> GetEnabledExtensions()
+        {
+            yield break;
+        }
+
         public unsafe void InitLogicalDevice()
         {
+            if (Initialized)
+                return;
+
             float queuePriority = 1.0f;
 
             var graphQueue = GetQueues().First(q => q.QueueFlags.HasFlag(QueueFlags.GraphicsBit));
+            VkQueueFamilyProperties surfaceQueue = null;
 
-            var queueCreateInfo = new DeviceQueueCreateInfo
+            var uniqueFamilys = new HashSet<uint>();
+            uniqueFamilys.Add(graphQueue.Index);
+
+            foreach (var q in GetQueues())
             {
-                SType = StructureType.DeviceQueueCreateInfo,
-                QueueFamilyIndex = graphQueue.Index,
-                QueueCount = 1,
-                PQueuePriorities = &queuePriority,
-            };
+                if (m_platform.Surface.GetPhysicalDeviceSurfaceSupport(PhysicalDevice, q.Index))
+                {
+                    uniqueFamilys.Add(q.Index);
+                    surfaceQueue = q;
+                    break;
+                }
+            }
+
+            var ufArray = uniqueFamilys.ToArray();
+
+            using var memory = GlobalMemory.Allocate(ufArray.Length * sizeof(DeviceQueueCreateInfo));
+            var queueCreateInfos = (DeviceQueueCreateInfo*)Unsafe.AsPointer(ref memory.GetPinnableReference());
+
+            for (uint i = 0; i < ufArray.Length; ++i)
+            {
+                queueCreateInfos[i] = new DeviceQueueCreateInfo
+                {
+                    SType = StructureType.DeviceQueueCreateInfo,
+                    QueueFamilyIndex = ufArray[i],
+                    QueueCount = 1,
+                    PQueuePriorities = &queuePriority,
+                };
+            }
 
             var features = new PhysicalDeviceFeatures
             {
             };
 
+            using var layers = new VkStringArray(GetEnabledLayers());
+            using var exts = new VkStringArray(GetEnabledExtensions());
+
             var createInfo = new DeviceCreateInfo
             {
                 SType = StructureType.DeviceCreateInfo,
-                QueueCreateInfoCount = 1,
-                PQueueCreateInfos = &queueCreateInfo,
+                QueueCreateInfoCount = (uint)ufArray.Length,
+                PQueueCreateInfos = queueCreateInfos,
                 PEnabledFeatures = &features,
-                EnabledExtensionCount = 0
+                PpEnabledExtensionNames = exts.Pointer,
+                EnabledExtensionCount = exts.Length,
+                PpEnabledLayerNames = layers.Pointer,
+                EnabledLayerCount = layers.Length
             };
 
             m_platform.SafeExecute(vk => vk.CreateDevice(PhysicalDevice.Handle, in createInfo, null, out m_logicalDevice));
 
             m_platform.Vk.GetDeviceQueue(m_logicalDevice, graphQueue.Index, 0, out m_graphicsQueue);
+
+            if (surfaceQueue != null)
+                m_platform.Vk.GetDeviceQueue(m_logicalDevice, surfaceQueue.Index, 0, out m_surfaceQueue);
         }
     }
 }
