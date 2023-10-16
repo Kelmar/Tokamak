@@ -20,12 +20,12 @@ namespace Tokamak.Vulkan.NativeWrapper
 
         public string Description { get; set; }
 
-        public static unsafe IEnumerable<VkLayerProperties> Enumerate(VkPlatform device)
+        public static unsafe IEnumerable<VkLayerProperties> InstanceEnumerate(VkPlatform platform)
         {
             uint layerCnt = 0;
             uint* cnt = &layerCnt;
 
-            device.SafeExecute(vk => vk.EnumerateInstanceLayerProperties(cnt, null));
+            platform.SafeExecute(vk => vk.EnumerateInstanceLayerProperties(cnt, null));
 
             var rval = new List<VkLayerProperties>((int)layerCnt);
 
@@ -33,7 +33,7 @@ namespace Tokamak.Vulkan.NativeWrapper
             {
                 var layers = new LayerProperties[layerCnt];
 
-                device.SafeExecute(vk => vk.EnumerateInstanceLayerProperties(cnt, layers));
+                platform.SafeExecute(vk => vk.EnumerateInstanceLayerProperties(cnt, layers));
 
                 fixed (LayerProperties* pLayer = layers)
                 {

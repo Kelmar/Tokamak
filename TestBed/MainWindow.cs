@@ -24,7 +24,7 @@ namespace TestBed
 
         private readonly IWindow m_silkWindow;
 
-        private Platform m_device;
+        private Platform m_platform;
         private Canvas m_canvas;
         private Font m_font;
         private Scene m_scene;
@@ -82,20 +82,20 @@ namespace TestBed
             {
             case "VULKAN":
                 var log = new ConsoleLog<Tokamak.Vulkan.VkPlatform>();
-                m_device = new Tokamak.Vulkan.VkPlatform(log, m_config, m_silkWindow);
+                m_platform = new Tokamak.Vulkan.VkPlatform(log, m_config, m_silkWindow);
                 break;
 
             case "OPENGL":
-                m_device = new Tokamak.OGL.GLPlatform(m_silkWindow);
+                m_platform = new Tokamak.OGL.GLPlatform(m_silkWindow);
                 break;
 
             default:
                 throw new Exception("Unknown driver");
             }
 
-            m_canvas = new Canvas(m_device);
+            m_canvas = new Canvas(m_platform);
 
-            using var shaderFact = m_device.GetShaderFactory();
+            using var shaderFact = m_platform.GetShaderFactory();
 
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/dnk.ttf");
@@ -103,14 +103,14 @@ namespace TestBed
             string path = Path.Combine(Environment.SystemDirectory, "../Fonts/segoeui.ttf");
             m_font = m_canvas.GetFont(path, 12);
 
-            m_scene = new Scene(m_device);
+            m_scene = new Scene(m_platform);
             //m_test = new TestObject(m_device);
 
             //m_scene.AddObject(m_test);
             m_scene.Camera.Location = new System.Numerics.Vector3(0, 0, 10);
 
-            m_renderers.Add(m_scene);
-            m_renderers.Add(m_canvas);
+            //m_renderers.Add(m_scene);
+            //m_renderers.Add(m_canvas);
 
             OnResize(m_silkWindow.Size);
         }
@@ -120,7 +120,7 @@ namespace TestBed
             m_scene.Dispose();
             m_font.Dispose();
             m_canvas.Dispose();
-            m_device.Dispose();
+            m_platform.Dispose();
         }
 
         public void Run() => m_silkWindow.Run();
@@ -145,7 +145,7 @@ namespace TestBed
 
             m_rot += (float)(ROT_AMOUNT * delta);
 
-            m_test.Rotation = new System.Numerics.Vector3(0, (float)m_rot, 0);
+            //m_test.Rotation = new System.Numerics.Vector3(0, (float)m_rot, 0);
         }
 
         private void ComputeFPS()
@@ -163,7 +163,7 @@ namespace TestBed
 
         protected void OnRenderFrame(double delta)
         {
-            m_device.ClearBuffers(GlobalBuffer.ColorBuffer | GlobalBuffer.DepthBuffer);
+            m_platform.ClearBuffers(GlobalBuffer.ColorBuffer | GlobalBuffer.DepthBuffer);
 
             Pen pen = new Pen
             {
@@ -182,7 +182,7 @@ namespace TestBed
         {
             if (size.X > 0 && size.Y > 0)
             {
-                m_device.Viewport = new Rect(0, 0, size.X, size.Y);
+                m_platform.Viewport = new Rect(0, 0, size.X, size.Y);
 
                 Point s = new Point(size.X, size.Y);
 
