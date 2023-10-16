@@ -27,7 +27,8 @@ namespace Tokamak.Vulkan
 
         private readonly ILogger m_log;
         private readonly IConfigReader m_config;
-        private readonly Instance m_instance;
+
+        private readonly List<VkDevice> m_devices = new List<VkDevice>();
 
         public VkPlatform(
             ILogger<VkPlatform> log,
@@ -45,15 +46,19 @@ namespace Tokamak.Vulkan
 
             Vk = Vk.GetApi();
 
-            InitVK(window.VkSurface, out m_instance);
+            InitVK(window.VkSurface);
 
             Monitors = EnumerateMonitors().ToList();
         }
 
         public override void Dispose()
         {
-            if (m_instance.Handle != IntPtr.Zero)
-                Vk.DestroyInstance(m_instance, null);
+            // Release the physical/logical devices.
+            foreach (var dev in m_devices)
+                dev.Dispose();
+
+            if (Instance.Handle != IntPtr.Zero)
+                Vk.DestroyInstance(Instance, null);
 
             Vk.Dispose();
 
@@ -62,7 +67,21 @@ namespace Tokamak.Vulkan
 
         public Vk Vk { get; }
 
-        private void InitVK(IVkSurface surface, out Instance instance)
+        public Instance Instance { get; private set; }
+
+        private void InitVK(IVkSurface surface)
+        {
+            CreateInstance(surface);
+            EnumerateDevices();
+
+            var device = SelectDevice();
+
+            m_log.Info("Using device: {0}", device.Name);
+
+            device.InitLogicalDevice();
+        }
+
+        private void CreateInstance(IVkSurface surface)
         {
             using var s = m_log.BeginScope(new { Phase = "InitVK" });
 
@@ -124,10 +143,14 @@ namespace Tokamak.Vulkan
                 PpEnabledLayerNames = pEnableLayers.Pointer
             };
 
+            Instance instance;
+
             var result = Vk.CreateInstance(info, null, out instance);
 
             if (result != Result.Success)
                 throw new VulkanException(result);
+
+            Instance = instance;
         }
 
         private IEnumerable<string> GetRequiredExtensions(IVkSurface surface)
@@ -179,6 +202,40 @@ namespace Tokamak.Vulkan
 
             if (res != Result.Success)
                 throw new VulkanException(res);
+        }
+
+        private void EnumerateDevices()
+        {
+            m_devices.AddRange(VkDevice.EnumerateAll(this));
+
+            if (!m_devices.Any())
+            {
+                m_log.Fatal("No physical Vulkan devices detected!");
+                throw new Exception("No physical Vulkan devices detected!");
+            }
+        }
+
+        private VkDevice SelectDevice()
+        {
+            var canidates =
+            (
+                from dev in m_devices
+                where dev.GetQueues().Any(q => q.QueueFlags.HasFlag(QueueFlags.GraphicsBit))
+                select dev
+            ).ToList();
+
+            if (!canidates.Any())
+            {
+                m_log.Fatal("No graphical Vulkan devices detected!");
+                throw new Exception("No graphical Vulkan devices detected.");
+            }
+
+            VkDevice rval = canidates.First();
+
+            // TODO: In the future we will want to allow the user to be able to select which device they want.
+            // We should probably also look for the more capable device (more memory, best selection of features, etc)
+
+            return rval;
         }
 
         private IEnumerable<Monitor> EnumerateMonitors()
