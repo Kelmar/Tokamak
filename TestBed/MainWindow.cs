@@ -12,6 +12,7 @@ using Tokamak.Scenes;
 
 using Graphite;
 using Tokamak.Config;
+using Tokamak.Logging;
 
 namespace TestBed
 {
@@ -40,7 +41,10 @@ namespace TestBed
 
         public MainWindow()
         {
-            m_config = new BasicConfigReader();
+            Platform.Services.Register<ILogFactory>(new LogFactory());
+            Platform.Services.Register<IConfigReader>(new BasicConfigReader());
+
+            m_config = Platform.Services.Find<IConfigReader>();
             m_driver = m_config.Get("Tok.Driver", "Vulkan");
 
             var options = WindowOptions.Default;
@@ -81,8 +85,7 @@ namespace TestBed
             switch (m_driver.ToUpper())
             {
             case "VULKAN":
-                var log = new ConsoleLog<Tokamak.Vulkan.VkPlatform>();
-                m_platform = new Tokamak.Vulkan.VkPlatform(log, m_config, m_silkWindow);
+                m_platform = new Tokamak.Vulkan.VkPlatform(m_silkWindow);
                 break;
 
             case "OPENGL":

@@ -1,8 +1,8 @@
-﻿using Silk.NET.Vulkan;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+
+using Silk.NET.Vulkan;
 
 namespace Tokamak.Vulkan.NativeWrapper
 {

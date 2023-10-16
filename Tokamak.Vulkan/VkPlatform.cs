@@ -30,13 +30,10 @@ namespace Tokamak.Vulkan
 
         private readonly List<VkDevice> m_devices = new List<VkDevice>();
 
-        public VkPlatform(
-            ILogger<VkPlatform> log,
-            IConfigReader config,
-            IWindow window)
+        public VkPlatform(IWindow window)
         {
-            m_log = log;
-            m_config = config;
+            m_log = Platform.Services.GetLogger<VkPlatform>();
+            m_config = Platform.Services.Find<IConfigReader>();
 
             if (window.VkSurface == null)
             {

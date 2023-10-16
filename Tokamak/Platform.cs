@@ -5,12 +5,18 @@ using System.Numerics;
 using Tokamak.Buffer;
 using Tokamak.Formats;
 using Tokamak.Mathematics;
+using Tokamak.Services;
 
 namespace Tokamak
 {
     public abstract class Platform : IDisposable
     {
         private readonly Stack<Matrix4x4> m_worldMatrixStack = new Stack<Matrix4x4>();
+
+        static Platform()
+        {
+            Services = new ServiceLocator();
+        }
 
         protected Platform()
         {
@@ -19,6 +25,9 @@ namespace Tokamak
         public virtual void Dispose()
         {
         }
+
+        // I know people call this an anti-pattern, it was this or a full on DI framework. >_<
+        public static IServiceLocator Services { get; }
 
         public Matrix4x4 WorldMatrix { get; set; }
 
