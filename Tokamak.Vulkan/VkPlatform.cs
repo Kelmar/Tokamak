@@ -6,6 +6,7 @@ using System.Text;
 using Silk.NET.Core.Contexts;
 using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
+using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Windowing;
 
 using Tokamak.Buffer;
@@ -29,6 +30,8 @@ namespace Tokamak.Vulkan
         private readonly IConfigReader m_config;
 
         private readonly List<VkDevice> m_devices = new List<VkDevice>();
+
+        private VkDebug m_debug = null;
 
         private DrawSurface m_surface = null;
 
@@ -63,6 +66,8 @@ namespace Tokamak.Vulkan
 
             m_surface.Dispose();
 
+            m_debug?.Dispose();
+
             if (Instance.Handle != IntPtr.Zero)
                 Vk.DestroyInstance(Instance, null);
 
@@ -84,6 +89,8 @@ namespace Tokamak.Vulkan
         private void InitVK()
         {
             CreateInstance(Window.VkSurface);
+
+            m_debug?.Initialize();
 
             m_surface = new DrawSurface(this, Window.VkSurface);
 
@@ -108,23 +115,20 @@ namespace Tokamak.Vulkan
 
             var enableLayers = new List<string>();
 
+            DebugUtilsMessengerCreateInfoEXT debugInfo;
+
             if (m_config.Get(VK_VALIDATE_CALLS_CONFIG, false))
             {
                 if (!layers.Any(l => l.LayerName == VK_VALIDATE_LAYER_NAME))
                     m_log.Warn($"{VK_VALIDATE_CALLS_CONFIG} is set, but validation layer not installed for Vulkan");
                 else
+                {
                     enableLayers.Add(VK_VALIDATE_LAYER_NAME);
-            }
 
-            /*
-            if (m_config.Get(VK_DEBUG_CONFIG, false))
-            {
-                if (!layers.Any(l => l.LayerName == KV_DEBUG_LAYER_NAME))
-                    m_log.Warn($"{VK_DEBUG_CONFIG} is set, but validation layer not installed for Vulkan");
-                else
-                    enableLayers.Add(KV_DEBUG_LAYER_NAME);
+                    m_debug = new VkDebug(this);
+                    debugInfo = m_debug.GetInstanceStartup();
+                }
             }
-            */
 
             var enableExts = new List<string>();
             enableExts.AddRange(GetRequiredExtensions(surface));
@@ -149,7 +153,7 @@ namespace Tokamak.Vulkan
             var info = new InstanceCreateInfo
             {
                 SType = StructureType.InstanceCreateInfo,
-                PNext = null,
+                PNext = m_debug != null ? &debugInfo : null,
                 Flags = InstanceCreateFlags.None,
                 PApplicationInfo = &appInfo,
                 EnabledExtensionCount = pEnableExts.Length,
@@ -175,6 +179,9 @@ namespace Tokamak.Vulkan
             var rval = new List<string>(SilkMarshal.PtrToStringArray((nint)items, (int)cnt));
 
             m_log.Debug("Surface requires extensions: {0}", String.Join(", ", rval));
+
+            if (m_debug != null)
+                rval.Add(ExtDebugUtils.ExtensionName);
 
             return rval;
         }
