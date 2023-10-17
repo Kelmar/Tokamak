@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
 
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Silk.NET.Windowing;
-
-using Tokamak.Vulkan.NativeWrapper;
 
 namespace Tokamak.Vulkan
 {
@@ -40,7 +35,7 @@ namespace Tokamak.Vulkan
 
         private void CreateSwapChain()
         {
-            var platform = Platform.Services.Find<VkPlatform>();
+            var platform = m_device.Parent;
 
             SurfaceCapabilitiesKHR caps = platform.Surface.GetPhysicalDeviceCapabilities(m_device.PhysicalDevice);
 

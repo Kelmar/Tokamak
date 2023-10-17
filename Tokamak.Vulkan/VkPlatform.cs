@@ -48,9 +48,6 @@ namespace Tokamak.Vulkan
                 throw new Exception("Vulkan not supported by platform.");
             }
 
-            // We're needed for several things during startup.
-            Platform.Services.Register(this);
-
             Vk = Vk.GetApi();
 
             InitVK();
@@ -73,8 +70,6 @@ namespace Tokamak.Vulkan
 
             Vk.Dispose();
 
-            Platform.Services.Unregister(this);
-
             base.Dispose();
         }
 
@@ -88,7 +83,7 @@ namespace Tokamak.Vulkan
 
         private void InitVK()
         {
-            CreateInstance(Window.VkSurface);
+            CreateInstance();
 
             m_debug?.Initialize();
 
@@ -103,7 +98,7 @@ namespace Tokamak.Vulkan
             device.InitLogicalDevice();
         }
 
-        private void CreateInstance(IVkSurface surface)
+        private void CreateInstance()
         {
             using var s = m_log.BeginScope(new { Phase = "InitVK" });
 
@@ -131,7 +126,7 @@ namespace Tokamak.Vulkan
             }
 
             var enableExts = new List<string>();
-            enableExts.AddRange(GetRequiredExtensions(surface));
+            enableExts.AddRange(GetRequiredExtensions());
 
             using var pEnableLayers = new VkStringArray(enableLayers);
             using var pEnableExts = new VkStringArray(enableExts);
@@ -172,9 +167,9 @@ namespace Tokamak.Vulkan
             Instance = instance;
         }
 
-        private IEnumerable<string> GetRequiredExtensions(IVkSurface surface)
+        private IEnumerable<string> GetRequiredExtensions()
         {
-            byte** items = surface.GetRequiredExtensions(out uint cnt);
+            byte** items = Window.VkSurface.GetRequiredExtensions(out uint cnt);
 
             var rval = new List<string>(SilkMarshal.PtrToStringArray((nint)items, (int)cnt));
 

@@ -112,8 +112,8 @@ namespace TestBed
             //m_scene.AddObject(m_test);
             m_scene.Camera.Location = new System.Numerics.Vector3(0, 0, 10);
 
-            //m_renderers.Add(m_scene);
-            //m_renderers.Add(m_canvas);
+            m_renderers.Add(m_scene);
+            m_renderers.Add(m_canvas);
 
             OnResize(m_silkWindow.Size);
         }

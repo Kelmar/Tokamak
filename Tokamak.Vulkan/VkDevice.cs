@@ -17,8 +17,6 @@ namespace Tokamak.Vulkan
 {
     internal class VkDevice : Device, IDisposable
     {
-        private readonly VkPlatform m_platform;
-
         private readonly List<VkQueueFamilyProperties> m_queueProps = new List<VkQueueFamilyProperties>();
 
         private NativeDevice m_logicalDevice;
@@ -30,7 +28,7 @@ namespace Tokamak.Vulkan
         {
             m_logicalDevice.Handle = 0;
 
-            m_platform = platform;
+            Parent = platform;
             PhysicalDevice = device;
         }
 
@@ -40,10 +38,12 @@ namespace Tokamak.Vulkan
 
             if (LogicalDevice.Handle != 0)
             {
-                m_platform.Vk.DestroyDevice(LogicalDevice, null);
+                Parent.Vk.DestroyDevice(LogicalDevice, null);
                 m_logicalDevice.Handle = 0;
             }
         }
+
+        public VkPlatform Parent { get; }
 
         public VkPhysicalDevice PhysicalDevice { get; }
 
@@ -85,7 +85,7 @@ namespace Tokamak.Vulkan
         public IEnumerable<VkQueueFamilyProperties> GetQueues()
         {
             if (!m_queueProps.Any())
-                m_queueProps.AddRange(VkQueueFamilyProperties.GetQueues(m_platform, this));
+                m_queueProps.AddRange(VkQueueFamilyProperties.GetQueues(Parent, this));
 
             return m_queueProps;
         }
@@ -106,7 +106,7 @@ namespace Tokamak.Vulkan
         public bool TryGetExtension<T>(out T ext)
              where T : NativeExtension<Silk.NET.Vulkan.Vk>
         {
-            return m_platform.Vk.TryGetDeviceExtension<T>(m_platform.Instance, LogicalDevice, out ext);
+            return Parent.Vk.TryGetDeviceExtension<T>(Parent.Instance, LogicalDevice, out ext);
         }
 
         public unsafe void InitLogicalDevice()
@@ -129,7 +129,7 @@ namespace Tokamak.Vulkan
 
             foreach (var q in GetQueues())
             {
-                if (m_platform.Surface.GetPhysicalDeviceSupport(PhysicalDevice, q.Index))
+                if (Parent.Surface.GetPhysicalDeviceSupport(PhysicalDevice, q.Index))
                 {
                     SurfaceQueueIndex = q.Index;
                     uniqueFamilies.Add(q.Index);
@@ -173,10 +173,10 @@ namespace Tokamak.Vulkan
                 EnabledLayerCount = layers.Length
             };
 
-            m_platform.SafeExecute(vk => vk.CreateDevice(PhysicalDevice.Handle, in createInfo, null, out m_logicalDevice));
+            Parent.SafeExecute(vk => vk.CreateDevice(PhysicalDevice.Handle, in createInfo, null, out m_logicalDevice));
 
-            m_platform.Vk.GetDeviceQueue(LogicalDevice, GraphicsQueueIndex, 0, out m_graphicsQueue);
-            m_platform.Vk.GetDeviceQueue(LogicalDevice, SurfaceQueueIndex, 0, out m_surfaceQueue);
+            Parent.Vk.GetDeviceQueue(LogicalDevice, GraphicsQueueIndex, 0, out m_graphicsQueue);
+            Parent.Vk.GetDeviceQueue(LogicalDevice, SurfaceQueueIndex, 0, out m_surfaceQueue);
 
             SwapChain = new SwapChain(this);
         }
