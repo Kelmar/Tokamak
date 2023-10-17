@@ -12,6 +12,7 @@ https://torque3d.org/
   - [ ] DirectX
   - [ ] Metal
   - [ ] Vulkan (in progress)
+	- [ ] Extension loader system
   - [ ] OS level GUI objects (e.g. the main window/screen)
   - [ ] Direct hardware input (e.g. DirectInput)
   - [ ] Sound
