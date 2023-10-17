@@ -16,7 +16,7 @@ This project is just starting out.  The goal is to provide the basis for doing t
 - [ ] Graphite (2D Graphics)
   - [X] Basic line drawing
   - [ ] Bitmap drawing (basic blits working)
-  - [ ] Text renderering (in progress)
+  - [ ] Text rendering (in progress)
 	- [X] Basics for debugging
 	- [ ] Advanced formatting and layout
   - [ ] Complex shape drawing
