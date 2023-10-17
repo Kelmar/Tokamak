@@ -1,7 +1,17 @@
 # Tokamak
-A C# graphics engine for games and virtual worlds.
+A C# engine for games and virtual worlds.
 
 This project is just starting out.  The goal is to provide the basis for doing the basic building blocks of a game engine that can be used in a variety of different ways.
+
+# Building
+Should be a mater of opening the solution in Visual Studio and hitting build.
+
+Not yet tested it under Linux or Mac OS X, but if you have the .NET 7.0 tools installed you should be able to run:
+```
+dotnet build Tokamak.sln
+```
+
+The current executable is the TestBed project where all the expiramentation is going on.
 
 # TODOS
 - [ ] Abstractions
