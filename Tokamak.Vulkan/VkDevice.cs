@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 
 using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
+using Silk.NET.Vulkan.Extensions.KHR;
 
 using Tokamak.Config;
 using Tokamak.Vulkan.NativeWrapper;
@@ -35,16 +36,30 @@ namespace Tokamak.Vulkan
 
         public unsafe void Dispose()
         {
-            if (m_logicalDevice.Handle != 0)
+            SwapChain?.Dispose();
+
+            if (LogicalDevice.Handle != 0)
             {
-                m_platform.Vk.DestroyDevice(m_logicalDevice, null);
+                m_platform.Vk.DestroyDevice(LogicalDevice, null);
                 m_logicalDevice.Handle = 0;
             }
         }
 
         public VkPhysicalDevice PhysicalDevice { get; }
 
-        public bool Initialized => m_logicalDevice.Handle != 0;
+        public NativeDevice LogicalDevice => m_logicalDevice;
+
+        public NativeQueue GraphicsQueue => m_graphicsQueue;
+
+        public uint GraphicsQueueIndex { get; private set; }
+
+        public NativeQueue SurfaceQueue => m_surfaceQueue;
+
+        public uint SurfaceQueueIndex { get; private set; }
+
+        public SwapChain SwapChain { get; private set; }
+
+        public bool Initialized => LogicalDevice.Handle != 0;
 
         public static IEnumerable<VkDevice> EnumerateAll(VkPlatform platform)
         {
@@ -85,7 +100,13 @@ namespace Tokamak.Vulkan
 
         private IEnumerable<string> GetEnabledExtensions()
         {
-            yield break;
+            yield return KhrSwapchain.ExtensionName;
+        }
+
+        public bool TryGetExtension<T>(out T ext)
+             where T : NativeExtension<Silk.NET.Vulkan.Vk>
+        {
+            return m_platform.Vk.TryGetDeviceExtension<T>(m_platform.Instance, LogicalDevice, out ext);
         }
 
         public unsafe void InitLogicalDevice()
@@ -98,20 +119,26 @@ namespace Tokamak.Vulkan
             var graphQueue = GetQueues().First(q => q.QueueFlags.HasFlag(QueueFlags.GraphicsBit));
             VkQueueFamilyProperties surfaceQueue = null;
 
-            var uniqueFamilys = new HashSet<uint>();
-            uniqueFamilys.Add(graphQueue.Index);
+            GraphicsQueueIndex = graphQueue.Index;
+            SurfaceQueueIndex = graphQueue.Index;
+
+            var uniqueFamilies = new HashSet<uint>
+            {
+                graphQueue.Index
+            };
 
             foreach (var q in GetQueues())
             {
-                if (m_platform.Surface.GetPhysicalDeviceSurfaceSupport(PhysicalDevice, q.Index))
+                if (m_platform.Surface.GetPhysicalDeviceSupport(PhysicalDevice, q.Index))
                 {
-                    uniqueFamilys.Add(q.Index);
+                    SurfaceQueueIndex = q.Index;
+                    uniqueFamilies.Add(q.Index);
                     surfaceQueue = q;
                     break;
                 }
             }
 
-            var ufArray = uniqueFamilys.ToArray();
+            var ufArray = uniqueFamilies.ToArray();
 
             using var memory = GlobalMemory.Allocate(ufArray.Length * sizeof(DeviceQueueCreateInfo));
             var queueCreateInfos = (DeviceQueueCreateInfo*)Unsafe.AsPointer(ref memory.GetPinnableReference());
@@ -148,10 +175,10 @@ namespace Tokamak.Vulkan
 
             m_platform.SafeExecute(vk => vk.CreateDevice(PhysicalDevice.Handle, in createInfo, null, out m_logicalDevice));
 
-            m_platform.Vk.GetDeviceQueue(m_logicalDevice, graphQueue.Index, 0, out m_graphicsQueue);
+            m_platform.Vk.GetDeviceQueue(LogicalDevice, GraphicsQueueIndex, 0, out m_graphicsQueue);
+            m_platform.Vk.GetDeviceQueue(LogicalDevice, SurfaceQueueIndex, 0, out m_surfaceQueue);
 
-            if (surfaceQueue != null)
-                m_platform.Vk.GetDeviceQueue(m_logicalDevice, surfaceQueue.Index, 0, out m_surfaceQueue);
+            SwapChain = new SwapChain(this);
         }
     }
 }

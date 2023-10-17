@@ -12,6 +12,8 @@ namespace Tokamak.Services
         void Register<T>(string name = "")
             where T : new();
 
+        void Unregister<T>(T service);
+
         T Find<T>(string name = "");
 
         IEnumerable<T> GetAll<T>();

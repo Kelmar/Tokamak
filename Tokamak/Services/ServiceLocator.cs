@@ -46,6 +46,25 @@ namespace Tokamak.Services
             Register(new T(), name);
         }
 
+        public void Unregister<T>(T service)
+        {
+            Type t = typeof(T);
+
+            if (m_services.TryGetValue(t, out List<ServiceInfo> services))
+            {
+                var toRemove = new List<ServiceInfo>();
+
+                foreach (var si in services)
+                {
+                    if (Equals(si.Service, service))
+                        toRemove.Add(si);
+                }
+
+                foreach (var si in toRemove)
+                    services.Remove(si);
+            }
+        }
+
         public T Find<T>(string name = "")
         {
             Type t = typeof(T);

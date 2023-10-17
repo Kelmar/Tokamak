@@ -34,18 +34,23 @@ namespace Tokamak.Vulkan
 
         public VkPlatform(IWindow window)
         {
+            Window = window;
+
             m_log = Platform.Services.GetLogger<VkPlatform>();
             m_config = Platform.Services.Find<IConfigReader>();
 
-            if (window.VkSurface == null)
+            if (Window.VkSurface == null)
             {
                 m_log.Error("Vulkan not supported by platform");
                 throw new Exception("Vulkan not supported by platform.");
             }
 
+            // We're needed for several things during startup.
+            Platform.Services.Register(this);
+
             Vk = Vk.GetApi();
 
-            InitVK(window.VkSurface);
+            InitVK();
 
             Monitors = EnumerateMonitors().ToList();
         }
@@ -63,6 +68,8 @@ namespace Tokamak.Vulkan
 
             Vk.Dispose();
 
+            Platform.Services.Unregister(this);
+
             base.Dispose();
         }
 
@@ -72,11 +79,13 @@ namespace Tokamak.Vulkan
 
         internal DrawSurface Surface => m_surface;
 
-        private void InitVK(IVkSurface surface)
-        {
-            CreateInstance(surface);
+        internal IWindow Window { get; }
 
-            m_surface = new DrawSurface(this, surface);
+        private void InitVK()
+        {
+            CreateInstance(Window.VkSurface);
+
+            m_surface = new DrawSurface(this, Window.VkSurface);
 
             EnumerateDevices();
 
@@ -165,7 +174,7 @@ namespace Tokamak.Vulkan
 
             var rval = new List<string>(SilkMarshal.PtrToStringArray((nint)items, (int)cnt));
 
-            m_log.Debug("Surface requred extensions: {0}", String.Join(", ", rval));
+            m_log.Debug("Surface requires extensions: {0}", String.Join(", ", rval));
 
             return rval;
         }
@@ -223,20 +232,20 @@ namespace Tokamak.Vulkan
 
         private VkDevice SelectDevice()
         {
-            var canidates =
+            var candidates =
             (
                 from dev in m_devices
                 where dev.GetQueues().Any(q => q.QueueFlags.HasFlag(QueueFlags.GraphicsBit))
                 select dev
             ).ToList();
 
-            if (!canidates.Any())
+            if (!candidates.Any())
             {
                 m_log.Fatal("No graphical Vulkan devices detected!");
                 throw new Exception("No graphical Vulkan devices detected.");
             }
 
-            VkDevice rval = canidates.First();
+            VkDevice rval = candidates.First();
 
             // TODO: In the future we will want to allow the user to be able to select which device they want.
             // We should probably also look for the more capable device (more memory, best selection of features, etc)
