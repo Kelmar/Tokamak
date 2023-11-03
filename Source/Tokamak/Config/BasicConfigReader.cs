@@ -11,7 +11,7 @@ namespace Tokamak.Config
     /// Just parses a simple text file as a set of assignments.
     /// 
     /// TODO: Replace this with a more comprehensive configuration system 
-    /// that can do change tracking and nofitications.
+    /// that can do change tracking and notifications.
     /// </remarks>
     public class BasicConfigReader : IConfigReader
     {

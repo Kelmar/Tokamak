@@ -4,28 +4,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.DotNet.PlatformAbstractions;
 using Silk.NET.Vulkan;
+
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Tokamak.Vulkan.NativeWrapper
 {
-    internal class VkImageView
+    internal class VkImageView : IDisposable
     {
-        private readonly ImageView m_imageView;
+        private readonly ImageView m_handle;
 
-        public VkImageView(Image image, Format format)
+        private VkImageView(ImageView handle)
         {
-            m_imageView = CreateObject(image, format);
+            m_handle = handle;
         }
 
-        private ImageView CreateObject(Image image, Format format)
+        public void Dispose()
+        {
+            // May need to use some kind of lifetime manager, looks like the SwapChain handles the destruction of these for us.
+        }
+
+        public static VkImageView FromHandle(ImageView handle)
+        {
+            return new VkImageView(handle);
+        }
+
+        public static VkImageView FromDevice(VkDevice device, VkImage image)
         {
             var createInfo = new ImageViewCreateInfo
             {
                 SType = StructureType.ImageViewCreateInfo,
                 PNext = null,
-                Image = image,
+                Image = image.Handle,
                 ViewType = ImageViewType.Type2D,
-                Format = format,
+                Format = image.ImageFormat,
                 Components =
                 {
                     R = ComponentSwizzle.Identity,
@@ -43,9 +56,7 @@ namespace Tokamak.Vulkan.NativeWrapper
                 }
             };
 
-            ImageView rval = default;
-
-            return rval;
+            return device.CreateImageView(createInfo);
         }
     }
 }

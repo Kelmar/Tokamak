@@ -114,6 +114,15 @@ namespace Tokamak.Vulkan
             return Parent.Vk.TryGetDeviceExtension<T>(Parent.Instance, LogicalDevice, out ext);
         }
 
+        internal unsafe VkImageView CreateImageView(ImageViewCreateInfo createInfo)
+        {
+            ImageView rval = default;
+
+            Parent.SafeExecute(vk => vk.CreateImageView(LogicalDevice, createInfo, null, out rval));
+
+            return VkImageView.FromHandle(rval);
+        }
+
         public unsafe void InitLogicalDevice()
         {
             if (Initialized)

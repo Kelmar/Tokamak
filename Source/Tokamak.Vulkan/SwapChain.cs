@@ -18,7 +18,6 @@ namespace Tokamak.Vulkan
 
         private KhrSwapchain m_khrSwapChain;
         private SwapchainKHR m_swapChain;
-        private Image[] m_images;
         private Format m_format;
         private Extent2D m_extent;
 
@@ -37,7 +36,9 @@ namespace Tokamak.Vulkan
             Cleanup();
         }
 
-        public IEnumerable<VkImage> Images { get; private set; }
+        public IReadOnlyList<VkImage> Images { get; private set; }
+
+        public IReadOnlyList<VkImageView> Views { get; private set; }
 
         private void Cleanup()
         {
@@ -105,6 +106,7 @@ namespace Tokamak.Vulkan
                 img.Dispose();
 
             Images = GetImages().ToList();
+            Views = GetViews().ToList();
         }
 
         private void SafeExecute(Func<KhrSwapchain, Result> cb)
@@ -168,11 +170,17 @@ namespace Tokamak.Vulkan
                 var images = new Image[imageCnt];
 
                 SafeExecute(sc => sc.GetSwapchainImages(m_device.LogicalDevice, m_swapChain, cnt, images));
-                
+
                 rval.AddRange(images.Select(i => VkImage.FromHandle(i, m_format, m_extent)));
             }
 
             return rval;
+        }
+
+        private IEnumerable<VkImageView> GetViews()
+        {
+            foreach (var image in Images)
+                yield return VkImageView.FromDevice(m_device, image);
         }
 
         internal void Rebuild()

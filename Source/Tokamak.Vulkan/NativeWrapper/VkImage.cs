@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Silk.NET.Vulkan;
 
@@ -10,11 +6,9 @@ namespace Tokamak.Vulkan.NativeWrapper
 {
     internal sealed class VkImage : IDisposable
     {
-        private Image m_handle;
-
         private VkImage(Image handle, Format format, in Extent2D extent)
         {
-            m_handle = handle;
+            Handle = handle;
             ImageFormat = format;
             Extent = extent;
         }
@@ -23,6 +17,8 @@ namespace Tokamak.Vulkan.NativeWrapper
         {
             // May need to use some kind of lifetime manager, looks like the SwapChain handles the destruction of these for us.
         }
+
+        public Image Handle { get; }
 
         public Format ImageFormat { get; }
 
