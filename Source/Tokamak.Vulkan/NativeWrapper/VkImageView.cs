@@ -43,9 +43,9 @@ namespace Tokamak.Vulkan.NativeWrapper
                 }
             };
 
-            ImageView rval = null;
+            ImageView rval = default;
 
-
+            return rval;
         }
     }
 }
