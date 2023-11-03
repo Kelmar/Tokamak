@@ -15,7 +15,7 @@ using NativeQueue = Silk.NET.Vulkan.Queue;
 
 namespace Tokamak.Vulkan
 {
-    internal class VkDevice : Device, IDisposable
+    internal unsafe class VkDevice : Device, IDisposable
     {
         private readonly List<VkQueueFamilyProperties> m_queueProps = new List<VkQueueFamilyProperties>();
 
@@ -32,7 +32,7 @@ namespace Tokamak.Vulkan
             PhysicalDevice = device;
         }
 
-        public unsafe void Dispose()
+        public void Dispose()
         {
             SwapChain?.Dispose();
 
@@ -114,16 +114,16 @@ namespace Tokamak.Vulkan
             return Parent.Vk.TryGetDeviceExtension<T>(Parent.Instance, LogicalDevice, out ext);
         }
 
-        internal unsafe VkImageView CreateImageView(ImageViewCreateInfo createInfo)
+        internal VkImage CreateImage(ImageCreateInfo createInfo)
         {
-            ImageView rval = default;
+            Image image = default;
 
-            Parent.SafeExecute(vk => vk.CreateImageView(LogicalDevice, createInfo, null, out rval));
+            Parent.SafeExecute(vk => vk.CreateImage(LogicalDevice, createInfo, null, out image));
 
-            return VkImageView.FromHandle(rval);
+            return VkImage.FromHandle(this, image, createInfo.Format, createInfo.Extent);
         }
 
-        public unsafe void InitLogicalDevice()
+        public void InitLogicalDevice()
         {
             if (Initialized)
                 return;
