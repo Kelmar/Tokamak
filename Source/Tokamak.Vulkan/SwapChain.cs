@@ -6,6 +6,8 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Silk.NET.Windowing;
 
+using Tokamak.Vulkan.NativeWrapper;
+
 namespace Tokamak.Vulkan
 {
     internal unsafe class SwapChain : IDisposable
@@ -22,6 +24,8 @@ namespace Tokamak.Vulkan
 
         public SwapChain(VkDevice device)
         {
+            Images = new List<VkImage>(0);
+
             m_device = device;
 
             CreateSwapChain();
@@ -30,6 +34,20 @@ namespace Tokamak.Vulkan
         public void Dispose()
         {
             m_disposed = true;
+            Cleanup();
+        }
+
+        public IEnumerable<VkImage> Images { get; private set; }
+
+        private void Cleanup()
+        {
+            m_device.WaitIdle();
+
+            foreach (var img in Images)
+                img.Dispose();
+
+            Images = new List<VkImage>(0);
+
             m_khrSwapChain.DestroySwapchain(m_device.LogicalDevice, m_swapChain, null);
         }
 
@@ -82,6 +100,11 @@ namespace Tokamak.Vulkan
 
             m_format = createInfo.ImageFormat;
             m_extent = createInfo.ImageExtent;
+
+            foreach (var img in Images)
+                img.Dispose();
+
+            Images = GetImages().ToList();
         }
 
         private void SafeExecute(Func<KhrSwapchain, Result> cb)
@@ -100,12 +123,11 @@ namespace Tokamak.Vulkan
             if (caps.CurrentExtent.Width != uint.MaxValue)
                 return caps.CurrentExtent;
 
-            Extent2D rval = new Extent2D();
-
-            rval.Width = (uint)Math.Clamp(window.FramebufferSize.X, caps.MinImageExtent.Width, caps.MaxImageExtent.Width);
-            rval.Height = (uint)Math.Clamp(window.FramebufferSize.Y, caps.MinImageExtent.Height, caps.MaxImageExtent.Height);
-
-            return rval;
+            return new Extent2D
+            {
+                Width = (uint)Math.Clamp(window.FramebufferSize.X, caps.MinImageExtent.Width, caps.MaxImageExtent.Width),
+                Height = (uint)Math.Clamp(window.FramebufferSize.Y, caps.MinImageExtent.Height, caps.MaxImageExtent.Height)
+            };
         }
 
         private SurfaceFormatKHR ChooseFormat(IEnumerable<SurfaceFormatKHR> formats)
@@ -130,6 +152,33 @@ namespace Tokamak.Vulkan
             }
 
             return PresentModeKHR.FifoKhr;
+        }
+
+        private IEnumerable<VkImage> GetImages()
+        {
+            uint imageCnt = 0;
+            uint* cnt = &imageCnt;
+
+            SafeExecute(sc => sc.GetSwapchainImages(m_device.LogicalDevice, m_swapChain, cnt, null));
+
+            var rval = new List<VkImage>((int)imageCnt);
+
+            if (imageCnt > 0)
+            {
+                var images = new Image[imageCnt];
+
+                SafeExecute(sc => sc.GetSwapchainImages(m_device.LogicalDevice, m_swapChain, cnt, images));
+                
+                rval.AddRange(images.Select(i => VkImage.FromHandle(i, m_format, m_extent)));
+            }
+
+            return rval;
+        }
+
+        internal void Rebuild()
+        {
+            Cleanup();
+            CreateSwapChain();
         }
     }
 }

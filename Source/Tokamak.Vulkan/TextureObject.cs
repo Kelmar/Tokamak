@@ -18,9 +18,9 @@ namespace Tokamak.Vulkan
     {
         private readonly VkPlatform m_parent;
 
-        public TextureObject(VkPlatform device, TokPixelFormat format, Point size)
+        public TextureObject(VkPlatform parent, TokPixelFormat format, Point size)
         {
-            m_parent = device;
+            m_parent = parent;
 
             Format = format;
             Size = new Point(MathX.NextPow2(size.X), MathX.NextPow2(size.Y));

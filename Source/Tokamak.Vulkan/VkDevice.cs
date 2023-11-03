@@ -82,6 +82,11 @@ namespace Tokamak.Vulkan
             return rval;
         }
 
+        public void WaitIdle()
+        {
+            Parent.SafeExecute(vk => vk.DeviceWaitIdle(LogicalDevice));
+        }
+
         public IEnumerable<VkQueueFamilyProperties> GetQueues()
         {
             if (!m_queueProps.Any())

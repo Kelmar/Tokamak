@@ -21,10 +21,8 @@ namespace Tokamak.Vulkan
     public unsafe class VkPlatform : Platform
     {
         internal const string VK_VALIDATE_CALLS_CONFIG = "Vk.ValidateCalls";
-        //internal const string VK_DEBUG_CONFIG = "Vk.DebugCalls";
 
         internal const string VK_VALIDATE_LAYER_NAME = "VK_LAYER_KHRONOS_validation";
-        //internal const string KV_DEBUG_LAYER_NAME = "";
 
         private readonly ILogger m_log;
         private readonly IConfigReader m_config;
@@ -266,6 +264,18 @@ namespace Tokamak.Vulkan
                 RawDPI = new System.Numerics.Vector2(192, 192),
                 WorkArea = new Rect(0, 0, 3840, 2160)
             };
+        }
+
+        public override Rect Viewport 
+        { 
+            get => base.Viewport;
+            set
+            {
+                base.Viewport = value;
+
+                foreach (var dev in m_devices)
+                    dev.SwapChain?.Rebuild();
+            }
         }
 
         public override void ClearBoundTexture()
