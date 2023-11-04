@@ -13,12 +13,12 @@ namespace TestBed
 {
     public class TestObject : SceneObject
     {
-        public const string FILE = "cube.fbx";
+        public const string FILE = "resources/cube.fbx";
 
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
         private readonly IElementBuffer m_elementBuffer;
 
-        private readonly Mesh m_mesh;
+        //private readonly Mesh m_mesh;
 
         private readonly Platform m_device;
 
@@ -42,7 +42,7 @@ namespace TestBed
                 BuildVector(-.5f, 0.5f, 0.5f)
             };
 
-            var indx = new uint[]
+            var indices = new uint[]
             {
                 0, 1, 3,
                 1, 2, 3
@@ -52,7 +52,7 @@ namespace TestBed
             m_elementBuffer = m_device.GetElementBuffer(BufferType.Static);
 
             m_vertexBuffer.Set(verts);
-            m_elementBuffer.Set(indx);
+            m_elementBuffer.Set(indices);
 
             //m_mesh.ToVertexBuffer(m_vertexBuffer);
             ///m_mesh.ToElementsBuffer(m_elementBuffer);

@@ -32,7 +32,7 @@ namespace TestBed
 
         private readonly List<IRenderable> m_renderers = new List<IRenderable>();
 
-        private TestObject m_test;
+        //private TestObject m_test;
 
         private int m_frameCount;
         private DateTime m_lastCheck = DateTime.UtcNow;
@@ -49,7 +49,7 @@ namespace TestBed
 
             var options = WindowOptions.Default;
             options.Size = new Vector2D<int>(1920, 1080);
-            options.Title = "OpenGL Test SILK!";
+            options.Title = "Tokamak Test!";
             options.VSync = false;
 
             switch (m_driver.ToUpper())
@@ -102,7 +102,6 @@ namespace TestBed
 
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/dnk.ttf");
-            //string path = "C:\\Users\\kfire\\AppData\\Local\\Microsoft\\Windows\\Fonts\\dreamscar.ttf";
             string path = Path.Combine(Environment.SystemDirectory, "../Fonts/segoeui.ttf");
             m_font = m_canvas.GetFont(path, 12);
 

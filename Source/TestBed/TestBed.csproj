@@ -8,22 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="blox.fbx" />
-    <None Remove="config.txt" />
-    <None Remove="cube.fbx" />
-    <None Remove="resources\container.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="blox.fbx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="cube.fbx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resources\container.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+	  <Content Include="resources\**">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
   </ItemGroup>
 
   <ItemGroup>
