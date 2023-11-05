@@ -1,4 +1,4 @@
-﻿using Tokamak.Logging;
+﻿using Tokamak.Abstractions.Logging;
 
 namespace TestBed
 {

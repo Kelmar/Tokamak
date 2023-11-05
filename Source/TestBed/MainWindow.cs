@@ -5,14 +5,16 @@ using System.IO;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 
+using Tokamak.Abstractions.Logging;
+
 using Tokamak;
 using Tokamak.Buffer;
+using Tokamak.Config;
 using Tokamak.Mathematics;
 using Tokamak.Scenes;
+using Tokamak.VFS;
 
 using Graphite;
-using Tokamak.Config;
-using Tokamak.Logging;
 
 namespace TestBed
 {
@@ -41,6 +43,8 @@ namespace TestBed
 
         public MainWindow()
         {
+            Platform.Services.InitVFS();
+
             Platform.Services.Register<ILogFactory>(new LogFactory());
             Platform.Services.Register<IConfigReader>(new BasicConfigReader());
 
@@ -103,6 +107,7 @@ namespace TestBed
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/dnk.ttf");
             string path = Path.Combine(Environment.SystemDirectory, "../Fonts/segoeui.ttf");
+
             m_font = m_canvas.GetFont(path, 12);
 
             m_scene = new Scene(m_platform);

@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Tokamak.VFS\Tokamak.VFS.csproj" />
     <ProjectReference Include="..\Graphite\Graphite.csproj" />
     <ProjectReference Include="..\Tokamak.OGL\Tokamak.OGL.csproj" />
     <ProjectReference Include="..\Tokamak.Readers\Tokamak.Readers.csproj" />

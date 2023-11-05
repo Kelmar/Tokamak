@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
-using Tokamak.Logging;
+using Tokamak.Abstractions.Logging;
+using Tokamak.Abstractions.Services;
 
 namespace Tokamak.Services
 {

@@ -8,10 +8,11 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Windowing;
 
+using Tokamak.Abstractions.Logging;
+
 using Tokamak.Buffer;
 using Tokamak.Config;
 using Tokamak.Formats;
-using Tokamak.Logging;
 using Tokamak.Mathematics;
 using Tokamak.Vulkan.NativeWrapper;
 

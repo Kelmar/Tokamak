@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Numerics;
 
+using Tokamak.Abstractions.Services;
+
 using Tokamak.Buffer;
 using Tokamak.Formats;
 using Tokamak.Mathematics;

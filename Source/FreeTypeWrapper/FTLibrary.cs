@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Numerics;
-using System.Runtime;
-using System.Runtime.InteropServices;
 
-using FreeTypeSharp;
 using FreeTypeSharp.Native;
+
+using Tokamak.Abstractions.VFS;
+
+using Tokamak;
 
 using static FreeTypeSharp.Native.FT;
 
@@ -62,9 +63,9 @@ namespace FreeTypeWrapper
         /// <returns></returns>
         public FTFace GetFace(string filename, float size, in Vector2 dpi)
         {
-            var data = File.ReadAllBytes(filename);
-
-            return GetFace(size, dpi, data);
+            var mountSys = Platform.Services.Find<IMountSystem>();
+            var bytes = mountSys.ReadAllBytes(filename);
+            return GetFace(bytes, size, dpi);
         }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace FreeTypeWrapper
         {
             using var ms = new MemoryStream();
             file.CopyTo(ms);
-            return GetFace(size, dpi, ms.ToArray());
+            return GetFace(ms.ToArray(), size, dpi);
         }
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace FreeTypeWrapper
         /// <param name="length">The length of the data to read.</param>
         /// <param name="offset">Starting offset into the array to read.</param>
         /// <returns></returns>
-        public FTFace GetFace(float size, in Vector2 dpi, in ReadOnlySpan<byte> data)
+        public FTFace GetFace(in ReadOnlySpan<byte> data, float size, in Vector2 dpi)
         {
             return new FTFace(data.ToArray(), this, size, dpi);
         }

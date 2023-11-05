@@ -1,4 +1,4 @@
-﻿namespace Tokamak.Logging
+﻿namespace Tokamak.Abstractions.Logging
 {
     public enum LogLevel
     {

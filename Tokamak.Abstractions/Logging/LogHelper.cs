@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace Tokamak.Logging
+namespace Tokamak.Abstractions.Logging
 {
     public static class LogHelper
     {
-        public static void Trace(this ILogger log, Exception ex, string format, params object[] args)
+        public static void Trace(this ILogger log, Exception? ex, string format, params object[] args)
         {
             if (!log.LevelEnabled(LogLevel.Trace))
                 return;
@@ -20,7 +20,7 @@ namespace Tokamak.Logging
             log.Log(LogLevel.Trace, null, format, args);
         }
 
-        public static void Debug(this ILogger log, Exception ex, string format, params object[] args)
+        public static void Debug(this ILogger log, Exception? ex, string format, params object[] args)
         {
             if (!log.LevelEnabled(LogLevel.Debug))
                 return;
@@ -35,7 +35,7 @@ namespace Tokamak.Logging
 
             log.Log(LogLevel.Debug, null, format, args);
         }
-        public static void Info(this ILogger log, Exception ex, string format, params object[] args)
+        public static void Info(this ILogger log, Exception? ex, string format, params object[] args)
         {
             if (!log.LevelEnabled(LogLevel.Info))
                 return;
@@ -51,7 +51,7 @@ namespace Tokamak.Logging
             log.Log(LogLevel.Info, null, format, args);
         }
 
-        public static void Warn(this ILogger log, Exception ex, string format, params object[] args)
+        public static void Warn(this ILogger log, Exception? ex, string format, params object[] args)
         {
             if (!log.LevelEnabled(LogLevel.Warn))
                 return;
@@ -67,7 +67,7 @@ namespace Tokamak.Logging
             log.Log(LogLevel.Warn, null, format, args);
         }
 
-        public static void Error(this ILogger log, Exception ex, string format, params object[] args)
+        public static void Error(this ILogger log, Exception? ex, string format, params object[] args)
         {
             if (!log.LevelEnabled(LogLevel.Error))
                 return;
@@ -83,7 +83,7 @@ namespace Tokamak.Logging
             log.Log(LogLevel.Error, null, format, args);
         }
 
-        public static void Fatal(this ILogger log, Exception ex, string format, params object[] args)
+        public static void Fatal(this ILogger log, Exception? ex, string format, params object[] args)
         {
             if (!log.LevelEnabled(LogLevel.Fatal))
                 return;
