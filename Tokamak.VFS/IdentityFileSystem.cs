@@ -10,9 +10,16 @@ namespace Tokamak.VFS
     /// <remarks>
     /// For now this is just a thin layer over the real file system.
     /// </remarks>
-    public class IdentityFileSystem : IFileSystem
+    public class IdentityFileSystem : FileSystem
     {
-        public Stream Open(string path, FileMode mode, FileAccess access, FileShare share)
+        public IdentityFileSystem(string root)
+            : base(root)
+        {
+        }
+
+        public override string TypeName => "Identity";
+
+        protected override Stream InnerOpen(string path, FileMode mode, FileAccess access, FileShare share)
         {
             return File.Open(path, mode, access, share);
         }

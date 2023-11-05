@@ -104,9 +104,8 @@ namespace TestBed
 
             using var shaderFact = m_platform.GetShaderFactory();
 
-            //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
-            //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/dnk.ttf");
-            string path = Path.Combine(Environment.SystemDirectory, "../Fonts/segoeui.ttf");
+            //string path = "/sys/fonts/arial.ttf";
+            string path = "/sys/fonts/segoeui.ttf";
 
             m_font = m_canvas.GetFont(path, 12);
 
