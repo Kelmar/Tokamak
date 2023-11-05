@@ -1,9 +1,6 @@
 ﻿using System;
 
-//using OpenTK.Graphics.OpenGL4;
 using Silk.NET.OpenGL;
-
-//using GLShaderType = OpenTK.Graphics.OpenGL4.ShaderType;
 
 using GLShaderType = Silk.NET.OpenGL.ShaderType;
 

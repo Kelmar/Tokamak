@@ -8,11 +8,11 @@ namespace Tokamak.Vulkan
 {
     internal class ShaderFactory : IShaderFactory
     {
-        private readonly Platform m_device;
+        private readonly Platform m_platform;
 
-        public ShaderFactory(VkPlatform device)
+        public ShaderFactory(VkPlatform platform)
         {
-            m_device = device;
+            m_platform = platform;
         }
 
         public void Dispose()
