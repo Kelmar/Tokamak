@@ -26,6 +26,10 @@ namespace Graphite
     {
         // For now we have some fairly basic shaders for testing the canvas out.
 
+        private const string VERTEX_SHADER_PATH = "/resources/canvas.vert.spv";
+
+        private const string FRAGMENT_SHADER_PATH = "/resources/canvas.frag.spv";
+
         public const string VERTEX = @"#version 450
 
 uniform mat4 projection;
@@ -81,7 +85,10 @@ void main()
         private readonly List<VectorFormatPCT> m_vectors = new List<VectorFormatPCT>(128);
 
         private readonly Platform m_device;
-        private readonly IShader m_shader;
+
+        private readonly IPipeline m_pipeline;
+
+        //private readonly IShader m_shader;
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
         private readonly RenderState m_uiState;
@@ -91,14 +98,23 @@ void main()
             m_ftLibrary = new FTLibrary();
 
             m_device = device;
+
+#if false
+            m_pipeline = device.CreatePipeline(cfg =>
+            {
+                cfg.AddShader(VERTEX_SHADER_PATH, ShaderType.Vertex);
+                cfg.AddShader(FRAGMENT_SHADER_PATH, ShaderType.Fragment);
+            });
+
             m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dyanmic);
 
-            using var factory = m_device.GetShaderFactory();
+            using var factory = m_device.GetPipelineFactory();
 
             factory.AddShaderSource(ShaderType.Vertex, VERTEX);
             factory.AddShaderSource(ShaderType.Fragment, FRAGMENT);
 
             m_shader = factory.Build();
+#endif
 
             m_uiState = new RenderState
             {
@@ -109,8 +125,10 @@ void main()
 
         public void Dispose()
         {
-            m_shader?.Dispose();
+            //m_shader?.Dispose();
             m_vertexBuffer.Dispose();
+
+            m_pipeline.Dispose();
 
             m_ftLibrary.Dispose();
         }
@@ -126,8 +144,8 @@ void main()
         {
             var mat = Matrix4x4.CreateOrthographicOffCenter(0, size.X, size.Y, 0, -1, 1);
 
-            m_shader.Activate();
-            m_shader.Set("projection", mat);
+            //m_shader.Activate();
+            //m_shader.Set("projection", mat);
         }
 
         private void AddCall(PrimitiveType type, IEnumerable<VectorFormatPCT> vectors, ITextureObject texture = null)
@@ -280,7 +298,7 @@ void main()
 
             ITextureObject last = null;
 
-            m_shader.Activate();
+            m_pipeline.Activate();
 
             m_vertexBuffer.Set(m_vectors);
 
@@ -290,10 +308,12 @@ void main()
                 {
                     if (call.Texture != null)
                     {
+#if false
                         if (call.Texture.Format == PixelFormat.FormatA8)
                             m_shader.Set("is8Bit", 1);
                         else
                             m_shader.Set("is8Bit", 0);
+#endif
 
                         call.Texture.Activate();
                     }
@@ -308,7 +328,7 @@ void main()
 
             if (last != null)
             {
-                m_shader.Set("is8Bit", 0);
+                //m_shader.Set("is8Bit", 0);
                 m_device.ClearBoundTexture();
             }
 

@@ -7,12 +7,12 @@ using Silk.NET.Windowing;
 
 using Tokamak;
 using Tokamak.Buffer;
+using Tokamak.Config;
+using Tokamak.Logging;
 using Tokamak.Mathematics;
 using Tokamak.Scenes;
 
 using Graphite;
-using Tokamak.Config;
-using Tokamak.Logging;
 
 namespace TestBed
 {
@@ -26,11 +26,12 @@ namespace TestBed
         private readonly IWindow m_silkWindow;
 
         private Platform m_platform;
-        private Canvas m_canvas;
-        private Font m_font;
-        private Scene m_scene;
 
-        private readonly List<IRenderable> m_renderers = new List<IRenderable>();
+        //private Canvas m_canvas;
+        //private Font m_font;
+        //private Scene m_scene;
+
+        //private readonly List<IRenderable> m_renderers = new List<IRenderable>();
 
         //private TestObject m_test;
 
@@ -96,6 +97,7 @@ namespace TestBed
                 throw new Exception("Unknown driver");
             }
 
+#if false
             m_canvas = new Canvas(m_platform);
 
             using var shaderFact = m_platform.GetShaderFactory();
@@ -113,15 +115,17 @@ namespace TestBed
 
             m_renderers.Add(m_scene);
             m_renderers.Add(m_canvas);
+#endif
 
             OnResize(m_silkWindow.Size);
         }
 
         private void OnClosing()
         {
-            m_scene.Dispose();
-            m_font.Dispose();
-            m_canvas.Dispose();
+            //m_scene.Dispose();
+            //m_font.Dispose();
+            //m_canvas.Dispose();
+
             m_platform.Dispose();
         }
 
@@ -167,6 +171,8 @@ namespace TestBed
         {
             m_platform.ClearBuffers(GlobalBuffer.ColorBuffer | GlobalBuffer.DepthBuffer);
 
+            /*
+
             Pen pen = new Pen
             {
                 Width = 40,
@@ -178,6 +184,7 @@ namespace TestBed
 
             foreach (var r in m_renderers)
                 r.Render();
+            */
         }
 
         protected void OnResize(Vector2D<int> size)
@@ -186,10 +193,12 @@ namespace TestBed
             {
                 m_platform.Viewport = new Rect(0, 0, size.X, size.Y);
 
+                /*
                 Point s = new Point(size.X, size.Y);
 
                 foreach (var r in m_renderers)
                     r.Resize(s);
+                */
             }
         }
     }

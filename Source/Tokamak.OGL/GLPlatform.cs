@@ -138,11 +138,6 @@ namespace Tokamak.OGL
             m_whiteTexture.Activate();
         }
 
-        public override IShaderFactory GetShaderFactory()
-        {
-            return new ShaderFactory(this);
-        }
-
         public override void DrawArrays(TokPrimType primative, int vertexOffset, int vertexCount)
         {
             GL.DrawArrays(primative.ToGLPrimitive(), vertexOffset, (uint)vertexCount);

@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-using Silk.NET.Maths;
-
 using Silk.NET.OpenGL;
 
 using SNum = System.Numerics;
 
 namespace Tokamak.OGL
 {
-    internal class Shader : IShader
+    internal class Shader
     {
         private readonly IDictionary<string, int> m_uniforms = new Dictionary<string, int>();
 

@@ -63,8 +63,6 @@ namespace Tokamak
 
         public abstract void ClearBoundTexture();
 
-        public abstract IShaderFactory GetShaderFactory();
-
         public abstract void DrawArrays(PrimitiveType primitive, int vertexOffset, int vertexCount);
 
         public abstract void DrawElements(PrimitiveType primitive, int length);

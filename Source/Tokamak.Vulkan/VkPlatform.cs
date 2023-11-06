@@ -298,11 +298,6 @@ namespace Tokamak.Vulkan
             return null;
         }
 
-        public override IShaderFactory GetShaderFactory()
-        {
-            return new ShaderFactory(this);
-        }
-
         public override ITextureObject GetTextureObject(PixelFormat format, Point size)
         {
             return new TextureObject(this, format, size);

@@ -48,7 +48,7 @@ void main()
 }
 ";
         private readonly Platform m_device;
-        private readonly IShader m_shader;
+        private readonly IPipeline m_pipeline;
 
         private readonly RenderState m_sceneState;
 
@@ -60,12 +60,12 @@ void main()
         {
             m_device = device;
 
-            using var factory = m_device.GetShaderFactory();
+            //using var factory = m_device.GetPipelineFactory();
 
-            factory.AddShaderSource(ShaderType.Vertex, VERTEX);
-            factory.AddShaderSource(ShaderType.Fragment, FRAGMENT);
+            //factory.AddShader(VERTEX, ShaderType.Vertex);
+            //factory.AddShader(FRAGMENT, ShaderType.Fragment);
 
-            m_shader = factory.Build();
+            //m_pipeline = factory.Build();
 
             m_sceneState = new RenderState
             {
@@ -79,7 +79,7 @@ void main()
             foreach (var obj in m_objects)
                 obj.Dispose();
 
-            m_shader.Dispose();
+            m_pipeline.Dispose();
         }
 
         public Matrix4x4 Projection { get; private set; }
@@ -110,18 +110,20 @@ void main()
 
         public void Render()
         {
+#if false
             m_device.SetRenderState(m_sceneState);
 
-            m_shader.Activate();
+            m_pipeline.Activate();
 
-            m_shader.Set("projection", Projection);
-            m_shader.Set("view", m_camera.View);
+            m_pipeline.Set("projection", Projection);
+            m_pipeline.Set("view", m_camera.View);
 
             foreach (var obj in m_objects)
             {
-                m_shader.Set("model", obj.Model);
+                m_pipeline.Set("model", obj.Model);
                 obj.Render();
             }
+#endif
         }
     }
 }
