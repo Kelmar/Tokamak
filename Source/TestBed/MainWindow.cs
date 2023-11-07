@@ -8,6 +8,7 @@ using Silk.NET.Windowing;
 using Tokamak;
 using Tokamak.Buffer;
 using Tokamak.Config;
+using Tokamak.Formats;
 using Tokamak.Logging;
 using Tokamak.Mathematics;
 using Tokamak.Scenes;
@@ -18,6 +19,9 @@ namespace TestBed
 {
     public class MainWindow : IDisposable
     {
+        private const string FRAG_SHADER = "resources/frag.spv";
+        private const string VERT_SHADER = "resources/vert.spv";
+
         private const float ROT_AMOUNT = 0.5f;
 
         private readonly IConfigReader m_config;
@@ -34,6 +38,8 @@ namespace TestBed
         //private readonly List<IRenderable> m_renderers = new List<IRenderable>();
 
         //private TestObject m_test;
+
+        private IPipeline m_pipeline;
 
         private int m_frameCount;
         private DateTime m_lastCheck = DateTime.UtcNow;
@@ -118,10 +124,23 @@ namespace TestBed
 #endif
 
             OnResize(m_silkWindow.Size);
+
+            m_pipeline = m_platform.GetPipeline(cfg =>
+            {
+                cfg.UseInputFormat<VectorFormatP>();
+
+                cfg.UseShader(ShaderType.Fragment, FRAG_SHADER);
+                cfg.UseShader(ShaderType.Vertex, VERT_SHADER);
+
+                cfg.UseCulling(CullMode.Back);
+                cfg.UsePrimitive(PrimitiveType.TriangleList);
+            });
         }
 
         private void OnClosing()
         {
+            m_pipeline.Dispose();
+
             //m_scene.Dispose();
             //m_font.Dispose();
             //m_canvas.Dispose();

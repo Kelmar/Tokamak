@@ -90,6 +90,11 @@ namespace Tokamak.OGL
             }
         }
 
+        protected override IPipelineFactory GetPipelineFactory(PipelineConfig config)
+        {
+            return new PipelineFactory(this, config);
+        }
+
         public override void SetRenderState(RenderState state)
         {
             if (state.UseDepthTest)

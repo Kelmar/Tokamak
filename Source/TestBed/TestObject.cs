@@ -97,7 +97,7 @@ namespace TestBed
 
             //m_device.DrawArrays(PrimitiveType.TrangleList, 0, m_mesh.Verts.Count);
 
-            m_device.DrawElements(PrimitiveType.TrangleList, 6);
+            m_device.DrawElements(PrimitiveType.TriangleList, 6);
         }
     }
 }

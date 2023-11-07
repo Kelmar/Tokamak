@@ -199,7 +199,7 @@ void main()
 
             var renderer = new StrokeRenderer(stroke);
 
-            AddCall(PrimitiveType.TrangleStrip, renderer.Vectors);
+            AddCall(PrimitiveType.TriangleStrip, renderer.Vectors);
         }
 
         // This is a simple test function for now.
@@ -235,7 +235,7 @@ void main()
                 }
             };
 
-            AddCall(PrimitiveType.TrangleStrip, vects, texture);
+            AddCall(PrimitiveType.TriangleStrip, vects, texture);
         }
 
         public void DrawText(Pen pen, Font font, in Point location, string text)
@@ -288,7 +288,7 @@ void main()
                 var texture = font.GetSheet(grp.Key);
                 var grpVects = grp.SelectMany(i => i.Item2).ToList();
 
-                AddCall(PrimitiveType.TrangleList, grpVects, texture);
+                AddCall(PrimitiveType.TriangleList, grpVects, texture);
             }
         }
 

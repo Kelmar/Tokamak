@@ -13,7 +13,7 @@ using PLHandle = Silk.NET.Vulkan.Pipeline;
 
 namespace Tokamak.Vulkan
 {
-    internal unsafe class PipelineFactory
+    internal unsafe class PipelineFactory : IPipelineFactory
     {
         private readonly ResourceTracker m_trackedResource = new();
 
@@ -43,18 +43,6 @@ namespace Tokamak.Vulkan
                 ShaderType.Compute => ShaderStageFlags.ComputeBit,
                 _ => throw new Exception($"Unknown shader type {type}")
             };
-        }
-
-        public void SetInputFormat<T>()
-            where T : struct
-        {
-            m_format = VectorFormat.GetLayoutOf<T>();
-        }
-
-        private void ValidateSettings()
-        {
-            if (m_format == null)
-                throw new InvalidOperationException("Vector data format has not been specified.  Call SetInputFormat<T>()");
         }
 
         private PipelineShaderStageCreateInfo[] GetShaderModules()
@@ -140,8 +128,6 @@ namespace Tokamak.Vulkan
 
         public unsafe IPipeline Build()
         {
-            ValidateSettings();
-
             var shaders = GetShaderModules();
 
             var vertexInputConfig = GetVertexInputConfig();

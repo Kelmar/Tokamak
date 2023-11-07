@@ -13,6 +13,7 @@ using Tokamak.Config;
 using Tokamak.Formats;
 using Tokamak.Logging;
 using Tokamak.Mathematics;
+
 using Tokamak.Vulkan.NativeWrapper;
 
 namespace Tokamak.Vulkan
@@ -27,6 +28,8 @@ namespace Tokamak.Vulkan
         private readonly IConfigReader m_config;
 
         private readonly List<VkDevice> m_devices = new List<VkDevice>();
+
+        private readonly VkDevice m_device = null;
 
         private VkDebug m_debug = null;
 
@@ -47,7 +50,7 @@ namespace Tokamak.Vulkan
 
             Vk = Vk.GetApi();
 
-            InitVK();
+            m_device = InitVK();
 
             Monitors = EnumerateMonitors().ToList();
         }
@@ -78,7 +81,7 @@ namespace Tokamak.Vulkan
 
         internal IWindow Window { get; }
 
-        private void InitVK()
+        private VkDevice InitVK()
         {
             CreateInstance();
 
@@ -93,6 +96,8 @@ namespace Tokamak.Vulkan
             m_log.Info("Using device: {0}", device.Name);
 
             device.InitLogicalDevice();
+
+            return device;
         }
 
         private void CreateInstance()
@@ -275,6 +280,11 @@ namespace Tokamak.Vulkan
                 foreach (var dev in m_devices)
                     dev.SwapChain?.Rebuild();
             }
+        }
+
+        protected override IPipelineFactory GetPipelineFactory(PipelineConfig config)
+        {
+            return new PipelineFactory(m_device, config);
         }
 
         public override void ClearBoundTexture()

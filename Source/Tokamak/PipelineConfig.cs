@@ -5,20 +5,19 @@ using Tokamak.Formats;
 
 namespace Tokamak
 {
-    public abstract class PipelineConfig
+    public class PipelineConfig
     {
         private readonly List<ShaderInfo> m_shaders = new();
 
-        protected PipelineConfig(VectorFormat.Info inputFormat)
+        internal PipelineConfig()
         {
-            InputFormat = inputFormat;
         }
 
         public IEnumerable<ShaderInfo> Shaders => m_shaders;
 
-        public VectorFormat.Info InputFormat { get; }
+        public VectorFormat.Info InputFormat { get; private set; }
 
-        public PrimitiveType Primitive { get; private set; }
+        public PrimitiveType Primitive { get; private set; } = PrimitiveType.TriangleList;
 
         public CullMode Culling { get; private set; } = CullMode.None;
 
@@ -43,14 +42,11 @@ namespace Tokamak
         {
             Primitive = primitive;
         }
-    }
 
-    public class PipelineConfig<TInputFormat> : PipelineConfig
-        where TInputFormat : struct
-    {
-        public PipelineConfig()
-            : base(VectorFormat.GetLayoutOf<TInputFormat>())
+        public void UseInputFormat<T>()
+            where T : struct
         {
+            InputFormat = VectorFormat.GetLayoutOf<T>();
         }
     }
 }

@@ -61,6 +61,25 @@ namespace Tokamak
 
         public abstract IElementBuffer GetElementBuffer(BufferType type);
 
+        protected abstract IPipelineFactory GetPipelineFactory(PipelineConfig config);
+
+        protected virtual void ValidatePipelineConfig(PipelineConfig config)
+        {
+            if (config.InputFormat == null)
+                throw new Exception("InputFormat not specified, call UseInputFormat().");
+        }
+
+        public IPipeline GetPipeline(Action<PipelineConfig> configurator)
+        {
+            PipelineConfig config = new PipelineConfig();
+            configurator(config);
+
+            ValidatePipelineConfig(config);
+
+            using var factory = GetPipelineFactory(config);
+            return factory.Build();
+        }
+
         public abstract void ClearBoundTexture();
 
         public abstract void DrawArrays(PrimitiveType primitive, int vertexOffset, int vertexCount);

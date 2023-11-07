@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Tokamak.OGL
 {
-    internal class PipelineFactory
+    internal class PipelineFactory : IPipelineFactory
     {
         private readonly PipelineConfig m_config;
 
