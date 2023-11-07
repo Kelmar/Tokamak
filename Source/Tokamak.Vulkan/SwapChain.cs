@@ -18,8 +18,6 @@ namespace Tokamak.Vulkan
 
         private KhrSwapchain m_khrSwapChain;
         private SwapchainKHR m_swapChain;
-        private Format m_format;
-        private Extent2D m_extent;
 
         public SwapChain(VkDevice device)
         {
@@ -39,6 +37,10 @@ namespace Tokamak.Vulkan
         public IReadOnlyList<VkImage> Images { get; private set; }
 
         public IReadOnlyList<VkImageView> Views { get; private set; }
+
+        public Format Format { get; private set; }
+
+        public Extent2D Extent { get; private set; }
 
         private void Cleanup()
         {
@@ -60,7 +62,7 @@ namespace Tokamak.Vulkan
 
             SurfaceFormatKHR format = ChooseFormat(platform.Surface.GetPhysicalDeviceFormats(m_device.PhysicalDevice));
             PresentModeKHR presentMode = ChoosePresentMode(platform.Surface.GetPhysicalDevicePresentModes(m_device.PhysicalDevice));
-            Extent2D extent = ChooseExtent(caps, platform.Window);
+            Extent = ChooseExtent(caps, platform.Window);
 
             uint imageCnt = caps.MinImageCount + 1;
 
@@ -74,7 +76,7 @@ namespace Tokamak.Vulkan
                 MinImageCount = imageCnt,
                 ImageFormat = format.Format,
                 ImageColorSpace = format.ColorSpace,
-                ImageExtent = extent,
+                ImageExtent = Extent,
                 ImageArrayLayers = 1,
                 ImageUsage = ImageUsageFlags.ColorAttachmentBit,
                 ImageSharingMode = SharingMode.Exclusive,
@@ -99,8 +101,8 @@ namespace Tokamak.Vulkan
 
             SafeExecute(sc => sc.CreateSwapchain(m_device.LogicalDevice, createInfo, null, out m_swapChain));
 
-            m_format = createInfo.ImageFormat;
-            m_extent = createInfo.ImageExtent;
+            Format = createInfo.ImageFormat;
+            Extent = createInfo.ImageExtent;
 
             foreach (var img in Images)
                 img.Dispose();
@@ -158,7 +160,7 @@ namespace Tokamak.Vulkan
 
         private IEnumerable<VkImage> GetImages()
         {
-            var ext3D = new Extent3D(m_extent.Width, m_extent.Height, 1);
+            var ext3D = new Extent3D(Extent.Width, Extent.Height, 1);
 
             uint imageCnt = 0;
             uint* cnt = &imageCnt;
@@ -174,7 +176,7 @@ namespace Tokamak.Vulkan
                 SafeExecute(sc => sc.GetSwapchainImages(m_device.LogicalDevice, m_swapChain, cnt, images));
                 
 
-                rval.AddRange(images.Select(i => VkImage.FromHandle(m_device, i, m_format, ext3D)));
+                rval.AddRange(images.Select(i => VkImage.FromHandle(m_device, i, Format, ext3D)));
             }
 
             return rval;

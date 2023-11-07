@@ -6,7 +6,10 @@ using Silk.NET.Vulkan;
 
 using Tokamak.Formats;
 using Tokamak.Utils;
+
 using Tokamak.Vulkan.NativeWrapper;
+
+using PLHandle = Silk.NET.Vulkan.Pipeline;
 
 namespace Tokamak.Vulkan
 {
@@ -86,7 +89,7 @@ namespace Tokamak.Vulkan
             return items;
         }
 
-        private PipelineVertexInputStateCreateInfo GetVertexConfig()
+        private PipelineVertexInputStateCreateInfo GetVertexInputConfig()
         {
             // TODO: Read format of the vertex reflection and add here.
 
@@ -135,21 +138,127 @@ namespace Tokamak.Vulkan
             };
         }
 
-        public IPipeline Build()
+        public unsafe IPipeline Build()
         {
             ValidateSettings();
 
-            var items = GetShaderModules();
+            var shaders = GetShaderModules();
 
-            var vertexConfig = GetVertexConfig();
+            var vertexInputConfig = GetVertexInputConfig();
+
+            var inputConfig = new PipelineInputAssemblyStateCreateInfo
+            {
+                SType = StructureType.PipelineInputAssemblyStateCreateInfo,
+                Topology = PrimitiveTopology.TriangleList,
+                PrimitiveRestartEnable = false
+            };
+
+            var viewport = new Viewport()
+            {
+                X = 0,
+                Y = 0,
+                Width = m_device.SwapChain.Extent.Width,
+                Height = m_device.SwapChain.Extent.Height,
+                MinDepth = 0,
+                MaxDepth = 1
+            };
+
+            var scissor = new Rect2D
+            {
+                Offset = { X = 0, Y = 0 },
+                Extent = m_device.SwapChain.Extent
+            };
+
+            var viewportConfig = new PipelineViewportStateCreateInfo
+            {
+                SType = StructureType.PipelineViewportStateCreateInfo,
+                ViewportCount = 1,
+                PViewports = &viewport,
+                ScissorCount = 1,
+                PScissors = &scissor
+            };
 
             var rasterConfig = GetRasterConfig();
 
-            // TODO: Create the render passes here.
+            var multiSampleConfig = new PipelineMultisampleStateCreateInfo
+            {
+                SType = StructureType.PipelineMultisampleStateCreateInfo,
+                SampleShadingEnable = false,
+                RasterizationSamples = SampleCountFlags.Count1Bit
+            };
 
-            // TODO: Create the pipeline here.
+            var colorBlendAttachment = new PipelineColorBlendAttachmentState
+            {
+                ColorWriteMask = ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit,
+                BlendEnable = false
+            };
 
-            return null;
+            var colorBlendConfig = new PipelineColorBlendStateCreateInfo
+            {
+                SType = StructureType.PipelineColorBlendStateCreateInfo,
+                LogicOpEnable = false,
+                LogicOp = LogicOp.Copy,
+                AttachmentCount = 1,
+                PAttachments = &colorBlendAttachment
+            };
+
+            colorBlendConfig.BlendConstants[0] = 0;
+            colorBlendConfig.BlendConstants[1] = 0;
+            colorBlendConfig.BlendConstants[2] = 0;
+            colorBlendConfig.BlendConstants[3] = 0;
+
+            /*
+             * This weird variable shenanigan is to work around a potential memory leak if 
+             * something should throw an exception while we create the full pipeline resource.
+             */
+            VkPipelineLayout layout = null;
+            VkRenderPass renderPass = null;
+
+            try
+            {
+                layout = new VkPipelineLayout(m_device);
+                renderPass = new VkRenderPass(m_device, m_device.SwapChain.Format);
+
+                fixed (PipelineShaderStageCreateInfo* shaderInfo = shaders)
+                {
+                    var pipelineInfo = new GraphicsPipelineCreateInfo
+                    {
+                        SType = StructureType.GraphicsPipelineCreateInfo,
+                        StageCount = (uint)shaders.Length,
+                        PStages = shaderInfo,
+                        PVertexInputState = &vertexInputConfig,
+                        PInputAssemblyState = &inputConfig,
+                        PViewportState = &viewportConfig,
+                        PRasterizationState = &rasterConfig,
+                        PMultisampleState = &multiSampleConfig,
+                        PDepthStencilState = null,
+                        PColorBlendState = &colorBlendConfig,
+                        PDynamicState = null,
+                        Layout = layout.Handle,
+                        RenderPass = renderPass.Handle,
+                        Subpass = 0,
+                        BasePipelineIndex = -1
+                    };
+
+                    pipelineInfo.BasePipelineHandle.Handle = 0;
+
+                    PLHandle handle = default;
+
+                    m_device.Parent.SafeExecute(vk => vk.CreateGraphicsPipelines(m_device.LogicalDevice, default, 1, pipelineInfo, null, out handle));
+
+                    var rval = new Pipeline(m_device, handle, layout, renderPass);
+
+                    layout = null;
+                    renderPass = null;
+
+                    return rval;
+                }
+            }
+            finally
+            {
+                layout?.Dispose();
+                renderPass?.Dispose();
+            }
         }
     }
 }
