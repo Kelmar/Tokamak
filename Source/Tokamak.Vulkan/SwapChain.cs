@@ -46,6 +46,9 @@ namespace Tokamak.Vulkan
         {
             m_device.WaitIdle();
 
+            foreach (var view in Views)
+                view.Dispose();
+
             foreach (var img in Images)
                 img.Dispose();
 
