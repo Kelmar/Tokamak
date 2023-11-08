@@ -10,6 +10,8 @@ namespace Tokamak.OGL
     {
         private readonly TextureObject m_whiteTexture;
 
+        private Pipeline m_pipeline;
+
         public CommandBuffer(GL gl, TextureObject whiteTexture)
         {
             GL = gl;
@@ -21,6 +23,11 @@ namespace Tokamak.OGL
         }
 
         public GL GL { get; }
+
+        internal void MakeActive(Pipeline pipeline)
+        {
+            m_pipeline = pipeline;
+        }
 
         public void ClearBuffers(GlobalBuffer buffers)
         {
@@ -40,14 +47,14 @@ namespace Tokamak.OGL
             m_whiteTexture.Activate();
         }
 
-        public void DrawArrays(TokPrimType primative, int vertexOffset, int vertexCount)
+        public void DrawArrays(int vertexOffset, int vertexCount)
         {
-            GL.DrawArrays(primative.ToGLPrimitive(), vertexOffset, (uint)vertexCount);
+            GL.DrawArrays(m_pipeline.Primitive, vertexOffset, (uint)vertexCount);
         }
 
-        public void DrawElements(TokPrimType primitive, int length)
+        public void DrawElements(int length)
         {
-            GL.DrawElements(primitive.ToGLPrimitive(), (uint)length, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(m_pipeline.Primitive, (uint)length, DrawElementsType.UnsignedInt, 0);
         }
     }
 }

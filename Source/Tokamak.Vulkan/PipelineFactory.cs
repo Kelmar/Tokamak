@@ -20,8 +20,6 @@ namespace Tokamak.Vulkan
         private readonly VkDevice m_device;
         private readonly PipelineConfig m_config;
 
-        private VectorFormat.Info m_format = null;
-
         public PipelineFactory(VkDevice device, PipelineConfig config)
         {
             m_device = device;

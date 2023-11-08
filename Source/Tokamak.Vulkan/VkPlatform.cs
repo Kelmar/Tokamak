@@ -295,7 +295,7 @@ namespace Tokamak.Vulkan
 
         public override ICommandBuffer GetCommandBuffer()
         {
-            return new CommandBuffer(m_commandPool.AllocateBuffer());
+            return new CommandBuffer(m_device, m_commandPool);
         }
 
         public override IElementBuffer GetElementBuffer(BufferType type)

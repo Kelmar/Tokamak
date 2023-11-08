@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Silk.NET.Vulkan;
 
 using Tokamak.Vulkan.NativeWrapper;
 
@@ -44,8 +42,10 @@ namespace Tokamak.Vulkan
             GC.SuppressFinalize(this);
         }
 
-        public void Activate()
+        public void Activate(ICommandBuffer buffer)
         {
+            var cmdBuffer = (CommandBuffer)buffer;
+            cmdBuffer.BindPipeline(PipelineBindPoint.Graphics, Handle);
         }
     }
 }

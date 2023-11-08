@@ -287,7 +287,7 @@ void main()
         {
             ITextureObject last = null;
 
-            m_pipeline.Activate();
+            m_pipeline.Activate(m_commandBuffer);
 
             m_vertexBuffer.Set(m_vectors);
 
@@ -314,7 +314,7 @@ void main()
                     last = call.Texture;
                 }
 
-                m_commandBuffer.DrawArrays(call.Type, call.VertexOffset, call.VertexCount);
+                m_commandBuffer.DrawArrays(call.VertexOffset, call.VertexCount);
             }
 
             if (last != null)

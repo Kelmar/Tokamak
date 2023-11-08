@@ -14,8 +14,8 @@ namespace Tokamak
 
         void ClearBoundTexture();
 
-        void DrawArrays(PrimitiveType primitive, int vertexOffset, int vertexCount);
+        void DrawArrays(int vertexOffset, int vertexCount);
 
-        void DrawElements(PrimitiveType primitive, int length);
+        void DrawElements(int length);
     }
 }

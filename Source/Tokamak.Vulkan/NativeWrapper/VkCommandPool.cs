@@ -36,10 +36,5 @@ namespace Tokamak.Vulkan.NativeWrapper
 
             return handle;
         }
-
-        public VkCommandBuffer AllocateBuffer()
-        {
-            return new VkCommandBuffer(m_device, this);
-        }
     }
 }

@@ -53,8 +53,11 @@ namespace Tokamak.OGL
             }
         }
 
-        public void Activate()
+        public void Activate(ICommandBuffer buffer)
         {
+            var cmdBuffer = (CommandBuffer)buffer;
+            cmdBuffer.MakeActive(this);
+
             m_shader.Activate();
 
             SetCullingMode();

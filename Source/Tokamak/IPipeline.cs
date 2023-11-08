@@ -4,6 +4,6 @@ namespace Tokamak
 {
     public interface IPipeline : IDisposable
     {
-        void Activate();
+        void Activate(ICommandBuffer commandBuffer);
     }
 }
