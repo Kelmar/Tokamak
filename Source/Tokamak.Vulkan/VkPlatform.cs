@@ -31,6 +31,8 @@ namespace Tokamak.Vulkan
 
         private readonly VkDevice m_device = null;
 
+        private readonly VkCommandPool m_commandPool = null;
+
         private VkDebug m_debug = null;
 
         private DrawSurface m_surface = null;
@@ -52,11 +54,15 @@ namespace Tokamak.Vulkan
 
             m_device = InitVK();
 
+            m_commandPool = new VkCommandPool(m_device);
+
             Monitors = EnumerateMonitors().ToList();
         }
 
         public override void Dispose()
         {
+            m_commandPool.Dispose();
+
             // Release the physical/logical devices.
             foreach (var dev in m_devices)
                 dev.Dispose();
@@ -287,20 +293,9 @@ namespace Tokamak.Vulkan
             return new PipelineFactory(m_device, config);
         }
 
-        public override void ClearBoundTexture()
+        public override ICommandBuffer GetCommandBuffer()
         {
-        }
-
-        public override void ClearBuffers(GlobalBuffer buffers)
-        {
-        }
-
-        public override void DrawArrays(PrimitiveType primitive, int vertexOffset, int vertexCount)
-        {
-        }
-
-        public override void DrawElements(PrimitiveType primitive, int length)
-        {
+            return new CommandBuffer(m_commandPool.AllocateBuffer());
         }
 
         public override IElementBuffer GetElementBuffer(BufferType type)

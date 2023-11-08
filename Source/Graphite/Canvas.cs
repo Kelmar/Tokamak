@@ -87,11 +87,9 @@ void main()
         private readonly Platform m_device;
 
         private readonly IPipeline m_pipeline;
+        private readonly ICommandBuffer m_commandBuffer;
 
-        //private readonly IShader m_shader;
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
-
-        private readonly RenderState m_uiState;
 
         public Canvas(Platform device)
         {
@@ -99,33 +97,26 @@ void main()
 
             m_device = device;
 
-#if false
-            m_pipeline = device.CreatePipeline(cfg =>
+            m_pipeline = device.GetPipeline(cfg =>
             {
-                cfg.AddShader(VERTEX_SHADER_PATH, ShaderType.Vertex);
-                cfg.AddShader(FRAGMENT_SHADER_PATH, ShaderType.Fragment);
+                cfg.UseInputFormat<VectorFormatPCT>();
+
+                cfg.UseCulling(CullMode.None);
+                //UseDepthTest = false
+
+                cfg.UseShader(ShaderType.Vertex, VERTEX_SHADER_PATH);
+                cfg.UseShader(ShaderType.Fragment, FRAGMENT_SHADER_PATH);
             });
 
+            m_commandBuffer = device.GetCommandBuffer();
+
             m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dyanmic);
-
-            using var factory = m_device.GetPipelineFactory();
-
-            factory.AddShaderSource(ShaderType.Vertex, VERTEX);
-            factory.AddShaderSource(ShaderType.Fragment, FRAGMENT);
-
-            m_shader = factory.Build();
-#endif
-
-            m_uiState = new RenderState
-            {
-                CullFaces = false,
-                UseDepthTest = false
-            };
         }
 
         public void Dispose()
         {
-            //m_shader?.Dispose();
+            m_commandBuffer.Dispose();
+
             m_vertexBuffer.Dispose();
 
             m_pipeline.Dispose();
@@ -294,8 +285,6 @@ void main()
 
         public void Render()
         {
-            m_device.SetRenderState(m_uiState);
-
             ITextureObject last = null;
 
             m_pipeline.Activate();
@@ -318,18 +307,20 @@ void main()
                         call.Texture.Activate();
                     }
                     else
-                        m_device.ClearBoundTexture();
+                    {
+                        m_commandBuffer.ClearBoundTexture();
+                    }
 
                     last = call.Texture;
                 }
 
-                m_device.DrawArrays(call.Type, call.VertexOffset, call.VertexCount);
+                m_commandBuffer.DrawArrays(call.Type, call.VertexOffset, call.VertexCount);
             }
 
             if (last != null)
             {
                 //m_shader.Set("is8Bit", 0);
-                m_device.ClearBoundTexture();
+                m_commandBuffer.ClearBoundTexture();
             }
 
             m_vectors.Clear();

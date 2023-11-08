@@ -52,8 +52,6 @@ namespace Tokamak
             WorldMatrix = m_worldMatrixStack.Pop();
         }
 
-        public abstract void ClearBuffers(GlobalBuffer buffers);
-
         public abstract IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
             where T : unmanaged;
 
@@ -80,10 +78,6 @@ namespace Tokamak
             return factory.Build();
         }
 
-        public abstract void ClearBoundTexture();
-
-        public abstract void DrawArrays(PrimitiveType primitive, int vertexOffset, int vertexCount);
-
-        public abstract void DrawElements(PrimitiveType primitive, int length);
+        public abstract ICommandBuffer GetCommandBuffer();
     }
 }

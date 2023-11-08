@@ -2,6 +2,8 @@
 
 using Silk.NET.OpenGL;
 
+using GLPrimType = Silk.NET.OpenGL.PrimitiveType;
+
 namespace Tokamak.OGL
 {
     internal sealed class Pipeline : IPipeline
@@ -23,6 +25,8 @@ namespace Tokamak.OGL
         public GLPlatform Platform { get; }
 
         public CullMode Culling { get; init; }
+
+        public GLPrimType Primitive { get; set; }
 
         private void SetCullingMode()
         {

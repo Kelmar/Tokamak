@@ -65,7 +65,8 @@ namespace Tokamak.OGL
 
             var rval = new Pipeline(m_platform, glShader)
             {
-                Culling = m_config.Culling
+                Culling = m_config.Culling,
+                Primitive = m_config.Primitive.ToGLPrimitive()
             };
 
             return rval;

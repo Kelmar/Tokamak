@@ -93,11 +93,11 @@ namespace TestBed
             m_vertexBuffer.Activate();
             //m_elementBuffer.Activate();
 
-            //m_device.DrawElements(PrimitiveType.TrangleList, m_mesh.Indicies.Count);
+            //m_device.DrawElements(PrimitiveType.TriangleList, m_mesh.Indicies.Count);
 
-            //m_device.DrawArrays(PrimitiveType.TrangleList, 0, m_mesh.Verts.Count);
+            //m_device.DrawArrays(PrimitiveType.TriangleList, 0, m_mesh.Verts.Count);
 
-            m_device.DrawElements(PrimitiveType.TriangleList, 6);
+            //m_device.DrawElements(PrimitiveType.TriangleList, 6);
         }
     }
 }

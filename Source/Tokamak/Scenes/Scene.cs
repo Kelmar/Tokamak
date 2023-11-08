@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.Versioning;
 
+using Tokamak.Formats;
 using Tokamak.Mathematics;
 
 namespace Tokamak.Scenes
@@ -47,10 +49,7 @@ void main()
     fsout_Color = is8Bit != 0 ? vec4(fsin_Color.rgb, fsin_Color.a * tx.r) : tx * fsin_Color;
 }
 ";
-        private readonly Platform m_device;
         private readonly IPipeline m_pipeline;
-
-        private readonly RenderState m_sceneState;
 
         private readonly List<SceneObject> m_objects = new List<SceneObject>();
 
@@ -58,7 +57,16 @@ void main()
 
         public Scene(Platform device)
         {
-            m_device = device;
+            m_pipeline = device.GetPipeline(cfg =>
+            {
+                cfg.UseInputFormat<VectorFormatPCT>();
+
+                cfg.UseCulling(CullMode.Back);
+                //UseDepthTest = false
+
+                //cfg.UseShader(ShaderType.Vertex, VERTEX);
+                //cfg.UseShader(ShaderType.Fragment, FRAGMENT);
+            });
 
             //using var factory = m_device.GetPipelineFactory();
 
@@ -66,12 +74,6 @@ void main()
             //factory.AddShader(FRAGMENT, ShaderType.Fragment);
 
             //m_pipeline = factory.Build();
-
-            m_sceneState = new RenderState
-            {
-                CullFaces = false,
-                UseDepthTest = false
-            };
         }
 
         public void Dispose()
