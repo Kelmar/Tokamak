@@ -13,14 +13,14 @@ namespace Tokamak.Vulkan
         private readonly VkDevice m_device;
 
         private readonly VkPipelineLayout m_layout;
-        private readonly VkRenderPass m_renderPass;
 
-        public Pipeline(VkDevice device, PLHandle handle, VkPipelineLayout layout, VkRenderPass renderPass)
+        public Pipeline(VkDevice device, PLHandle handle, VkPipelineLayout layout, VkRenderPass renderPass, VkFrameBuffer frameBuffer)
         {
             m_device = device;
             Handle = handle;
             m_layout = layout;
-            m_renderPass = renderPass;
+            RenderPass = renderPass;
+            FrameBuffer = frameBuffer;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -29,10 +29,15 @@ namespace Tokamak.Vulkan
             {
                 m_device.Parent.Vk.DestroyPipeline(m_device.LogicalDevice, Handle, null);
 
-                m_renderPass.Dispose();
+                FrameBuffer.Dispose();
+                RenderPass.Dispose();
                 m_layout.Dispose();
             }
         }
+
+        public VkRenderPass RenderPass { get; }
+
+        public VkFrameBuffer FrameBuffer { get; }
 
         public PLHandle Handle { get; }
 
@@ -45,7 +50,7 @@ namespace Tokamak.Vulkan
         public void Activate(ICommandBuffer buffer)
         {
             var cmdBuffer = (CommandBuffer)buffer;
-            cmdBuffer.BindPipeline(PipelineBindPoint.Graphics, Handle);
+            cmdBuffer.BindPipeline(this);
         }
     }
 }

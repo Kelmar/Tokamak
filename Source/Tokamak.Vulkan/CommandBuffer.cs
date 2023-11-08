@@ -15,10 +15,12 @@ using PLHandle = Silk.NET.Vulkan.Pipeline;
 
 namespace Tokamak.Vulkan
 {
-    internal class CommandBuffer : ICommandBuffer
+    internal unsafe class CommandBuffer : ICommandBuffer
     {
         private readonly VkDevice m_device;
         private readonly VkCommandPool m_pool;
+
+        private Pipeline m_pipeline;
 
         public CommandBuffer(VkDevice device, VkCommandPool pool)
         {
@@ -53,16 +55,9 @@ namespace Tokamak.Vulkan
             return handle;
         }
 
-        #region Native Wrappers
-
-        public void BeginRenderPass(RenderPassBeginInfo renderInfo, SubpassContents contents)
+        public void BindPipeline(Pipeline pipeline)
         {
-            m_device.Parent.Vk.CmdBeginRenderPass(Handle, renderInfo, contents);
-        }
-
-        public void BindPipeline(PipelineBindPoint bindPoint, PLHandle pipeline)
-        {
-            m_device.Parent.Vk.CmdBindPipeline(Handle, bindPoint, pipeline);
+            m_pipeline = pipeline;
         }
 
         public void Draw(uint vertexCount, uint instanceCount, uint firstVertex, uint firstInstance)
@@ -70,9 +65,14 @@ namespace Tokamak.Vulkan
             m_device.Parent.Vk.CmdDraw(Handle, vertexCount, instanceCount, firstVertex, firstInstance);
         }
 
-        public void EndRenderPass()
+        public void Begin()
         {
-            m_device.Parent.Vk.CmdEndRenderPass(Handle);
+            var info = new CommandBufferBeginInfo
+            {
+                SType = StructureType.CommandBufferBeginInfo
+            };
+
+            m_device.Parent.SafeExecute(vk => vk.BeginCommandBuffer(Handle, info));
         }
 
         public void End()
@@ -80,8 +80,37 @@ namespace Tokamak.Vulkan
             m_device.Parent.SafeExecute(vk => vk.EndCommandBuffer(Handle));
         }
 
-        #endregion Native Wrappers
+        public void BeginPass()
+        {
+            var clearColor = new ClearValue()
+            {
+                Color = new() { Float32_0 = 0, Float32_1 = 0, Float32_2 = 0, Float32_3 = 1 }
+            };
 
+            var renderInfo = new RenderPassBeginInfo
+            {
+                SType = StructureType.RenderPassBeginInfo,
+                RenderPass = m_pipeline.RenderPass.Handle,
+                Framebuffer = m_pipeline.FrameBuffer.Handle,
+                ClearValueCount = 1,
+                PClearValues = &clearColor,
+                RenderArea =
+                {
+                    Offset = { X = 0, Y = 0 },
+                    Extent = m_device.SwapChain.Extent
+                }
+            };
+
+            m_device.Parent.Vk.CmdBeginRenderPass(Handle, renderInfo, SubpassContents.Inline);
+
+            m_device.Parent.Vk.CmdBindPipeline(Handle, PipelineBindPoint.Graphics, m_pipeline.Handle);
+        }
+
+        public void EndPass()
+        {
+            m_device.Parent.Vk.CmdEndRenderPass(Handle);
+            m_pipeline = null;
+        }
 
         public void ClearBoundTexture()
         {
@@ -93,6 +122,7 @@ namespace Tokamak.Vulkan
 
         public void DrawArrays(int vertexOffset, int vertexCount)
         {
+            Draw((uint)vertexCount, 1, (uint)vertexOffset, 0);
         }
 
         public void DrawElements(int length)

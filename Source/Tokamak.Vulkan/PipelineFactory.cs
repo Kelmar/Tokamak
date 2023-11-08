@@ -4,7 +4,6 @@ using System.Linq;
 
 using Silk.NET.Vulkan;
 
-using Tokamak.Formats;
 using Tokamak.Utils;
 
 using Tokamak.Vulkan.NativeWrapper;
@@ -197,11 +196,13 @@ namespace Tokamak.Vulkan
              */
             VkPipelineLayout layout = null;
             VkRenderPass renderPass = null;
+            VkFrameBuffer frameBuffer = null;
 
             try
             {
                 layout = new VkPipelineLayout(m_device);
                 renderPass = new VkRenderPass(m_device, m_device.SwapChain.Format);
+                frameBuffer = new VkFrameBuffer(m_device, m_device.SwapChain.Extent, renderPass, m_device.SwapChain.Views[0]);
 
                 fixed (PipelineShaderStageCreateInfo* shaderInfo = shaders)
                 {
@@ -230,18 +231,20 @@ namespace Tokamak.Vulkan
 
                     m_device.Parent.SafeExecute(vk => vk.CreateGraphicsPipelines(m_device.LogicalDevice, default, 1, pipelineInfo, null, out handle));
 
-                    var rval = new Pipeline(m_device, handle, layout, renderPass);
+                    var rval = new Pipeline(m_device, handle, layout, renderPass, frameBuffer);
 
                     layout = null;
                     renderPass = null;
+                    frameBuffer = null;
 
                     return rval;
                 }
             }
             finally
             {
-                layout?.Dispose();
+                frameBuffer?.Dispose();
                 renderPass?.Dispose();
+                layout?.Dispose();
             }
         }
     }

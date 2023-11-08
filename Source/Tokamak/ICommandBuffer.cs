@@ -10,6 +10,14 @@ namespace Tokamak
 {
     public interface ICommandBuffer : IDisposable
     {
+        void BeginPass();
+
+        void EndPass();
+
+        void Begin();
+
+        void End();
+
         void ClearBuffers(GlobalBuffer buffers);
 
         void ClearBoundTexture();

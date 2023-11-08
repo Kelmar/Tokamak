@@ -138,6 +138,18 @@ namespace TestBed
             });
 
             m_commandBuffer = m_platform.GetCommandBuffer();
+
+            m_pipeline.Activate(m_commandBuffer);
+
+            m_commandBuffer.Begin();
+
+            m_commandBuffer.BeginPass();
+
+            m_commandBuffer.DrawArrays(0, 3);
+
+            m_commandBuffer.EndPass();
+
+            m_commandBuffer.End();
         }
 
         private void OnClosing()

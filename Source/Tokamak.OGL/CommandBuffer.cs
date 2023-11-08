@@ -56,5 +56,21 @@ namespace Tokamak.OGL
         {
             GL.DrawElements(m_pipeline.Primitive, (uint)length, DrawElementsType.UnsignedInt, 0);
         }
+
+        public void BeginPass()
+        {
+        }
+
+        public void EndPass()
+        {
+        }
+
+        public void Begin()
+        {
+        }
+
+        public void End()
+        {
+        }
     }
 }
