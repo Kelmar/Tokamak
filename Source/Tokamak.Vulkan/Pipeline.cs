@@ -14,37 +14,138 @@ namespace Tokamak.Vulkan
 
         private readonly VkPipelineLayout m_layout;
 
-        public Pipeline(VkDevice device, PLHandle handle, VkPipelineLayout layout, VkRenderPass renderPass, VkFrameBuffer frameBuffer)
+        public Pipeline(VkDevice device, PipelineFactory factory)
         {
             m_device = device;
-            Handle = handle;
-            m_layout = layout;
-            RenderPass = renderPass;
-            FrameBuffer = frameBuffer;
+
+            m_layout = new VkPipelineLayout(m_device);
+            RenderPass = new VkRenderPass(m_device, m_device.SwapChain.Format);
+            FrameBuffer = new VkFrameBuffer(m_device, m_device.SwapChain.Extent, RenderPass, m_device.SwapChain.Views[0]);
+
+            Handle = CreateHandle(factory);
+
+            FrameFence = new VkFence(m_device, true);
         }
 
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
+                FrameFence.Dispose();
+
                 m_device.Parent.Vk.DestroyPipeline(m_device.LogicalDevice, Handle, null);
 
                 FrameBuffer.Dispose();
                 RenderPass.Dispose();
+
                 m_layout.Dispose();
             }
+        }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public VkRenderPass RenderPass { get; }
 
         public VkFrameBuffer FrameBuffer { get; }
 
+        public VkFence FrameFence { get; }
+
         public PLHandle Handle { get; }
 
-        public void Dispose()
+        private PLHandle CreateHandle(PipelineFactory factory)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            var shaders = factory.GetShaderModules();
+
+            PipelineVertexInputStateCreateInfo vertexInputConfig = factory.GetVertexInputConfig();
+
+            PipelineInputAssemblyStateCreateInfo inputConfig = factory.GetInputConfig();
+
+            PipelineRasterizationStateCreateInfo rasterConfig = factory.GetRasterConfig();
+
+            var viewport = new Viewport()
+            {
+                X = 0,
+                Y = 0,
+                Width = m_device.SwapChain.Extent.Width,
+                Height = m_device.SwapChain.Extent.Height,
+                MinDepth = 0,
+                MaxDepth = 1
+            };
+
+            var scissor = new Rect2D
+            {
+                Offset = { X = 0, Y = 0 },
+                Extent = m_device.SwapChain.Extent
+            };
+
+            var viewportConfig = new PipelineViewportStateCreateInfo
+            {
+                SType = StructureType.PipelineViewportStateCreateInfo,
+                ViewportCount = 1,
+                PViewports = &viewport,
+                ScissorCount = 1,
+                PScissors = &scissor
+            };
+
+            var multiSampleConfig = new PipelineMultisampleStateCreateInfo
+            {
+                SType = StructureType.PipelineMultisampleStateCreateInfo,
+                SampleShadingEnable = false,
+                RasterizationSamples = SampleCountFlags.Count1Bit
+            };
+
+            var colorBlendAttachment = new PipelineColorBlendAttachmentState
+            {
+                ColorWriteMask = ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit,
+                BlendEnable = false
+            };
+
+            var colorBlendConfig = new PipelineColorBlendStateCreateInfo
+            {
+                SType = StructureType.PipelineColorBlendStateCreateInfo,
+                LogicOpEnable = false,
+                LogicOp = LogicOp.Copy,
+                AttachmentCount = 1,
+                PAttachments = &colorBlendAttachment
+            };
+
+            colorBlendConfig.BlendConstants[0] = 0;
+            colorBlendConfig.BlendConstants[1] = 0;
+            colorBlendConfig.BlendConstants[2] = 0;
+            colorBlendConfig.BlendConstants[3] = 0;
+
+            fixed (PipelineShaderStageCreateInfo* shaderInfo = shaders)
+            {
+                var pipelineInfo = new GraphicsPipelineCreateInfo
+                {
+                    SType = StructureType.GraphicsPipelineCreateInfo,
+                    StageCount = (uint)shaders.Length,
+                    PStages = shaderInfo,
+                    PVertexInputState = &vertexInputConfig,
+                    PInputAssemblyState = &inputConfig,
+                    PViewportState = &viewportConfig,
+                    PRasterizationState = &rasterConfig,
+                    PMultisampleState = &multiSampleConfig,
+                    PDepthStencilState = null,
+                    PColorBlendState = &colorBlendConfig,
+                    PDynamicState = null,
+                    Layout = m_layout.Handle,
+                    RenderPass = RenderPass.Handle,
+                    Subpass = 0,
+                    BasePipelineIndex = -1
+                };
+
+                pipelineInfo.BasePipelineHandle.Handle = 0;
+
+                PLHandle handle = default;
+
+                m_device.Parent.SafeExecute(vk => vk.CreateGraphicsPipelines(m_device.LogicalDevice, default, 1, pipelineInfo, null, out handle));
+
+                return handle;
+            }
         }
 
         public void Activate(ICommandBuffer buffer)

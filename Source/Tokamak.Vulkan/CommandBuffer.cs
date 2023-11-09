@@ -1,6 +1,4 @@
-﻿using Silk.NET.Vulkan;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
@@ -10,8 +8,9 @@ using System.Threading.Tasks;
 using Tokamak.Buffer;
 using Tokamak.Vulkan.NativeWrapper;
 
+using Silk.NET.Vulkan;
+
 using CBHandle = Silk.NET.Vulkan.CommandBuffer;
-using PLHandle = Silk.NET.Vulkan.Pipeline;
 
 namespace Tokamak.Vulkan
 {
@@ -20,7 +19,11 @@ namespace Tokamak.Vulkan
         private readonly VkDevice m_device;
         private readonly VkCommandPool m_pool;
 
+        private readonly VkSemaphore m_imageSemaphore;
+        private readonly VkSemaphore m_renderSemaphore;
+
         private Pipeline m_pipeline;
+        private uint m_imageIndex;
 
         public CommandBuffer(VkDevice device, VkCommandPool pool)
         {
@@ -28,10 +31,16 @@ namespace Tokamak.Vulkan
             m_pool = pool;
 
             Handle = CreateHandle();
+
+            m_imageSemaphore = new VkSemaphore(m_device);
+            m_renderSemaphore = new VkSemaphore(m_device);
         }
 
         public void Dispose()
         {
+            m_renderSemaphore.Dispose();
+            m_imageSemaphore.Dispose();
+
             var handles = new CBHandle[] { Handle };
             m_device.Parent.Vk.FreeCommandBuffers(m_device.LogicalDevice, m_pool.Handle, handles);
         }
@@ -63,6 +72,17 @@ namespace Tokamak.Vulkan
         public void Draw(uint vertexCount, uint instanceCount, uint firstVertex, uint firstInstance)
         {
             m_device.Parent.Vk.CmdDraw(Handle, vertexCount, instanceCount, firstVertex, firstInstance);
+        }
+
+        public void Reset()
+        {
+            m_pipeline.FrameFence.Wait();
+
+            m_pipeline.FrameFence.Reset();
+
+            m_imageIndex = m_device.SwapChain.AcquireNextImage(m_imageSemaphore);
+
+            m_device.Parent.SafeExecute(vk => vk.ResetCommandBuffer(Handle, CommandBufferResetFlags.None));
         }
 
         public void Begin()
@@ -109,6 +129,32 @@ namespace Tokamak.Vulkan
         public void EndPass()
         {
             m_device.Parent.Vk.CmdEndRenderPass(Handle);
+        }
+
+        public void Flush()
+        {
+            var waitSemaphores = stackalloc[] { m_imageSemaphore.Handle };
+            var waitStages = stackalloc[] { PipelineStageFlags.ColorAttachmentOutputBit };
+            var signalSemaphores = stackalloc[] { m_renderSemaphore.Handle };
+
+            var handles = stackalloc[] { Handle };
+
+            var submitInfo = new SubmitInfo
+            {
+                SType = StructureType.SubmitInfo,
+                WaitSemaphoreCount = 1,
+                PWaitSemaphores = waitSemaphores,
+                PWaitDstStageMask = waitStages,
+
+                CommandBufferCount = 1,
+                PCommandBuffers = handles,
+
+                SignalSemaphoreCount = 1,
+                PSignalSemaphores = signalSemaphores
+            };
+
+            m_device.Parent.SafeExecute(vk => vk.QueueSubmit(m_device.GraphicsQueue, 1, submitInfo, m_pipeline.FrameFence.Handle));
+
             m_pipeline = null;
         }
 

@@ -10,6 +10,8 @@ namespace Tokamak
 {
     public interface ICommandBuffer : IDisposable
     {
+        void Reset();
+
         void BeginPass();
 
         void EndPass();
@@ -17,6 +19,8 @@ namespace Tokamak
         void Begin();
 
         void End();
+
+        void Flush();
 
         void ClearBuffers(GlobalBuffer buffers);
 

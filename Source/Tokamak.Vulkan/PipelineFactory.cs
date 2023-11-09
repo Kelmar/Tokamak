@@ -8,8 +8,6 @@ using Tokamak.Utils;
 
 using Tokamak.Vulkan.NativeWrapper;
 
-using PLHandle = Silk.NET.Vulkan.Pipeline;
-
 namespace Tokamak.Vulkan
 {
     internal unsafe class PipelineFactory : IPipelineFactory
@@ -42,7 +40,7 @@ namespace Tokamak.Vulkan
             };
         }
 
-        private PipelineShaderStageCreateInfo[] GetShaderModules()
+        public PipelineShaderStageCreateInfo[] GetShaderModules()
         {
             var shaderList = m_config.Shaders.ToList();
 
@@ -74,7 +72,7 @@ namespace Tokamak.Vulkan
             return items;
         }
 
-        private PipelineVertexInputStateCreateInfo GetVertexInputConfig()
+        public PipelineVertexInputStateCreateInfo GetVertexInputConfig()
         {
             // TODO: Read format of the vertex reflection and add here.
 
@@ -90,7 +88,7 @@ namespace Tokamak.Vulkan
             };
         }
 
-        private PipelineRasterizationStateCreateInfo GetRasterConfig()
+        public PipelineRasterizationStateCreateInfo GetRasterConfig()
         {
             return new PipelineRasterizationStateCreateInfo
             {
@@ -123,129 +121,19 @@ namespace Tokamak.Vulkan
             };
         }
 
-        public unsafe IPipeline Build()
+        public PipelineInputAssemblyStateCreateInfo GetInputConfig()
         {
-            var shaders = GetShaderModules();
-
-            var vertexInputConfig = GetVertexInputConfig();
-
-            var inputConfig = new PipelineInputAssemblyStateCreateInfo
+            return new PipelineInputAssemblyStateCreateInfo
             {
                 SType = StructureType.PipelineInputAssemblyStateCreateInfo,
                 Topology = PrimitiveTopology.TriangleList,
                 PrimitiveRestartEnable = false
             };
+        }
 
-            var viewport = new Viewport()
-            {
-                X = 0,
-                Y = 0,
-                Width = m_device.SwapChain.Extent.Width,
-                Height = m_device.SwapChain.Extent.Height,
-                MinDepth = 0,
-                MaxDepth = 1
-            };
-
-            var scissor = new Rect2D
-            {
-                Offset = { X = 0, Y = 0 },
-                Extent = m_device.SwapChain.Extent
-            };
-
-            var viewportConfig = new PipelineViewportStateCreateInfo
-            {
-                SType = StructureType.PipelineViewportStateCreateInfo,
-                ViewportCount = 1,
-                PViewports = &viewport,
-                ScissorCount = 1,
-                PScissors = &scissor
-            };
-
-            var rasterConfig = GetRasterConfig();
-
-            var multiSampleConfig = new PipelineMultisampleStateCreateInfo
-            {
-                SType = StructureType.PipelineMultisampleStateCreateInfo,
-                SampleShadingEnable = false,
-                RasterizationSamples = SampleCountFlags.Count1Bit
-            };
-
-            var colorBlendAttachment = new PipelineColorBlendAttachmentState
-            {
-                ColorWriteMask = ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit,
-                BlendEnable = false
-            };
-
-            var colorBlendConfig = new PipelineColorBlendStateCreateInfo
-            {
-                SType = StructureType.PipelineColorBlendStateCreateInfo,
-                LogicOpEnable = false,
-                LogicOp = LogicOp.Copy,
-                AttachmentCount = 1,
-                PAttachments = &colorBlendAttachment
-            };
-
-            colorBlendConfig.BlendConstants[0] = 0;
-            colorBlendConfig.BlendConstants[1] = 0;
-            colorBlendConfig.BlendConstants[2] = 0;
-            colorBlendConfig.BlendConstants[3] = 0;
-
-            /*
-             * This weird variable shenanigan is to work around a potential memory leak if 
-             * something should throw an exception while we create the full pipeline resource.
-             */
-            VkPipelineLayout layout = null;
-            VkRenderPass renderPass = null;
-            VkFrameBuffer frameBuffer = null;
-
-            try
-            {
-                layout = new VkPipelineLayout(m_device);
-                renderPass = new VkRenderPass(m_device, m_device.SwapChain.Format);
-                frameBuffer = new VkFrameBuffer(m_device, m_device.SwapChain.Extent, renderPass, m_device.SwapChain.Views[0]);
-
-                fixed (PipelineShaderStageCreateInfo* shaderInfo = shaders)
-                {
-                    var pipelineInfo = new GraphicsPipelineCreateInfo
-                    {
-                        SType = StructureType.GraphicsPipelineCreateInfo,
-                        StageCount = (uint)shaders.Length,
-                        PStages = shaderInfo,
-                        PVertexInputState = &vertexInputConfig,
-                        PInputAssemblyState = &inputConfig,
-                        PViewportState = &viewportConfig,
-                        PRasterizationState = &rasterConfig,
-                        PMultisampleState = &multiSampleConfig,
-                        PDepthStencilState = null,
-                        PColorBlendState = &colorBlendConfig,
-                        PDynamicState = null,
-                        Layout = layout.Handle,
-                        RenderPass = renderPass.Handle,
-                        Subpass = 0,
-                        BasePipelineIndex = -1
-                    };
-
-                    pipelineInfo.BasePipelineHandle.Handle = 0;
-
-                    PLHandle handle = default;
-
-                    m_device.Parent.SafeExecute(vk => vk.CreateGraphicsPipelines(m_device.LogicalDevice, default, 1, pipelineInfo, null, out handle));
-
-                    var rval = new Pipeline(m_device, handle, layout, renderPass, frameBuffer);
-
-                    layout = null;
-                    renderPass = null;
-                    frameBuffer = null;
-
-                    return rval;
-                }
-            }
-            finally
-            {
-                frameBuffer?.Dispose();
-                renderPass?.Dispose();
-                layout?.Dispose();
-            }
+        public unsafe IPipeline Build()
+        {
+            return new Pipeline(m_device, this);
         }
     }
 }

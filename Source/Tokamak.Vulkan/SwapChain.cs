@@ -17,7 +17,7 @@ namespace Tokamak.Vulkan
         private bool m_disposed = false;
 
         private KhrSwapchain m_khrSwapChain;
-        private SwapchainKHR m_swapChain;
+        private SwapchainKHR m_handle;
 
         public SwapChain(VkDevice device)
         {
@@ -54,7 +54,7 @@ namespace Tokamak.Vulkan
 
             Images = new List<VkImage>(0);
 
-            m_khrSwapChain.DestroySwapchain(m_device.LogicalDevice, m_swapChain, null);
+            m_khrSwapChain.DestroySwapchain(m_device.LogicalDevice, m_handle, null);
         }
 
         private void CreateSwapChain()
@@ -102,7 +102,7 @@ namespace Tokamak.Vulkan
             if (!m_device.TryGetExtension(out m_khrSwapChain))
                 throw new NotSupportedException("VK_KHR_swapchain extension not found.");
 
-            SafeExecute(sc => sc.CreateSwapchain(m_device.LogicalDevice, createInfo, null, out m_swapChain));
+            SafeExecute(sc => sc.CreateSwapchain(m_device.LogicalDevice, createInfo, null, out m_handle));
 
             Format = createInfo.ImageFormat;
             Extent = createInfo.ImageExtent;
@@ -168,7 +168,7 @@ namespace Tokamak.Vulkan
             uint imageCnt = 0;
             uint* cnt = &imageCnt;
 
-            SafeExecute(sc => sc.GetSwapchainImages(m_device.LogicalDevice, m_swapChain, cnt, null));
+            SafeExecute(sc => sc.GetSwapchainImages(m_device.LogicalDevice, m_handle, cnt, null));
 
             var rval = new List<VkImage>((int)imageCnt);
 
@@ -176,13 +176,22 @@ namespace Tokamak.Vulkan
             {
                 var images = new Image[imageCnt];
 
-                SafeExecute(sc => sc.GetSwapchainImages(m_device.LogicalDevice, m_swapChain, cnt, images));
+                SafeExecute(sc => sc.GetSwapchainImages(m_device.LogicalDevice, m_handle, cnt, images));
                 
 
                 rval.AddRange(images.Select(i => VkImage.FromHandle(m_device, i, Format, ext3D)));
             }
 
             return rval;
+        }
+
+        public uint AcquireNextImage(VkSemaphore semaphore)
+        {
+            uint imageIndex = 0;
+
+            SafeExecute(sc => sc.AcquireNextImage(m_device.LogicalDevice, m_handle, ulong.MaxValue, semaphore.Handle, default, ref imageIndex));
+                   
+            return imageIndex;
         }
 
         internal void Rebuild()

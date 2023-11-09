@@ -63,11 +63,11 @@ namespace Tokamak.Vulkan
 
         public static IEnumerable<VkDevice> EnumerateAll(VkPlatform platform)
         {
-            var devs = VkPhysicalDevice.Enumerate(platform);
+            var devices = VkPhysicalDevice.Enumerate(platform);
 
-            var rval = new List<VkDevice>(devs.Count());
+            var rval = new List<VkDevice>(devices.Count());
 
-            foreach (var dev in devs)
+            foreach (var dev in devices)
             {
                 var info = new VkPhysicalDeviceProperties(platform, dev);
 
@@ -109,9 +109,9 @@ namespace Tokamak.Vulkan
         }
 
         public bool TryGetExtension<T>(out T ext)
-             where T : NativeExtension<Silk.NET.Vulkan.Vk>
+             where T : NativeExtension<Vk>
         {
-            return Parent.Vk.TryGetDeviceExtension<T>(Parent.Instance, LogicalDevice, out ext);
+            return Parent.Vk.TryGetDeviceExtension(Parent.Instance, LogicalDevice, out ext);
         }
 
         internal VkImage CreateImage(ImageCreateInfo createInfo)
@@ -173,7 +173,7 @@ namespace Tokamak.Vulkan
             };
 
             using var layers = new VkStringArray(GetEnabledLayers());
-            using var exts = new VkStringArray(GetEnabledExtensions());
+            using var extensions = new VkStringArray(GetEnabledExtensions());
 
             var createInfo = new DeviceCreateInfo
             {
@@ -181,8 +181,8 @@ namespace Tokamak.Vulkan
                 QueueCreateInfoCount = (uint)ufArray.Length,
                 PQueueCreateInfos = queueCreateInfos,
                 PEnabledFeatures = &features,
-                PpEnabledExtensionNames = exts.Pointer,
-                EnabledExtensionCount = exts.Length,
+                PpEnabledExtensionNames = extensions.Pointer,
+                EnabledExtensionCount = extensions.Length,
                 PpEnabledLayerNames = layers.Pointer,
                 EnabledLayerCount = layers.Length
             };
