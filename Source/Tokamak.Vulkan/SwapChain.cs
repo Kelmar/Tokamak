@@ -21,7 +21,7 @@ namespace Tokamak.Vulkan
 
         public SwapChain(VkDevice device)
         {
-            Images = new List<VkImage>(0);
+            Images = new List<SwapChainImage>(0);
 
             m_device = device;
 
@@ -34,9 +34,7 @@ namespace Tokamak.Vulkan
             Cleanup();
         }
 
-        public IReadOnlyList<VkImage> Images { get; private set; }
-
-        public IReadOnlyList<VkImageView> Views { get; private set; }
+        public IReadOnlyList<SwapChainImage> Images { get; private set; }
 
         public Format Format { get; private set; }
 
@@ -46,13 +44,10 @@ namespace Tokamak.Vulkan
         {
             m_device.WaitIdle();
 
-            foreach (var view in Views)
-                view.Dispose();
-
             foreach (var img in Images)
                 img.Dispose();
 
-            Images = new List<VkImage>(0);
+            Images = new List<SwapChainImage>(0);
 
             m_khrSwapChain.DestroySwapchain(m_device.LogicalDevice, m_handle, null);
         }
@@ -90,9 +85,9 @@ namespace Tokamak.Vulkan
                 OldSwapchain = default
             };
 
-            uint* indices = stackalloc[] { m_device.GraphicsQueueIndex, m_device.SurfaceQueueIndex };
+            uint* indices = stackalloc[] { m_device.GraphicsQueueIndex, m_device.PresentQueueIndex };
 
-            if (m_device.GraphicsQueueIndex != m_device.SurfaceQueueIndex)
+            if (m_device.GraphicsQueueIndex != m_device.PresentQueueIndex)
             {
                 createInfo.ImageSharingMode = SharingMode.Concurrent;
                 createInfo.QueueFamilyIndexCount = 2;
@@ -110,8 +105,38 @@ namespace Tokamak.Vulkan
             foreach (var img in Images)
                 img.Dispose();
 
-            Images = GetImages().ToList();
-            Views = Images.Select(i => i.CreateView()).ToList();
+            var images = GetImages().ToList();
+
+            foreach (var detail in Images)
+                detail.Dispose();
+
+            var newImages = new List<SwapChainImage>(images.Count);
+
+            for (int i = 0; i < images.Count; ++i)
+            {
+                newImages.Add(new SwapChainImage(i)
+                {
+                    Image = images[i],
+                    View = images[i].CreateView()
+                });
+            }
+
+            Images = newImages;
+        }
+
+        public void InitSyncObjects()
+        {
+            foreach (var img in Images)
+            {
+                if (img.ImageSemaphore == null)
+                    img.ImageSemaphore = new VkSemaphore(m_device);
+
+                if (img.RenderSemaphore == null)
+                    img.RenderSemaphore = new VkSemaphore(m_device);
+
+                if (img.Fence == null)
+                    img.Fence = new VkFence(m_device, true);
+            }
         }
 
         private void SafeExecute(Func<KhrSwapchain, Result> cb)
@@ -177,7 +202,6 @@ namespace Tokamak.Vulkan
                 var images = new Image[imageCnt];
 
                 SafeExecute(sc => sc.GetSwapchainImages(m_device.LogicalDevice, m_handle, cnt, images));
-                
 
                 rval.AddRange(images.Select(i => VkImage.FromHandle(m_device, i, Format, ext3D)));
             }
@@ -190,8 +214,30 @@ namespace Tokamak.Vulkan
             uint imageIndex = 0;
 
             SafeExecute(sc => sc.AcquireNextImage(m_device.LogicalDevice, m_handle, ulong.MaxValue, semaphore.Handle, default, ref imageIndex));
-                   
+
             return imageIndex;
+        }
+
+        public void Present(SwapChainImage image, Queue presentQueue)
+        {
+            uint imageIndex = (uint)image.Index;
+
+            var swapChains = stackalloc[] { m_handle };
+            var signalSemaphores = stackalloc[] { image.RenderSemaphore.Handle };
+
+            var presentInfo = new PresentInfoKHR
+            {
+                SType = StructureType.PresentInfoKhr,
+                WaitSemaphoreCount = 1,
+                PWaitSemaphores = signalSemaphores,
+
+                SwapchainCount = 1,
+                PSwapchains = swapChains,
+
+                PImageIndices = &imageIndex
+            };
+
+            SafeExecute(khr => khr.QueuePresent(presentQueue, presentInfo));
         }
 
         internal void Rebuild()

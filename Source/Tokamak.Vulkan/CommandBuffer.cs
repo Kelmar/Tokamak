@@ -19,11 +19,9 @@ namespace Tokamak.Vulkan
         private readonly VkDevice m_device;
         private readonly VkCommandPool m_pool;
 
-        private readonly VkSemaphore m_imageSemaphore;
-        private readonly VkSemaphore m_renderSemaphore;
+        private SwapChainImage m_image;
 
         private Pipeline m_pipeline;
-        private uint m_imageIndex;
 
         public CommandBuffer(VkDevice device, VkCommandPool pool)
         {
@@ -32,15 +30,11 @@ namespace Tokamak.Vulkan
 
             Handle = CreateHandle();
 
-            m_imageSemaphore = new VkSemaphore(m_device);
-            m_renderSemaphore = new VkSemaphore(m_device);
+            m_device.SwapChain.InitSyncObjects();
         }
 
         public void Dispose()
         {
-            m_renderSemaphore.Dispose();
-            m_imageSemaphore.Dispose();
-
             var handles = new CBHandle[] { Handle };
             m_device.Parent.Vk.FreeCommandBuffers(m_device.LogicalDevice, m_pool.Handle, handles);
         }
@@ -76,12 +70,14 @@ namespace Tokamak.Vulkan
 
         public void Reset()
         {
-            m_pipeline.FrameFence.Wait();
+            if (m_image == null)
+                m_image = m_device.SwapChain.Images[0];
 
-            m_pipeline.FrameFence.Reset();
+            m_image.Fence.Wait();
 
-            m_imageIndex = m_device.SwapChain.AcquireNextImage(m_imageSemaphore);
-
+            uint index = m_device.SwapChain.AcquireNextImage(m_image.ImageSemaphore);
+            m_image = m_device.SwapChain.Images[(int)index];
+            
             m_device.Parent.SafeExecute(vk => vk.ResetCommandBuffer(Handle, CommandBufferResetFlags.None));
         }
 
@@ -111,7 +107,7 @@ namespace Tokamak.Vulkan
             {
                 SType = StructureType.RenderPassBeginInfo,
                 RenderPass = m_pipeline.RenderPass.Handle,
-                Framebuffer = m_pipeline.FrameBuffer.Handle,
+                Framebuffer = m_pipeline.FrameBuffers[m_image.Index].Handle,
                 ClearValueCount = 1,
                 PClearValues = &clearColor,
                 RenderArea =
@@ -133,9 +129,11 @@ namespace Tokamak.Vulkan
 
         public void Flush()
         {
-            var waitSemaphores = stackalloc[] { m_imageSemaphore.Handle };
+            m_image.Fence.Reset();
+
+            var waitSemaphores = stackalloc[] { m_image.ImageSemaphore.Handle };
             var waitStages = stackalloc[] { PipelineStageFlags.ColorAttachmentOutputBit };
-            var signalSemaphores = stackalloc[] { m_renderSemaphore.Handle };
+            var signalSemaphores = stackalloc[] { m_image.RenderSemaphore.Handle };
 
             var handles = stackalloc[] { Handle };
 
@@ -153,7 +151,9 @@ namespace Tokamak.Vulkan
                 PSignalSemaphores = signalSemaphores
             };
 
-            m_device.Parent.SafeExecute(vk => vk.QueueSubmit(m_device.GraphicsQueue, 1, submitInfo, m_pipeline.FrameFence.Handle));
+            m_device.Parent.SafeExecute(vk => vk.QueueSubmit(m_device.GraphicsQueue, 1, submitInfo, m_image.Fence.Handle));
+
+            m_device.SwapChain.Present(m_image, m_device.PresentQueue);
 
             m_pipeline = null;
         }

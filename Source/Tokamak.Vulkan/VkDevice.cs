@@ -22,7 +22,7 @@ namespace Tokamak.Vulkan
         private NativeDevice m_logicalDevice;
 
         private NativeQueue m_graphicsQueue;
-        private NativeQueue m_surfaceQueue;
+        private NativeQueue m_presentQueue;
 
         private VkDevice(VkPlatform platform, VkPhysicalDevice device)
         {
@@ -53,9 +53,9 @@ namespace Tokamak.Vulkan
 
         public uint GraphicsQueueIndex { get; private set; }
 
-        public NativeQueue SurfaceQueue => m_surfaceQueue;
+        public NativeQueue PresentQueue => m_presentQueue;
 
-        public uint SurfaceQueueIndex { get; private set; }
+        public uint PresentQueueIndex { get; private set; }
 
         public SwapChain SwapChain { get; private set; }
 
@@ -130,11 +130,13 @@ namespace Tokamak.Vulkan
 
             float queuePriority = 1.0f;
 
-            var graphQueue = GetQueues().First(q => q.QueueFlags.HasFlag(QueueFlags.GraphicsBit));
-            VkQueueFamilyProperties surfaceQueue = null;
+            var queues = GetQueues().ToList();
+
+            var graphQueue = queues.First(q => q.QueueFlags.HasFlag(QueueFlags.GraphicsBit));
+            VkQueueFamilyProperties presentQueue = null;
 
             GraphicsQueueIndex = graphQueue.Index;
-            SurfaceQueueIndex = graphQueue.Index;
+            PresentQueueIndex = graphQueue.Index;
 
             var uniqueFamilies = new HashSet<uint>
             {
@@ -145,9 +147,9 @@ namespace Tokamak.Vulkan
             {
                 if (Parent.Surface.GetPhysicalDeviceSupport(PhysicalDevice, q.Index))
                 {
-                    SurfaceQueueIndex = q.Index;
+                    PresentQueueIndex = q.Index;
                     uniqueFamilies.Add(q.Index);
-                    surfaceQueue = q;
+                    presentQueue = q;
                     break;
                 }
             }
@@ -190,7 +192,7 @@ namespace Tokamak.Vulkan
             Parent.SafeExecute(vk => vk.CreateDevice(PhysicalDevice.Handle, in createInfo, null, out m_logicalDevice));
 
             Parent.Vk.GetDeviceQueue(LogicalDevice, GraphicsQueueIndex, 0, out m_graphicsQueue);
-            Parent.Vk.GetDeviceQueue(LogicalDevice, SurfaceQueueIndex, 0, out m_surfaceQueue);
+            Parent.Vk.GetDeviceQueue(LogicalDevice, PresentQueueIndex, 0, out m_presentQueue);
 
             SwapChain = new SwapChain(this);
         }

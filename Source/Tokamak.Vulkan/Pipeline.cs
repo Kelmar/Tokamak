@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Silk.NET.Vulkan;
 
@@ -14,28 +15,32 @@ namespace Tokamak.Vulkan
 
         private readonly VkPipelineLayout m_layout;
 
+        private readonly List<VkFrameBuffer> m_frameBuffers = new List<VkFrameBuffer>();
+
         public Pipeline(VkDevice device, PipelineFactory factory)
         {
             m_device = device;
 
             m_layout = new VkPipelineLayout(m_device);
             RenderPass = new VkRenderPass(m_device, m_device.SwapChain.Format);
-            FrameBuffer = new VkFrameBuffer(m_device, m_device.SwapChain.Extent, RenderPass, m_device.SwapChain.Views[0]);
+
+            foreach (var image in m_device.SwapChain.Images)
+                m_frameBuffers.Add(new VkFrameBuffer(m_device, m_device.SwapChain.Extent, RenderPass, image.View));
 
             Handle = CreateHandle(factory);
-
-            FrameFence = new VkFence(m_device, true);
         }
 
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
-                FrameFence.Dispose();
-
                 m_device.Parent.Vk.DestroyPipeline(m_device.LogicalDevice, Handle, null);
 
-                FrameBuffer.Dispose();
+                foreach (var fb in m_frameBuffers)
+                    fb.Dispose();
+
+                m_frameBuffers.Clear();
+
                 RenderPass.Dispose();
 
                 m_layout.Dispose();
@@ -49,9 +54,7 @@ namespace Tokamak.Vulkan
 
         public VkRenderPass RenderPass { get; }
 
-        public VkFrameBuffer FrameBuffer { get; }
-
-        public VkFence FrameFence { get; }
+        public IReadOnlyList<VkFrameBuffer> FrameBuffers => m_frameBuffers;
 
         public PLHandle Handle { get; }
 
