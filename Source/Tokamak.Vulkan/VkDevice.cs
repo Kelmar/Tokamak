@@ -44,6 +44,9 @@ namespace Tokamak.Vulkan
 
         public void Dispose()
         {
+            while (m_freeSubmitFences.TryDequeue(out VkFence fence))
+                fence.Dispose();
+
             SwapChain?.Dispose();
 
             if (LogicalDevice.Handle != 0)

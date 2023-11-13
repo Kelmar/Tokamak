@@ -37,6 +37,12 @@ namespace Tokamak.Vulkan
 
         public void Dispose()
         {
+            m_device.WaitForSubmittedWork();
+
+            m_fence.Wait();
+
+            m_cmdBuffer.Dispose();
+            m_fence.Dispose();
         }
 
         public IPipeline Pipeline
