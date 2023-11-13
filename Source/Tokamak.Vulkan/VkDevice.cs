@@ -44,12 +44,18 @@ namespace Tokamak.Vulkan
 
         public void Dispose()
         {
+            /*
+             * By the time we get here, all CommandList objects should be disposed of.
+             * Along with their work being fully completed.  That should put all of the
+             * work fences in the free pool.
+             */
+
             while (m_freeSubmitFences.TryDequeue(out VkFence fence))
                 fence.Dispose();
 
             SwapChain?.Dispose();
 
-            if (LogicalDevice.Handle != 0)
+            if (m_logicalDevice.Handle != 0)
             {
                 Parent.Vk.DestroyDevice(LogicalDevice, null);
                 m_logicalDevice.Handle = 0;
