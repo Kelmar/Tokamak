@@ -17,7 +17,17 @@ namespace Tokamak.Vulkan
 {
     internal unsafe class VkDevice : Device, IDisposable
     {
+        private class SubmittedWork
+        {
+            public VkCommandBuffer CommandBuffer { get; set; }
+
+            public VkFence Fence { get; set; }
+        }
+
         private readonly List<VkQueueFamilyProperties> m_queueProps = new List<VkQueueFamilyProperties>();
+
+        private readonly Queue<VkFence> m_freeSubmitFences = new Queue<VkFence>();
+        private readonly Queue<SubmittedWork> m_submittedWork = new Queue<SubmittedWork>();
 
         private NativeDevice m_logicalDevice;
 
@@ -121,6 +131,60 @@ namespace Tokamak.Vulkan
             Parent.SafeExecute(vk => vk.CreateImage(LogicalDevice, createInfo, null, out image));
 
             return VkImage.FromHandle(this, image, createInfo.Format, createInfo.Extent);
+        }
+
+        private VkFence GetSubmitFence()
+        {
+            VkFence rval;
+
+            if (!m_freeSubmitFences.TryDequeue(out rval))
+                rval = new VkFence(this, false);
+
+            return rval;
+        }
+
+        public void QueueSubmit(Queue queue, VkCommandBuffer cmdBuffer)
+        {
+            var handles = stackalloc[] { cmdBuffer.Handle };
+
+            var submitInfo = new SubmitInfo
+            {
+                SType = StructureType.SubmitInfo,
+                WaitSemaphoreCount = 0,
+                PWaitSemaphores = null,
+                PWaitDstStageMask = null,
+
+                CommandBufferCount = 1,
+                PCommandBuffers = handles,
+
+                SignalSemaphoreCount = 0,
+                PSignalSemaphores = null
+            };
+
+            var fence = GetSubmitFence();
+
+            Parent.SafeExecute(vk => vk.QueueSubmit(queue, 1, submitInfo, fence.Handle));
+
+            m_submittedWork.Enqueue(new SubmittedWork
+            {
+                CommandBuffer = cmdBuffer,
+                Fence = fence
+            });
+        }
+
+        public void WaitForSubmittedWork()
+        {
+            while (m_submittedWork.TryDequeue(out SubmittedWork work))
+            {
+                work.Fence.Wait();
+                CompleteWork(work);
+            }
+        }
+
+        private void CompleteWork(SubmittedWork work)
+        {
+            work.Fence.Reset();
+            m_freeSubmitFences.Enqueue(work.Fence);
         }
 
         public void InitLogicalDevice()

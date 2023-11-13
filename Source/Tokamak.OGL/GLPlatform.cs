@@ -94,9 +94,9 @@ namespace Tokamak.OGL
             return new PipelineFactory(this, config);
         }
 
-        public override ICommandBuffer GetCommandBuffer()
+        public override ICommandList GetCommandList()
         {
-            return new CommandBuffer(GL, m_whiteTexture);
+            return new GLCommandList(GL, m_whiteTexture);
         }
 
         public override void SetRenderState(RenderState state)

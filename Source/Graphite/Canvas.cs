@@ -87,7 +87,7 @@ void main()
         private readonly Platform m_device;
 
         private readonly IPipeline m_pipeline;
-        private readonly ICommandBuffer m_commandBuffer;
+        private readonly ICommandList m_commandBuffer;
 
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
@@ -108,7 +108,7 @@ void main()
                 cfg.UseShader(ShaderType.Fragment, FRAGMENT_SHADER_PATH);
             });
 
-            m_commandBuffer = device.GetCommandBuffer();
+            m_commandBuffer = device.GetCommandList();
 
             m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dyanmic);
         }
@@ -286,8 +286,6 @@ void main()
         public void Render()
         {
             ITextureObject last = null;
-
-            m_pipeline.Activate(m_commandBuffer);
 
             m_vertexBuffer.Set(m_vectors);
 

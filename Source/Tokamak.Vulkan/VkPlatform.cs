@@ -293,9 +293,9 @@ namespace Tokamak.Vulkan
             return new PipelineFactory(m_device, config);
         }
 
-        public override ICommandBuffer GetCommandBuffer()
+        public override ICommandList GetCommandList()
         {
-            return new CommandBuffer(m_device, m_commandPool);
+            return new CommandList(m_device, m_commandPool);
         }
 
         public override IElementBuffer GetElementBuffer(BufferType type)

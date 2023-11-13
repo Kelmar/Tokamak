@@ -4,11 +4,11 @@ using Silk.NET.Vulkan;
 
 namespace Tokamak.Vulkan.NativeWrapper
 {
-    internal unsafe class VkFrameBuffer : IDisposable
+    internal unsafe class VkFramebuffer : IDisposable
     {
         private readonly VkDevice m_device;
 
-        public VkFrameBuffer(VkDevice device, in Extent2D extent, VkRenderPass renderPass, VkImageView view)
+        public VkFramebuffer(VkDevice device, in Extent2D extent, VkRenderPass renderPass, VkImageView view)
         {
             m_device = device;
             Extent = extent;

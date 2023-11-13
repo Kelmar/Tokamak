@@ -40,7 +40,7 @@ namespace TestBed
         //private TestObject m_test;
 
         private IPipeline m_pipeline;
-        private ICommandBuffer m_commandBuffer;
+        private ICommandList m_commandList;
 
         private int m_frameCount;
         private DateTime m_lastCheck = DateTime.UtcNow;
@@ -137,12 +137,12 @@ namespace TestBed
                 cfg.UsePrimitive(PrimitiveType.TriangleList);
             });
 
-            m_commandBuffer = m_platform.GetCommandBuffer();
+            m_commandList = m_platform.GetCommandList();
         }
 
         private void OnClosing()
         {
-            m_commandBuffer.Dispose();
+            m_commandList.Dispose();
             m_pipeline.Dispose();
 
             //m_scene.Dispose();
@@ -192,23 +192,15 @@ namespace TestBed
 
         protected void OnRenderFrame(double delta)
         {
-            m_pipeline.Activate(m_commandBuffer);
+            m_commandList.Pipeline = m_pipeline;
 
-            m_commandBuffer.Reset();
+            m_commandList.Begin();
 
-            m_commandBuffer.Begin();
+            m_commandList.ClearBuffers(GlobalBuffer.ColorBuffer | GlobalBuffer.DepthBuffer);
 
-            m_commandBuffer.BeginPass();
+            m_commandList.DrawArrays(0, 3);
 
-            m_commandBuffer.ClearBuffers(GlobalBuffer.ColorBuffer | GlobalBuffer.DepthBuffer);
-
-            m_commandBuffer.DrawArrays(0, 3);
-
-            m_commandBuffer.EndPass();
-
-            m_commandBuffer.End();
-
-            m_commandBuffer.Flush();
+            m_commandList.End();
 
             /*
 

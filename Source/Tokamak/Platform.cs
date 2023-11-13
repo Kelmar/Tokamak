@@ -78,6 +78,6 @@ namespace Tokamak
             return factory.Build();
         }
 
-        public abstract ICommandBuffer GetCommandBuffer();
+        public abstract ICommandList GetCommandList();
     }
 }

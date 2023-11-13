@@ -1,18 +1,20 @@
 ﻿using Silk.NET.OpenGL;
 
+using System.Numerics;
+
 using Tokamak.Buffer;
 
 using TokPrimType = Tokamak.PrimitiveType;
 
 namespace Tokamak.OGL
 {
-    internal class CommandBuffer : ICommandBuffer
+    internal class GLCommandList : ICommandList
     {
         private readonly TextureObject m_whiteTexture;
 
         private Pipeline m_pipeline;
 
-        public CommandBuffer(GL gl, TextureObject whiteTexture)
+        public GLCommandList(GL gl, TextureObject whiteTexture)
         {
             GL = gl;
             m_whiteTexture = whiteTexture;
@@ -23,6 +25,10 @@ namespace Tokamak.OGL
         }
 
         public GL GL { get; }
+
+        public IPipeline Pipeline { get; set; }
+
+        public Vector4 ClearColor { get; set; }
 
         internal void MakeActive(Pipeline pipeline)
         {
@@ -57,27 +63,11 @@ namespace Tokamak.OGL
             GL.DrawElements(m_pipeline.Primitive, (uint)length, DrawElementsType.UnsignedInt, 0);
         }
 
-        public void Reset()
-        {
-        }
-
-        public void BeginPass()
-        {
-        }
-
-        public void EndPass()
-        {
-        }
-
         public void Begin()
         {
         }
 
         public void End()
-        {
-        }
-
-        public void Flush()
         {
         }
     }

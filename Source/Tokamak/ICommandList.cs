@@ -1,26 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 
 using Tokamak.Buffer;
 
 namespace Tokamak
 {
-    public interface ICommandBuffer : IDisposable
+    public interface ICommandList : IDisposable
     {
-        void Reset();
+        IPipeline Pipeline { get; set; }
 
-        void BeginPass();
-
-        void EndPass();
+        Vector4 ClearColor { get; set; }
 
         void Begin();
 
         void End();
-
-        void Flush();
 
         void ClearBuffers(GlobalBuffer buffers);
 

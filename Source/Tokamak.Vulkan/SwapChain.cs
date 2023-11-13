@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Silk.NET.Windowing;
+
+using Tokamak.Logging;
 
 using Tokamak.Vulkan.NativeWrapper;
 
@@ -12,6 +15,8 @@ namespace Tokamak.Vulkan
 {
     internal unsafe class SwapChain : IDisposable
     {
+        private readonly ILogger m_log;
+
         private readonly VkDevice m_device;
 
         private bool m_disposed = false;
@@ -19,8 +24,12 @@ namespace Tokamak.Vulkan
         private KhrSwapchain m_khrSwapChain;
         private SwapchainKHR m_handle;
 
+        private uint m_imageIndex;
+
         public SwapChain(VkDevice device)
         {
+            m_log = Platform.Services.GetLogger<SwapChain>();
+
             Images = new List<SwapChainImage>(0);
 
             m_device = device;
@@ -35,6 +44,10 @@ namespace Tokamak.Vulkan
         }
 
         public IReadOnlyList<SwapChainImage> Images { get; private set; }
+
+        public SwapChainImage CurrentImage => Images[(int)m_imageIndex];
+
+        public uint ImageIndex => m_imageIndex;
 
         public Format Format { get; private set; }
 
@@ -124,21 +137,6 @@ namespace Tokamak.Vulkan
             Images = newImages;
         }
 
-        public void InitSyncObjects()
-        {
-            foreach (var img in Images)
-            {
-                if (img.ImageSemaphore == null)
-                    img.ImageSemaphore = new VkSemaphore(m_device);
-
-                if (img.RenderSemaphore == null)
-                    img.RenderSemaphore = new VkSemaphore(m_device);
-
-                if (img.Fence == null)
-                    img.Fence = new VkFence(m_device, true);
-            }
-        }
-
         private void SafeExecute(Func<KhrSwapchain, Result> cb)
         {
             if (m_disposed)
@@ -209,27 +207,42 @@ namespace Tokamak.Vulkan
             return rval;
         }
 
-        public uint AcquireNextImage(VkSemaphore semaphore)
+        public bool AcquireNextImage(VkFence fence)
         {
-            uint imageIndex = 0;
+            Debug.Assert(fence != default, "Invalid fence handle");
 
-            SafeExecute(sc => sc.AcquireNextImage(m_device.LogicalDevice, m_handle, ulong.MaxValue, semaphore.Handle, default, ref imageIndex));
+            Result res = m_khrSwapChain.AcquireNextImage(m_device.LogicalDevice, m_handle, ulong.MaxValue, default, fence.Handle, ref m_imageIndex);
 
-            return imageIndex;
+            switch (res)
+            {
+            case Result.Success:
+                break;
+
+            case Result.ErrorOutOfDateKhr:
+            case Result.SuboptimalKhr:
+                m_log.Debug("Need to recreate the swap chain here.");
+                //CreateSwapChain(); // Rebuild the swap chain.
+                return false;
+
+            default:
+                throw new VulkanException(res);
+            }
+
+            return true;
         }
 
-        public void Present(SwapChainImage image, Queue presentQueue)
+        public void Present(Queue presentQueue)
         {
-            uint imageIndex = (uint)image.Index;
-
             var swapChains = stackalloc[] { m_handle };
-            var signalSemaphores = stackalloc[] { image.RenderSemaphore.Handle };
+            //var signalSemaphores = stackalloc[] { CurrentImage.RenderSemaphore.Handle };
+
+            uint imageIndex = m_imageIndex;
 
             var presentInfo = new PresentInfoKHR
             {
                 SType = StructureType.PresentInfoKhr,
-                WaitSemaphoreCount = 1,
-                PWaitSemaphores = signalSemaphores,
+                WaitSemaphoreCount = 0,
+                PWaitSemaphores = null,
 
                 SwapchainCount = 1,
                 PSwapchains = swapChains,

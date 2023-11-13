@@ -15,7 +15,7 @@ namespace Tokamak.Vulkan
 
         private readonly VkPipelineLayout m_layout;
 
-        private readonly List<VkFrameBuffer> m_frameBuffers = new List<VkFrameBuffer>();
+        private readonly List<VkFramebuffer> m_frameBuffers = new List<VkFramebuffer>();
 
         public Pipeline(VkDevice device, PipelineFactory factory)
         {
@@ -25,7 +25,7 @@ namespace Tokamak.Vulkan
             RenderPass = new VkRenderPass(m_device, m_device.SwapChain.Format);
 
             foreach (var image in m_device.SwapChain.Images)
-                m_frameBuffers.Add(new VkFrameBuffer(m_device, m_device.SwapChain.Extent, RenderPass, image.View));
+                m_frameBuffers.Add(new VkFramebuffer(m_device, m_device.SwapChain.Extent, RenderPass, image.View));
 
             Handle = CreateHandle(factory);
         }
@@ -54,7 +54,7 @@ namespace Tokamak.Vulkan
 
         public VkRenderPass RenderPass { get; }
 
-        public IReadOnlyList<VkFrameBuffer> FrameBuffers => m_frameBuffers;
+        public IReadOnlyList<VkFramebuffer> FrameBuffers => m_frameBuffers;
 
         public PLHandle Handle { get; }
 
@@ -149,12 +149,6 @@ namespace Tokamak.Vulkan
 
                 return handle;
             }
-        }
-
-        public void Activate(ICommandBuffer buffer)
-        {
-            var cmdBuffer = (CommandBuffer)buffer;
-            cmdBuffer.BindPipeline(this);
         }
     }
 }
