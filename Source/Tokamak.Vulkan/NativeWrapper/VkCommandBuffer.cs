@@ -42,7 +42,7 @@ namespace Tokamak.Vulkan.NativeWrapper
 
             CBHandle handle = default;
 
-            m_device.Parent.SafeExecute(vk => vk.AllocateCommandBuffers(m_device.LogicalDevice, allocInfo, out handle));
+            m_device.Parent.SafeExecute(vk => vk.AllocateCommandBuffers(m_device.LogicalDevice, in allocInfo, out handle));
 
             return handle;
         }
@@ -72,7 +72,7 @@ namespace Tokamak.Vulkan.NativeWrapper
                 SType = StructureType.CommandBufferBeginInfo
             };
 
-            m_device.Parent.SafeExecute(vk => vk.BeginCommandBuffer(Handle, info));
+            m_device.Parent.SafeExecute(vk => vk.BeginCommandBuffer(Handle, in info));
         }
 
         public void End()
@@ -103,7 +103,7 @@ namespace Tokamak.Vulkan.NativeWrapper
                 RenderArea = RenderArea
             };
 
-            m_device.Parent.Vk.CmdBeginRenderPass(Handle, renderInfo, SubpassContents.Inline);
+            m_device.Parent.Vk.CmdBeginRenderPass(Handle, in renderInfo, SubpassContents.Inline);
         }
 
         public void EndRenderPass()

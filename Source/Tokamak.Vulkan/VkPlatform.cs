@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 using Silk.NET.Core.Native;
+using Silk.NET.Maths;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Windowing;
@@ -40,6 +42,9 @@ namespace Tokamak.Vulkan
         public VkPlatform(IWindow window)
         {
             Window = window;
+
+            // Set initial size to prevent redundant Rebuild of swap chain.
+            base.Viewport = new Rect(Point.Zero, Window.FramebufferSize);
 
             m_log = Platform.Services.GetLogger<VkPlatform>();
             m_config = Platform.Services.Find<IConfigReader>();
@@ -167,7 +172,7 @@ namespace Tokamak.Vulkan
 
             Instance instance;
 
-            var result = Vk.CreateInstance(info, null, out instance);
+            var result = Vk.CreateInstance(in info, null, out instance);
 
             if (result != Result.Success)
                 throw new VulkanException(result);
@@ -281,10 +286,13 @@ namespace Tokamak.Vulkan
             get => base.Viewport;
             set
             {
-                base.Viewport = value;
+                if (!base.Viewport.Equals(value))
+                {
+                    base.Viewport = value;
 
-                foreach (var dev in m_devices)
-                    dev.SwapChain?.Rebuild();
+                    foreach (var dev in m_devices)
+                        dev.SwapChain?.DeferredRebuild();
+                }
             }
         }
 

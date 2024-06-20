@@ -13,6 +13,7 @@ namespace Tokamak.Vulkan
 
         public void Dispose()
         {
+            Framebuffer?.Dispose();
             View?.Dispose();
             Image?.Dispose();
         }
@@ -22,5 +23,7 @@ namespace Tokamak.Vulkan
         public VkImage Image { get; set; } = null;
 
         public VkImageView View { get; set; } = null;
+
+        public VkFramebuffer Framebuffer { get; set; } = null;
     }
 }

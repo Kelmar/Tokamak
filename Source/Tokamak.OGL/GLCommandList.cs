@@ -60,7 +60,8 @@ namespace Tokamak.OGL
 
         public void DrawElements(int length)
         {
-            GL.DrawElements(m_pipeline.Primitive, (uint)length, DrawElementsType.UnsignedInt, 0);
+            int indices = 0;
+            GL.DrawElements(m_pipeline.Primitive, (uint)length, DrawElementsType.UnsignedInt, ref indices);
         }
 
         public void Begin()

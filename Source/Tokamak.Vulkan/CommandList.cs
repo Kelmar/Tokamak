@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Tokamak.Buffer;
+using Tokamak.Logging;
 using Tokamak.Vulkan.NativeWrapper;
 
 using Silk.NET.Vulkan;
@@ -15,6 +16,8 @@ namespace Tokamak.Vulkan
 {
     internal unsafe class CommandList : ICommandList
     {
+        private readonly ILogger<CommandList> m_log;
+
         private readonly VkDevice m_device;
         private readonly VkCommandPool m_pool;
 
@@ -25,8 +28,12 @@ namespace Tokamak.Vulkan
         private Pipeline m_pipeline;
         private VkCommandBuffer m_cmdBuffer;
 
+        private bool m_inDraw;
+
         public CommandList(VkDevice device, VkCommandPool pool)
         {
+            m_log = Platform.Services.GetLogger<CommandList>();
+
             m_device = device;
             m_pool = pool;
 
@@ -58,14 +65,19 @@ namespace Tokamak.Vulkan
             m_cmdBuffer.Draw(vertexCount, instanceCount, firstVertex, firstInstance);
         }
 
-        private void Reset()
+        private bool Reset()
         {
             if (!m_device.SwapChain.AcquireNextImage(m_fence))
-                return; // Probably should die here.
+            {
+                //m_log.Debug("Die on reset here?");
+                return false; // Probably should die here.
+            }
 
             m_image = m_device.SwapChain.CurrentImage;
 
             m_cmdBuffer.Reset(CommandBufferResetFlags.None);
+
+            return true;
         }
 
         public void Begin()
@@ -73,7 +85,10 @@ namespace Tokamak.Vulkan
             m_fence.Wait();
             m_fence.Reset();
 
-            Reset();
+            m_inDraw = Reset();
+
+            if (!m_inDraw)
+                return;
 
             m_cmdBuffer.RenderArea = new Rect2D(
                 new Offset2D(m_device.Parent.Viewport.Left, m_device.Parent.Viewport.Top),
@@ -84,11 +99,16 @@ namespace Tokamak.Vulkan
 
             m_cmdBuffer.BindPipeline(m_pipeline);
 
-            m_cmdBuffer.BeginRenderPass(ClearColor, m_pipeline.RenderPass, m_pipeline.FrameBuffers[m_image.Index]);
+            VkFramebuffer framebuffer = m_device.SwapChain.Images[m_image.Index].Framebuffer;
+            
+            m_cmdBuffer.BeginRenderPass(ClearColor, m_pipeline.RenderPass, framebuffer);
         }
 
         public void End()
         {
+            if (!m_inDraw)
+                return;
+
             m_cmdBuffer.EndRenderPass();
 
             m_cmdBuffer.PipelineBarrier();
@@ -100,6 +120,8 @@ namespace Tokamak.Vulkan
             m_device.WaitForSubmittedWork();
 
             m_device.SwapChain.Present(m_device.PresentQueue);
+
+            m_inDraw = false;
         }
 
         public void ClearBoundTexture()

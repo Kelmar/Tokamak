@@ -52,7 +52,7 @@ namespace Tokamak.Vulkan.NativeWrapper
             fixed(byte* code = Data)
             {
                 createInfo.PCode = (uint*)code;
-                m_device.Parent.SafeExecute(vk => vk.CreateShaderModule(m_device.LogicalDevice, createInfo, null, out rval));
+                m_device.Parent.SafeExecute(vk => vk.CreateShaderModule(m_device.LogicalDevice, in createInfo, null, out rval));
             }
 
             return rval;

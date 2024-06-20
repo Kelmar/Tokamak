@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 using Silk.NET.Vulkan;
 
@@ -122,7 +121,7 @@ namespace Tokamak.Vulkan.NativeWrapper
 
             Fence handle = default;
 
-            m_device.Parent.SafeExecute(vk => vk.CreateFence(m_device.LogicalDevice, createInfo, null, out handle));
+            m_device.Parent.SafeExecute(vk => vk.CreateFence(m_device.LogicalDevice, in createInfo, null, out handle));
 
             return handle;
         }

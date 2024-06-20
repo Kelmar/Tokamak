@@ -31,7 +31,7 @@ namespace Tokamak.Vulkan.NativeWrapper
 
             Semaphore handle = default;
 
-            m_device.Parent.SafeExecute(vk => vk.CreateSemaphore(m_device.LogicalDevice, createInfo, null, out handle));
+            m_device.Parent.SafeExecute(vk => vk.CreateSemaphore(m_device.LogicalDevice, in createInfo, null, out handle));
 
             return handle;
         }

@@ -64,7 +64,7 @@ namespace Tokamak.Vulkan.NativeWrapper
 
             RenderPass handle = default;
 
-            m_device.Parent.SafeExecute(vk => vk.CreateRenderPass(m_device.LogicalDevice, info, null, out handle));
+            m_device.Parent.SafeExecute(vk => vk.CreateRenderPass(m_device.LogicalDevice, in info, null, out handle));
 
             return handle;
         }

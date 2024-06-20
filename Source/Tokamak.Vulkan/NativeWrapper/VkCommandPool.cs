@@ -32,7 +32,7 @@ namespace Tokamak.Vulkan.NativeWrapper
 
             CommandPool handle = default;
 
-            m_device.Parent.SafeExecute(vk => vk.CreateCommandPool(m_device.LogicalDevice, createInfo, null, out handle));
+            m_device.Parent.SafeExecute(vk => vk.CreateCommandPool(m_device.LogicalDevice, in createInfo, null, out handle));
 
             return handle;
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using Silk.NET.Vulkan;
 
@@ -15,17 +14,12 @@ namespace Tokamak.Vulkan
 
         private readonly VkPipelineLayout m_layout;
 
-        private readonly List<VkFramebuffer> m_frameBuffers = new List<VkFramebuffer>();
-
         public Pipeline(VkDevice device, PipelineFactory factory)
         {
             m_device = device;
 
             m_layout = new VkPipelineLayout(m_device);
             RenderPass = new VkRenderPass(m_device, m_device.SwapChain.Format);
-
-            foreach (var image in m_device.SwapChain.Images)
-                m_frameBuffers.Add(new VkFramebuffer(m_device, m_device.SwapChain.Extent, RenderPass, image.View));
 
             Handle = CreateHandle(factory);
         }
@@ -35,11 +29,6 @@ namespace Tokamak.Vulkan
             if (disposing)
             {
                 m_device.Parent.Vk.DestroyPipeline(m_device.LogicalDevice, Handle, null);
-
-                foreach (var fb in m_frameBuffers)
-                    fb.Dispose();
-
-                m_frameBuffers.Clear();
 
                 RenderPass.Dispose();
 
@@ -53,8 +42,6 @@ namespace Tokamak.Vulkan
         }
 
         public VkRenderPass RenderPass { get; }
-
-        public IReadOnlyList<VkFramebuffer> FrameBuffers => m_frameBuffers;
 
         public PLHandle Handle { get; }
 
@@ -145,7 +132,7 @@ namespace Tokamak.Vulkan
 
                 PLHandle handle = default;
 
-                m_device.Parent.SafeExecute(vk => vk.CreateGraphicsPipelines(m_device.LogicalDevice, default, 1, pipelineInfo, null, out handle));
+                m_device.Parent.SafeExecute(vk => vk.CreateGraphicsPipelines(m_device.LogicalDevice, default, 1, in pipelineInfo, null, out handle));
 
                 return handle;
             }

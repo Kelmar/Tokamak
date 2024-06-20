@@ -104,6 +104,7 @@ namespace Tokamak.Vulkan
         public void WaitIdle()
         {
             Parent.SafeExecute(vk => vk.DeviceWaitIdle(LogicalDevice));
+            //Parent.Vk.DeviceWaitIdle(LogicalDevice);
         }
 
         public IEnumerable<VkQueueFamilyProperties> GetQueues()
@@ -137,7 +138,7 @@ namespace Tokamak.Vulkan
         {
             Image image = default;
 
-            Parent.SafeExecute(vk => vk.CreateImage(LogicalDevice, createInfo, null, out image));
+            Parent.SafeExecute(vk => vk.CreateImage(LogicalDevice, in createInfo, null, out image));
 
             return VkImage.FromHandle(this, image, createInfo.Format, createInfo.Extent);
         }
@@ -172,7 +173,7 @@ namespace Tokamak.Vulkan
 
             var fence = GetSubmitFence();
 
-            Parent.SafeExecute(vk => vk.QueueSubmit(queue, 1, submitInfo, fence.Handle));
+            Parent.SafeExecute(vk => vk.QueueSubmit(queue, 1, in submitInfo, fence.Handle));
 
             m_submittedWork.Enqueue(new SubmittedWork
             {

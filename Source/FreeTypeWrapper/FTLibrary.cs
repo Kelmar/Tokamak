@@ -5,38 +5,40 @@ using System.Runtime;
 using System.Runtime.InteropServices;
 
 using FreeTypeSharp;
-using FreeTypeSharp.Native;
 
-using static FreeTypeSharp.Native.FT;
+using static FreeTypeSharp.FT;
 
 namespace FreeTypeWrapper
 {
     public unsafe class FTLibrary : IDisposable
     {
-        private readonly IntPtr m_handle;
+        private readonly FT_LibraryRec_ * m_libRec;
         private bool m_disposed = false;
 
         public FTLibrary()
         {
-            IntPtr handle = IntPtr.Zero;
+            FT_LibraryRec_ *ptr;
 
-            SafeExecute(() => FT_Init_FreeType(out handle));
+            FT_Error err = FT_Init_FreeType(&ptr);
 
-            m_handle = handle;
+            if (err != FT_Error.FT_Err_Ok)
+                throw new FreeTypeException(err);
+
+            m_libRec = ptr;
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing && m_handle != IntPtr.Zero)
+            if (disposing && m_libRec != null)
             {
                 // Maybe log this if there's a problem, but not much we can do if it fails....
-                FT_Done_FreeType(m_handle);
+                FT_Done_FreeType(m_libRec);
             }
 
             m_disposed = true;
         }
 
-        internal IntPtr Handle => m_handle;
+        internal FT_LibraryRec_ *Handle => m_libRec;
 
         public void Dispose()
         {

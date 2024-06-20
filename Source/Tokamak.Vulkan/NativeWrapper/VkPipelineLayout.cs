@@ -35,7 +35,7 @@ namespace Tokamak.Vulkan.NativeWrapper
 
             PipelineLayout handle = default;
 
-            m_device.Parent.SafeExecute(vk => vk.CreatePipelineLayout(m_device.LogicalDevice, info, null, out handle));
+            m_device.Parent.SafeExecute(vk => vk.CreatePipelineLayout(m_device.LogicalDevice, in info, null, out handle));
 
             return handle;
         }
