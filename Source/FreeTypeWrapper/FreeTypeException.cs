@@ -1,4 +1,4 @@
-﻿using FreeTypeSharp.Native;
+﻿using FreeTypeSharp;
 
 using System;
 using System.Collections.Generic;

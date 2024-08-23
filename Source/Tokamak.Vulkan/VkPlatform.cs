@@ -156,7 +156,7 @@ namespace Tokamak.Vulkan
 
             Instance instance;
 
-            var result = Vk.CreateInstance(info, null, out instance);
+            var result = Vk.CreateInstance(ref info, null, out instance);
 
             if (result != Result.Success)
                 throw new VulkanException(result);

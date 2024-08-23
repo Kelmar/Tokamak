@@ -150,7 +150,8 @@ namespace Tokamak.OGL
 
         public override void DrawElements(TokPrimType primitive, int length)
         {
-            GL.DrawElements(primitive.ToGLPrimitive(), (uint)length, DrawElementsType.UnsignedInt, 0);
+            int indices = 0;
+            GL.DrawElements(primitive.ToGLPrimitive(), (uint)length, DrawElementsType.UnsignedInt, ref indices);
         }
     }
 }

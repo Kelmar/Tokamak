@@ -97,7 +97,7 @@ namespace Tokamak.Vulkan
             if (!m_device.TryGetExtension(out m_khrSwapChain))
                 throw new NotSupportedException("VK_KHR_swapchain extension not found.");
 
-            SafeExecute(sc => sc.CreateSwapchain(m_device.LogicalDevice, createInfo, null, out m_swapChain));
+            SafeExecute(sc => sc.CreateSwapchain(m_device.LogicalDevice, ref createInfo, null, out m_swapChain));
 
             m_format = createInfo.ImageFormat;
             m_extent = createInfo.ImageExtent;

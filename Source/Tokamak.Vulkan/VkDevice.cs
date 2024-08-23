@@ -118,7 +118,7 @@ namespace Tokamak.Vulkan
         {
             Image image = default;
 
-            Parent.SafeExecute(vk => vk.CreateImage(LogicalDevice, createInfo, null, out image));
+            Parent.SafeExecute(vk => vk.CreateImage(LogicalDevice, ref createInfo, null, out image));
 
             return VkImage.FromHandle(this, image, createInfo.Format, createInfo.Extent);
         }
