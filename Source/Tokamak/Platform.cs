@@ -80,8 +80,6 @@ namespace Tokamak
             WorldMatrix = m_worldMatrixStack.Pop();
         }
 
-        public abstract void ClearBuffers(GlobalBuffer buffers);
-
         public abstract IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
             where T : unmanaged;
 
@@ -89,12 +87,25 @@ namespace Tokamak
 
         public abstract IElementBuffer GetElementBuffer(BufferType type);
 
-        public abstract void ClearBoundTexture();
+        protected abstract IPipelineFactory GetPipelineFactory(PipelineConfig config);
 
-        public abstract IShaderFactory GetShaderFactory();
+        protected virtual void ValidatePipelineConfig(PipelineConfig config)
+        {
+            if (config.InputFormat == null)
+                throw new Exception("InputFormat not specified, call UseInputFormat().");
+        }
 
-        public abstract void DrawArrays(PrimitiveType primitive, int vertexOffset, int vertexCount);
+        public IPipeline GetPipeline(Action<PipelineConfig> configurator)
+        {
+            PipelineConfig config = new PipelineConfig();
+            configurator(config);
 
-        public abstract void DrawElements(PrimitiveType primitive, int length);
+            ValidatePipelineConfig(config);
+
+            using var factory = GetPipelineFactory(config);
+            return factory.Build();
+        }
+
+        public abstract ICommandList GetCommandList();
     }
 }

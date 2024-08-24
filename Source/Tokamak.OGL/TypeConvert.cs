@@ -21,8 +21,8 @@ namespace Tokamak.OGL
                 TPrimType.PointList => GLPrimType.Points,
                 TPrimType.LineList => GLPrimType.Lines,
                 TPrimType.LineStrip => GLPrimType.LineStrip,
-                TPrimType.TrangleList => GLPrimType.Triangles,
-                TPrimType.TrangleStrip => GLPrimType.TriangleStrip,
+                TPrimType.TriangleList => GLPrimType.Triangles,
+                TPrimType.TriangleStrip => GLPrimType.TriangleStrip,
                 _ => GLPrimType.Points
             };
         }

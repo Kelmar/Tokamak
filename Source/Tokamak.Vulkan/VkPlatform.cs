@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Text;
 
 using Silk.NET.Core.Native;
+using Silk.NET.Maths;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Windowing;
@@ -14,6 +15,7 @@ using Tokamak.Config;
 using Tokamak.Formats;
 using Tokamak.Logging;
 using Tokamak.Mathematics;
+
 using Tokamak.Vulkan.NativeWrapper;
 
 namespace Tokamak.Vulkan
@@ -29,6 +31,10 @@ namespace Tokamak.Vulkan
 
         private readonly List<VkDevice> m_devices = new List<VkDevice>();
 
+        private readonly VkDevice m_device = null;
+
+        private readonly VkCommandPool m_commandPool = null;
+
         private VkDebug m_debug = null;
 
         private DrawSurface m_surface = null;
@@ -36,6 +42,9 @@ namespace Tokamak.Vulkan
         public VkPlatform(IWindow window)
         {
             Window = window;
+
+            // Set initial size to prevent redundant Rebuild of swap chain.
+            base.Viewport = new Rect(Point.Zero, Window.FramebufferSize);
 
             m_log = Platform.Services.GetLogger<VkPlatform>();
             m_config = Platform.Services.Find<IConfigReader>();
@@ -53,6 +62,8 @@ namespace Tokamak.Vulkan
 
         public override void Dispose()
         {
+            m_commandPool.Dispose();
+
             // Release the physical/logical devices.
             foreach (var dev in m_devices)
                 dev.Dispose();
@@ -77,7 +88,7 @@ namespace Tokamak.Vulkan
 
         internal IWindow Window { get; }
 
-        private void InitVK()
+        private VkDevice InitVK()
         {
             CreateInstance();
 
@@ -92,6 +103,8 @@ namespace Tokamak.Vulkan
             m_log.Info("Using device: {0}", device.Name);
 
             device.InitLogicalDevice();
+
+            return device;
         }
 
         private void CreateInstance()
@@ -256,37 +269,29 @@ namespace Tokamak.Vulkan
             get => base.Viewport;
             set
             {
-                base.Viewport = value;
+                if (!base.Viewport.Equals(value))
+                {
+                    base.Viewport = value;
 
-                foreach (var dev in m_devices)
-                    dev.SwapChain?.Rebuild();
+                    foreach (var dev in m_devices)
+                        dev.SwapChain?.DeferredRebuild();
+                }
             }
         }
 
-        public override void ClearBoundTexture()
+        protected override IPipelineFactory GetPipelineFactory(PipelineConfig config)
         {
+            return new PipelineFactory(m_device, config);
         }
 
-        public override void ClearBuffers(GlobalBuffer buffers)
+        public override ICommandList GetCommandList()
         {
-        }
-
-        public override void DrawArrays(PrimitiveType primitive, int vertexOffset, int vertexCount)
-        {
-        }
-
-        public override void DrawElements(PrimitiveType primitive, int length)
-        {
+            return new CommandList(m_device, m_commandPool);
         }
 
         public override IElementBuffer GetElementBuffer(BufferType type)
         {
             return null;
-        }
-
-        public override IShaderFactory GetShaderFactory()
-        {
-            return new ShaderFactory(this);
         }
 
         public override ITextureObject GetTextureObject(PixelFormat format, Point size)

@@ -141,7 +141,7 @@ namespace Tokamak
         public static Color FromHSV(in Vector4 v) => FromHSV(v.X, v.Y, v.Z, v.W);
 
         /// <summary>
-        /// Linerarly interpolate between two colors.
+        /// Linearly interpolate between two colors.
         /// </summary>
         /// <param name="dist">Distance from color 1 to color 2.</param>
         /// <param name="c1">Color 1</param>

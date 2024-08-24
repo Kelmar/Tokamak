@@ -26,6 +26,10 @@ namespace Graphite
     {
         // For now we have some fairly basic shaders for testing the canvas out.
 
+        private const string VERTEX_SHADER_PATH = "/resources/canvas.vert.spv";
+
+        private const string FRAGMENT_SHADER_PATH = "/resources/canvas.frag.spv";
+
         public const string VERTEX = @"#version 450
 
 uniform mat4 projection;
@@ -81,36 +85,41 @@ void main()
         private readonly List<VectorFormatPCT> m_vectors = new List<VectorFormatPCT>(128);
 
         private readonly Platform m_device;
-        private readonly IShader m_shader;
-        private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
-        private readonly RenderState m_uiState;
+        private readonly IPipeline m_pipeline;
+        private readonly ICommandList m_commandBuffer;
+
+        private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
         public Canvas(Platform device)
         {
             m_ftLibrary = new FTLibrary();
 
             m_device = device;
-            m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dynamic);
 
-            using var factory = m_device.GetShaderFactory();
-
-            factory.AddShaderSource(ShaderType.Vertex, VERTEX);
-            factory.AddShaderSource(ShaderType.Fragment, FRAGMENT);
-
-            m_shader = factory.Build();
-
-            m_uiState = new RenderState
+            m_pipeline = device.GetPipeline(cfg =>
             {
-                CullFaces = false,
-                UseDepthTest = false
-            };
+                cfg.UseInputFormat<VectorFormatPCT>();
+
+                cfg.UseCulling(CullMode.None);
+                //UseDepthTest = false
+
+                cfg.UseShader(ShaderType.Vertex, VERTEX_SHADER_PATH);
+                cfg.UseShader(ShaderType.Fragment, FRAGMENT_SHADER_PATH);
+            });
+
+            m_commandBuffer = device.GetCommandList();
+
+            m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dynamic);
         }
 
         public void Dispose()
         {
-            m_shader?.Dispose();
+            m_commandBuffer.Dispose();
+
             m_vertexBuffer.Dispose();
+
+            m_pipeline.Dispose();
 
             m_ftLibrary.Dispose();
         }
@@ -126,8 +135,8 @@ void main()
         {
             var mat = Matrix4x4.CreateOrthographicOffCenter(0, size.X, size.Y, 0, -1, 1);
 
-            m_shader.Activate();
-            m_shader.Set("projection", mat);
+            //m_shader.Activate();
+            //m_shader.Set("projection", mat);
         }
 
         private void AddCall(PrimitiveType type, IEnumerable<VectorFormatPCT> vectors, ITextureObject texture = null)
@@ -181,7 +190,7 @@ void main()
 
             var renderer = new StrokeRenderer(stroke);
 
-            AddCall(PrimitiveType.TrangleStrip, renderer.Vectors);
+            AddCall(PrimitiveType.TriangleStrip, renderer.Vectors);
         }
 
         // This is a simple test function for now.
@@ -217,7 +226,7 @@ void main()
                 }
             };
 
-            AddCall(PrimitiveType.TrangleStrip, vects, texture);
+            AddCall(PrimitiveType.TriangleStrip, vects, texture);
         }
 
         public void DrawText(Pen pen, Font font, in Point location, string text)
@@ -270,17 +279,13 @@ void main()
                 var texture = font.GetSheet(grp.Key);
                 var grpVects = grp.SelectMany(i => i.Item2).ToList();
 
-                AddCall(PrimitiveType.TrangleList, grpVects, texture);
+                AddCall(PrimitiveType.TriangleList, grpVects, texture);
             }
         }
 
         public void Render()
         {
-            m_device.SetRenderState(m_uiState);
-
             ITextureObject last = null;
-
-            m_shader.Activate();
 
             m_vertexBuffer.Set(m_vectors);
 
@@ -290,26 +295,30 @@ void main()
                 {
                     if (call.Texture != null)
                     {
+#if false
                         if (call.Texture.Format == PixelFormat.FormatA8)
                             m_shader.Set("is8Bit", 1);
                         else
                             m_shader.Set("is8Bit", 0);
+#endif
 
                         call.Texture.Activate();
                     }
                     else
-                        m_device.ClearBoundTexture();
+                    {
+                        m_commandBuffer.ClearBoundTexture();
+                    }
 
                     last = call.Texture;
                 }
 
-                m_device.DrawArrays(call.Type, call.VertexOffset, call.VertexCount);
+                m_commandBuffer.DrawArrays(call.VertexOffset, call.VertexCount);
             }
 
             if (last != null)
             {
-                m_shader.Set("is8Bit", 0);
-                m_device.ClearBoundTexture();
+                //m_shader.Set("is8Bit", 0);
+                m_commandBuffer.ClearBoundTexture();
             }
 
             m_vectors.Clear();

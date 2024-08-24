@@ -10,7 +10,6 @@ using Silk.NET.Windowing;
 using Tokamak.Mathematics;
 using Tokamak.Buffer;
 
-using TokPrimType = Tokamak.PrimitiveType;
 using TokPixelFormat = Tokamak.Formats.PixelFormat;
 
 namespace Tokamak.OGL
@@ -65,6 +64,16 @@ namespace Tokamak.OGL
             }
         }
 
+        protected override IPipelineFactory GetPipelineFactory(PipelineConfig config)
+        {
+            return new PipelineFactory(this, config);
+        }
+
+        public override ICommandList GetCommandList()
+        {
+            return new GLCommandList(GL, m_whiteTexture);
+        }
+
         public override void SetRenderState(RenderState state)
         {
             if (state.UseDepthTest)
@@ -80,18 +89,6 @@ namespace Tokamak.OGL
             GL.ClearColor(state.ClearColor.Red, state.ClearColor.Green, state.ClearColor.Blue, state.ClearColor.Alpha);
         }
 
-        public override void ClearBuffers(GlobalBuffer buffers)
-        {
-            ClearBufferMask flags = 0;
-
-            flags |= buffers.HasFlag(GlobalBuffer.ColorBuffer) ? ClearBufferMask.ColorBufferBit : 0;
-            flags |= buffers.HasFlag(GlobalBuffer.DepthBuffer) ? ClearBufferMask.DepthBufferBit : 0;
-            flags |= buffers.HasFlag(GlobalBuffer.StencilBuffer) ? ClearBufferMask.StencilBufferBit : 0;
-
-            if ((int)flags != 0)
-                GL.Clear(flags);
-        }
-
         public override IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
         {
             return new VertexBuffer<T>(this, type);
@@ -105,28 +102,6 @@ namespace Tokamak.OGL
         public override IElementBuffer GetElementBuffer(BufferType type)
         {
             return new ElementBuffer(this, type);
-        }
-
-        public override void ClearBoundTexture()
-        {
-            // Reset to our 1x1 white texture to keep samplers in shaders happy.
-            m_whiteTexture.Activate();
-        }
-
-        public override IShaderFactory GetShaderFactory()
-        {
-            return new ShaderFactory(this);
-        }
-
-        public override void DrawArrays(TokPrimType primitive, int vertexOffset, int vertexCount)
-        {
-            GL.DrawArrays(primitive.ToGLPrimitive(), vertexOffset, (uint)vertexCount);
-        }
-
-        public override void DrawElements(TokPrimType primitive, int length)
-        {
-            int indices = 0;
-            GL.DrawElements(primitive.ToGLPrimitive(), (uint)length, DrawElementsType.UnsignedInt, ref indices);
         }
     }
 }

@@ -28,7 +28,7 @@ namespace FreeTypeWrapper
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing && m_handle != (FT_LibraryRec_*)IntPtr.Zero)
+            if (disposing && m_handle != null)
             {
                 // Maybe log this if there's a problem, but not much we can do if it fails....
                 FT_Done_FreeType(m_handle);

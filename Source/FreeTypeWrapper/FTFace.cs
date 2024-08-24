@@ -67,7 +67,7 @@ namespace FreeTypeWrapper
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing && m_faceRec != (FT_FaceRec_*)IntPtr.Zero)
+            if (disposing && m_faceRec != null)
             {
                 // Maybe log this if there's a problem, but not much we can do if it fails....
                 FT_Done_Face(m_faceRec);
@@ -198,10 +198,13 @@ namespace FreeTypeWrapper
         /// <returns>The kerning distance in pixels.</returns>
         public float GetKerning(char left, char right)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(nameof(FTFace));
+
             if (!HasKerning)
                 return 0;
 
-            FT_Vector_ aKern = new FT_Vector_();
+            FT_Vector_ aKern;
 
             FT_Error err = FT_Get_Kerning(m_faceRec, left, right, FT_Kerning_Mode_.FT_KERNING_UNFITTED, &aKern);
 
@@ -309,7 +312,7 @@ namespace FreeTypeWrapper
         {
             SafeExecute(() => FT_Render_Glyph(FaceRecRaw.glyph, FT_Render_Mode_.FT_RENDER_MODE_NORMAL));
 
-            if (Glyph.bitmap.buffer != (byte*)IntPtr.Zero)
+            if (Glyph.bitmap.buffer != null)
             {
                 FT_Pixel_Mode_ pixelMode = Glyph.bitmap.pixel_mode;
 
