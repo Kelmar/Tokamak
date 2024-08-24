@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using Tokamak.Core.Logging;
 
 namespace Tokamak.Core.Services
 {
     // I know people call this an anti-pattern, it was this or a full on DI framework. >_<
-    public interface IServiceLocator
+    public interface IServiceLocator : IDisposable
     {
         void Register<T>(T service, string name = "");
 

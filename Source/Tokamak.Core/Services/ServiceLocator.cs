@@ -20,6 +20,18 @@ namespace Tokamak.Core.Services
 
         private readonly IDictionary<Type, List<ServiceInfo>> m_services = new Dictionary<Type, List<ServiceInfo>>();
 
+        public void Dispose()
+        {
+            foreach (var list in m_services.Values)
+            {
+                foreach (var item in list)
+                {
+                    var obj = item.Service as IDisposable;
+                    obj?.Dispose();
+                }
+            }
+        }
+
         public void Register<T>(T service, string name = "")
         {
             Type t = typeof(T);
@@ -76,7 +88,7 @@ namespace Tokamak.Core.Services
             }
 
             if (entry == null)
-                throw new Exception($"Unknown service {t.Name}");
+                throw new KeyNotFoundException($"Unknown service {t.Name}");
 
             return entry.Cast<T>();
         }
@@ -88,7 +100,7 @@ namespace Tokamak.Core.Services
             if (m_services.TryGetValue(t, out List<ServiceInfo> services))
                 return services.Select(i => i.Cast<T>());
 
-            throw new Exception($"Unknown service {t.Name}");
+            throw new KeyNotFoundException($"Unknown service {t.Name}");
         }
 
         public ILogger GetLogger(string name = "")
