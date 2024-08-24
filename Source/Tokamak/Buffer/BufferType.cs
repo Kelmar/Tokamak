@@ -10,7 +10,7 @@
         /// <summary>
         /// Buffer is expected to change frequently.
         /// </summary>
-        Dyanmic,
+        Dynamic,
 
         /// <summary>
         /// Buffers for things that are intended to only be used once.

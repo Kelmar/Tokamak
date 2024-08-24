@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.2" />
+    <PackageReference Include="Silk.NET.Windowing.Common" Version="2.21.0" />
   </ItemGroup>
 
   <ItemGroup>

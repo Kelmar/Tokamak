@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 using Silk.NET.Core.Native;
@@ -48,8 +49,6 @@ namespace Tokamak.Vulkan
             Vk = Vk.GetApi();
 
             InitVK();
-
-            Monitors = EnumerateMonitors().ToList();
         }
 
         public override void Dispose()
@@ -250,19 +249,6 @@ namespace Tokamak.Vulkan
             // We should probably also look for the more capable device (more memory, best selection of features, etc)
 
             return rval;
-        }
-
-        private IEnumerable<Monitor> EnumerateMonitors()
-        {
-            yield return new Monitor
-            {
-                Index = 0,
-                IsMain = true,
-                Gamma = 2.2f,
-                DPI = new Point(192, 192),
-                RawDPI = new System.Numerics.Vector2(192, 192),
-                WorkArea = new Rect(0, 0, 3840, 2160)
-            };
         }
 
         public override Rect Viewport 

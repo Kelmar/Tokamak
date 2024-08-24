@@ -1,2 +1,2 @@
-Tok.Driver = vulkan
+Tok.Driver = opengl
 Vk.ValidateCalls = true

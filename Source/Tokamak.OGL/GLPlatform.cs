@@ -43,8 +43,6 @@ namespace Tokamak.OGL
 
             Array.Fill<byte>(m_whiteTexture.Bitmap.Data, 255);
             m_whiteTexture.Refresh();
-
-            Monitors = EnumerateMonitors().ToList();
         }
 
         public override void Dispose()
@@ -64,29 +62,6 @@ namespace Tokamak.OGL
             {
                 GL.Viewport(value.Left, value.Top, (uint)value.Size.X, (uint)value.Size.Y);
                 base.Viewport = value;
-            }
-        }
-
-        private IEnumerable<Monitor> EnumerateMonitors()
-        {
-            var platform = Window.GetWindowPlatform(false);
-
-            if (platform == null)
-                throw new Exception("Unable to get window platform.");
-
-            foreach (var m in platform.GetMonitors())
-            {
-                // Silk doesn't return the DPI info yet, hard coded for now.
-
-                yield return new Monitor
-                {
-                    Index = m.Index,
-                    IsMain = m.Index == 0, // For now we assume it's the first monitor
-                    Gamma = m.Gamma,
-                    DPI = new Point(192, 192),
-                    RawDPI = new Vector2(192, 192),
-                    WorkArea = m.Bounds
-                };
             }
         }
 
@@ -143,9 +118,9 @@ namespace Tokamak.OGL
             return new ShaderFactory(this);
         }
 
-        public override void DrawArrays(TokPrimType primative, int vertexOffset, int vertexCount)
+        public override void DrawArrays(TokPrimType primitive, int vertexOffset, int vertexCount)
         {
-            GL.DrawArrays(primative.ToGLPrimitive(), vertexOffset, (uint)vertexCount);
+            GL.DrawArrays(primitive.ToGLPrimitive(), vertexOffset, (uint)vertexCount);
         }
 
         public override void DrawElements(TokPrimType primitive, int length)

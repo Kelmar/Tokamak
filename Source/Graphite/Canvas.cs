@@ -91,7 +91,7 @@ void main()
             m_ftLibrary = new FTLibrary();
 
             m_device = device;
-            m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dyanmic);
+            m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dynamic);
 
             using var factory = m_device.GetShaderFactory();
 

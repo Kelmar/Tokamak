@@ -6,27 +6,32 @@ using Tokamak.Mathematics;
 
 namespace Tokamak
 {
-    public class Monitor
+    public record Monitor
     {
         /// <summary>
         /// The index of the monitor.
         /// </summary>
-        public int Index { get; set; }
+        public int Index { get; init; }
 
         /// <summary>
         /// Gets the flag indicating if this is the main monitor or not.
         /// </summary>
-        public bool IsMain { get; set; }
+        public bool IsMain { get; init; }
+
+        /// <summary>
+        /// Name of the monitor registered with the OS if any.
+        /// </summary>
+        public string Name { get; init; }
 
         /// <summary>
         /// Gets the gamma setting for this monitor.
         /// </summary>
-        public float Gamma { get; set; }
+        public float Gamma { get; init; }
 
         /// <summary>
         /// The dots per inch of the monitor.
         /// </summary>
-        public Point DPI { get; set; }
+        public Point DPI { get; init; }
 
         /// <summary>
         /// The detailed DPI for the monitor.
@@ -34,7 +39,7 @@ namespace Tokamak
         /// <remarks>
         /// One should use the integer based DPI for most things.
         /// </remarks>
-        public Vector2 RawDPI { get; set; }
+        public Vector2 RawDPI { get; init; }
 
         /// <summary>
         /// Gets how the OS is scaling fonts and graphics on this screen.
@@ -42,7 +47,7 @@ namespace Tokamak
         /// <remarks>
         /// Windows only?
         /// </remarks>
-        public float Scaling { get; set; }
+        public float Scaling { get; init; }
 
         /// <summary>
         /// The working area of the monitor.
@@ -53,6 +58,6 @@ namespace Tokamak
         /// 
         /// Values can be negative for positions so watch out!
         /// </remarks>
-        public Rectangle<int> WorkArea { get; set; }
+        public Rectangle<int> WorkArea { get; init; }
     }
 }
