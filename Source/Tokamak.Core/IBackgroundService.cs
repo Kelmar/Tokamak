@@ -1,9 +1,10 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tokamak.Core
 {
-    public interface IBackgroundService
+    public interface IBackgroundService : IDisposable
     {
         Task StartAsync(CancellationToken cancellationToken = default);
 

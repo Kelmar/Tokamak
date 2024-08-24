@@ -10,6 +10,8 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Windowing;
 
+using Stashbox;
+
 using Tokamak.Core.Config;
 using Tokamak.Core.Logging;
 
@@ -40,15 +42,16 @@ namespace Tokamak.Vulkan
 
         private DrawSurface m_surface = null;
 
-        public VkPlatform(IWindow window)
+        public VkPlatform(IWindow window, IDependencyResolver resolver)
+            : base(resolver)
         {
             Window = window;
 
             // Set initial size to prevent redundant Rebuild of swap chain.
             base.Viewport = new Rect(Point.Zero, Window.FramebufferSize);
 
-            m_log = Platform.Services.GetLogger<VkPlatform>();
-            m_config = Platform.Services.Find<IConfigReader>();
+            m_log = Resolver.Resolve<ILogger<VkPlatform>>();
+            m_config = Resolver.Resolve<IConfigReader>();
 
             if (Window.VkSurface == null)
             {

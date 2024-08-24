@@ -6,12 +6,14 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
+using Silk.NET.Vulkan;
+
+using Stashbox;
+
 using Tokamak.Core.Logging;
 
 using Tokamak.Buffer;
 using Tokamak.Vulkan.NativeWrapper;
-
-using Silk.NET.Vulkan;
 
 namespace Tokamak.Vulkan
 {
@@ -33,7 +35,7 @@ namespace Tokamak.Vulkan
 
         public CommandList(VkDevice device, VkCommandPool pool)
         {
-            m_log = Platform.Services.GetLogger<CommandList>();
+            m_log = device.Parent.Resolver.Resolve<ILogger<CommandList>>();
 
             m_device = device;
             m_pool = pool;

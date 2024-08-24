@@ -10,4 +10,8 @@
     <Folder Include="Config\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Stashbox" Version="5.16.0" />
+  </ItemGroup>
+
 </Project>

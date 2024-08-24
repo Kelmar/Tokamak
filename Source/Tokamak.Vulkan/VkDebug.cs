@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 
+using Stashbox;
+
 using Tokamak.Core.Config;
 using Tokamak.Core.Logging;
 
@@ -22,10 +24,10 @@ namespace Tokamak.Vulkan
         {
             m_platform = platform;
 
-            var logFact = Platform.Services.Find<ILogFactory>();
+            var logFact = platform.Resolver.Resolve<ILogFactory>();
             m_log = logFact.GetLogger("Vulkan");
 
-            var conf = Platform.Services.Find<IConfigReader>();
+            var conf = platform.Resolver.Resolve<IConfigReader>();
 
             ShouldLoad = conf.Get(VkPlatform.VK_VALIDATE_CALLS_CONFIG, false);
         }

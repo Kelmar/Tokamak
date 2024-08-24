@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 
+using Stashbox;
+
 using Tokamak.Core.Config;
-using Tokamak.Core.Services;
 
 namespace Tokamak.Core
 {
@@ -10,18 +11,18 @@ namespace Tokamak.Core
     {
         private Func<IConfigReader> m_configFactory;
 
-        private Func<IServiceLocator> m_serviceLocatorFactory;
-        private Action<IServiceLocator> m_serviceConfig = null;
+        private Func<IStashboxContainer> m_containerFactory;
+        private Action<IStashboxContainer> m_containerConfig = null;
 
         private IConfigReader m_config;
-        private IServiceLocator m_services;
+        private IStashboxContainer m_container;
 
         private IGameHost m_result = null;
 
         public GameHostBuilder()
         {
             ConfigFactory = () => new BasicConfigReader();
-            ServiceLocatorFactory = () => new ServiceLocator();
+            ContainerFactory = () => new StashboxContainer();
         }
 
         internal void ConfigureArguments(string[] args)
@@ -42,24 +43,24 @@ namespace Tokamak.Core
             }
         }
 
-        public Func<IServiceLocator> ServiceLocatorFactory
+        public Func<IStashboxContainer> ContainerFactory
         {
-            get => m_serviceLocatorFactory;
+            get => m_containerFactory;
             set
             {
                 if (value == null)
                     throw new ArgumentNullException();
 
-                m_serviceLocatorFactory = value;
+                m_containerFactory = value;
             }
         }
 
-        public GameHostBuilder ConfigureServices(Action<IServiceLocator> serviceConfig)
+        public GameHostBuilder ConfigureServices(Action<IStashboxContainer> serviceConfig)
         {
             if (serviceConfig == null)
                 throw new ArgumentNullException(nameof(serviceConfig));
 
-            m_serviceConfig = serviceConfig;
+            m_containerConfig = serviceConfig;
             return this;
         }
 
@@ -72,16 +73,16 @@ namespace Tokamak.Core
 
         private void InitServices()
         {
-            Debug.Assert(ServiceLocatorFactory != null);
+            Debug.Assert(ContainerFactory != null);
 
-            m_services = ServiceLocatorFactory();
-            m_services.Register(m_config);
-            m_serviceConfig?.Invoke(m_services);
+            m_container = ContainerFactory();
+            m_container.RegisterInstance(m_config);
+            m_containerConfig?.Invoke(m_container);
         }
 
         private IGameHost CreateHost()
         {
-            return new Implementation.GameHost(m_services);
+            return new Implementation.GameHost(m_container);
         }
 
         public IGameHost Build()

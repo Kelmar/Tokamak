@@ -7,6 +7,8 @@ using Silk.NET.OpenGL;
 using Silk.NET.Core.Contexts;
 using Silk.NET.Windowing;
 
+using Stashbox;
+
 using Tokamak.Mathematics;
 using Tokamak.Buffer;
 
@@ -18,7 +20,8 @@ namespace Tokamak.OGL
     {
         private readonly TextureObject m_whiteTexture;
 
-        public GLPlatform(IGLContextSource context)
+        public GLPlatform(IGLContextSource context, IDependencyResolver resolver)
+            : base(resolver)
         {
             GL = GL.GetApi(context);
 

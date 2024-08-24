@@ -7,6 +7,8 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Silk.NET.Windowing;
 
+using Stashbox;
+
 using Tokamak.Core.Logging;
 
 using Tokamak.Vulkan.NativeWrapper;
@@ -38,9 +40,8 @@ namespace Tokamak.Vulkan
 
         public SwapChain(VkDevice device)
         {
-            m_log = Platform.Services.GetLogger<SwapChain>();
-
             m_device = device;
+            m_log = m_device.Parent.Resolver.Resolve<ILogger<SwapChain>>();
 
             InitializeFormat();
 

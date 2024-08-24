@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 
+using Stashbox;
+
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 
@@ -28,6 +30,8 @@ namespace TestBed
 
         private const float ROT_AMOUNT = 0.5f;
 
+        private readonly IDependencyResolver m_resolver;
+
         private readonly IConfigReader m_config;
         private readonly string m_driver;
 
@@ -51,12 +55,10 @@ namespace TestBed
         private float m_fps;
         private float m_rot;
 
-        public MainWindow()
+        public MainWindow(IDependencyResolver resolver, IConfigReader config)
         {
-            Platform.Services.Register<ILogFactory>(new LogFactory());
-            Platform.Services.Register<IConfigReader>(new BasicConfigReader());
-
-            m_config = Platform.Services.Find<IConfigReader>();
+            m_resolver = resolver;
+            m_config = config;
             m_driver = m_config.Get("Tok.Driver", "Vulkan");
 
             var options = WindowOptions.Default;
@@ -97,16 +99,18 @@ namespace TestBed
             switch (m_driver.ToUpper())
             {
             case "VULKAN":
-                m_platform = new Tokamak.Vulkan.VkPlatform(m_silkWindow);
+                m_platform = m_resolver.Activate<Tokamak.Vulkan.VkPlatform>(m_silkWindow);
                 break;
 
             case "OPENGL":
-                m_platform = new Tokamak.OGL.GLPlatform(m_silkWindow);
+                m_platform = m_resolver.Activate<Tokamak.OGL.GLPlatform>(m_silkWindow);
                 break;
 
             default:
                 throw new Exception("Unknown driver");
             }
+
+            m_resolver.PutInstanceInScope(m_platform);
 
 #if false
             m_canvas = new Canvas(m_platform);
@@ -130,6 +134,8 @@ namespace TestBed
 
             OnResize(m_silkWindow.Size);
 
+#if false
+
             m_pipeline = m_platform.GetPipeline(cfg =>
             {
                 cfg.UseInputFormat<VectorFormatP>();
@@ -142,18 +148,19 @@ namespace TestBed
             });
 
             m_commandList = m_platform.GetCommandList();
+#endif
         }
 
         private void OnClosing()
         {
-            m_commandList.Dispose();
-            m_pipeline.Dispose();
+            //m_commandList.Dispose();
+            //m_pipeline.Dispose();
 
             //m_scene.Dispose();
             //m_font.Dispose();
             //m_canvas.Dispose();
 
-            m_platform.Dispose();
+            //m_platform.Dispose();
         }
 
         public void Run() => m_silkWindow.Run();
@@ -196,6 +203,7 @@ namespace TestBed
 
         protected void OnRenderFrame(double delta)
         {
+#if false
             m_commandList.Pipeline = m_pipeline;
 
             m_commandList.Begin();
@@ -205,6 +213,7 @@ namespace TestBed
             m_commandList.DrawArrays(0, 3);
 
             m_commandList.End();
+#endif
 
             /*
 

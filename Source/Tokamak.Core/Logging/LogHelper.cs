@@ -1,9 +1,31 @@
-﻿using System;
+﻿using Stashbox;
+
+using System;
 
 namespace Tokamak.Core.Logging
 {
     public static class LogHelper
     {
+        public static IStashboxContainer AddLogging<T>(this IStashboxContainer container)
+            where T : class, ILogFactory
+        {
+            container.RegisterSingleton<ILogFactory, T>();
+
+            container.Register<ILogger>(cfg =>
+            {
+                cfg.WithScopedLifetime();
+                cfg.WithFactory<ILogFactory>(fact => fact.GetLogger(""));
+            });
+
+            container.Register(typeof(ILogger<>), cfg =>
+            {
+                cfg.WithScopedLifetime();
+                cfg.WithFactory<ILogFactory>(fact => fact.GetLogger(""));
+            });
+
+            return container;
+        }
+
         public static void Trace(this ILogger log, Exception ex, string format, params object[] args)
         {
             if (!log.LevelEnabled(LogLevel.Trace))

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Tokamak.Core.Services;
+using Stashbox;
 
 namespace Tokamak.Core
 {
@@ -14,15 +14,15 @@ namespace Tokamak.Core
             return rval;
         }
 
-        public static GameHostBuilder UseServiceLocator<T>(this GameHostBuilder builder, Func<IServiceLocator> factory)
-            where T : IServiceLocator
+        public static GameHostBuilder UseServiceLocator<T>(this GameHostBuilder builder, Func<IStashboxContainer> factory)
+            where T : IStashboxContainer
         {
-            builder.ServiceLocatorFactory = factory;
+            builder.ContainerFactory = factory;
             return builder;
         }
 
         public static GameHostBuilder UseServiceLocator<T>(this GameHostBuilder builder)
-            where T : IServiceLocator, new()
+            where T : IStashboxContainer, new()
         {
             return builder.UseServiceLocator<T>(() => new T());
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-using Tokamak.Core.Services;
+using Stashbox;
 
 using Tokamak.Buffer;
 using Tokamak.Formats;
@@ -15,13 +15,9 @@ namespace Tokamak
     {
         private readonly Stack<Matrix4x4> m_worldMatrixStack = new Stack<Matrix4x4>();
 
-        static Platform()
+        protected Platform(IDependencyResolver resolver)
         {
-            Services = new ServiceLocator();
-        }
-
-        protected Platform()
-        {
+            Resolver = resolver;
             Monitors = EnumerateMonitors().ToList().AsReadOnly();
         }
 
@@ -29,8 +25,7 @@ namespace Tokamak
         {
         }
 
-        // I know people call this an anti-pattern, it was this or a full on DI framework. >_<
-        public static IServiceLocator Services { get; }
+        public IDependencyResolver Resolver { get; }
 
         public Matrix4x4 WorldMatrix { get; set; }
 

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Stashbox;
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,9 +12,21 @@ namespace TestBed
     {
         private MainWindow m_window;
 
-        public GuiHost()
+        public GuiHost(IDependencyResolver resolver)
         {
-            m_window = new MainWindow();
+            m_window = resolver.Activate<MainWindow>();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+                m_window.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public Task StartAsync(CancellationToken cancellationToken = default)
@@ -25,7 +36,6 @@ namespace TestBed
 
         public Task StopAsync(CancellationToken cancellationToken = default)
         {
-            m_window.Dispose();
             return Task.CompletedTask;
         }
     }

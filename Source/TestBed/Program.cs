@@ -3,6 +3,7 @@
 using Silk.NET.Windowing;
 
 using Tokamak.Core;
+using Tokamak.Core.Logging;
 
 namespace TestBed
 {
@@ -24,7 +25,8 @@ namespace TestBed
             .GetBuilder(args)
             .ConfigureServices(services =>
             {
-                services.Register<IBackgroundService>(new GuiHost());
+                services.AddLogging<LogFactory>();
+                services.RegisterSingleton<IBackgroundService, GuiHost>();
             })
             .Build();
     }

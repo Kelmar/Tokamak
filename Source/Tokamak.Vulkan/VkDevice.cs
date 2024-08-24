@@ -7,6 +7,8 @@ using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 
+using Stashbox;
+
 using Tokamak.Core.Config;
 
 using Tokamak.Vulkan.NativeWrapper;
@@ -118,7 +120,7 @@ namespace Tokamak.Vulkan
 
         private IEnumerable<string> GetEnabledLayers()
         {
-            var config = Platform.Services.Find<IConfigReader>();
+            var config = Parent.Resolver.Resolve<IConfigReader>();
 
             if (config.Get(VkPlatform.VK_VALIDATE_CALLS_CONFIG, false))
                 yield return VkPlatform.VK_VALIDATE_LAYER_NAME;
