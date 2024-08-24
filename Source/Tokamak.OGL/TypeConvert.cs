@@ -4,16 +4,30 @@ using Silk.NET.OpenGL;
 
 using Tokamak.Buffer;
 
+using GLShaderType = Silk.NET.OpenGL.ShaderType;
 using GLPrimType = Silk.NET.OpenGL.PrimitiveType;
 
 using TPrimType = Tokamak.PrimitiveType;
 using FormatType = Tokamak.Formats.FormatBaseType;
 using TokPixelFormat = Tokamak.Formats.PixelFormat;
+using TShaderType = Tokamak.ShaderType;
 
 namespace Tokamak.OGL
 {
     internal static class TypeConvert
     {
+        public static GLShaderType ToGLShaderType(this TShaderType type)
+        {
+            return type switch
+            {
+                TShaderType.Fragment => GLShaderType.FragmentShader,
+                TShaderType.Vertex => GLShaderType.VertexShader,
+                TShaderType.Geometry => GLShaderType.GeometryShader,
+                TShaderType.Compute => GLShaderType.ComputeShader,
+                _ => throw new Exception($"Unknown shader type: {type}")
+            };
+        }
+
         public static GLPrimType ToGLPrimitive(this TPrimType type)
         {
             return type switch

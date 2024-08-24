@@ -1,4 +1,4 @@
-﻿namespace Tokamak.Logging
+﻿namespace Tokamak.Core.Logging
 {
     public enum LogLevel
     {

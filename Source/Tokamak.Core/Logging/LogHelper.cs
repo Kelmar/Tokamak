@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tokamak.Logging
+namespace Tokamak.Core.Logging
 {
     public static class LogHelper
     {

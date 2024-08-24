@@ -5,11 +5,12 @@ using System.IO;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 
+using Tokamak.Core.Config;
+using Tokamak.Core.Logging;
+
 using Tokamak;
 using Tokamak.Buffer;
-using Tokamak.Config;
 using Tokamak.Formats;
-using Tokamak.Logging;
 using Tokamak.Mathematics;
 using Tokamak.Scenes;
 
@@ -19,8 +20,11 @@ namespace TestBed
 {
     public class MainWindow : IDisposable
     {
-        private const string FRAG_SHADER = "resources/frag.spv";
-        private const string VERT_SHADER = "resources/vert.spv";
+        //private const string FRAG_SHADER = "resources/frag.spv";
+        //private const string VERT_SHADER = "resources/vert.spv";
+
+        private const string FRAG_SHADER = "../../../shaders/test.frag";
+        private const string VERT_SHADER = "../../../shaders/test.vert";
 
         private const float ROT_AMOUNT = 0.5f;
 

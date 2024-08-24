@@ -6,8 +6,9 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
+using Tokamak.Core.Logging;
+
 using Tokamak.Buffer;
-using Tokamak.Logging;
 using Tokamak.Vulkan.NativeWrapper;
 
 using Silk.NET.Vulkan;

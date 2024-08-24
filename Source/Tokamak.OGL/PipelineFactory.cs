@@ -33,6 +33,9 @@ namespace Tokamak.OGL
                     string source = File.ReadAllText(shader.Path);
                     var comp = new ShaderCompiler(m_platform, shader.Type, source);
 
+                    //byte[] data = File.ReadAllBytes(shader.Path);
+                    //var comp = new ShaderCompiler(m_platform, shader.Type, data);
+
                     compilers.Add(comp);
 
                     m_platform.GL.AttachShader(glShader.Handle, comp.Handle);

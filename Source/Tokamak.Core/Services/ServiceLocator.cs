@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
-using Tokamak.Logging;
+using Tokamak.Core.Logging;
 
-namespace Tokamak.Services
+namespace Tokamak.Core.Services
 {
     // I know people call this an anti-pattern, it was this or a full on DI framework. >_<
     public class ServiceLocator : IServiceLocator

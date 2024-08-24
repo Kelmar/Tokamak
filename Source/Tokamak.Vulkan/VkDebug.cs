@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 
-using Tokamak.Config;
-using Tokamak.Logging;
+using Tokamak.Core.Config;
+using Tokamak.Core.Logging;
 
 namespace Tokamak.Vulkan
 {

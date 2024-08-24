@@ -1,4 +1,4 @@
-﻿namespace Tokamak.Config
+﻿namespace Tokamak.Core.Config
 {
     /// <summary>
     /// This is a really simple config system for now.

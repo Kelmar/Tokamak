@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Tokamak.Config
+namespace Tokamak.Core.Config
 {
     /// <summary>
     /// This is the most basic of brain dead config systems at the moment.
