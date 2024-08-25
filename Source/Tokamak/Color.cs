@@ -32,7 +32,7 @@ namespace Tokamak
         public static ref readonly Color Black => ref s_black;
 
         public static ref readonly Color DarkBlue => ref s_darkBlue;
-        public static ref readonly Color DarkGren => ref s_darkGreen;
+        public static ref readonly Color DarkGreen => ref s_darkGreen;
         public static ref readonly Color DarkCyan => ref s_darkCyan;
         public static ref readonly Color DarkRed => ref s_darkRed;
         public static ref readonly Color Purple => ref s_purple;
@@ -143,21 +143,21 @@ namespace Tokamak
         /// <summary>
         /// Linearly interpolate between two colors.
         /// </summary>
-        /// <param name="dist">Distance from color 1 to color 2.</param>
+        /// <param name="distance">Distance from color 1 to color 2.</param>
         /// <param name="c1">Color 1</param>
         /// <param name="c2">Color 2</param>
         /// <returns>Mixed color between the two colors.</returns>
-        public static Color Lerp(double dist, in Color c1, in Color c2)
+        public static Color Lerp(double distance, in Color c1, in Color c2)
         {
-            dist = MathX.Clamp(dist, 0, 1);
-            double oneMinus = 1 - dist;
+            distance = MathX.Clamp(distance, 0, 1);
+            double oneMinus = 1 - distance;
 
             return new Color
             {
-                Red   = (byte)Math.Round(c1.Red   * oneMinus + c2.Red   * dist),
-                Green = (byte)Math.Round(c1.Green * oneMinus + c2.Green * dist),
-                Blue  = (byte)Math.Round(c1.Blue  * oneMinus + c2.Blue  * dist),
-                Alpha = (byte)Math.Round(c1.Alpha * oneMinus + c2.Alpha * dist)
+                Red   = (byte)Math.Round(c1.Red   * oneMinus + c2.Red   * distance),
+                Green = (byte)Math.Round(c1.Green * oneMinus + c2.Green * distance),
+                Blue  = (byte)Math.Round(c1.Blue  * oneMinus + c2.Blue  * distance),
+                Alpha = (byte)Math.Round(c1.Alpha * oneMinus + c2.Alpha * distance)
             };
         }
 

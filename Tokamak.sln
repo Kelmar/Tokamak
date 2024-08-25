@@ -40,7 +40,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokamak.Mathematics", "Sour
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokamak.OGL", "Source\Tokamak.OGL\Tokamak.OGL.csproj", "{8131B79B-763A-4105-AB32-D188E6092C2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Core", "Source\Tokamak.Core\Tokamak.Core.csproj", "{67D15C5D-0153-4DF8-B407-086444F83AAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokamak.Core", "Source\Tokamak.Core\Tokamak.Core.csproj", "{67D15C5D-0153-4DF8-B407-086444F83AAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
