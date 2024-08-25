@@ -1,17 +1,15 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 
-namespace Tokamak
+namespace Tokamak.Core
 {
     public static class ReflectionHelper
     {
         public static bool Implements<TInterface>(this Type type)
         {
             Type iType = typeof(TInterface);
-
-            if (!iType.IsInterface)
-                throw new Exception($"{iType.Name} is not an interface.");
-
+            Debug.Assert(iType.IsInterface, $"{iType.Name} is not an interface.");
             return type.GetInterfaces().Contains(iType);
         }
     }

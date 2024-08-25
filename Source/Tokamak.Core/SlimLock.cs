@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Tokamak
+namespace Tokamak.Core
 {
     public class SlimLock : IDisposable
     {
