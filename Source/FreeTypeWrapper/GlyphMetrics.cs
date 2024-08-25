@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 
 using Tokamak.Mathematics;
 
@@ -15,7 +10,7 @@ namespace FreeTypeWrapper
     public struct GlyphMetrics
     {
         /// <summary>
-        /// Gets the actual dimentions of the rendered bitmap.
+        /// Gets the actual dimensions of the rendered bitmap.
         /// </summary>
         public Point BitSize { get; set; }
 

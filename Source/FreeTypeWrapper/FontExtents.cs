@@ -37,7 +37,7 @@ namespace FreeTypeWrapper
         public int Ascender => (int)Math.Round(EmToPixel * AscenderEm);
 
         /// <summary>
-        /// Gets the decsender size in EM units.
+        /// Gets the descender size in EM units.
         /// </summary>
         public float DescenderEm { get; set; }
 
@@ -81,7 +81,7 @@ namespace FreeTypeWrapper
         public int UnderlineThickness => (int)Math.Round(EmToPixel * UnderlineThicknessEm);
 
         /// <summary>
-        /// Get the minium size of a glyph for this font in EM units.
+        /// Get the minimum size of a glyph for this font in EM units.
         /// </summary>
         public Vector2 MinEm { get; set; }
 

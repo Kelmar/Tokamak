@@ -3,7 +3,7 @@
     public struct BitmapSize
     {
         /// <summary>
-        /// The vertical distinace, in pixels, between two consecutive baselines.  It is always positive.
+        /// The vertical distance, in pixels, between two consecutive baselines.  It is always positive.
         /// </summary>
         public int Height { get; set; }
 

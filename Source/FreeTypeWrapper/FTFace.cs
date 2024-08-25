@@ -133,7 +133,7 @@ namespace FreeTypeWrapper
         /// Indicates that the face contains outline glyphs.
         /// </summary>
         /// <remarks>
-        /// This doesn't prvent bitmap strikes, i.e., a face can have both this and HasFixedSizes
+        /// This doesn't prevent bitmap strikes, i.e., a face can have both this and HasFixedSizes
         /// </remarks>
         public bool IsScalable => HasFlag(FT_FACE_FLAG.FT_FACE_FLAG_SCALABLE);
 
@@ -183,7 +183,7 @@ namespace FreeTypeWrapper
         public uint GetCharIndexUTF32(char hi, char low)
         {
             int charCode = Char.ConvertToUtf32(hi, low);
-            return FT_Get_Char_Index(m_faceRec, (uint)charCode); // This is almost certianly going to break.
+            return FT_Get_Char_Index(m_faceRec, (uint)charCode); // This is almost certainly going to break.
         }
 
         public uint GetCharIndex(char c) => FT_Get_Char_Index(m_faceRec, c);
