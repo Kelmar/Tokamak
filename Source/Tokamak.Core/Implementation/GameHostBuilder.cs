@@ -1,29 +1,40 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+
+using Microsoft.Extensions.Configuration;
 
 using Stashbox;
 
 using Tokamak.Core.Config;
 
-namespace Tokamak.Core
+namespace Tokamak.Core.Implementation
 {
-    public class GameHostBuilder
+    internal abstract class GameHostBuilder : IGameHostBuilder
     {
-        private Func<IConfigReader> m_configFactory;
+        private Func<IConfigurationRoot> m_configFactory;
 
         private Func<IStashboxContainer> m_containerFactory;
         private Action<IStashboxContainer> m_containerConfig = null;
 
-        private IConfigReader m_config;
+        private Lazy<IConfigurationRoot> m_config;
         private IStashboxContainer m_container;
 
         private IGameHost m_result = null;
 
         public GameHostBuilder()
         {
-            ConfigFactory = () => new BasicConfigReader();
+            ConfigFactory = DefaultConfigure;
             ContainerFactory = () => new StashboxContainer();
+
+            m_config = new Lazy<IConfigurationRoot>(() =>
+            {
+                Debug.Assert(ConfigFactory != null);
+                return ConfigFactory();
+            });
         }
+
+        public IStashboxContainer Container => m_container;
 
         internal void ConfigureArguments(string[] args)
         {
@@ -31,7 +42,18 @@ namespace Tokamak.Core
                 return;
         }
 
-        public Func<IConfigReader> ConfigFactory
+        private IConfigurationRoot DefaultConfigure()
+        {
+            var builder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+            ;
+
+            return builder.Build();
+        }
+
+        public IConfigurationRoot Configuration => m_config.Value;
+
+        public Func<IConfigurationRoot> ConfigFactory
         {
             get => m_configFactory;
             set
@@ -55,7 +77,7 @@ namespace Tokamak.Core
             }
         }
 
-        public GameHostBuilder ConfigureServices(Action<IStashboxContainer> serviceConfig)
+        public IGameHostBuilder ConfigureServices(Action<IStashboxContainer> serviceConfig)
         {
             if (serviceConfig == null)
                 throw new ArgumentNullException(nameof(serviceConfig));
@@ -64,33 +86,24 @@ namespace Tokamak.Core
             return this;
         }
 
-        private void InitConfig()
-        {
-            Debug.Assert(ConfigFactory != null);
-
-            m_config = ConfigFactory();
-        }
-
         private void InitServices()
         {
             Debug.Assert(ContainerFactory != null);
 
             m_container = ContainerFactory();
-            m_container.RegisterInstance(m_config);
+            m_container.RegisterInstance<IConfiguration>(m_config.Value);
+            m_container.Register(typeof(IOptions<>), typeof(Options<>));
+
             m_containerConfig?.Invoke(m_container);
         }
 
-        private IGameHost CreateHost()
-        {
-            return new Implementation.GameHost(m_container);
-        }
+        protected abstract IGameHost CreateHost();
 
         public IGameHost Build()
         {
             if (m_result != null)
                 return m_result;
 
-            InitConfig();
             InitServices();
 
             m_result = CreateHost();

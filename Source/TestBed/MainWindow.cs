@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+
+using Microsoft.Extensions.Configuration;
 
 using Stashbox;
 
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
-
-using Tokamak.Core.Config;
-using Tokamak.Core.Logging;
 
 using Tokamak;
 using Tokamak.Buffer;
@@ -32,7 +32,7 @@ namespace TestBed
 
         private readonly IDependencyResolver m_resolver;
 
-        private readonly IConfigReader m_config;
+        private readonly IConfiguration m_config;
         private readonly string m_driver;
 
         private readonly IWindow m_silkWindow;
@@ -55,11 +55,16 @@ namespace TestBed
         private float m_fps;
         private float m_rot;
 
-        public MainWindow(IDependencyResolver resolver, IConfigReader config)
+        public MainWindow(IDependencyResolver resolver, IConfiguration config)
         {
             m_resolver = resolver;
             m_config = config;
-            m_driver = m_config.Get("Tok.Driver", "Vulkan");
+            //m_driver = m_config.Get("Tok.Driver", "Vulkan");
+            m_driver = m_config
+                .GetSection("Tok")
+                .GetChildren()
+                .FirstOrDefault(c => c.Key == "Driver")
+                .Value;
 
             var options = WindowOptions.Default;
             options.Size = new Vector2D<int>(1920, 1080);

@@ -68,6 +68,7 @@ namespace Tokamak.OGL
 
             var rval = new Pipeline(m_platform, glShader)
             {
+                DepthTest = m_config.DepthTest,
                 Culling = m_config.Culling,
                 Primitive = m_config.Primitive.ToGLPrimitive()
             };

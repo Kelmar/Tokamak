@@ -7,7 +7,6 @@ using Silk.NET.Vulkan.Extensions.EXT;
 
 using Stashbox;
 
-using Tokamak.Core.Config;
 using Tokamak.Core.Logging;
 
 namespace Tokamak.Vulkan
@@ -26,10 +25,6 @@ namespace Tokamak.Vulkan
 
             var logFact = platform.Resolver.Resolve<ILogFactory>();
             m_log = logFact.GetLogger("Vulkan");
-
-            var conf = platform.Resolver.Resolve<IConfigReader>();
-
-            ShouldLoad = conf.Get(VkPlatform.VK_VALIDATE_CALLS_CONFIG, false);
         }
 
         public void Dispose()
@@ -44,8 +39,6 @@ namespace Tokamak.Vulkan
         public string Name => "Vulkan Debugger";
 
         public string Identifier => String.Empty;
-
-        public bool ShouldLoad { get; }
 
         public IEnumerable<string> GetDependencies()
         {

@@ -35,8 +35,6 @@ namespace Tokamak
 
         virtual public Rect Viewport { get; set; }
 
-        public abstract void SetRenderState(RenderState state);
-
         public IReadOnlyList<Monitor> Monitors { get; }
 
         public void PushWorldMatrix(in Matrix4x4 newMatrix)

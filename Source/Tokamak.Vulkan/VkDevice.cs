@@ -120,10 +120,12 @@ namespace Tokamak.Vulkan
 
         private IEnumerable<string> GetEnabledLayers()
         {
-            var config = Parent.Resolver.Resolve<IConfigReader>();
+            //var config = Parent.Resolver.Resolve<IConfigReader>();
 
-            if (config.Get(VkPlatform.VK_VALIDATE_CALLS_CONFIG, false))
-                yield return VkPlatform.VK_VALIDATE_LAYER_NAME;
+            //if (config.Get(VkPlatform.VK_VALIDATE_CALLS_CONFIG, false))
+            //    yield return VkPlatform.VK_VALIDATE_LAYER_NAME;
+
+            return null;
         }
 
         private IEnumerable<string> GetEnabledExtensions()

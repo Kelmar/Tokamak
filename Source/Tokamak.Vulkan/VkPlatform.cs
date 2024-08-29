@@ -30,7 +30,7 @@ namespace Tokamak.Vulkan
         internal const string VK_VALIDATE_LAYER_NAME = "VK_LAYER_KHRONOS_validation";
 
         private readonly ILogger m_log;
-        private readonly IConfigReader m_config;
+        private readonly VulkanConfig m_config;
 
         private readonly List<VkDevice> m_devices = new List<VkDevice>();
 
@@ -51,12 +51,12 @@ namespace Tokamak.Vulkan
             base.Viewport = new Rect(Point.Zero, Window.FramebufferSize);
 
             m_log = Resolver.Resolve<ILogger<VkPlatform>>();
-            m_config = Resolver.Resolve<IConfigReader>();
+            m_config = Resolver.Resolve<IOptions<VulkanConfig>>().Value;
 
             if (Window.VkSurface == null)
             {
                 m_log.Error("Vulkan not supported by platform");
-                throw new Exception("Vulkan not supported by platform.");
+                throw new NotSupportedException("Vulkan not supported by platform.");
             }
 
             Vk = Vk.GetApi();
@@ -125,7 +125,7 @@ namespace Tokamak.Vulkan
 
             DebugUtilsMessengerCreateInfoEXT debugInfo;
 
-            if (m_config.Get(VK_VALIDATE_CALLS_CONFIG, false))
+            if (m_config.ValidateCalls)
             {
                 if (!layers.Any(l => l.LayerName == VK_VALIDATE_LAYER_NAME))
                     m_log.Warn($"{VK_VALIDATE_CALLS_CONFIG} is set, but validation layer not installed for Vulkan");
@@ -306,10 +306,6 @@ namespace Tokamak.Vulkan
         public override IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
         {
             return null;
-        }
-
-        public override void SetRenderState(RenderState state)
-        {
         }
     }
 }

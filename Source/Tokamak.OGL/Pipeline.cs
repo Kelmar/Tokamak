@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 using Silk.NET.OpenGL;
 
@@ -9,6 +10,7 @@ namespace Tokamak.OGL
     internal sealed class Pipeline : IPipeline
     {
         private readonly Shader m_shader;
+        private readonly Vector4 m_clearColor;
 
         public Pipeline(GLPlatform platform, Shader shader)
         {
@@ -24,9 +26,30 @@ namespace Tokamak.OGL
 
         public GLPlatform Platform { get; }
 
+        public Color ClearColor
+        {
+            get => (Color)m_clearColor;
+            init => m_clearColor = (Vector4)value;
+        }
+
+        public bool DepthTest { get; init; }
+
         public CullMode Culling { get; init; }
 
         public GLPrimType Primitive { get; set; }
+
+        private void SetClearColor()
+        {
+            Platform.GL.ClearColor(m_clearColor.X, m_clearColor.Y, m_clearColor.Z, m_clearColor.W);
+        }
+
+        private void SetDepthTest()
+        {
+            if (DepthTest)
+                Platform.GL.Enable(EnableCap.DepthTest);
+            else
+                Platform.GL.Disable(EnableCap.DepthTest);
+        }
 
         private void SetCullingMode()
         {
@@ -60,6 +83,8 @@ namespace Tokamak.OGL
 
             m_shader.Activate();
 
+            SetClearColor();
+            SetDepthTest();
             SetCullingMode();
         }
     }

@@ -1,6 +1,5 @@
 ﻿using System;
-
-using Silk.NET.Windowing;
+using System.Threading.Tasks;
 
 using Tokamak.Core;
 using Tokamak.Core.Logging;
@@ -9,11 +8,11 @@ namespace TestBed
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             try
             {
-                BuildHost(args).Run();
+                await BuildHost(args).RunAsync();
             }
             catch (Exception ex)
             {
@@ -22,11 +21,11 @@ namespace TestBed
         }
 
         static IGameHost BuildHost(string[] args) => GameHost
-            .GetBuilder(args)
+            .GetClientBuilder(args)
             .ConfigureServices(services =>
             {
                 services.AddLogging<LogFactory>();
-                services.RegisterSingleton<IBackgroundService, GuiHost>();
+                //services.RegisterSingleton<IBackgroundService, GuiHost>();
             })
             .Build();
     }

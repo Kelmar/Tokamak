@@ -3,41 +3,35 @@ using System.Threading.Tasks;
 
 using Stashbox;
 
+using Tokamak.Core.Implementation;
+
 namespace Tokamak.Core
 {
     public static class GameHost
     {
-        public static GameHostBuilder GetBuilder(string[] args = null)
+        public static IGameHostBuilder GetClientBuilder(string[] args = null)
         {
-            var rval = new GameHostBuilder();
+            var rval = new ClientHostBuilder();
             rval.ConfigureArguments(args);
             return rval;
         }
 
-        public static GameHostBuilder UseServiceLocator<T>(this GameHostBuilder builder, Func<IStashboxContainer> factory)
+        public static IGameHostBuilder UseContainer<T>(this IGameHostBuilder builder, Func<IStashboxContainer> factory)
             where T : IStashboxContainer
         {
             builder.ContainerFactory = factory;
             return builder;
         }
 
-        public static GameHostBuilder UseServiceLocator<T>(this GameHostBuilder builder)
+        public static IGameHostBuilder UseContainer<T>(this IGameHostBuilder builder)
             where T : IStashboxContainer, new()
         {
-            return builder.UseServiceLocator<T>(() => new T());
+            return builder.UseContainer<T>(() => new T());
         }
 
         public static void Run(this IGameHost host)
         {
-            try
-            {
-                host.StartAsync().GetAwaiter().GetResult();
-                host.StopAsync().GetAwaiter().GetResult();
-            }
-            finally
-            {
-                host.Dispose();
-            }
+            host.RunAsync().GetAwaiter().GetResult();
         }
 
         public static async Task RunAsync(this IGameHost host)
@@ -49,7 +43,10 @@ namespace Tokamak.Core
             }
             finally
             {
-                host.Dispose();
+                if (host is IAsyncDisposable asyncDisposable)
+                    await asyncDisposable.DisposeAsync();
+                else
+                    host.Dispose();
             }
         }
     }
