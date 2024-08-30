@@ -97,18 +97,15 @@ void main()
 
             m_device = device;
 
-            m_pipeline = device.GetPipeline(cfg =>
-            {
-                cfg.UseInputFormat<VectorFormatPCT>();
+            m_pipeline = m_device.GetPipeline(cfg => cfg
+                .UseInputFormat<VectorFormatPCT>()
+                .EnableDepthTest(false)
+                .UseCulling(CullMode.None)
+                .UseShader(ShaderType.Vertex, VERTEX_SHADER_PATH)
+                .UseShader(ShaderType.Fragment, FRAGMENT_SHADER_PATH)
+            );
 
-                cfg.UseCulling(CullMode.None);
-                //UseDepthTest = false
-
-                cfg.UseShader(ShaderType.Vertex, VERTEX_SHADER_PATH);
-                cfg.UseShader(ShaderType.Fragment, FRAGMENT_SHADER_PATH);
-            });
-
-            m_commandBuffer = device.GetCommandList();
+            m_commandBuffer = m_device.GetCommandList();
 
             m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dynamic);
         }
@@ -250,15 +247,14 @@ void main()
                 var p = new Point(cursor.X + g.Bearing.X, cursor.Y - g.Bearing.Y);
 
                 var detail = new Tuple<Glyph, VectorFormatPCT[]>(g, 
-                    new VectorFormatPCT[6]
-                    {
+                    [
                         BuildVector(pen, p.X, p.Y, tl),
                         BuildVector(pen, p.X, p.Y + g.Size.Y, new Vector2(tl.X, br.Y)),
                         BuildVector(pen, p.X + g.Size.X, p.Y, new Vector2(br.X, tl.Y)),
                         BuildVector(pen, p.X, p.Y + g.Size.Y, new Vector2(tl.X, br.Y)),
                         BuildVector(pen, p.X + g.Size.X, p.Y, new Vector2(br.X, tl.Y)),
                         BuildVector(pen, p.X + g.Size.X, p.Y + g.Size.Y, br)
-                    }
+                    ]
                 );
 
                 glyphPolys.Add(detail);

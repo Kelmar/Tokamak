@@ -10,9 +10,11 @@ namespace Tokamak.Core
     {
         IConfigurationRoot Configuration { get; }
 
-        Func<IConfigurationRoot> ConfigFactory { get; set; }
-
         Func<IStashboxContainer> ContainerFactory { get; set; }
+
+        IGameHostBuilder ConfigureHostConfiguration(Action<IConfigurationBuilder> configFn);
+
+        IGameHostBuilder ConfigureAppConfiguration(Action<IConfigurationBuilder> configFn);
 
         IGameHostBuilder ConfigureServices(Action<IStashboxContainer> serviceConfig);
 
