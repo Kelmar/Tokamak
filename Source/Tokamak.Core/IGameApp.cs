@@ -2,6 +2,13 @@
 
 namespace Tokamak.Core
 {
+    /// <summary>
+    /// Provides the logic around the game application.
+    /// </summary>
+    /// <remarks>
+    /// It is expected that users of the library may override
+    /// this to provide custom implementations.
+    /// </remarks>
     public interface IGameApp : IDisposable
     {
         /// <summary>

@@ -12,6 +12,12 @@ using Tokamak.Core.Logging;
 
 namespace Tokamak.Core.Implementation
 {
+    /// <summary>
+    /// Common GameHost implementation.
+    /// </summary>
+    /// <remarks>
+    /// Handles IoC setup, and starting background services.
+    /// </remarks>
     internal abstract class GameHost : IGameHost
     {
         private readonly IStashboxContainer m_container;
@@ -56,8 +62,24 @@ namespace Tokamak.Core.Implementation
 
         protected ILogger Log { get; }
 
+        /// <summary>
+        /// Starts processing on the main thread.
+        /// </summary>
+        /// <remarks>
+        /// ClientGameHost uses this to initialize the main window.
+        /// </remarks>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         abstract protected Task StartHostAsync(CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Stops processing on the main thread.
+        /// </summary>
+        /// <remarks>
+        /// ClientGameHost blocks on this call in the View.Run() call.
+        /// </remarks>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         abstract protected Task StopHostAsync(CancellationToken cancellationToken);
 
         public async Task StartAsync(CancellationToken cancellationToken = default)
