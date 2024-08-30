@@ -21,7 +21,7 @@ namespace TestBed
         }
 
         static IGameHost BuildHost(string[] args) => GameHost
-            .GetClientBuilder(args)
+            .GetDefaultClientBuilder(args)
             .ConfigureServices(services =>
             {
                 services.AddLogging<LogFactory>();

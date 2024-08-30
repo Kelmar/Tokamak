@@ -13,11 +13,12 @@ namespace Tokamak.Core
 {
     public static class GameHost
     {
-        public static IGameHostBuilder GetClientBuilder(string[] args = null)
+        public static IGameHostBuilder GetClientBuilder() => new ClientHostBuilder();
+
+        public static IGameHostBuilder GetDefaultClientBuilder(string[] args = null)
         {
-            var rval = new ClientHostBuilder();
-            rval.ConfigureDefaults(args);
-            return rval;
+            return new ClientHostBuilder()
+                .ConfigureDefaults(args);
         }
 
         public static IGameHostBuilder ConfigureDefaults(this IGameHostBuilder builder, string[] args)
