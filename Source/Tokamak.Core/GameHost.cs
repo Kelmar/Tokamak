@@ -23,6 +23,8 @@ namespace Tokamak.Core
 
         public static IGameHostBuilder ConfigureDefaults(this IGameHostBuilder builder, string[] args)
         {
+            builder.UseGameApp<GameApp>();
+
             builder.ConfigureHostConfiguration(config => GetDefaultHostConfiguration(config, args));
             builder.ConfigureAppConfiguration(config => GetDefaultAppConfiguration(config, args));
             return builder;
@@ -66,6 +68,20 @@ namespace Tokamak.Core
             where T : IStashboxContainer, new()
         {
             return builder.UseContainer<T>(() => new T());
+        }
+
+        public static IGameHostBuilder UseGameApp<T>(this IGameHostBuilder builder)
+            where T : class, IGameApp
+        {
+            builder.ConfigureServices(c =>
+            {
+                if (c.IsRegistered<IGameApp>())
+                    c.ReMap<IGameApp, T>(cfg => cfg.WithSingletonLifetime());
+                else
+                    c.RegisterSingleton<IGameApp, T>();
+            });
+
+            return builder;
         }
 
         public static void Run(this IGameHost host)

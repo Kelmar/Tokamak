@@ -15,12 +15,12 @@ namespace Tokamak.Core.Implementation
     {
         private readonly List<Action<IConfigurationBuilder>> m_hostConfigBuilders = new();
         private readonly List<Action<IConfigurationBuilder>> m_appConfigBuilders = new();
+        private readonly List<Action<IStashboxContainer>> m_serviceConfigs = new();
 
         private readonly Lazy<IConfiguration> m_hostConfig;
         private readonly Lazy<IConfigurationRoot> m_appConfig;
 
         private Func<IStashboxContainer> m_containerFactory;
-        private Action<IStashboxContainer> m_containerConfig = null;
 
         private IStashboxContainer m_container;
 
@@ -71,7 +71,7 @@ namespace Tokamak.Core.Implementation
             if (serviceConfig == null)
                 throw new ArgumentNullException(nameof(serviceConfig));
 
-            m_containerConfig = serviceConfig;
+            m_serviceConfigs.Add(serviceConfig);
             return this;
         }
 
@@ -124,7 +124,8 @@ namespace Tokamak.Core.Implementation
             m_container.RegisterInstance<IConfiguration>(Configuration);
             m_container.Register(typeof(IOptions<>), typeof(Options<>));
 
-            m_containerConfig?.Invoke(m_container);
+            foreach (var fn in m_serviceConfigs)
+                fn(m_container);
         }
 
         protected abstract IGameHost CreateHost();

@@ -4,8 +4,6 @@ using System.Numerics;
 
 using Tokamak.Buffer;
 
-using TokPrimType = Tokamak.PrimitiveType;
-
 namespace Tokamak.OGL
 {
     internal class GLCommandList : ICommandList
@@ -43,7 +41,7 @@ namespace Tokamak.OGL
             flags |= buffers.HasFlag(GlobalBuffer.DepthBuffer) ? ClearBufferMask.DepthBufferBit : 0;
             flags |= buffers.HasFlag(GlobalBuffer.StencilBuffer) ? ClearBufferMask.StencilBufferBit : 0;
 
-            if ((int)flags != 0)
+            if (flags != 0)
                 GL.Clear(flags);
         }
 

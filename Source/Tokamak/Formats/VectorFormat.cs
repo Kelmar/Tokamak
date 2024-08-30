@@ -5,16 +5,15 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
-using System.Drawing;
 
 namespace Tokamak.Formats
 {
     /// <summary>
-    /// Class for getting information on a vetex buffer layout.
+    /// Class for getting information on a vertex buffer layout.
     /// </summary>
     /// <remarks>
     /// This class takes in a structure and builds up information about how it is laid out in memory so that we 
-    /// can send that over to the undelying video system.
+    /// can send that over to the underlying video system.
     /// 
     /// What this effectively does is gives us a way to define an arbitrary structure and map it to our shader parameters.
     /// </remarks>
@@ -39,7 +38,7 @@ namespace Tokamak.Formats
                 var fields = Type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                 /*
-                 * Note that if an item doesn't have a FormatDesciptorAttribute, we'll throw a NullReferenceException.
+                 * Note that if an item doesn't have a FormatDescriptorAttribute, we'll throw a NullReferenceException.
                  * That is intentional, we want this to be a required attribute when working with vertex buffers.
                  * 
                  * TODO: Look into a nicer way to verify this and provide a clearer error.
@@ -107,7 +106,7 @@ namespace Tokamak.Formats
             public int Index { get; set; }
 
             /// <summary>
-            /// Offset from the begining of the structure the item occurs at.
+            /// Offset from the beginning of the structure the item occurs at.
             /// </summary>
             public nint Offset { get; set; }
 
@@ -146,6 +145,7 @@ namespace Tokamak.Formats
             // Prebuild for some common base structures.
             var items = new List<Type>
             {
+                typeof(VectorFormatP),
                 typeof(VectorFormatPC),
                 typeof(VectorFormatPCT)
             };
