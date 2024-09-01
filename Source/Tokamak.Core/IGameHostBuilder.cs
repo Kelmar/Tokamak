@@ -6,6 +6,9 @@ using System;
 
 namespace Tokamak.Core
 {
+    /// <summary>
+    /// Interface for performing initial host setup.
+    /// </summary>
     public interface IGameHostBuilder
     {
         IConfigurationRoot Configuration { get; }

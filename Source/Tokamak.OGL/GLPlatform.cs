@@ -9,10 +9,12 @@ using Silk.NET.Windowing;
 
 using Stashbox;
 
+using Tokamak.Core;
 using Tokamak.Mathematics;
 using Tokamak.Buffer;
 
 using TokPixelFormat = Tokamak.Formats.PixelFormat;
+
 
 namespace Tokamak.OGL
 {
@@ -20,10 +22,10 @@ namespace Tokamak.OGL
     {
         private readonly TextureObject m_whiteTexture;
 
-        public GLPlatform(IGLContextSource context, IDependencyResolver resolver)
+        public GLPlatform(IOGLContextProvider provider, IDependencyResolver resolver)
             : base(resolver)
         {
-            GL = GL.GetApi(context);
+            GL = GL.GetApi(provider.Context);
 
             // Need to figure out how to abstract these.
             GL.Enable(EnableCap.Blend);

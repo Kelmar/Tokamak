@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 
-namespace Tokamak.Core
+namespace Tokamak.Core.Utilities
 {
     public static class ReflectionHelper
     {

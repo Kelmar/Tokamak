@@ -24,7 +24,7 @@ namespace TestBed
             .GetDefaultClientBuilder(args)
             .ConfigureServices(services =>
             {
-                services.AddLogging<LogFactory>();
+                services.UseConsoleLogger();
                 //services.RegisterSingleton<IBackgroundService, GuiHost>();
             })
             .Build();

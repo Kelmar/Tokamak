@@ -122,7 +122,10 @@ namespace Tokamak.Core.Implementation
             m_container.RegisterInstance(HostEnvironment);
 
             m_container.RegisterInstance<IConfiguration>(Configuration);
-            m_container.Register(typeof(IOptions<>), typeof(Options<>));
+
+            // Initialize default configuration readers
+            m_container.Register(typeof(IConfigOptions<>), typeof(ConfigOptions<>));
+            m_container.Register(typeof(IOptions<>), typeof(DefaultOptions<>));
 
             foreach (var fn in m_serviceConfigs)
                 fn(m_container);

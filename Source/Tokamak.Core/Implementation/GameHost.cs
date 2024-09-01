@@ -30,7 +30,7 @@ namespace Tokamak.Core.Implementation
             m_container = builder.Container;
 
             // Allow things to resolve us, but don't dispose, we're managing the lifetime of the container itself!
-            m_container.PutInstanceInScope<IGameHost>(this, withoutDisposalTracking: true);
+            m_container.RegisterInstance<IGameHost>(this, withoutDisposalTracking: true);
 
             m_container.Validate();
 
@@ -38,7 +38,7 @@ namespace Tokamak.Core.Implementation
 
             Configuration = m_scope.Resolve<IConfiguration>();
 
-            Log = m_scope.Resolve<ILogger>();
+            Log = m_scope.Resolve<ILogger<GameHost>>();
         }
 
         virtual protected void Dispose(bool disposing)

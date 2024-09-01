@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Tokamak.Core
+namespace Tokamak.Core.Utilities
 {
     public class SlimLock : IDisposable
     {
@@ -48,7 +48,7 @@ namespace Tokamak.Core
             return new Unlocker(m_base);
         }
 
-        public async Task<IDisposable> LockAsync(TimeSpan timeSpan, CancellationToken cancellationToken= default)
+        public async Task<IDisposable> LockAsync(TimeSpan timeSpan, CancellationToken cancellationToken = default)
         {
             if (await m_base.WaitAsync(timeSpan, cancellationToken))
                 return new Unlocker(m_base);

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading;
 
+using Silk.NET.Core.Contexts;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 
 namespace Tokamak.Core.Implementation
 {
-    internal sealed class ClientView : IDisposable
+    internal sealed class ClientView : IDisposable, IOGLContextProvider
     {
         private readonly IWindow m_silkWindow;
         private readonly IView m_silkView;
@@ -56,6 +57,8 @@ namespace Tokamak.Core.Implementation
 
             GC.SuppressFinalize(this);
         }
+
+        public IGLContextSource Context => m_silkView;
 
         private void Shutdown()
         {

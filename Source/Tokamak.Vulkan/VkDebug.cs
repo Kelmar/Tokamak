@@ -19,12 +19,10 @@ namespace Tokamak.Vulkan
         private ExtDebugUtils m_debugUtils;
         private DebugUtilsMessengerEXT m_messenger;
 
-        public VkDebug(VkPlatform platform)
+        public VkDebug(ILogger<VkPlatform> log, VkPlatform platform)
         {
+            m_log = log;
             m_platform = platform;
-
-            var logFact = platform.Resolver.Resolve<ILogFactory>();
-            m_log = logFact.GetLogger("Vulkan");
         }
 
         public void Dispose()

@@ -23,6 +23,7 @@ using Tokamak.Vulkan.NativeWrapper;
 
 namespace Tokamak.Vulkan
 {
+    [LogName("Tokamak.Vulkan")]
     public unsafe class VkPlatform : Platform
     {
         internal const string VK_VALIDATE_CALLS_CONFIG = "Vk.ValidateCalls";
@@ -133,7 +134,7 @@ namespace Tokamak.Vulkan
                 {
                     enableLayers.Add(VK_VALIDATE_LAYER_NAME);
 
-                    m_debug = new VkDebug(this);
+                    m_debug = Resolver.Activate<VkDebug>(this);
                     debugInfo = m_debug.GetInstanceStartup();
                 }
             }
