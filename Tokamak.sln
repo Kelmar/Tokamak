@@ -42,7 +42,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokamak.OGL", "Source\Tokam
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokamak.Core", "Source\Tokamak.Core\Tokamak.Core.csproj", "{67D15C5D-0153-4DF8-B407-086444F83AAC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokamak.Tritium", "Source\Tridium\Tokamak.Tritium.csproj", "{BEA03A6C-F340-4B0F-A45A-DA11D4A121F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokamak.Tritium", "Source\Tritium\Tokamak.Tritium.csproj", "{BEA03A6C-F340-4B0F-A45A-DA11D4A121F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
