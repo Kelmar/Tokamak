@@ -15,6 +15,8 @@ namespace Tokamak.Core
 
         Func<IStashboxContainer> ContainerFactory { get; set; }
 
+        IStashboxContainer Container { get; }
+
         IGameHostBuilder ConfigureHostConfiguration(Action<IConfigurationBuilder> configFn);
 
         IGameHostBuilder ConfigureAppConfiguration(Action<IConfigurationBuilder> configFn);

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reflection;
 
+using Tokamak.Core.Utilities;
+
 namespace Tokamak.Core.Logging
 {
     /// <summary>
@@ -17,7 +19,7 @@ namespace Tokamak.Core.Logging
 
         public IDisposable BeginScope(object args)
         {
-            return null;
+            return Indisposable.Instance;
         }
 
         public bool LevelEnabled(LogLevel level)
@@ -30,7 +32,7 @@ namespace Tokamak.Core.Logging
             string msg = args != null ? String.Format(format, args) : format;
 
             if (m_name != null)
-                Console.WriteLine("{0} {1}: {2}", m_name, level, msg);
+                Console.WriteLine("{0} [{1}]: {2}", m_name, level, msg);
             else
                 Console.WriteLine("{0}: {1}", level, msg);
         }
@@ -47,7 +49,7 @@ namespace Tokamak.Core.Logging
         {
             var attr = t.GetCustomAttribute<LogNameAttribute>();
 
-            return attr?.Name ?? t.FullName;
+            return attr?.Name ?? t.Name;
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tokamak.Utils
+namespace Tokamak.Core.Utilities
 {
     /// <summary>
     /// Used for tracking a list of items that need to be disposed of.

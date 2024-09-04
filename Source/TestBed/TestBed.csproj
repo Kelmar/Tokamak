@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Tridium\Tokamak.Tritium.csproj" />
     <ProjectReference Include="..\Graphite\Graphite.csproj" />
     <ProjectReference Include="..\Tokamak.Core\Tokamak.Core.csproj" />
     <ProjectReference Include="..\Tokamak.OGL\Tokamak.OGL.csproj" />

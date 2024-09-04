@@ -5,9 +5,11 @@ using Silk.NET.Core.Contexts;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 
-namespace Tokamak.Core.Implementation
+using Tokamak.Core;
+
+namespace Tokamak.Tritium.Hosting
 {
-    internal sealed class ClientView : IDisposable, IOGLContextProvider
+    internal sealed class ClientView : IDisposable
     {
         private readonly IWindow m_silkWindow;
         private readonly IView m_silkView;

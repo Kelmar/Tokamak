@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Tokamak.Core
 {
+    /// <summary>
+    /// Interface to services that run on separate background tasks.
+    /// </summary>
     public interface IBackgroundService : IDisposable
     {
         Task StartAsync(CancellationToken cancellationToken = default);

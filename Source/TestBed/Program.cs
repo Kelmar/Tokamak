@@ -1,18 +1,19 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 using Tokamak.Core;
 using Tokamak.Core.Logging;
+
+using Tokamak.Tritium;
 
 namespace TestBed
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             try
             {
-                await BuildHost(args).RunAsync();
+                BuildHost(args).Run();
             }
             catch (Exception ex)
             {
@@ -21,10 +22,11 @@ namespace TestBed
         }
 
         static IGameHost BuildHost(string[] args) => GameHost
-            .GetDefaultClientBuilder(args)
+            .GetDefaultBuilder(args)
             .ConfigureServices(services =>
             {
                 services.UseConsoleLogger();
+                services.UseTritium();
                 //services.RegisterSingleton<IBackgroundService, GuiHost>();
             })
             .Build();

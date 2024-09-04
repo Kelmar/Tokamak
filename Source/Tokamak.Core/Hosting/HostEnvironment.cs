@@ -1,4 +1,4 @@
-﻿namespace Tokamak.Core.Implementation
+﻿namespace Tokamak.Core.Hosting
 {
     internal class HostEnvironment : IHostEnvironment
     {

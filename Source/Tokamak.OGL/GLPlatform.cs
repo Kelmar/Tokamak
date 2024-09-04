@@ -22,10 +22,10 @@ namespace Tokamak.OGL
     {
         private readonly TextureObject m_whiteTexture;
 
-        public GLPlatform(IOGLContextProvider provider, IDependencyResolver resolver)
+        public GLPlatform(IGLContext context, IDependencyResolver resolver)
             : base(resolver)
         {
-            GL = GL.GetApi(provider.Context);
+            GL = GL.GetApi(context);
 
             // Need to figure out how to abstract these.
             GL.Enable(EnableCap.Blend);

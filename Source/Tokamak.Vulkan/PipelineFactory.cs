@@ -4,7 +4,7 @@ using System.Linq;
 
 using Silk.NET.Vulkan;
 
-using Tokamak.Utils;
+using Tokamak.Core.Utilities;
 
 using Tokamak.Vulkan.NativeWrapper;
 

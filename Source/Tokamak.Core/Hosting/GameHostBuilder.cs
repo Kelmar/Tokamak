@@ -9,9 +9,9 @@ using Stashbox;
 
 using Tokamak.Core.Config;
 
-namespace Tokamak.Core.Implementation
+namespace Tokamak.Core.Hosting
 {
-    internal abstract class GameHostBuilder : IGameHostBuilder
+    public class GameHostBuilder : IGameHostBuilder
     {
         private readonly List<Action<IConfigurationBuilder>> m_hostConfigBuilders = new();
         private readonly List<Action<IConfigurationBuilder>> m_appConfigBuilders = new();
@@ -101,9 +101,10 @@ namespace Tokamak.Core.Implementation
         {
             var hostConfig = m_hostConfig.Value;
 
-            string name =
-                hostConfig["ApplicationName"] ??
-                Assembly.GetEntryAssembly()?.GetName().Name ??
+            Assembly entry = Assembly.GetEntryAssembly();
+
+            string name = hostConfig["ApplicationName"] ??
+                entry?.GetName().Name ??
                 "Tokamak";
 
             HostEnvironment = new HostEnvironment
@@ -131,8 +132,6 @@ namespace Tokamak.Core.Implementation
                 fn(m_container);
         }
 
-        protected abstract IGameHost CreateHost();
-
         public IGameHost Build()
         {
             if (m_result != null)
@@ -141,7 +140,7 @@ namespace Tokamak.Core.Implementation
             InitEnvironment();
             InitServices();
 
-            m_result = CreateHost();
+            m_result = new GameHost(this);
             return m_result;
         }
     }

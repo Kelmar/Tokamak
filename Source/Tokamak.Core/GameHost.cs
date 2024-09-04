@@ -7,23 +7,22 @@ using Microsoft.Extensions.Configuration;
 
 using Stashbox;
 
-using Tokamak.Core.Implementation;
+using Tokamak.Core.Hosting;
 
 namespace Tokamak.Core
 {
     public static class GameHost
     {
-        public static IGameHostBuilder GetClientBuilder() => new ClientHostBuilder();
-
-        public static IGameHostBuilder GetDefaultClientBuilder(string[] args = null)
+        public static IGameHostBuilder GetDefaultBuilder(string[] args = null)
         {
-            return new ClientHostBuilder()
-                .ConfigureDefaults(args);
+            var builder = new GameHostBuilder();
+            builder.ConfigureDefaults(args);
+            return builder;
         }
 
         public static IGameHostBuilder ConfigureDefaults(this IGameHostBuilder builder, string[] args)
         {
-            builder.UseGameApp<GameApp>();
+            //builder.UseGameApp<GameApp>();
 
             builder.ConfigureHostConfiguration(config => GetDefaultHostConfiguration(config, args));
             builder.ConfigureAppConfiguration(config => GetDefaultAppConfiguration(config, args));
@@ -38,7 +37,7 @@ namespace Tokamak.Core
             // TODO: Add command line args here.
             
             if (values.Any())
-                builder.AddInMemoryCollection(values.ToArray());
+                builder.AddInMemoryCollection(values);
         }
 
         private static void GetDefaultAppConfiguration(IConfigurationBuilder builder, string[] args)
@@ -54,7 +53,7 @@ namespace Tokamak.Core
             // TODO: Add command line args here.
 
             if (values.Any())
-                builder.AddInMemoryCollection(values.ToArray());
+                builder.AddInMemoryCollection(values);
         }
 
         public static IGameHostBuilder UseContainer<T>(this IGameHostBuilder builder, Func<IStashboxContainer> factory)
@@ -86,22 +85,15 @@ namespace Tokamak.Core
 
         public static void Run(this IGameHost host)
         {
-            host.RunAsync().GetAwaiter().GetResult();
-        }
-
-        public static async Task RunAsync(this IGameHost host)
-        {
             try
             {
-                await host.StartAsync();
-                await host.StopAsync();
+                host.Start();
+                host.MainLoop();
+                host.Stop();
             }
             finally
             {
-                if (host is IAsyncDisposable asyncDisposable)
-                    await asyncDisposable.DisposeAsync();
-                else
-                    host.Dispose();
+                host.Dispose();
             }
         }
     }
