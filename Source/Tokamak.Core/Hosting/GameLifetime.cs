@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Tokamak.Core.Hosting
 {
@@ -7,7 +8,29 @@ namespace Tokamak.Core.Hosting
     /// </summary>
     internal class GameLifetime : IGameLifetime
     {
-        private readonly HashSet<ITick> m_tickers = new();
+        private class TickInfo
+        {
+            public TickPriority Priority { get; set; }
+
+            public ITick Ticker { get; set; }
+        }
+
+        private readonly Dictionary<ITick, TickInfo> m_tickers = new();
+
+        private readonly Dictionary<TickPriority, List<ITick>> m_priorityLists = new();
+
+        private readonly TickPriority[] m_priorities;
+
+        public GameLifetime()
+        {
+            var t = typeof(TickPriority);
+
+            var values = (TickPriority[])t.GetEnumValues();
+            m_priorities = values.OrderDescending().ToArray();
+
+            foreach (var value in m_priorities)
+                m_priorityLists[value] = new();
+        }
 
         public bool Running { get; private set; } = true;
 
@@ -16,14 +39,49 @@ namespace Tokamak.Core.Hosting
             Running = false;
         }
 
-        public void AddTick(ITick tick) => m_tickers.Add(tick);
+        public void AddTick(ITick tick, TickPriority priority = TickPriority.Normal)
+        {
+            if (m_tickers.TryGetValue(tick, out TickInfo info))
+            {
+                if (info.Priority == priority)
+                    return; // No change;
 
-        public bool RemoveTick(ITick tick) => m_tickers.Remove(tick);
+                m_priorityLists[priority].Remove(tick);
+                info.Priority = priority;
+            }
+            else
+            {
+                info = new TickInfo
+                {
+                    Priority = priority,
+                    Ticker = tick
+                };
+
+                m_tickers[tick] = info;
+            }
+
+            m_priorityLists[priority].Add(info.Ticker);
+        }
+
+        public bool RemoveTick(ITick tick)
+        {
+            if (m_tickers.TryGetValue(tick, out TickInfo info))
+            {
+                m_tickers.Remove(tick);
+                m_priorityLists[info.Priority].Remove(tick);
+                return true;
+            }
+
+            return false;
+        }
 
         public void Tick()
         {
-            foreach (var item in m_tickers)
-                item.Tick();
+            foreach (var value in m_priorities)
+            {
+                foreach (var item in m_priorityLists[value])
+                    item.Tick();
+            }
         }
     }
 }

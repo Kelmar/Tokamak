@@ -12,9 +12,9 @@ namespace Tokamak.Tritium.APIs.NullRender
 
         public SupportLevel SupportLevel => SupportLevel - 100; // Should never automatically choose this.
 
-        public IDisposable Create()
+        public IAPILayer Create()
         {
-            return Indisposable.Instance;
+            return new NullLayer();
         }
     }
 }

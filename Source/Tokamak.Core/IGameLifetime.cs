@@ -18,10 +18,15 @@ namespace Tokamak.Core
         void Shutdown();
 
         /// <summary>
+        /// Run all tick events
+        /// </summary>
+        void Tick();
+
+        /// <summary>
         /// Adds an ITick component to the main thread tick update.
         /// </summary>
         /// <param name="tick">Item to add</param>
-        void AddTick(ITick tick);
+        void AddTick(ITick tick, TickPriority priority = TickPriority.Normal);
 
         /// <summary>
         /// Removes an ITick component from the main thread tick update.

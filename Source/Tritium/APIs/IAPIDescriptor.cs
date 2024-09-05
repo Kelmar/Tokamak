@@ -26,6 +26,6 @@ namespace Tokamak.Tritium.APIs
         /// Factory method for creating API management object.
         /// </summary>
         /// <returns></returns>
-        IDisposable Create();
+        IAPILayer Create();
     }
 }

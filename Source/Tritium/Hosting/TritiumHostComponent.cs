@@ -1,12 +1,6 @@
-﻿using Silk.NET.Windowing;
-
-using Stashbox;
+﻿using Stashbox;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Tokamak.Core;
 using Tokamak.Core.Config;
@@ -22,7 +16,7 @@ namespace Tokamak.Tritium.Hosting
         private readonly TritiumConfig m_config;
         private readonly IDependencyResolver m_resolver;
 
-        private IDisposable m_api = null;
+        private IAPILayer m_apiLayer = null;
 
         public TritiumHostComponent(
             ILogger<TritiumHostComponent> log,
@@ -36,7 +30,7 @@ namespace Tokamak.Tritium.Hosting
 
         public void Dispose()
         {
-            m_api?.Dispose();
+            m_apiLayer?.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -45,7 +39,7 @@ namespace Tokamak.Tritium.Hosting
             var loader = m_resolver.Activate<APILoader>();
 
             var descriptor = loader.SelectAPI();
-            m_api = descriptor.Create();
+            m_apiLayer = descriptor.Create();
         }
 
         public void Start()

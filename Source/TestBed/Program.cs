@@ -5,6 +5,8 @@ using Tokamak.Core.Logging;
 
 using Tokamak.Tritium;
 
+using Tokamak.OGL;
+
 namespace TestBed
 {
     class Program
@@ -27,7 +29,7 @@ namespace TestBed
             {
                 services.UseConsoleLogger();
                 services.UseTritium();
-                //services.RegisterSingleton<IBackgroundService, GuiHost>();
+                services.AllowOpenGL();
             })
             .Build();
     }

@@ -14,14 +14,12 @@ using Tokamak.Mathematics;
 using Tokamak.Buffer;
 
 using TokPixelFormat = Tokamak.Formats.PixelFormat;
-
+using Tokamak.Core.Utilities;
 
 namespace Tokamak.OGL
 {
     public class GLPlatform : Platform
     {
-        private readonly TextureObject m_whiteTexture;
-
         public GLPlatform(IGLContext context, IDependencyResolver resolver)
             : base(resolver)
         {
@@ -32,17 +30,10 @@ namespace Tokamak.OGL
 
             // A good blending function for 2D font antialiasing.
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
-            
-            // Create a default 1x1 white texture as not all OpenGL implementations will do this for us.
-            m_whiteTexture = new TextureObject(this, TokPixelFormat.FormatR8G8B8A8, new Point(1, 1));
-
-            Array.Fill<byte>(m_whiteTexture.Bitmap.Data, 255);
-            m_whiteTexture.Refresh();
         }
 
         public override void Dispose()
         {
-            m_whiteTexture.Dispose();
             GL.Dispose();
 
             base.Dispose();
@@ -67,7 +58,7 @@ namespace Tokamak.OGL
 
         public override ICommandList GetCommandList()
         {
-            return new GLCommandList(GL, m_whiteTexture);
+            return new GLCommandList(GL, null); // m_whiteTexture);
         }
 
         public override IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
@@ -77,7 +68,8 @@ namespace Tokamak.OGL
 
         public override ITextureObject GetTextureObject(TokPixelFormat format, Point size)
         {
-            return new TextureObject(this, format, size);
+            //return new TextureObject(this, format, size);
+            return null;
         }
 
         public override IElementBuffer GetElementBuffer(BufferType type)
