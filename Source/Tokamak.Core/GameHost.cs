@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
 
@@ -13,6 +12,8 @@ namespace Tokamak.Core
 {
     public static class GameHost
     {
+        public static IGameHost Instance { get; internal set; }
+
         public static IGameHostBuilder GetDefaultBuilder(string[] args = null)
         {
             var builder = new GameHostBuilder();

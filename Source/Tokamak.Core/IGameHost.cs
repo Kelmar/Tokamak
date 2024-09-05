@@ -12,6 +12,11 @@ namespace Tokamak.Core
         IDependencyResolver Services { get; }
 
         /// <summary>
+        /// Returns the instance of the game application.
+        /// </summary>
+        IGameApp App { get; }
+
+        /// <summary>
         /// Called to initialize the game host and background services.
         /// </summary>
         void Start();

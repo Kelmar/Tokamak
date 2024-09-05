@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Stashbox;
 using Stashbox.Registration.Fluent;
 
 namespace Tokamak.Core.Utilities
 {
+    public delegate void SimpleEvent();
+    public delegate void SimpleEvent<T>(T arg);
+
     public static class RegistrationHelper
     {
         public static void TryRegister<T>(this IStashboxContainer container, object name = null)

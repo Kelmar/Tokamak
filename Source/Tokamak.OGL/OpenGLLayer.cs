@@ -5,6 +5,8 @@ using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
 using Tokamak.Core;
+using Tokamak.Core.Utilities;
+
 using Tokamak.Mathematics;
 
 using Tokamak.Tritium.APIs;
@@ -15,11 +17,15 @@ namespace Tokamak.OGL
 {
     internal class OpenGLLayer : IAPILayer, ITick
     {
+        public event SimpleEvent<Point> OnResize;
+        public event SimpleEvent<double> OnRender;
+
         private readonly IWindow m_window;
         private readonly IView m_view;
 
         private readonly IGameLifetime m_gameLifetime;
 
+        private bool m_firstCall = true;
         private TextureObject m_whiteTexture = null;
 
         public OpenGLLayer(IHostEnvironment hostEnvironment, IGameLifetime gameLifetime)
@@ -38,8 +44,6 @@ namespace Tokamak.OGL
             }
 
             InitEvents();
-
-            m_view.Initialize();
 
             // Ensure OS events are taken care of first thing.
             m_gameLifetime.AddTick(this, TickPriority.Highest);
@@ -75,6 +79,7 @@ namespace Tokamak.OGL
         {
             m_view.Load += OnViewLoad;
             m_view.Resize += OnViewResized;
+            m_view.Render += OnViewRender;
             m_view.Closing += OnViewClosing;
         }
 
@@ -84,6 +89,7 @@ namespace Tokamak.OGL
             m_view.Reset();
 
             m_view.Closing -= OnViewClosing;
+            m_view.Render -= OnViewRender;
             m_view.Resize -= OnViewResized;
             m_view.Load -= OnViewLoad;
 
@@ -119,6 +125,7 @@ namespace Tokamak.OGL
         {
             ViewBounds = new Point(bounds.X, bounds.Y);
             GL.Viewport(0, 0, (uint)bounds.X, (uint)bounds.Y);
+            OnResize?.Invoke(ViewBounds);
         }
 
         private void OnViewClosing()
@@ -126,8 +133,25 @@ namespace Tokamak.OGL
             m_gameLifetime.Shutdown();
         }
 
+        private void OnViewRender(double delta)
+        {
+            OnRender?.Invoke(delta);
+        }
+
         public void Tick()
         {
+            if (m_firstCall)
+            {
+                /*
+                 * Don't like this way of doing this, but it allows
+                 * other objects to register for events before we start
+                 * firing them.
+                 */
+                
+                m_view.Initialize();
+                m_firstCall = false;
+            }
+
             m_view.DoEvents();
 
             if (!m_view.IsClosing)
@@ -135,6 +159,11 @@ namespace Tokamak.OGL
 
             if (!m_view.IsClosing)
                 m_view.DoRender();
+        }
+
+        public void SwapBuffers()
+        {
+            m_view.SwapBuffers();
         }
     }
 }

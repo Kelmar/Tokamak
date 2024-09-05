@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,23 +26,28 @@ namespace Tokamak.Core.Hosting
 
         private readonly GameLifetime m_gameLifetime = new();
 
+        private readonly Lazy<IGameApp> m_app;
+
         public GameHost(IGameHostBuilder builder)
         {
+            Core.GameHost.Instance = this;
+
             m_container = builder.Container;
 
             // Allow things to resolve us, but don't dispose, we're managing the lifetime of the container itself!
             m_container.RegisterInstance<IGameHost>(this, withoutDisposalTracking: true);
             m_container.RegisterInstance<IGameLifetime>(m_gameLifetime, withoutDisposalTracking: true);
 
-            m_container.Validate();
-
-            m_scope = m_container.BeginScope();
+            m_scope = m_container.BeginScope("Main Scope");
 
             Configuration = m_scope.Resolve<IConfiguration>();
 
             Log = m_scope.Resolve<ILogger<GameHost>>();
 
             Console.CancelKeyPress += AbortApp;
+
+            // Resolve any dependencies only when we really need to.
+            m_app = new Lazy<IGameApp>(() => m_scope.Resolve<IGameApp>());
         }
 
         virtual protected void Dispose(bool disposing)
@@ -49,6 +55,9 @@ namespace Tokamak.Core.Hosting
             if (disposing)
             {
                 Console.CancelKeyPress -= AbortApp;
+
+                if (m_app.IsValueCreated)
+                    m_app.Value.Dispose();
 
                 m_scope.Dispose();
                 m_container.Dispose();
@@ -64,6 +73,8 @@ namespace Tokamak.Core.Hosting
         public IDependencyResolver Services => m_scope;
 
         public IConfiguration Configuration { get; }
+
+        public IGameApp App => m_app.Value;
 
         protected ILogger Log { get; }
 
@@ -134,18 +145,32 @@ namespace Tokamak.Core.Hosting
         {
             StartBackground();
             StartComponents();
+
+            App.OnLoad();
         }
 
         public virtual void MainLoop()
         {
             Log.Info("MainLoop() now running.  (Press CTRL+C to terminate)");
 
+            var timer = Stopwatch.StartNew();
+
             while (m_gameLifetime.Running)
+            {
                 m_gameLifetime.Tick();
+
+                // Compute delta for this frame
+                double delta = timer.ElapsedMilliseconds / 1000.0;
+                timer.Restart();
+
+                App.OnUpdate(delta);
+            }
         }
 
         public virtual void Stop()
         {
+            App.OnShutdown();
+
             StopComponents();
             StopBackground();
         }

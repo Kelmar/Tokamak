@@ -31,6 +31,7 @@ namespace TestBed
                 services.UseTritium();
                 services.AllowOpenGL();
             })
+            .UseGameApp<TestGameApp>()
             .Build();
     }
 }

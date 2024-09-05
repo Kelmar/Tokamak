@@ -5,6 +5,7 @@ using System;
 using Tokamak.Core;
 using Tokamak.Core.Config;
 using Tokamak.Core.Logging;
+
 using Tokamak.Tritium.APIs;
 
 namespace Tokamak.Tritium.Hosting
@@ -14,32 +15,34 @@ namespace Tokamak.Tritium.Hosting
     {
         private readonly ILogger m_log;
         private readonly TritiumConfig m_config;
-        private readonly IDependencyResolver m_resolver;
+        private readonly IGameHost m_host;
 
         private IAPILayer m_apiLayer = null;
 
         public TritiumHostComponent(
             ILogger<TritiumHostComponent> log,
             IOptions<TritiumConfig> config,
-            IDependencyResolver resolver)
+            IGameHost host)
         {
             m_log = log;
             m_config = config.Value;
-            m_resolver = resolver;
+            m_host = host;
         }
 
         public void Dispose()
         {
-            m_apiLayer?.Dispose();
             GC.SuppressFinalize(this);
         }
 
         private void InitAPI()
         {
-            var loader = m_resolver.Activate<APILoader>();
+            var loader = m_host.Services.Activate<APILoader>();
 
             var descriptor = loader.SelectAPI();
             m_apiLayer = descriptor.Create();
+            m_host.Services.PutInstanceInScope(m_apiLayer);
+
+            m_apiLayer.OnRender += m_host.App.OnRender;
         }
 
         public void Start()
@@ -52,6 +55,8 @@ namespace Tokamak.Tritium.Hosting
         public void Stop()
         {
             m_log.Debug("Tridium stopping.");
+
+            m_apiLayer.OnRender -= m_host.App.OnRender;
         }
     }
 }
