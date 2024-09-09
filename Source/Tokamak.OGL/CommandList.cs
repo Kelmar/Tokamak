@@ -8,13 +8,13 @@ using Tokamak.Tritium.Pipelines;
 
 namespace Tokamak.OGL
 {
-    internal class GLCommandList : ICommandList
+    internal class CommandList : ICommandList
     {
         private readonly TextureObject m_whiteTexture;
 
         private Pipeline m_pipeline;
 
-        public GLCommandList(GL gl, TextureObject whiteTexture)
+        public CommandList(GL gl, TextureObject whiteTexture)
         {
             GL = gl;
             m_whiteTexture = whiteTexture;

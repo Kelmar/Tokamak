@@ -287,7 +287,7 @@ namespace Tokamak.Vulkan
 
         public ICommandList GetCommandList()
         {
-            return new CommandList(null, m_device, m_commandPool);
+            return new CommandList(m_device, m_commandPool);
         }
 
         public IVertexBuffer<T> GetVertexBuffer<T>(BufferUsage usage)
