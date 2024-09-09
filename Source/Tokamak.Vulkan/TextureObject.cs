@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Silk.NET.Vulkan;
+
 using Tokamak.Mathematics;
 
 using Tokamak.Tritium.Buffers;
 using Tokamak.Tritium.Buffers.Formats;
-
-using Silk.NET.Vulkan;
 
 using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
 

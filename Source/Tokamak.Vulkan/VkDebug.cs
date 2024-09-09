@@ -10,7 +10,7 @@ using Tokamak.Core.Logging;
 namespace Tokamak.Vulkan
 {
     // TODO: Make this internal again.
-
+    [LogName("Vulkan")]
     public unsafe class VkDebug : IDisposable
     {
         private readonly VkPlatform m_platform;
@@ -19,9 +19,9 @@ namespace Tokamak.Vulkan
         private ExtDebugUtils m_debugUtils;
         private DebugUtilsMessengerEXT m_messenger;
 
-        public VkDebug(ILogger<VkPlatform> log, VkPlatform platform)
+        public VkDebug(VkPlatform platform)
         {
-            m_log = log;
+            m_log = LogManager.GetLogger<VkDebug>();
             m_platform = platform;
         }
 

@@ -36,11 +36,10 @@ namespace Tokamak.Vulkan
         private bool m_inDraw;
 
         public CommandList(
-            ILogger<CommandList> logger,
             VkDevice device,
             VkCommandPool pool)
         {
-            m_log = logger; // device.Parent.Resolver.Resolve<ILogger<CommandList>>();
+            m_log = LogManager.GetLogger<CommandList>();
 
             m_device = device;
             m_pool = pool;

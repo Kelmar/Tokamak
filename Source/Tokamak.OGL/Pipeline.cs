@@ -83,7 +83,7 @@ namespace Tokamak.OGL
 
         public void Activate(ICommandList buffer)
         {
-            var cmdBuffer = (GLCommandList)buffer;
+            var cmdBuffer = (CommandList)buffer;
             cmdBuffer.MakeActive(this);
 
             m_shader.Activate();

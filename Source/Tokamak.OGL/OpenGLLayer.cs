@@ -200,7 +200,7 @@ namespace Tokamak.OGL
 
         public ICommandList CreateCommandList()
         {
-            return new GLCommandList(GL, m_whiteTexture);
+            return new CommandList(GL, m_whiteTexture);
         }
 
         public IFactory<IPipeline> GetPipelineFactory(PipelineConfig config)

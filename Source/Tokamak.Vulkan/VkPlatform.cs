@@ -47,15 +47,14 @@ namespace Tokamak.Vulkan
         private DrawSurface m_surface = null;
 
         public VkPlatform(
-            IWindow window, 
-            ILogger<VkPlatform> logger, 
+            IWindow window,
             IOptions<VulkanConfig> config,
             Func<VkDebug> debugFactory)
             : base()
         {
             Window = window;
 
-            m_log = logger;
+            m_log = LogManager.GetLogger<VkPlatform>();
             m_config = config.Value;
             m_debugFactory = debugFactory;
 
