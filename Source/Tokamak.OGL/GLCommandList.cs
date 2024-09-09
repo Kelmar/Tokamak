@@ -2,7 +2,7 @@
 
 using Silk.NET.OpenGL;
 
-using Tokamak.Tritium;
+using Tokamak.Tritium.APIs;
 
 using Tokamak.Buffer;
 

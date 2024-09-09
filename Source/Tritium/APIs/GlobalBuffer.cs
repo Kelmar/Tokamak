@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tokamak.Tritium
+namespace Tokamak.Tritium.APIs
 {
     [Flags]
     public enum GlobalBuffer

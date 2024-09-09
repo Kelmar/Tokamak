@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Tokamak.Tritium
+namespace Tokamak.Tritium.APIs
 {
     public interface ICommandList : IDisposable
     {

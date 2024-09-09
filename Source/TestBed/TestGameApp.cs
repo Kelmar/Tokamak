@@ -11,11 +11,9 @@ using Tokamak.Formats;
 using Tokamak.Mathematics;
 using Tokamak.Scenes;
 
-using Tokamak.Tritium;
 using Tokamak.Tritium.APIs;
 
 using Graphite;
-using System.IO;
 
 namespace TestBed
 {

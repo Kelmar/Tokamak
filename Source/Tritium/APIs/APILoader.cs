@@ -4,7 +4,6 @@ using System.Linq;
 
 using Tokamak.Core.Config;
 using Tokamak.Core.Logging;
-
 using Tokamak.Tritium.APIs.NullRender;
 
 namespace Tokamak.Tritium.APIs

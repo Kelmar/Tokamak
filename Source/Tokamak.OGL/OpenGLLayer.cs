@@ -14,8 +14,7 @@ using Tokamak.Mathematics;
 using Tokamak.Tritium.APIs;
 
 using TokPixelFormat = Tokamak.Formats.PixelFormat;
-using Monitor = Tokamak.Tritium.Monitor;
-using Tokamak.Tritium;
+using Monitor = Tokamak.Tritium.APIs.Monitor;
 
 namespace Tokamak.OGL
 {

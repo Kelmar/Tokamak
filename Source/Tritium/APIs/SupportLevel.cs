@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tokamak.Tritium
+namespace Tokamak.Tritium.APIs
 {
     /// <summary>
     /// Support level for a graphics API

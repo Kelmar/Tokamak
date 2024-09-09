@@ -10,7 +10,7 @@ using Silk.NET.Vulkan;
 
 using Tokamak.Core.Logging;
 
-using Tokamak.Tritium;
+using Tokamak.Tritium.APIs;
 
 using Tokamak.Buffer;
 using Tokamak.Vulkan.NativeWrapper;

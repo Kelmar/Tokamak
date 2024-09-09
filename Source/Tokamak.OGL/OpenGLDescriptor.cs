@@ -1,5 +1,4 @@
 ﻿using Tokamak.Core;
-using Tokamak.Tritium;
 using Tokamak.Tritium.APIs;
 
 namespace Tokamak.OGL

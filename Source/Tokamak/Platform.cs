@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 
 using Tokamak.Buffer;
@@ -9,6 +8,7 @@ using Tokamak.Mathematics;
 
 namespace Tokamak
 {
+    [Obsolete("Migrating to Tritium IAPILayer")]
     public abstract class Platform : IDisposable
     {
         private readonly Stack<Matrix4x4> m_worldMatrixStack = new Stack<Matrix4x4>();

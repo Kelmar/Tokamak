@@ -1,8 +1,7 @@
 ﻿using System.Numerics;
-
 using Tokamak.Mathematics;
 
-namespace Tokamak.Tritium
+namespace Tokamak.Tritium.APIs
 {
     /// <summary>
     /// Structures for holding details about a connected host display.

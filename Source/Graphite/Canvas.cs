@@ -11,6 +11,7 @@ using Tokamak;
 using Tokamak.Buffer;
 using Tokamak.Formats;
 using Tokamak.Mathematics;
+using Tokamak.Tritium.APIs;
 
 namespace Graphite
 {
@@ -86,6 +87,7 @@ void main()
         private readonly List<CanvasCall> m_calls = new List<CanvasCall>(128);
         private readonly List<VectorFormatPCT> m_vectors = new List<VectorFormatPCT>(128);
 
+        private readonly IAPILayer m_apiLayer;
         private readonly Platform m_device;
 
         private readonly IPipeline m_pipeline;
@@ -93,10 +95,11 @@ void main()
 
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
-        public Canvas(Platform device)
+        public Canvas(IAPILayer apiLayer, Platform device)
         {
             m_ftLibrary = new FTLibrary();
 
+            m_apiLayer = apiLayer;
             m_device = device;
 
             m_pipeline = m_device.GetPipeline(cfg => cfg
@@ -107,7 +110,7 @@ void main()
                 .UseShader(ShaderType.Fragment, FRAGMENT_SHADER_PATH)
             );
 
-            //m_commandBuffer = m_device.CreateCommandList();
+            m_commandBuffer = m_apiLayer.CreateCommandList();
 
             m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dynamic);
         }
@@ -125,8 +128,7 @@ void main()
 
         public Font GetFont(string filename, float size)
         {
-            //var dpi = m_device.Monitors.FirstOrDefault()?.DPI ?? new Point(192, 192);
-            var dpi = new Point(192, 192);
+            var dpi = m_apiLayer.GetMonitors().FirstOrDefault(m => m.IsMain)?.DPI ?? new Point(192, 192);
             var face = m_ftLibrary.GetFace(filename, size, dpi);
             return new Font(m_device, face);
         }
