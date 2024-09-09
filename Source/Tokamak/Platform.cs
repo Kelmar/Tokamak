@@ -15,7 +15,6 @@ namespace Tokamak
 
         protected Platform()
         {
-            Monitors = EnumerateMonitors().ToList().AsReadOnly();
         }
 
         public virtual void Dispose()
@@ -30,38 +29,10 @@ namespace Tokamak
 
         virtual public Rect Viewport { get; set; }
 
-        public IReadOnlyList<Monitor> Monitors { get; }
-
         public void PushWorldMatrix(in Matrix4x4 newMatrix)
         {
             m_worldMatrixStack.Push(WorldMatrix);
             WorldMatrix = newMatrix;
-        }
-
-        protected IEnumerable<Monitor> EnumerateMonitors()
-        {
-            var platform = Silk.NET.Windowing.Window.GetWindowPlatform(false);
-
-            if (platform == null)
-                throw new Exception("Unable to get window platform.");
-
-            var mainMonitor = platform.GetMainMonitor();
-
-            foreach (var m in platform.GetMonitors())
-            {
-                // Silk doesn't return the DPI info yet, hard coded for now.
-
-                yield return new Monitor
-                {
-                    Index = m.Index,
-                    IsMain = m.Index == mainMonitor.Index,
-                    Name = m.Name,
-                    Gamma = m.Gamma,
-                    DPI = new Point(192, 192),
-                    RawDPI = new Vector2(192, 192),
-                    WorkArea = m.Bounds
-                };
-            }
         }
 
         public void PopWorldMatrix()
@@ -94,7 +65,5 @@ namespace Tokamak
             using var factory = GetPipelineFactory(config);
             return factory.Build();
         }
-
-        public abstract ICommandList GetCommandList();
     }
 }

@@ -1,6 +1,4 @@
-﻿using Stashbox;
-
-using System;
+﻿using System;
 
 namespace Tokamak.Core.Logging
 {

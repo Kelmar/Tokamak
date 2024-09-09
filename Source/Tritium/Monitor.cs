@@ -1,12 +1,13 @@
 ﻿using System.Numerics;
 
-using Silk.NET.Maths;
-
 using Tokamak.Mathematics;
 
-namespace Tokamak
+namespace Tokamak.Tritium
 {
-    public record Monitor
+    /// <summary>
+    /// Structures for holding details about a connected host display.
+    /// </summary>
+    public record class Monitor
     {
         /// <summary>
         /// The index of the monitor.
@@ -58,6 +59,6 @@ namespace Tokamak
         /// 
         /// Values can be negative for positions so watch out!
         /// </remarks>
-        public Rectangle<int> WorkArea { get; init; }
+        public Rect WorkArea { get; init; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Tokamak.Core.Utilities;
 using Tokamak.Mathematics;
@@ -26,8 +27,19 @@ namespace Tokamak.Tritium.APIs
         Point ViewBounds { get; }
 
         /// <summary>
+        /// Enumerate the connected displays on a host system.
+        /// </summary>
+        IEnumerable<Monitor> GetMonitors();
+
+        /// <summary>
         /// Swap front/back buffers if buffering is enabled.
         /// </summary>
         void SwapBuffers();
+
+        /// <summary>
+        /// Factory method for getting a command list.
+        /// </summary>
+        /// <returns>A new command list.</returns>
+        ICommandList CreateCommandList();
     }
 }

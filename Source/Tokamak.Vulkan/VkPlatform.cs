@@ -293,11 +293,11 @@ namespace Tokamak.Vulkan
             return new PipelineFactory(m_device, config);
         }
 
-        public override ICommandList GetCommandList()
-        {
-            //return new CommandList(m_device, m_commandPool);
-            return null;
-        }
+        //public override ICommandList GetCommandList()
+        //{
+        //    //return new CommandList(m_device, m_commandPool);
+        //    return null;
+        //}
 
         public override IElementBuffer GetElementBuffer(BufferType type)
         {

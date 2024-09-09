@@ -10,6 +10,21 @@ namespace Tokamak.Core.Utilities
 
     public static class RegistrationHelper
     {
+        public static void RegisterFactory<T, TFactory>(this IStashboxContainer container, Action<RegistrationConfigurator<T, T>> configurator = null)
+            where T : class
+            where TFactory : class, IFactory<T>
+        {
+            container.Register<IFactory<T>, TFactory>(cfg => cfg.WithTransientLifetime());
+
+            container.Register<T>(config =>
+            {
+                if (configurator != null)
+                    configurator(config);
+
+                config.WithFactory<IFactory<T>, T>(factory => factory.Build());
+            });
+        }
+
         public static void TryRegister<T>(this IStashboxContainer container, object name = null)
             where T : class
         {

@@ -99,7 +99,6 @@ namespace Tokamak.Core.Config
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="pattern"></param>
-        /// <returns></returns>
         public static IConfigBuilder AddEnvironmentVariables(
             this IConfigBuilder builder,
             string pathRoot,
@@ -125,6 +124,16 @@ namespace Tokamak.Core.Config
             if (result.Any())
                 builder.AddInMemoryConfig(result);
 
+            return builder;
+        }
+
+        /// <summary>
+        /// Parse the supplied command line arguments into the builder's list of providers.
+        /// </summary>
+        /// <param name="builder">The builder to add the arguments to.</param>
+        /// <param name="args">The list of arguments to add.</param>
+        public static IConfigBuilder ParseCommandArgs(this IConfigBuilder builder, string[] args)
+        {
             return builder;
         }
     }

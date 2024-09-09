@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FreeTypeWrapper\FreeTypeWrapper.csproj" />
     <ProjectReference Include="..\Tokamak\Tokamak.csproj" />
+    <ProjectReference Include="..\Tritium\Tokamak.Tritium.csproj" />
   </ItemGroup>
 
 </Project>

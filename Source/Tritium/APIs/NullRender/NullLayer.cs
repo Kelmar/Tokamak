@@ -1,4 +1,6 @@
-﻿using Tokamak.Core.Utilities;
+﻿using System.Collections.Generic;
+
+using Tokamak.Core.Utilities;
 
 using Tokamak.Mathematics;
 
@@ -25,8 +27,15 @@ namespace Tokamak.Tritium.APIs.NullRender
 
         public Point ViewBounds { get; } = new Point(640, 480);
 
+        public IEnumerable<Monitor> GetMonitors()
+        {
+            yield break;
+        }
+
         public void SwapBuffers()
         {
         }
+
+        public ICommandList CreateCommandList() => new NullCommandList();
     }
 }

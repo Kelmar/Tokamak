@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
@@ -12,6 +14,8 @@ using Tokamak.Mathematics;
 using Tokamak.Tritium.APIs;
 
 using TokPixelFormat = Tokamak.Formats.PixelFormat;
+using Monitor = Tokamak.Tritium.Monitor;
+using Tokamak.Tritium;
 
 namespace Tokamak.OGL
 {
@@ -74,6 +78,32 @@ namespace Tokamak.OGL
         public GL GL { get; private set; } = null;
 
         public Point ViewBounds { get; private set; }
+
+        public IEnumerable<Monitor> GetMonitors()
+        {
+            var platform = Window.GetWindowPlatform(Window.IsViewOnly);
+
+            if (platform == null)
+                throw new Exception("Unable to get window platform.");
+
+            var mainMonitor = platform.GetMainMonitor();
+
+            foreach (var m in platform.GetMonitors())
+            {
+                // Silk doesn't return the DPI info yet, hard coded for now.
+
+                yield return new Monitor
+                {
+                    Index = m.Index,
+                    IsMain = m.Index == mainMonitor.Index,
+                    Name = m.Name,
+                    Gamma = m.Gamma,
+                    DPI = new Point(192, 192),
+                    RawDPI = new Vector2(192, 192),
+                    WorkArea = m.Bounds
+                };
+            }
+        }
 
         private void InitEvents()
         {
@@ -164,6 +194,11 @@ namespace Tokamak.OGL
         public void SwapBuffers()
         {
             m_view.SwapBuffers();
+        }
+
+        public ICommandList CreateCommandList()
+        {
+            return new GLCommandList(GL, m_whiteTexture);
         }
     }
 }

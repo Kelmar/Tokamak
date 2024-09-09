@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Numerics;
 
-using Tokamak.Buffer;
-
-namespace Tokamak
+namespace Tokamak.Tritium
 {
     public interface ICommandList : IDisposable
     {
-        IPipeline Pipeline { get; set; }
-
         Vector4 ClearColor { get; set; }
 
         void Begin();

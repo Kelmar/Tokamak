@@ -7,6 +7,10 @@ namespace Tokamak.Core
     {
         public static IGameHost Instance { get; internal set; }
 
+        /// <summary>
+        /// Gets a builder that constructs the default generic GameHost.
+        /// </summary>
+        /// <param name="args">Application command line arguments.</param>
         public static IGameHostBuilder GetDefaultBuilder(string[] args = null)
         {
             var builder = new GameHostBuilder();
@@ -19,28 +23,34 @@ namespace Tokamak.Core
             //builder.UseGameApp<GameApp>();
 
             builder.ConfigureHostConfiguration(config => GetDefaultHostConfiguration(config, args));
-            builder.ConfigureAppConfiguration(config => GetDefaultAppConfiguration(config, args));
+            builder.ConfigureAppConfiguration((env, config) => GetDefaultAppConfiguration(env, config, args));
             return builder;
         }
 
         private static void GetDefaultHostConfiguration(IConfigBuilder builder, string[] args)
         {
             builder.AddEnvironmentVariables("tokamak", "^TOKAMAK_(.*)");
-
-            // TODO: Add command line args here.
+            builder.ParseCommandArgs(args);
         }
 
-        private static void GetDefaultAppConfiguration(IConfigBuilder builder, string[] args)
+        private static void GetDefaultAppConfiguration(IHostEnvironment env, IConfigBuilder builder, string[] args)
         {
             builder
                 .AddJsonFile("appsettings.json", optional: true)
-                //.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
             ;
 
-            // TODO: Add environment variables
-            // TODO: Add command line args here.
+            builder.AddEnvironmentVariables("tokamak", "^TOKAMAK_(.*)");
+            builder.ParseCommandArgs(args);
         }
 
+        /// <summary>
+        /// Method for selecting which GameApp implementation to use.
+        /// </summary>
+        /// <remarks>
+        /// If an implementation isn't selected, then a default generic GameApp will be used.
+        /// </remarks>
+        /// <typeparam name="T">The type of GameApp to use.</typeparam>
         public static IGameHostBuilder UseGameApp<T>(this IGameHostBuilder builder)
             where T : class, IGameApp
         {
@@ -55,6 +65,11 @@ namespace Tokamak.Core
             return builder;
         }
 
+        /// <summary>
+        /// Utility method for starting, running, stopping and 
+        /// disposing of the built up GameHost object.
+        /// </summary>
+        /// <param name="host"></param>
         public static void Run(this IGameHost host)
         {
             try

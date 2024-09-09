@@ -5,6 +5,8 @@ using System.Numerics;
 
 using FreeTypeWrapper;
 
+using Tokamak.Tritium;
+
 using Tokamak;
 using Tokamak.Buffer;
 using Tokamak.Formats;
@@ -105,7 +107,7 @@ void main()
                 .UseShader(ShaderType.Fragment, FRAGMENT_SHADER_PATH)
             );
 
-            m_commandBuffer = m_device.GetCommandList();
+            //m_commandBuffer = m_device.CreateCommandList();
 
             m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dynamic);
         }
@@ -123,7 +125,8 @@ void main()
 
         public Font GetFont(string filename, float size)
         {
-            var dpi = m_device.Monitors.FirstOrDefault()?.DPI ?? new Point(192, 192);
+            //var dpi = m_device.Monitors.FirstOrDefault()?.DPI ?? new Point(192, 192);
+            var dpi = new Point(192, 192);
             var face = m_ftLibrary.GetFace(filename, size, dpi);
             return new Font(m_device, face);
         }

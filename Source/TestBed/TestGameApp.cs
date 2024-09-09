@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Stashbox;
-
 using Tokamak;
 using Tokamak.Buffer;
 using Tokamak.Core;
@@ -13,6 +11,7 @@ using Tokamak.Formats;
 using Tokamak.Mathematics;
 using Tokamak.Scenes;
 
+using Tokamak.Tritium;
 using Tokamak.Tritium.APIs;
 
 using Graphite;

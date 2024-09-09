@@ -56,11 +56,6 @@ namespace Tokamak.OGL
             return new PipelineFactory(this, config);
         }
 
-        public override ICommandList GetCommandList()
-        {
-            return new GLCommandList(GL, null); // m_whiteTexture);
-        }
-
         public override IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
         {
             return new VertexBuffer<T>(this, type);

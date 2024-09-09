@@ -1,6 +1,8 @@
-﻿using Silk.NET.OpenGL;
+﻿using System.Numerics;
 
-using System.Numerics;
+using Silk.NET.OpenGL;
+
+using Tokamak.Tritium;
 
 using Tokamak.Buffer;
 

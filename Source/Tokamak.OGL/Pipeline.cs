@@ -3,6 +3,8 @@ using System.Numerics;
 
 using Silk.NET.OpenGL;
 
+using Tokamak.Tritium;
+
 using GLPrimType = Silk.NET.OpenGL.PrimitiveType;
 
 namespace Tokamak.OGL

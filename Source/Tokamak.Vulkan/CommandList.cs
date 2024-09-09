@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 using Silk.NET.Vulkan;
 
-using Stashbox;
-
 using Tokamak.Core.Logging;
+
+using Tokamak.Tritium;
 
 using Tokamak.Buffer;
 using Tokamak.Vulkan.NativeWrapper;

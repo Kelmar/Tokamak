@@ -17,7 +17,7 @@ namespace Tokamak.Core
 
         IGameHostBuilder ConfigureHostConfiguration(Action<IConfigBuilder> configFn);
 
-        IGameHostBuilder ConfigureAppConfiguration(Action<IConfigBuilder> configFn);
+        IGameHostBuilder ConfigureAppConfiguration(Action<IHostEnvironment, IConfigBuilder> configFn);
 
         IGameHostBuilder ConfigureServices(Action<IStashboxContainer> serviceConfig);
 

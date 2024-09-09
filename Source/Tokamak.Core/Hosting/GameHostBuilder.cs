@@ -12,7 +12,7 @@ namespace Tokamak.Core.Hosting
     public class GameHostBuilder : IGameHostBuilder
     {
         private readonly List<Action<IConfigBuilder>> m_hostConfigBuilders = new();
-        private readonly List<Action<IConfigBuilder>> m_appConfigBuilders = new();
+        private readonly List<Action<IHostEnvironment, IConfigBuilder>> m_appConfigBuilders = new();
         private readonly List<Action<IStashboxContainer>> m_serviceConfigs = new();
 
         private readonly Lazy<IConfiguration> m_hostConfig;
@@ -57,7 +57,7 @@ namespace Tokamak.Core.Hosting
             return this;
         }
 
-        public IGameHostBuilder ConfigureAppConfiguration(Action<IConfigBuilder> configFn)
+        public IGameHostBuilder ConfigureAppConfiguration(Action<IHostEnvironment, IConfigBuilder> configFn)
         {
             var fn = configFn ?? throw new ArgumentNullException(nameof(configFn));
             m_appConfigBuilders.Add(fn);
@@ -90,7 +90,7 @@ namespace Tokamak.Core.Hosting
                 .AddConfiguration(m_hostConfig.Value);
 
             foreach (var fn in m_appConfigBuilders)
-                fn(configBuilder);
+                fn(HostEnvironment, configBuilder);
 
             return configBuilder.Build();
         }
