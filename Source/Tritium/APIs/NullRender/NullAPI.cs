@@ -1,14 +1,9 @@
-﻿using Stashbox;
-
-namespace Tokamak.Tritium.APIs.NullRender
+﻿namespace Tokamak.Tritium.APIs.NullRender
 {
     internal class NullAPI : IAPIDescriptor
     {
-        private readonly IDependencyResolver m_resolver;
-
-        public NullAPI(IDependencyResolver resolver)
+        public NullAPI()
         {
-            m_resolver = resolver;
         }
 
         public string ID => "null";
@@ -17,6 +12,6 @@ namespace Tokamak.Tritium.APIs.NullRender
 
         public SupportLevel SupportLevel => SupportLevel - 100; // Should never automatically choose this.
 
-        public IAPILayer Create() => m_resolver.Activate<NullLayer>();
+        public IAPILayer Build() => new NullLayer();
     }
 }

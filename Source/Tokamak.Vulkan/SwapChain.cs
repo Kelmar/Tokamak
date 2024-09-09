@@ -38,10 +38,11 @@ namespace Tokamak.Vulkan
         private SurfaceFormatKHR m_surfaceFormat;
         private PresentModeKHR m_presentMode;
 
-        public SwapChain(VkDevice device)
+        public SwapChain(ILogger<SwapChain> logger, VkDevice device)
         {
             m_device = device;
-            m_log = m_device.Parent.Resolver.Resolve<ILogger<SwapChain>>();
+            m_log = logger;
+            //m_log = m_device.Parent.Resolver.Resolve<ILogger<SwapChain>>();
 
             InitializeFormat();
 

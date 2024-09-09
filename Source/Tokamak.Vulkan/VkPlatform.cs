@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 
 using Silk.NET.Core.Native;
@@ -9,8 +8,6 @@ using Silk.NET.Maths;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Windowing;
-
-using Stashbox;
 
 using Tokamak.Core.Config;
 using Tokamak.Core.Logging;
@@ -35,6 +32,8 @@ namespace Tokamak.Vulkan
 
         private readonly List<VkDevice> m_devices = new List<VkDevice>();
 
+        private readonly Func<VkDebug> m_debugFactory;
+
         private readonly VkDevice m_device = null;
 
         private readonly VkCommandPool m_commandPool = null;
@@ -43,16 +42,21 @@ namespace Tokamak.Vulkan
 
         private DrawSurface m_surface = null;
 
-        public VkPlatform(IWindow window, IDependencyResolver resolver)
-            : base(resolver)
+        public VkPlatform(
+            IWindow window, 
+            ILogger<VkPlatform> logger, 
+            IOptions<VulkanConfig> config,
+            Func<VkDebug> debugFactory)
+            : base()
         {
             Window = window;
 
             // Set initial size to prevent redundant Rebuild of swap chain.
             base.Viewport = new Rect(Point.Zero, Window.FramebufferSize);
 
-            m_log = Resolver.Resolve<ILogger<VkPlatform>>();
-            m_config = Resolver.Resolve<IOptions<VulkanConfig>>().Value;
+            m_log = logger;
+            m_config = config.Value;
+            m_debugFactory = debugFactory;
 
             if (Window.VkSurface == null)
             {
@@ -134,7 +138,7 @@ namespace Tokamak.Vulkan
                 {
                     enableLayers.Add(VK_VALIDATE_LAYER_NAME);
 
-                    m_debug = Resolver.Activate<VkDebug>(this);
+                    m_debug = m_debugFactory();
                     debugInfo = m_debug.GetInstanceStartup();
                 }
             }
@@ -291,7 +295,8 @@ namespace Tokamak.Vulkan
 
         public override ICommandList GetCommandList()
         {
-            return new CommandList(m_device, m_commandPool);
+            //return new CommandList(m_device, m_commandPool);
+            return null;
         }
 
         public override IElementBuffer GetElementBuffer(BufferType type)

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-using Stashbox;
-
 using Tokamak.Buffer;
 using Tokamak.Formats;
 using Tokamak.Mathematics;
@@ -15,17 +13,14 @@ namespace Tokamak
     {
         private readonly Stack<Matrix4x4> m_worldMatrixStack = new Stack<Matrix4x4>();
 
-        protected Platform(IDependencyResolver resolver)
+        protected Platform()
         {
-            Resolver = resolver;
             Monitors = EnumerateMonitors().ToList().AsReadOnly();
         }
 
         public virtual void Dispose()
         {
         }
-
-        public IDependencyResolver Resolver { get; }
 
         public Matrix4x4 WorldMatrix { get; set; }
 

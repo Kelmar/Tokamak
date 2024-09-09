@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 
-using Stashbox;
-
 using Tokamak.Core.Logging;
 
 namespace Tokamak.Vulkan
 {
-    internal unsafe class VkDebug : IDisposable
+    // TODO: Make this internal again.
+
+    public unsafe class VkDebug : IDisposable
     {
         private readonly VkPlatform m_platform;
         private readonly ILogger m_log;

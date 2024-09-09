@@ -273,7 +273,8 @@ namespace Tokamak.Vulkan
             Parent.Vk.GetDeviceQueue(LogicalDevice, GraphicsQueueIndex, 0, out m_graphicsQueue);
             Parent.Vk.GetDeviceQueue(LogicalDevice, PresentQueueIndex, 0, out m_presentQueue);
 
-            SwapChain = new SwapChain(this);
+            //SwapChain = new SwapChain(this);
+            SwapChain = null;
         }
     }
 }

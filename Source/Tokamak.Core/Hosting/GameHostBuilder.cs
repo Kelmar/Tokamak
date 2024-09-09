@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 
-using Microsoft.Extensions.Configuration;
-
 using Stashbox;
 
 using Tokamak.Core.Config;
@@ -13,12 +11,12 @@ namespace Tokamak.Core.Hosting
 {
     public class GameHostBuilder : IGameHostBuilder
     {
-        private readonly List<Action<IConfigurationBuilder>> m_hostConfigBuilders = new();
-        private readonly List<Action<IConfigurationBuilder>> m_appConfigBuilders = new();
+        private readonly List<Action<IConfigBuilder>> m_hostConfigBuilders = new();
+        private readonly List<Action<IConfigBuilder>> m_appConfigBuilders = new();
         private readonly List<Action<IStashboxContainer>> m_serviceConfigs = new();
 
         private readonly Lazy<IConfiguration> m_hostConfig;
-        private readonly Lazy<IConfigurationRoot> m_appConfig;
+        private readonly Lazy<IConfiguration> m_appConfig;
 
         private Func<IStashboxContainer> m_containerFactory;
 
@@ -31,14 +29,14 @@ namespace Tokamak.Core.Hosting
             ContainerFactory = () => new StashboxContainer();
 
             m_hostConfig = new Lazy<IConfiguration>(BuildHostConfig);
-            m_appConfig = new Lazy<IConfigurationRoot>(BuildAppConfig);
+            m_appConfig = new Lazy<IConfiguration>(BuildAppConfig);
         }
 
         public IStashboxContainer Container => m_container;
 
         public IHostEnvironment HostEnvironment { get; private set; }
 
-        public IConfigurationRoot Configuration => m_appConfig.Value;
+        public IConfiguration Configuration => m_appConfig.Value;
 
         public Func<IStashboxContainer> ContainerFactory
         {
@@ -52,14 +50,14 @@ namespace Tokamak.Core.Hosting
             }
         }
 
-        public IGameHostBuilder ConfigureHostConfiguration(Action<IConfigurationBuilder> configFn)
+        public IGameHostBuilder ConfigureHostConfiguration(Action<IConfigBuilder> configFn)
         {
             var fn = configFn ?? throw new ArgumentNullException(nameof(configFn));
             m_hostConfigBuilders.Add(fn);
             return this;
         }
 
-        public IGameHostBuilder ConfigureAppConfiguration(Action<IConfigurationBuilder> configFn)
+        public IGameHostBuilder ConfigureAppConfiguration(Action<IConfigBuilder> configFn)
         {
             var fn = configFn ?? throw new ArgumentNullException(nameof(configFn));
             m_appConfigBuilders.Add(fn);
@@ -77,8 +75,8 @@ namespace Tokamak.Core.Hosting
 
         private IConfiguration BuildHostConfig()
         {
-            var configBuilder = new ConfigurationBuilder()
-                .AddInMemoryCollection();
+            var configBuilder = new ConfigBuilder()
+                .AddInMemoryConfig();
 
             foreach (var fn in m_hostConfigBuilders)
                 fn(configBuilder);
@@ -86,15 +84,28 @@ namespace Tokamak.Core.Hosting
             return configBuilder.Build();
         }
 
-        private IConfigurationRoot BuildAppConfig()
+        private IConfiguration BuildAppConfig()
         {
-            var configBuilder = new ConfigurationBuilder()
-                .AddConfiguration(m_hostConfig.Value, shouldDisposeConfiguration: true);
+            var configBuilder = new ConfigBuilder()
+                .AddConfiguration(m_hostConfig.Value);
 
             foreach (var fn in m_appConfigBuilders)
                 fn(configBuilder);
 
             return configBuilder.Build();
+        }
+
+        private string GetEnvironmentName(Assembly asm)
+        {
+            if (asm == null)
+                return "Release";
+
+            var attr = asm.GetCustomAttribute<DebuggableAttribute>();
+
+            if (attr != null)
+                return "Debug";
+
+            return "Release";
         }
 
         private void InitEnvironment()
@@ -110,7 +121,7 @@ namespace Tokamak.Core.Hosting
             HostEnvironment = new HostEnvironment
             {
                 ApplicationName = name,
-                EnvironmentName = hostConfig["EnvironmentName"] ?? "Debug"
+                EnvironmentName = hostConfig["EnvironmentName"] ?? GetEnvironmentName(entry)
             };
         }
 

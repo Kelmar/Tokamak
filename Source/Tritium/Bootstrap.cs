@@ -2,6 +2,8 @@
 
 using Tokamak.Core;
 
+using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.APIs.NullRender;
 using Tokamak.Tritium.Hosting;
 
 namespace Tokamak.Tritium
@@ -11,6 +13,14 @@ namespace Tokamak.Tritium
         public static IStashboxContainer UseTritium(this IStashboxContainer container)
         {
             container.RegisterSingleton<IHostComponent, TritiumHostComponent>();
+
+            container.Register<APILoader>();
+            container.RegisterSingleton<NullAPI>();
+
+            container.Register<IAPILayer>(options => options
+                .WithSingletonLifetime()
+                .WithFactory<APILoader>(loader => loader.Build())
+            );
 
             return container;
         }

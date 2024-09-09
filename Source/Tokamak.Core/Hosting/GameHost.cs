@@ -5,10 +5,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.Configuration;
-
 using Stashbox;
 
+using Tokamak.Core.Config;
 using Tokamak.Core.Logging;
 
 namespace Tokamak.Core.Hosting

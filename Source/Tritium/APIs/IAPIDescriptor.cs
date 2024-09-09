@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Tokamak.Core.Utilities;
 
 namespace Tokamak.Tritium.APIs
 {
     /// <summary>
     /// Informational description of a graphics API.
     /// </summary>
-    public interface IAPIDescriptor
+    /// <remarks>
+    /// API descriptors are also factories for the API layers themselves.
+    /// </remarks>
+    public interface IAPIDescriptor : IFactory<IAPILayer>
     {
         /// <summary>
         /// Unique ID of the graphics API
@@ -21,11 +24,5 @@ namespace Tokamak.Tritium.APIs
         /// Level of support for this API on the current platform.
         /// </summary>
         SupportLevel SupportLevel { get; }
-
-        /// <summary>
-        /// Factory method for creating API management object.
-        /// </summary>
-        /// <returns></returns>
-        IAPILayer Create();
     }
 }

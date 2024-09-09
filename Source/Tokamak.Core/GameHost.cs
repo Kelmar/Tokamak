@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using Microsoft.Extensions.Configuration;
-
-using Stashbox;
-
+﻿using Tokamak.Core.Config;
 using Tokamak.Core.Hosting;
 
 namespace Tokamak.Core
@@ -30,44 +23,22 @@ namespace Tokamak.Core
             return builder;
         }
 
-        private static void GetDefaultHostConfiguration(IConfigurationBuilder builder, string[] args)
+        private static void GetDefaultHostConfiguration(IConfigBuilder builder, string[] args)
         {
-            var values = new Dictionary<string, string>();
+            builder.AddEnvironmentVariables("tokamak", "^TOKAMAK_(.*)");
 
-            // TODO: Add environment variables
             // TODO: Add command line args here.
-            
-            if (values.Any())
-                builder.AddInMemoryCollection(values);
         }
 
-        private static void GetDefaultAppConfiguration(IConfigurationBuilder builder, string[] args)
+        private static void GetDefaultAppConfiguration(IConfigBuilder builder, string[] args)
         {
             builder
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                //.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: false)
+                .AddJsonFile("appsettings.json", optional: true)
+                //.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
             ;
-
-            var values = new Dictionary<string, string>();
 
             // TODO: Add environment variables
             // TODO: Add command line args here.
-
-            if (values.Any())
-                builder.AddInMemoryCollection(values);
-        }
-
-        public static IGameHostBuilder UseContainer<T>(this IGameHostBuilder builder, Func<IStashboxContainer> factory)
-            where T : IStashboxContainer
-        {
-            builder.ContainerFactory = factory;
-            return builder;
-        }
-
-        public static IGameHostBuilder UseContainer<T>(this IGameHostBuilder builder)
-            where T : IStashboxContainer, new()
-        {
-            return builder.UseContainer<T>(() => new T());
         }
 
         public static IGameHostBuilder UseGameApp<T>(this IGameHostBuilder builder)

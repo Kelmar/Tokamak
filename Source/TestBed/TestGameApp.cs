@@ -48,9 +48,10 @@ namespace TestBed
         private float m_fps;
         private float m_rot;
 
-        public TestGameApp()
+        public TestGameApp(IAPILayer layer)
         {
-            m_apiLayer = GameHost.Instance.Services.Resolve<IAPILayer>();
+            //m_apiLayer = GameHost.Instance.Services.Resolve<IAPILayer>();
+            m_apiLayer = layer;
         }
 
         public void Dispose()

@@ -9,8 +9,6 @@ namespace Tokamak.Core
     /// </summary>
     public interface IGameHost : IDisposable
     {
-        IDependencyResolver Services { get; }
-
         /// <summary>
         /// Returns the instance of the game application.
         /// </summary>

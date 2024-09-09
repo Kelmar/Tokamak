@@ -3,10 +3,6 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-using Microsoft.Extensions.Configuration;
-
-using Stashbox;
-
 namespace Tokamak.Core.Config
 {
     /// <summary>
@@ -22,20 +18,17 @@ namespace Tokamak.Core.Config
         /// <remarks>
         /// Removes the words "Option", "Options", "Config", and "Configuration" from the end of class names.
         /// </remarks>
-        private static Regex s_NameClean = new("(Option(|s)|(Config(|uration)))$", RegexOptions.Compiled);
+        private static Regex s_nameClean = new("(Option(|s)|(Config(|uration)))$", RegexOptions.Compiled);
 
         protected readonly static ConcurrentDictionary<Type, Func<IConfiguration, object>> s_factories = new();
 
-        public DefaultOptions(IDependencyResolver resolver)
+        public DefaultOptions(IConfiguration config, IConfigOptions<T> options = null)
         {
-            var options = resolver.ResolveOrDefault<IConfigOptions<T>>();
-
-            var config = resolver.Resolve<IConfiguration>();
-
             ConfigType = typeof(T);
             Value = new T();
 
-            config.Bind(GetSectionName(options), Value);
+            var section = config.GetSection(GetSectionName(options));
+            section.ReadInto(Value);
         }
 
         private string GetSectionName(IConfigOptions<T> options)
@@ -53,7 +46,7 @@ namespace Tokamak.Core.Config
             if (String.IsNullOrWhiteSpace(section))
             {
                 // Finally default to sanitized class name.
-                section = s_NameClean.Replace(ConfigType.Name, String.Empty);
+                section = s_nameClean.Replace(ConfigType.Name, String.Empty);
             }
 
             return section;

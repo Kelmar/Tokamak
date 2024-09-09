@@ -20,8 +20,8 @@ namespace Tokamak.OGL
 {
     public class GLPlatform : Platform
     {
-        public GLPlatform(IGLContext context, IDependencyResolver resolver)
-            : base(resolver)
+        public GLPlatform(IGLContext context)
+            : base()
         {
             GL = GL.GetApi(context);
 

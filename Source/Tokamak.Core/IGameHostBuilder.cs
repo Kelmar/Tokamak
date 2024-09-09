@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
 
 using Stashbox;
 
-using System;
+using Tokamak.Core.Config;
 
 namespace Tokamak.Core
 {
@@ -11,15 +11,13 @@ namespace Tokamak.Core
     /// </summary>
     public interface IGameHostBuilder
     {
-        IConfigurationRoot Configuration { get; }
-
-        Func<IStashboxContainer> ContainerFactory { get; set; }
+        IConfiguration Configuration { get; }
 
         IStashboxContainer Container { get; }
 
-        IGameHostBuilder ConfigureHostConfiguration(Action<IConfigurationBuilder> configFn);
+        IGameHostBuilder ConfigureHostConfiguration(Action<IConfigBuilder> configFn);
 
-        IGameHostBuilder ConfigureAppConfiguration(Action<IConfigurationBuilder> configFn);
+        IGameHostBuilder ConfigureAppConfiguration(Action<IConfigBuilder> configFn);
 
         IGameHostBuilder ConfigureServices(Action<IStashboxContainer> serviceConfig);
 
