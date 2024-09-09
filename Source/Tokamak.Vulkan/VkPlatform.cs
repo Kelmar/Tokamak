@@ -34,7 +34,7 @@ namespace Tokamak.Vulkan
         private readonly ILogger m_log;
         private readonly VulkanConfig m_config;
 
-        private readonly List<VkDevice> m_devices = new List<VkDevice>();
+        private readonly List<VkDevice> m_devices = new();
 
         private readonly Func<VkDebug> m_debugFactory;
 
@@ -60,7 +60,7 @@ namespace Tokamak.Vulkan
             m_debugFactory = debugFactory;
 
             if (Window.VkSurface == null)
-                throw new NotSupportedException("Vulkan not supported by platform.");
+                throw new PlatformNotSupportedException("Vulkan not supported by platform.");
 
             Vk = Vk.GetApi();
 
@@ -254,7 +254,7 @@ namespace Tokamak.Vulkan
             if (!m_devices.Any())
             {
                 m_log.Fatal("No physical Vulkan devices detected!");
-                throw new Exception("No physical Vulkan devices detected!");
+                throw new PlatformNotSupportedException("No physical Vulkan devices detected!");
             }
         }
 
@@ -270,7 +270,7 @@ namespace Tokamak.Vulkan
             if (!candidates.Any())
             {
                 m_log.Fatal("No graphical Vulkan devices detected!");
-                throw new Exception("No graphical Vulkan devices detected.");
+                throw new PlatformNotSupportedException("No graphical Vulkan devices detected.");
             }
 
             VkDevice rval = candidates.First();

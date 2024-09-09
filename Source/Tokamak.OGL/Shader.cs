@@ -88,13 +88,11 @@ namespace Tokamak.OGL
 
         public unsafe void Set(string name, SNum.Matrix3x2 mat)
         {
-            //var m = mat.ToOpenTK();
             m_apiLayer.GL.UniformMatrix3x2(GetLocation(name), 1, true, (float*)&mat);
         }
 
         public unsafe void Set(string name, SNum.Matrix4x4 mat)
         {
-            //var m = mat.ToOpenTK();
             m_apiLayer.GL.UniformMatrix4(GetLocation(name), 1, true, (float*)&mat);
         }
     }

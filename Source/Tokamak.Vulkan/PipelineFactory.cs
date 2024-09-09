@@ -39,7 +39,7 @@ namespace Tokamak.Vulkan
                 ShaderType.Vertex => ShaderStageFlags.VertexBit,
                 ShaderType.Geometry => ShaderStageFlags.GeometryBit,
                 ShaderType.Compute => ShaderStageFlags.ComputeBit,
-                _ => throw new Exception($"Unknown shader type {type}")
+                _ => throw new ArgumentException($"Unknown shader type {type}")
             };
         }
 
@@ -104,7 +104,7 @@ namespace Tokamak.Vulkan
                     CullMode.Back => CullModeFlags.BackBit,
                     CullMode.Front => CullModeFlags.FrontBit,
                     CullMode.FrontAndBack => CullModeFlags.FrontAndBack,
-                    _ => throw new Exception($"Unknown culling mode {m_config.Culling}")
+                    _ => throw new ArgumentException($"Unknown culling mode {m_config.Culling}")
                 },
                 FrontFace = FrontFace.Clockwise,
 

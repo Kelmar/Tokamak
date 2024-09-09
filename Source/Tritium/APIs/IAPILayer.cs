@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Tokamak.Core.Utilities;
 
 using Tokamak.Mathematics;
+
 using Tokamak.Tritium.Buffers;
 using Tokamak.Tritium.Buffers.Formats;
 using Tokamak.Tritium.Pipelines;

@@ -4,7 +4,7 @@ using Silk.NET.Vulkan;
 
 namespace Tokamak.Vulkan
 {
-    internal class VulkanException : Exception
+    internal class VulkanException : ApplicationException
     {
         public VulkanException(Result result)
         {
