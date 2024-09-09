@@ -4,7 +4,7 @@ using Silk.NET.OpenGL;
 
 using Tokamak.Tritium.APIs;
 
-using Tokamak.Buffer;
+using Tokamak.Tritium.Pipelines;
 
 namespace Tokamak.OGL
 {

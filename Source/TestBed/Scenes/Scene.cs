@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Runtime.Versioning;
 
-using Tokamak.Formats;
 using Tokamak.Mathematics;
 
-namespace Tokamak.Scenes
+using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Buffers.Formats;
+using Tokamak.Tritium.Pipelines;
+
+namespace TestBed.Scenes
 {
-    public class Scene : IDisposable, IRenderable
+    public class Scene : IDisposable//, IRenderable
     {
         public const string VERTEX = @"#version 450
 
@@ -55,9 +57,9 @@ void main()
 
         private Camera m_camera = new Camera();
 
-        public Scene(Platform device)
+        public Scene(IAPILayer apiLayer)
         {
-            m_pipeline = device.GetPipeline(cfg =>
+            m_pipeline = apiLayer.CreatePipeline(cfg =>
             {
                 cfg.UseInputFormat<VectorFormatPCT>();
 
@@ -86,7 +88,7 @@ void main()
 
         public Matrix4x4 Projection { get; private set; }
 
-        public Camera Camera 
+        public Camera Camera
         {
             get => m_camera;
             set => m_camera = value ?? new Camera();

@@ -11,17 +11,21 @@ using Silk.NET.Windowing;
 
 using Tokamak.Core.Config;
 using Tokamak.Core.Logging;
+using Tokamak.Core.Utilities;
 
-using Tokamak.Buffer;
-using Tokamak.Formats;
 using Tokamak.Mathematics;
+
+using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Buffers;
+using Tokamak.Tritium.Buffers.Formats;
+using Tokamak.Tritium.Pipelines;
 
 using Tokamak.Vulkan.NativeWrapper;
 
 namespace Tokamak.Vulkan
 {
     [LogName("Tokamak.Vulkan")]
-    public unsafe class VkPlatform : Platform
+    public unsafe class VkPlatform //: Platform
     {
         internal const string VK_VALIDATE_CALLS_CONFIG = "Vk.ValidateCalls";
 
@@ -51,26 +55,22 @@ namespace Tokamak.Vulkan
         {
             Window = window;
 
-            // Set initial size to prevent redundant Rebuild of swap chain.
-            base.Viewport = new Rect(Point.Zero, Window.FramebufferSize);
-
             m_log = logger;
             m_config = config.Value;
             m_debugFactory = debugFactory;
 
             if (Window.VkSurface == null)
-            {
-                m_log.Error("Vulkan not supported by platform");
                 throw new NotSupportedException("Vulkan not supported by platform.");
-            }
 
             Vk = Vk.GetApi();
 
             InitVK();
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
+            Window.Resize -= ViewResize;
+
             m_commandPool.Dispose();
 
             // Release the physical/logical devices.
@@ -86,7 +86,7 @@ namespace Tokamak.Vulkan
 
             Vk.Dispose();
 
-            base.Dispose();
+            //base.Dispose();
         }
 
         internal Vk Vk { get; }
@@ -113,7 +113,15 @@ namespace Tokamak.Vulkan
 
             device.InitLogicalDevice();
 
+            Window.Resize += ViewResize;
+
             return device;
+        }
+
+        private void ViewResize(Vector2D<int> obj)
+        {
+            foreach (var dev in m_devices)
+                dev.SwapChain?.DeferredRebuild();
         }
 
         private void CreateInstance()
@@ -273,45 +281,30 @@ namespace Tokamak.Vulkan
             return rval;
         }
 
-        public override Rect Viewport 
-        { 
-            get => base.Viewport;
-            set
-            {
-                if (!base.Viewport.Equals(value))
-                {
-                    base.Viewport = value;
-
-                    foreach (var dev in m_devices)
-                        dev.SwapChain?.DeferredRebuild();
-                }
-            }
-        }
-
-        protected override IPipelineFactory GetPipelineFactory(PipelineConfig config)
+        protected IFactory<IPipeline> GetPipelineFactory(PipelineConfig config)
         {
             return new PipelineFactory(m_device, config);
         }
 
-        //public override ICommandList GetCommandList()
-        //{
-        //    //return new CommandList(m_device, m_commandPool);
-        //    return null;
-        //}
+        public ICommandList GetCommandList()
+        {
+            return new CommandList(null, m_device, m_commandPool);
+        }
 
-        public override IElementBuffer GetElementBuffer(BufferType type)
+        public IVertexBuffer<T> GetVertexBuffer<T>(BufferUsage usage)
+           where T : unmanaged
         {
             return null;
         }
 
-        public override ITextureObject GetTextureObject(PixelFormat format, Point size)
+        public IElementBuffer GetElementBuffer(BufferUsage usage)
+        {
+            return null;
+        }
+
+        public ITextureObject GetTextureObject(PixelFormat format, Point size)
         {
             return new TextureObject(this, format, size);
-        }
-
-        public override IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
-        {
-            return null;
         }
     }
 }

@@ -1,13 +1,16 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 
-using Tokamak;
-using Tokamak.Buffer;
-using Tokamak.Formats;
+using Tokamak.Mathematics;
+
+using Tokamak.Tritium.Buffers;
+using Tokamak.Tritium.Buffers.Formats;
+
 using Tokamak.Readers.FBX;
-using Tokamak.Scenes;
+
+using TestBed.Scenes;
+using Tokamak.Tritium.APIs;
+
+//using Tokamak.Scenes;
 
 namespace TestBed
 {
@@ -20,11 +23,11 @@ namespace TestBed
 
         //private readonly Mesh m_mesh;
 
-        private readonly Platform m_device;
+        private readonly IAPILayer m_apiLayer;
 
-        public TestObject(Platform device)
+        public TestObject(IAPILayer apiLayer)
         {
-            m_device = device;
+            m_apiLayer = apiLayer;
 
             /*
             using var reader = new FBXReader(File.OpenRead(FILE));
@@ -48,8 +51,8 @@ namespace TestBed
                 1, 2, 3
             };
 
-            m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Static);
-            m_elementBuffer = m_device.GetElementBuffer(BufferType.Static);
+            m_vertexBuffer = m_apiLayer.GetVertexBuffer<VectorFormatPCT>(BufferUsage.Static);
+            m_elementBuffer = m_apiLayer.GetElementBuffer(BufferUsage.Static);
 
             m_vertexBuffer.Set(verts);
             m_elementBuffer.Set(indices);
@@ -93,11 +96,11 @@ namespace TestBed
             m_vertexBuffer.Activate();
             //m_elementBuffer.Activate();
 
-            //m_device.DrawElements(PrimitiveType.TriangleList, m_mesh.Indicies.Count);
+            //m_apiLayer.DrawElements(PrimitiveType.TriangleList, m_mesh.Indicies.Count);
 
-            //m_device.DrawArrays(PrimitiveType.TriangleList, 0, m_mesh.Verts.Count);
+            //m_apiLayer.DrawArrays(PrimitiveType.TriangleList, 0, m_mesh.Verts.Count);
 
-            //m_device.DrawElements(PrimitiveType.TriangleList, 6);
+            //m_apiLayer.DrawElements(PrimitiveType.TriangleList, 6);
         }
     }
 }

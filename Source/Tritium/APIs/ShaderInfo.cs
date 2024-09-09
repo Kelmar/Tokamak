@@ -1,6 +1,6 @@
-﻿namespace Tokamak
+﻿namespace Tokamak.Tritium.APIs
 {
-    public record ShaderInfo
+    public record class ShaderInfo
     {
         public required ShaderType Type { get; init; }
 

@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Numerics;
 
-using Tokamak.Mathematics;
-
-namespace Tokamak
+namespace Tokamak.Mathematics
 {
     public struct Color
     {
         private const float BYTE_MAX_F = (float)Byte.MaxValue;
 
         private static readonly Color s_black = new Color(0, 0, 0);
-        
+
         private static readonly Color s_darkBlue = new Color(0, 0, 128);
         private static readonly Color s_darkGreen = new Color(0, 128, 0);
         private static readonly Color s_darkCyan = new Color(0, 128, 128);
@@ -154,9 +152,9 @@ namespace Tokamak
 
             return new Color
             {
-                Red   = (byte)Math.Round(c1.Red   * oneMinus + c2.Red   * distance),
+                Red = (byte)Math.Round(c1.Red * oneMinus + c2.Red * distance),
                 Green = (byte)Math.Round(c1.Green * oneMinus + c2.Green * distance),
-                Blue  = (byte)Math.Round(c1.Blue  * oneMinus + c2.Blue  * distance),
+                Blue = (byte)Math.Round(c1.Blue * oneMinus + c2.Blue * distance),
                 Alpha = (byte)Math.Round(c1.Alpha * oneMinus + c2.Alpha * distance)
             };
         }

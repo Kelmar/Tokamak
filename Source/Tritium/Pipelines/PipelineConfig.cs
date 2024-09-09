@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using Tokamak.Formats;
+using Tokamak.Mathematics;
 
-namespace Tokamak
+using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Buffers.Formats;
+
+namespace Tokamak.Tritium.Pipelines
 {
     public class PipelineConfig
     {

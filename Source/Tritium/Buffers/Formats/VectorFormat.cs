@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
-namespace Tokamak.Formats
+namespace Tokamak.Tritium.Buffers.Formats
 {
     /// <summary>
     /// Class for getting information on a vertex buffer layout.

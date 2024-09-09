@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Tokamak
+namespace Tokamak.Tritium.Pipelines
 {
     public interface IPipeline : IDisposable
     {
-
     }
 }

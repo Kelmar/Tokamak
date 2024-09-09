@@ -1,5 +1,8 @@
-﻿namespace Tokamak.Formats
+﻿namespace Tokamak.Tritium.Buffers.Formats
 {
+    /// <summary>
+    /// Format of raw pixel data.
+    /// </summary>
     public enum PixelFormat
     {
         // 8-Bit Textures

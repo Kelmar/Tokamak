@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-using Tokamak.Formats;
+using Tokamak.Mathematics;
 
-namespace Tokamak.Buffer
+using Tokamak.Tritium.Buffers.Formats;
+
+namespace Tokamak.Tritium.Buffers
 {
     public class Mesh : IDisposable
     {
@@ -16,13 +18,13 @@ namespace Tokamak.Buffer
         {
         }
 
-        public List<Vector3> Verts 
+        public List<Vector3> Verts
         {
             get => m_verts;
             set => m_verts = value ?? new List<Vector3>();
         }
 
-        public List<uint> Indicies 
+        public List<uint> Indicies
         {
             get => m_indices;
             set => m_indices = value ?? new List<uint>();
@@ -36,7 +38,7 @@ namespace Tokamak.Buffer
                     Point = v,
                     Color = (Vector4)Color.White,
                     TexCoord = Vector2.Zero
-                }));
+                }).ToArray());
         }
 
         public void ToElementsBuffer(IElementBuffer buffer)

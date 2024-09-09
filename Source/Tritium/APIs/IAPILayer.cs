@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 
 using Tokamak.Core.Utilities;
+
 using Tokamak.Mathematics;
+using Tokamak.Tritium.Buffers;
+using Tokamak.Tritium.Buffers.Formats;
+using Tokamak.Tritium.Pipelines;
 
 namespace Tokamak.Tritium.APIs
 {
@@ -41,5 +45,19 @@ namespace Tokamak.Tritium.APIs
         /// </summary>
         /// <returns>A new command list.</returns>
         ICommandList CreateCommandList();
+
+        /// <summary>
+        /// Gets a factory that will build a new pipeline.
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        IFactory<IPipeline> GetPipelineFactory(PipelineConfig config);
+
+        IVertexBuffer<T> GetVertexBuffer<T>(BufferUsage usage)
+            where T : unmanaged;
+
+        IElementBuffer GetElementBuffer(BufferUsage usage);
+
+        ITextureObject GetTextureObject(PixelFormat format, Point size);
     }
 }

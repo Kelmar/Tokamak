@@ -3,7 +3,10 @@ using System.Numerics;
 
 using Silk.NET.OpenGL;
 
+using Tokamak.Mathematics;
+
 using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Pipelines;
 
 using GLPrimType = Silk.NET.OpenGL.PrimitiveType;
 
@@ -11,12 +14,14 @@ namespace Tokamak.OGL
 {
     internal sealed class Pipeline : IPipeline
     {
+        private readonly OpenGLLayer m_apiLayer;
+
         private readonly Shader m_shader;
         private readonly Vector4 m_clearColor;
 
-        public Pipeline(GLPlatform platform, Shader shader)
+        public Pipeline(OpenGLLayer apiLayer, Shader shader)
         {
-            Platform = platform;
+            m_apiLayer = apiLayer;
             m_shader = shader;
         }
 
@@ -25,8 +30,6 @@ namespace Tokamak.OGL
             m_shader.Dispose();
             GC.SuppressFinalize(this);
         }
-
-        public GLPlatform Platform { get; }
 
         public Color ClearColor
         {
@@ -42,37 +45,37 @@ namespace Tokamak.OGL
 
         private void SetClearColor()
         {
-            Platform.GL.ClearColor(m_clearColor.X, m_clearColor.Y, m_clearColor.Z, m_clearColor.W);
+            m_apiLayer.GL.ClearColor(m_clearColor.X, m_clearColor.Y, m_clearColor.Z, m_clearColor.W);
         }
 
         private void SetDepthTest()
         {
             if (DepthTest)
-                Platform.GL.Enable(EnableCap.DepthTest);
+                m_apiLayer.GL.Enable(EnableCap.DepthTest);
             else
-                Platform.GL.Disable(EnableCap.DepthTest);
+                m_apiLayer.GL.Disable(EnableCap.DepthTest);
         }
 
         private void SetCullingMode()
         {
             if (Culling == CullMode.None)
-                Platform.GL.Disable(EnableCap.CullFace);
+                m_apiLayer.GL.Disable(EnableCap.CullFace);
             else
             {
-                Platform.GL.Enable(EnableCap.CullFace);
+                m_apiLayer.GL.Enable(EnableCap.CullFace);
 
                 switch (Culling)
                 {
                 case CullMode.Back:
-                    Platform.GL.CullFace(TriangleFace.Back);
+                    m_apiLayer.GL.CullFace(TriangleFace.Back);
                     break;
 
                 case CullMode.Front:
-                    Platform.GL.CullFace(TriangleFace.Front);
+                    m_apiLayer.GL.CullFace(TriangleFace.Front);
                     break;
 
                 case CullMode.FrontAndBack:
-                    Platform.GL.CullFace(TriangleFace.FrontAndBack);
+                    m_apiLayer.GL.CullFace(TriangleFace.FrontAndBack);
                     break;
                 }
             }

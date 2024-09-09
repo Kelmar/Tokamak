@@ -7,10 +7,6 @@ using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 
-using Stashbox;
-
-using Tokamak.Core.Config;
-
 using Tokamak.Vulkan.NativeWrapper;
 
 using NativeDevice = Silk.NET.Vulkan.Device;
@@ -18,7 +14,7 @@ using NativeQueue = Silk.NET.Vulkan.Queue;
 
 namespace Tokamak.Vulkan
 {
-    internal unsafe class VkDevice : Device, IDisposable
+    internal unsafe class VkDevice : IDisposable
     {
         private class SubmittedWork
         {
@@ -82,6 +78,14 @@ namespace Tokamak.Vulkan
         public SwapChain SwapChain { get; private set; }
 
         public bool Initialized => LogicalDevice.Handle != 0;
+
+        // TODO: Replace VendorID, DeviceID, and Name with the DeviceInfo record.
+
+        public int VendorID { get; init; }
+
+        public int DeviceID { get; init; }
+
+        public string Name { get; init; }
 
         public static IEnumerable<VkDevice> EnumerateAll(VkPlatform platform)
         {

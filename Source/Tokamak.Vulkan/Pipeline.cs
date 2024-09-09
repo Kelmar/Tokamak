@@ -2,6 +2,8 @@
 
 using Silk.NET.Vulkan;
 
+using Tokamak.Tritium.Pipelines;
+
 using Tokamak.Vulkan.NativeWrapper;
 
 using PLHandle = Silk.NET.Vulkan.Pipeline;

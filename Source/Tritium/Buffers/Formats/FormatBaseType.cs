@@ -1,8 +1,11 @@
-﻿namespace Tokamak.Formats
+﻿namespace Tokamak.Tritium.Buffers.Formats
 {
     /// <summary>
-    /// Basic type for our graphics system.
+    /// The primitive type that is used to compose a more complex format type.
     /// </summary>
+    /// <remarks>
+    /// E.g.: double for a 3D vector
+    /// </remarks>
     public enum FormatBaseType
     {
         Byte,

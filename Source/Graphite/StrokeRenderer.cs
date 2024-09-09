@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Numerics;
 
-using Tokamak.Formats;
 using Tokamak.Mathematics;
+
+using Tokamak.Tritium.Buffers.Formats;
 
 namespace Graphite
 {

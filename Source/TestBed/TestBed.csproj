@@ -28,7 +28,6 @@
     <ProjectReference Include="..\Tokamak.OGL\Tokamak.OGL.csproj" />
     <ProjectReference Include="..\Tokamak.Readers\Tokamak.Readers.csproj" />
     <ProjectReference Include="..\Tokamak.Vulkan\Tokamak.Vulkan.csproj" />
-    <ProjectReference Include="..\Tokamak\Tokamak.csproj" />
     <ProjectReference Include="..\Tritium\Tokamak.Tritium.csproj" />
   </ItemGroup>
 

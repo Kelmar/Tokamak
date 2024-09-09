@@ -9,6 +9,7 @@ namespace Tokamak.OGL
         public static IStashboxContainer AllowOpenGL(this IStashboxContainer container)
         {
             container.RegisterSingleton<IAPIDescriptor, OpenGLDescriptor>();
+
             return container;
         }
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Tokamak.Scenes
+namespace TestBed.Scenes
 {
     public abstract class SceneObject : IDisposable
     {

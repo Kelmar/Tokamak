@@ -1,4 +1,4 @@
-﻿namespace Tokamak
+﻿namespace Tokamak.Tritium.Pipelines
 {
     public enum PrimitiveType
     {

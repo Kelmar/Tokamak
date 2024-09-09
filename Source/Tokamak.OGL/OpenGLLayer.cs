@@ -13,8 +13,11 @@ using Tokamak.Mathematics;
 
 using Tokamak.Tritium.APIs;
 
-using TokPixelFormat = Tokamak.Formats.PixelFormat;
+using Tokamak.Tritium.Pipelines;
+using Tokamak.Tritium.Buffers;
+
 using Monitor = Tokamak.Tritium.APIs.Monitor;
+using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
 
 namespace Tokamak.OGL
 {
@@ -144,7 +147,7 @@ namespace Tokamak.OGL
             GL = GL.GetApi(m_view);
 
             // Create a default 1x1 white texture as not all OpenGL implementations will do this for us.
-            m_whiteTexture = new TextureObject(this, TokPixelFormat.FormatR8G8B8A8, new Point(1, 1));
+            m_whiteTexture = new TextureObject(this, TPixelFormat.FormatR8G8B8A8, new Point(1, 1));
 
             Array.Fill<byte>(m_whiteTexture.Bitmap.Data, 255);
             m_whiteTexture.Refresh();
@@ -198,6 +201,27 @@ namespace Tokamak.OGL
         public ICommandList CreateCommandList()
         {
             return new GLCommandList(GL, m_whiteTexture);
+        }
+
+        public IFactory<IPipeline> GetPipelineFactory(PipelineConfig config)
+        {
+            return new PipelineFactory(this, config);
+        }
+
+        public IVertexBuffer<T> GetVertexBuffer<T>(BufferUsage usage)
+            where T : unmanaged
+        {
+            return new VertexBuffer<T>(this, usage);
+        }
+
+        public IElementBuffer GetElementBuffer(BufferUsage usage)
+        {
+            return new ElementBuffer(this, usage);
+        }
+
+        public ITextureObject GetTextureObject(TPixelFormat format, Point size)
+        {
+            return new TextureObject(this, format, size);
         }
     }
 }

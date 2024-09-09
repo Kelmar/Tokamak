@@ -5,10 +5,11 @@ using System.Numerics;
 
 using FreeTypeWrapper;
 
-using Tokamak;
-using Tokamak.Buffer;
-using Tokamak.Formats;
 using Tokamak.Mathematics;
+
+using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Buffers;
+using Tokamak.Tritium.Buffers.Formats;
 
 namespace Graphite
 {
@@ -16,7 +17,7 @@ namespace Graphite
     {
         private const int CACHE_SHEET_SIZE = 512;
 
-        private readonly Platform m_device;
+        private readonly IAPILayer m_apiLayer;
         private readonly FTFace m_face;
 
         private readonly List<ITextureObject> m_cacheSheets = new List<ITextureObject>(4);
@@ -25,9 +26,9 @@ namespace Graphite
         private ITextureObject m_currentSheet;
         private Point m_sheetIndex;
 
-        internal Font(Platform device, FTFace face)
+        internal Font(IAPILayer apiLayer, FTFace face)
         {
-            m_device = device;
+            m_apiLayer = apiLayer;
             m_face = face;
 
             AddSheet();
@@ -57,7 +58,7 @@ namespace Graphite
 
         private void AddSheet()
         {
-            m_currentSheet = m_device.GetTextureObject(PixelFormat.FormatA8, new Point(CACHE_SHEET_SIZE, CACHE_SHEET_SIZE));
+            m_currentSheet = m_apiLayer.GetTextureObject(PixelFormat.FormatA8, new Point(CACHE_SHEET_SIZE, CACHE_SHEET_SIZE));
             m_currentSheet.Bitmap.Clear();
             m_cacheSheets.Add(m_currentSheet);
             m_sheetIndex = new Point(0, m_face.LineSpacing);

@@ -22,7 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Tokamak.Core\Tokamak.Core.csproj" />
     <ProjectReference Include="..\Tokamak.Mathematics\Tokamak.Mathematics.csproj" />
-    <ProjectReference Include="..\Tokamak\Tokamak.csproj" />
     <ProjectReference Include="..\Tritium\Tokamak.Tritium.csproj" />
   </ItemGroup>
 

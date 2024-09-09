@@ -2,10 +2,11 @@
 using System.Buffers;
 using System.Diagnostics;
 
-using Tokamak.Formats;
 using Tokamak.Mathematics;
 
-namespace Tokamak.Buffer
+using Tokamak.Tritium.Buffers.Formats;
+
+namespace Tokamak.Tritium.Buffers
 {
     public class Bitmap : IDisposable
     {

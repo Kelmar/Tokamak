@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 using FreeTypeWrapper;
 
-using Tokamak.Tritium;
-
 using Tokamak;
-using Tokamak.Buffer;
-using Tokamak.Formats;
 using Tokamak.Mathematics;
+
 using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Buffers;
+using Tokamak.Tritium.Buffers.Formats;
+using Tokamak.Tritium.Pipelines;
 
 namespace Graphite
 {
@@ -25,7 +26,7 @@ namespace Graphite
     /// The canvas is designed to be reused between frame calls so that it does
     /// not allocate memory several times over and over again.
     /// </remarks>
-    public class Canvas : IRenderable
+    public class Canvas //: IRenderable
     {
         // For now we have some fairly basic shaders for testing the canvas out.
 
@@ -88,21 +89,19 @@ void main()
         private readonly List<VectorFormatPCT> m_vectors = new List<VectorFormatPCT>(128);
 
         private readonly IAPILayer m_apiLayer;
-        private readonly Platform m_device;
 
         private readonly IPipeline m_pipeline;
         private readonly ICommandList m_commandBuffer;
 
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
-        public Canvas(IAPILayer apiLayer, Platform device)
+        public Canvas(IAPILayer apiLayer)
         {
             m_ftLibrary = new FTLibrary();
 
             m_apiLayer = apiLayer;
-            m_device = device;
 
-            m_pipeline = m_device.GetPipeline(cfg => cfg
+            m_pipeline = m_apiLayer.CreatePipeline(cfg => cfg
                 .UseInputFormat<VectorFormatPCT>()
                 .EnableDepthTest(false)
                 .UseCulling(CullMode.None)
@@ -112,7 +111,7 @@ void main()
 
             m_commandBuffer = m_apiLayer.CreateCommandList();
 
-            m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dynamic);
+            m_vertexBuffer = m_apiLayer.GetVertexBuffer<VectorFormatPCT>(BufferUsage.Dynamic);
         }
 
         public void Dispose()
@@ -130,7 +129,7 @@ void main()
         {
             var dpi = m_apiLayer.GetMonitors().FirstOrDefault(m => m.IsMain)?.DPI ?? new Point(192, 192);
             var face = m_ftLibrary.GetFace(filename, size, dpi);
-            return new Font(m_device, face);
+            return new Font(m_apiLayer, face);
         }
 
         public void Resize(in Point size)
@@ -288,7 +287,7 @@ void main()
         {
             ITextureObject last = null;
 
-            m_vertexBuffer.Set(m_vectors);
+            m_vertexBuffer.Set(CollectionsMarshal.AsSpan(m_vectors));
 
             foreach (var call in m_calls)
             {

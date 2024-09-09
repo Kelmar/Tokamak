@@ -6,11 +6,14 @@ using Silk.NET.Vulkan;
 
 using Tokamak.Core.Utilities;
 
+using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Pipelines;
+
 using Tokamak.Vulkan.NativeWrapper;
 
 namespace Tokamak.Vulkan
 {
-    internal unsafe class PipelineFactory : IPipelineFactory
+    internal unsafe class PipelineFactory : IFactory<IPipeline>
     {
         private readonly ResourceTracker m_trackedResource = new();
 

@@ -1,12 +1,13 @@
 ﻿using System;
 
-using Tokamak.Buffer;
 using Tokamak.Mathematics;
+
+using Tokamak.Tritium.Buffers;
 
 using Silk.NET.OpenGL;
 
 using GlPixelFormat = Silk.NET.OpenGL.PixelFormat;
-using TokPixelFormat = Tokamak.Formats.PixelFormat;
+using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
 
 namespace Tokamak.OGL
 {
@@ -20,7 +21,7 @@ namespace Tokamak.OGL
         private readonly PixelType m_glType;
         private readonly InternalFormat m_glInternal;
 
-        public TextureObject(OpenGLLayer layer, TokPixelFormat format, Point size)
+        public TextureObject(OpenGLLayer layer, TPixelFormat format, Point size)
         {
             m_layer = layer;
             m_handle = m_layer.GL.GenTexture();
@@ -41,7 +42,7 @@ namespace Tokamak.OGL
             Bitmap.Dispose();
         }
 
-        public TokPixelFormat Format { get; }
+        public TPixelFormat Format { get; }
 
         public Point Size { get; }
 

@@ -10,9 +10,11 @@ using Silk.NET.Vulkan;
 
 using Tokamak.Core.Logging;
 
-using Tokamak.Tritium.APIs;
+using Tokamak.Mathematics;
 
-using Tokamak.Buffer;
+using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Pipelines;
+
 using Tokamak.Vulkan.NativeWrapper;
 
 namespace Tokamak.Vulkan
@@ -96,9 +98,16 @@ namespace Tokamak.Vulkan
             if (!m_inDraw)
                 return;
 
+            //m_cmdBuffer.RenderArea = new Rect2D(
+            //    new Offset2D(m_device.Parent.Viewport.Left, m_device.Parent.Viewport.Top),
+            //    new Extent2D((uint)m_device.Parent.Viewport.Size.X, (uint)m_device.Parent.Viewport.Size.Y)
+            //);
+
+            var extent = new Point(m_device.Parent.Window.FramebufferSize.X, m_device.Parent.Window.FramebufferSize.Y);
+
             m_cmdBuffer.RenderArea = new Rect2D(
-                new Offset2D(m_device.Parent.Viewport.Left, m_device.Parent.Viewport.Top),
-                new Extent2D((uint)m_device.Parent.Viewport.Size.X, (uint)m_device.Parent.Viewport.Size.Y)
+                new Offset2D(0, 0),
+                new Extent2D((uint)extent.X, (uint)extent.Y)
             );
 
             m_cmdBuffer.Begin();

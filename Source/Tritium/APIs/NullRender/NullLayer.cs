@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using Tokamak.Core.Utilities;
 
 using Tokamak.Mathematics;
+using Tokamak.Tritium.Buffers;
+using Tokamak.Tritium.Buffers.Formats;
+using Tokamak.Tritium.Pipelines;
 
 namespace Tokamak.Tritium.APIs.NullRender
 {
@@ -37,5 +41,25 @@ namespace Tokamak.Tritium.APIs.NullRender
         }
 
         public ICommandList CreateCommandList() => new NullCommandList();
+
+        public IFactory<IPipeline> GetPipelineFactory(PipelineConfig config)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IVertexBuffer<T> GetVertexBuffer<T>(BufferUsage usage) where T : unmanaged
+        {
+            throw new NotImplementedException();
+        }
+
+        public IElementBuffer GetElementBuffer(BufferUsage usage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITextureObject GetTextureObject(PixelFormat format, Point size)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

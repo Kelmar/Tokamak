@@ -2,6 +2,7 @@
 
 using Silk.NET.OpenGL;
 
+using ShaderType = Tokamak.Tritium.APIs.ShaderType;
 using GLShaderType = Silk.NET.OpenGL.ShaderType;
 
 namespace Tokamak.OGL
@@ -11,7 +12,7 @@ namespace Tokamak.OGL
     /// </summary>
     internal unsafe class ShaderCompiler : IDisposable
     {
-        private readonly GLPlatform m_device;
+        private readonly OpenGLLayer m_apiLayer;
 
         private readonly uint m_handle;
 
@@ -21,15 +22,15 @@ namespace Tokamak.OGL
         /// <param name="device"></param>
         /// <param name="type"></param>
         /// <param name="source"></param>
-        public ShaderCompiler(GLPlatform device, ShaderType type, string source)
+        public ShaderCompiler(OpenGLLayer apiLayer, ShaderType type, string source)
         {
-            m_device = device;
+            m_apiLayer = apiLayer;
 
             Type = type.ToGLShaderType();
 
-            m_handle = m_device.GL.CreateShader(Type);
+            m_handle = m_apiLayer.GL.CreateShader(Type);
 
-            m_device.GL.ShaderSource(m_handle, source);
+            m_apiLayer.GL.ShaderSource(m_handle, source);
 
             Compile();
         }
@@ -40,24 +41,24 @@ namespace Tokamak.OGL
         /// <param name="device"></param>
         /// <param name="type"></param>
         /// <param name="data"></param>
-        public ShaderCompiler(GLPlatform device, ShaderType type, ReadOnlySpan<byte> data)
+        public ShaderCompiler(OpenGLLayer apiLayer, ShaderType type, in ReadOnlySpan<byte> data)
         {
-            m_device = device;
+            m_apiLayer = apiLayer;
 
             Type = type.ToGLShaderType();
 
-            m_handle = m_device.GL.CreateShader(Type);
+            m_handle = m_apiLayer.GL.CreateShader(Type);
 
             fixed (uint* h = &m_handle)
             {
                 uint len = (uint)data.Length;
-                m_device.GL.ShaderBinary(1, h, GLEnum.SpirVBinary, data, len);
+                m_apiLayer.GL.ShaderBinary(1, h, GLEnum.SpirVBinary, data, len);
             }
 
             uint constIndex = 0;
             uint constValue = 0;
 
-            m_device.GL.SpecializeShader(m_handle, "main", 0, ref constIndex, ref constValue);
+            m_apiLayer.GL.SpecializeShader(m_handle, "main", 0, ref constIndex, ref constValue);
 
             Compile();
         }
@@ -65,7 +66,7 @@ namespace Tokamak.OGL
         public void Dispose()
         {
             if (m_handle != 0)
-                m_device.GL.DeleteShader(m_handle);
+                m_apiLayer.GL.DeleteShader(m_handle);
         }
 
         public GLShaderType Type { get; }
@@ -74,13 +75,13 @@ namespace Tokamak.OGL
 
         private void Compile()
         {
-            m_device.GL.CompileShader(m_handle);
+            m_apiLayer.GL.CompileShader(m_handle);
 
-            m_device.GL.GetShader(m_handle, GLEnum.CompileStatus, out int status);
+            m_apiLayer.GL.GetShader(m_handle, GLEnum.CompileStatus, out int status);
 
             if (status == 0)
             {
-                string infoLog = m_device.GL.GetShaderInfoLog(m_handle);
+                string infoLog = m_apiLayer.GL.GetShaderInfoLog(m_handle);
                 throw new Exception($"Error compiling shader {Type}: {infoLog}");
             }
         }

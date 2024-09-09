@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Tokamak.Formats
+namespace Tokamak.Tritium.Buffers.Formats
 {
     [AttributeUsage(AttributeTargets.Field)]
-    public sealed class FormatDescriptorAttribute : Attribute
+    internal class FormatDescriptorAttribute : Attribute
     {
         public FormatDescriptorAttribute(FormatBaseType baseType, int count)
         {
@@ -15,8 +11,14 @@ namespace Tokamak.Formats
             Count = count;
         }
 
+        /// <summary>
+        /// The primitive type that composes this field.
+        /// </summary>
         public FormatBaseType BaseType { get; }
 
+        /// <summary>
+        /// The number of primitives in this field.
+        /// </summary>
         public int Count { get; }
     }
 }

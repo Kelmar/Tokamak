@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Tokamak.Buffer;
-using Tokamak.Formats;
 using Tokamak.Mathematics;
+
+using Tokamak.Tritium.Buffers;
+using Tokamak.Tritium.Buffers.Formats;
 
 using Silk.NET.Vulkan;
 
-using TokPixelFormat = Tokamak.Formats.PixelFormat;
+using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
 
 namespace Tokamak.Vulkan
 {
@@ -18,7 +19,7 @@ namespace Tokamak.Vulkan
     {
         private readonly VkPlatform m_parent;
 
-        public TextureObject(VkPlatform parent, TokPixelFormat format, Point size)
+        public TextureObject(VkPlatform parent, TPixelFormat format, Point size)
         {
             m_parent = parent;
 

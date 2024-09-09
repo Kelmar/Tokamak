@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 using FreeTypeSharp;
 
-using Tokamak.Buffer;
+using Tokamak.Tritium.Buffers;
 using Tokamak.Mathematics;
 
 using static FreeTypeSharp.FT;

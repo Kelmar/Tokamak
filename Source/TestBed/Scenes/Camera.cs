@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Tokamak.Scenes
+namespace TestBed.Scenes
 {
     public class Camera
     {
@@ -21,7 +21,7 @@ namespace Tokamak.Scenes
             }
         }
 
-        public Vector3 LookAt 
+        public Vector3 LookAt
         {
             get => m_lookAt;
             set

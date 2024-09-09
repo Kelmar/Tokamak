@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace Tokamak.Formats
+namespace Tokamak.Tritium.Buffers.Formats
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct VectorFormatPCT

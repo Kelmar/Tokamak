@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tokamak
+namespace Tokamak.Tritium.APIs
 {
     public interface IDeviceResource : IDisposable
     {

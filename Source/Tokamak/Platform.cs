@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Numerics;
 
-using Tokamak.Buffer;
-using Tokamak.Formats;
 using Tokamak.Mathematics;
 
 namespace Tokamak
@@ -38,32 +36,6 @@ namespace Tokamak
         public void PopWorldMatrix()
         {
             WorldMatrix = m_worldMatrixStack.Pop();
-        }
-
-        public abstract IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
-            where T : unmanaged;
-
-        public abstract ITextureObject GetTextureObject(PixelFormat format, Point size);
-
-        public abstract IElementBuffer GetElementBuffer(BufferType type);
-
-        protected abstract IPipelineFactory GetPipelineFactory(PipelineConfig config);
-
-        protected virtual void ValidatePipelineConfig(PipelineConfig config)
-        {
-            if (config.InputFormat == null)
-                throw new Exception("InputFormat not specified, call UseInputFormat().");
-        }
-
-        public IPipeline GetPipeline(Action<PipelineConfig> configurator)
-        {
-            PipelineConfig config = new PipelineConfig();
-            configurator(config);
-
-            ValidatePipelineConfig(config);
-
-            using var factory = GetPipelineFactory(config);
-            return factory.Build();
         }
     }
 }

@@ -1,7 +1,9 @@
-﻿using Tokamak.Formats;
-using Tokamak.Mathematics;
+﻿using Tokamak.Mathematics;
 
-namespace Tokamak.Buffer
+using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Buffers.Formats;
+
+namespace Tokamak.Tritium.Buffers
 {
     public interface ITextureObject : IDeviceResource
     {

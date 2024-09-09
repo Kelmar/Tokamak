@@ -1,9 +1,9 @@
-﻿namespace Tokamak.Buffer
+﻿namespace Tokamak.Tritium.Buffers
 {
-    public enum BufferType
+    public enum BufferUsage
     {
         /// <summary>
-        /// Buffer is generally created and rarely updated.
+        /// Buffer is not modified frequently.
         /// </summary>
         Static,
 
