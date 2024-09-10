@@ -292,6 +292,7 @@ void main()
 
             m_pipeline.Activate(m_commandBuffer);
             m_commandBuffer.Begin();
+            m_commandBuffer.ClearBuffers(GlobalBuffer.ColorBuffer);
 
             foreach (var call in m_calls)
             {

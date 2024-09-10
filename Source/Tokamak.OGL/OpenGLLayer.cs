@@ -153,6 +153,8 @@ namespace Tokamak.OGL
             Array.Fill<byte>(m_whiteTexture.Bitmap.Data, 255);
             m_whiteTexture.Refresh();
 
+            OnViewResized(m_view.FramebufferSize);
+
             OnLoad?.Invoke();
         }
 
@@ -194,10 +196,7 @@ namespace Tokamak.OGL
                     m_view.DoUpdate();
 
                 if (!m_view.IsClosing)
-                {
                     m_view.DoRender();
-                    SwapBuffers();
-                }
             }
         }
 
