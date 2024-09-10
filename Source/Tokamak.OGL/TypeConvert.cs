@@ -6,16 +6,43 @@ using Tokamak.Tritium.Buffers;
 
 using GLShaderType = Silk.NET.OpenGL.ShaderType;
 using GLPrimType = Silk.NET.OpenGL.PrimitiveType;
+using GLBlendFact = Silk.NET.OpenGL.BlendingFactor;
 
 using TPrimType = Tokamak.Tritium.Pipelines.PrimitiveType;
 using FormatType = Tokamak.Tritium.Buffers.Formats.FormatBaseType;
 using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
 using TShaderType = Tokamak.Tritium.APIs.ShaderType;
+using TBlendFactor = Tokamak.Tritium.Pipelines.BlendFactor;
 
 namespace Tokamak.OGL
 {
     internal static class TypeConvert
     {
+        public static GLBlendFact ToGLBlendFact(this TBlendFactor factor)
+        {
+            return factor switch
+            {
+                TBlendFactor.Zero => GLBlendFact.Zero,
+                TBlendFactor.One => GLBlendFact.One,
+                TBlendFactor.SourceColor => GLBlendFact.SrcColor,
+                TBlendFactor.OneMinusSourceColor => GLBlendFact.OneMinusSrcColor,
+                TBlendFactor.DestColor => GLBlendFact.DstColor,
+                TBlendFactor.OneMinusDestColor => GLBlendFact.OneMinusDstColor,
+                TBlendFactor.SourceAlpha => GLBlendFact.SrcAlpha,
+                TBlendFactor.OneMinusSourceAlpha => GLBlendFact.OneMinusSrcAlpha,
+                TBlendFactor.DestAlpha => GLBlendFact.DstAlpha,
+                TBlendFactor.OneMinusDestAlpha => GLBlendFact.OneMinusDstAlpha,
+                TBlendFactor.ConstantColor => GLBlendFact.ConstantColor,
+                TBlendFactor.OneMinusConstantColor => GLBlendFact.OneMinusConstantColor,
+                TBlendFactor.SourceAlphaSaturate => GLBlendFact.SrcAlphaSaturate,
+                TBlendFactor.Source1Color => GLBlendFact.Src1Color,
+                TBlendFactor.OneMinusSource1Color => GLBlendFact.OneMinusSrc1Color,
+                TBlendFactor.Source1Alpha => GLBlendFact.Src1Alpha,
+                TBlendFactor.OneMinusSource1Alpha => GLBlendFact.OneMinusSrc1Alpha,
+                _ => throw new Exception($"Unknown blending factor: {factor}")
+            };
+        }
+
         public static GLShaderType ToGLShaderType(this TShaderType type)
         {
             return type switch

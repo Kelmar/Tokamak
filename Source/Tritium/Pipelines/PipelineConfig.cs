@@ -24,6 +24,12 @@ namespace Tokamak.Tritium.Pipelines
 
         public PrimitiveType Primitive { get; private set; } = PrimitiveType.TriangleList;
 
+        public bool Blending { get; private set; } = false;
+
+        public BlendFactor SourceBlendFactor { get; private set; }
+
+        public BlendFactor DestinationBlendFactor { get; private set; }
+
         public bool DepthTest { get; private set; } = false;
 
         public CullMode Culling { get; private set; } = CullMode.None;
@@ -70,6 +76,23 @@ namespace Tokamak.Tritium.Pipelines
         public PipelineConfig EnableDepthTest(bool value = true)
         {
             DepthTest = value;
+            return this;
+        }
+
+        public PipelineConfig DisableBlending()
+        {
+            Blending = false;
+            return this;
+        }
+
+        public PipelineConfig EnableBlending(
+            BlendFactor sourceFactor,
+            BlendFactor destinationFactor)
+        {
+            Blending = true;
+            SourceBlendFactor = sourceFactor;
+            DestinationBlendFactor = destinationFactor;
+
             return this;
         }
     }

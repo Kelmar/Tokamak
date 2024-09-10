@@ -104,6 +104,11 @@ void main()
             m_pipeline = m_apiLayer.CreatePipeline(cfg => cfg
                 .UseInputFormat<VectorFormatPCT>()
                 .EnableDepthTest(false)
+                .EnableBlending(
+                    // A good blending function for 2D font antialiasing.
+                    sourceFactor: BlendFactor.SourceAlpha,
+                    destinationFactor: BlendFactor.One
+                )
                 .UseCulling(CullMode.None)
                 .UseShader(ShaderType.Vertex, VERTEX_SHADER_PATH)
                 .UseShader(ShaderType.Fragment, FRAGMENT_SHADER_PATH)

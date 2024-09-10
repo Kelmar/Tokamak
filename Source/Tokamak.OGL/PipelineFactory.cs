@@ -73,7 +73,10 @@ namespace Tokamak.OGL
             {
                 DepthTest = m_config.DepthTest,
                 Culling = m_config.Culling,
-                Primitive = m_config.Primitive.ToGLPrimitive()
+                Primitive = m_config.Primitive.ToGLPrimitive(),
+                EnableBlend = m_config.Blending,
+                SourceFactor = m_config.SourceBlendFactor.ToGLBlendFact(),
+                DestinationFactor = m_config.DestinationBlendFactor.ToGLBlendFact()
             };
 
             return rval;

@@ -9,6 +9,7 @@ using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Pipelines;
 
 using GLPrimType = Silk.NET.OpenGL.PrimitiveType;
+using GLBlendFact = Silk.NET.OpenGL.BlendingFactor;
 
 namespace Tokamak.OGL
 {
@@ -37,6 +38,12 @@ namespace Tokamak.OGL
             init => m_clearColor = (Vector4)value;
         }
 
+        public bool EnableBlend { get; init; }
+
+        public GLBlendFact SourceFactor { get; init; }
+
+        public GLBlendFact DestinationFactor { get; init; }
+
         public bool DepthTest { get; init; }
 
         public CullMode Culling { get; init; }
@@ -46,6 +53,19 @@ namespace Tokamak.OGL
         private void SetClearColor()
         {
             m_apiLayer.GL.ClearColor(m_clearColor.X, m_clearColor.Y, m_clearColor.Z, m_clearColor.W);
+        }
+
+        private void SetBlendMode()
+        {
+            if (EnableBlend)
+            {
+                m_apiLayer.GL.Enable(EnableCap.Blend);
+                m_apiLayer.GL.BlendFunc(SourceFactor, DestinationFactor);
+            }
+            else
+            {
+                m_apiLayer.GL.Disable(EnableCap.Blend);
+            }
         }
 
         private void SetDepthTest()
@@ -89,6 +109,7 @@ namespace Tokamak.OGL
             m_shader.Activate();
 
             SetClearColor();
+            SetBlendMode();
             SetDepthTest();
             SetCullingMode();
         }

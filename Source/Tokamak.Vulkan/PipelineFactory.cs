@@ -134,6 +134,17 @@ namespace Tokamak.Vulkan
             };
         }
 
+        public PipelineColorBlendAttachmentState GetBlendAttachmentState()
+        {
+            // TODO: Pull in blending from the configuration.
+
+            return new PipelineColorBlendAttachmentState
+            {
+                ColorWriteMask = ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit,
+                BlendEnable = false
+            };
+        }
+
         public unsafe IPipeline Build()
         {
             return new Pipeline(m_device, this);

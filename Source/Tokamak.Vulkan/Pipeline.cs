@@ -37,6 +37,7 @@ namespace Tokamak.Vulkan
                 m_layout.Dispose();
             }
         }
+
         public void Dispose()
         {
             Dispose(true);
@@ -89,11 +90,7 @@ namespace Tokamak.Vulkan
                 RasterizationSamples = SampleCountFlags.Count1Bit
             };
 
-            var colorBlendAttachment = new PipelineColorBlendAttachmentState
-            {
-                ColorWriteMask = ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit,
-                BlendEnable = false
-            };
+            var colorBlendAttachment = factory.GetBlendAttachmentState();
 
             var colorBlendConfig = new PipelineColorBlendStateCreateInfo
             {
