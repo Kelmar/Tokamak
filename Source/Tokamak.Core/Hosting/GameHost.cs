@@ -144,8 +144,6 @@ namespace Tokamak.Core.Hosting
         {
             StartBackground();
             StartComponents();
-
-            App.OnLoad();
         }
 
         public virtual void MainLoop()

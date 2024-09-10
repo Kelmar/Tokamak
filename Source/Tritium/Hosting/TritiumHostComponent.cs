@@ -41,12 +41,14 @@ namespace Tokamak.Tritium.Hosting
 
             m_apiLayer = m_layerFactory();
             m_apiLayer.OnRender += m_host.App.OnRender;
+            m_apiLayer.OnLoad += m_host.App.OnLoad;
         }
 
         public void Stop()
         {
             m_log.Debug("Tridium stopping.");
 
+            m_apiLayer.OnLoad -= m_host.App.OnLoad;
             m_apiLayer.OnRender -= m_host.App.OnRender;
         }
     }

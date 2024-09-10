@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 
 using Tokamak.Core.Utilities;
 
@@ -27,17 +26,18 @@ namespace Tokamak.OGL
         {
             var compilers = new List<ShaderCompiler>();
             var glShader = new Shader(m_apiLayer);
+            bool disposeShader = true;
 
             try
             {
-                foreach (var shader in m_config.Shaders)
+                foreach (var shaderSource in m_config.ShaderSources)
                 {
-                    // TODO: Replace with VFS
-                    string source = File.ReadAllText(shader.Path);
-                    var comp = new ShaderCompiler(m_apiLayer, shader.Type, source);
+                    ShaderCompiler comp;
 
-                    //byte[] data = File.ReadAllBytes(shader.Path);
-                    //var comp = new ShaderCompiler(m_apiLayer, shader.Type, data);
+                    if (shaderSource.Precompiled)
+                        comp = new ShaderCompiler(m_apiLayer, shaderSource.Type, shaderSource.GetData());
+                    else
+                        comp = new ShaderCompiler(m_apiLayer, shaderSource.Type, shaderSource.GetSourceCode());
 
                     compilers.Add(comp);
 
@@ -48,7 +48,7 @@ namespace Tokamak.OGL
 
                 // Passing ownership on to caller.
                 Shader rval = glShader;
-                glShader = null; // Prevent finally Dispose() call.
+                disposeShader = false; // Prevent finally Dispose() call.
                 return rval;
             }
             finally
@@ -61,7 +61,8 @@ namespace Tokamak.OGL
                 }
 
                 // Only dispose if there's a problem.
-                glShader?.Dispose();
+                if (disposeShader)
+                    glShader.Dispose();
             }
         }
 

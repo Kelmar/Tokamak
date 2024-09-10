@@ -11,7 +11,7 @@ using GLBlendFact = Silk.NET.OpenGL.BlendingFactor;
 using TPrimType = Tokamak.Tritium.Pipelines.PrimitiveType;
 using FormatType = Tokamak.Tritium.Buffers.Formats.FormatBaseType;
 using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
-using TShaderType = Tokamak.Tritium.APIs.ShaderType;
+using TShaderType = Tokamak.Tritium.Pipelines.Shaders.ShaderType;
 using TBlendFactor = Tokamak.Tritium.Pipelines.BlendFactor;
 
 namespace Tokamak.OGL

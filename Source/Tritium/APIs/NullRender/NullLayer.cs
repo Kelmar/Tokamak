@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Tokamak.Core;
 using Tokamak.Core.Utilities;
 
 using Tokamak.Mathematics;
@@ -13,13 +14,17 @@ namespace Tokamak.Tritium.APIs.NullRender
     /// <summary>
     /// Dummy layer that doesn't actually do anything.
     /// </summary>
-    internal sealed class NullLayer : IAPILayer
+    internal sealed class NullLayer : ITick, IAPILayer
     {
         // These events are not called from this layer
 #pragma warning disable 00067
         public event SimpleEvent<Point> OnResize;
         public event SimpleEvent<double> OnRender;
 #pragma warning restore 00067
+
+        public event SimpleEvent OnLoad;
+
+        private bool m_firstTick = true;
 
         public NullLayer()
         {
@@ -60,6 +65,15 @@ namespace Tokamak.Tritium.APIs.NullRender
         public ITextureObject GetTextureObject(PixelFormat format, Point size)
         {
             throw new NotImplementedException();
+        }
+
+        public void Tick()
+        {
+            if (m_firstTick)
+            {
+                m_firstTick = false;
+                OnLoad?.Invoke();
+            }
         }
     }
 }

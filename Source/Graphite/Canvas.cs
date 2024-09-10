@@ -6,13 +6,13 @@ using System.Runtime.InteropServices;
 
 using FreeTypeWrapper;
 
-using Tokamak;
 using Tokamak.Mathematics;
 
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Buffers;
 using Tokamak.Tritium.Buffers.Formats;
 using Tokamak.Tritium.Pipelines;
+using Tokamak.Tritium.Pipelines.Shaders;
 
 namespace Graphite
 {
@@ -29,10 +29,6 @@ namespace Graphite
     public class Canvas //: IRenderable
     {
         // For now we have some fairly basic shaders for testing the canvas out.
-
-        private const string VERTEX_SHADER_PATH = "/resources/canvas.vert.spv";
-
-        private const string FRAGMENT_SHADER_PATH = "/resources/canvas.frag.spv";
 
         public const string VERTEX = @"#version 450
 
@@ -110,8 +106,8 @@ void main()
                     destinationFactor: BlendFactor.One
                 )
                 .UseCulling(CullMode.None)
-                .UseShader(ShaderType.Vertex, VERTEX_SHADER_PATH)
-                .UseShader(ShaderType.Fragment, FRAGMENT_SHADER_PATH)
+                .AddShaderCode(ShaderType.Vertex, VERTEX)
+                .AddShaderCode(ShaderType.Fragment, FRAGMENT)
             );
 
             m_commandBuffer = m_apiLayer.CreateCommandList();
@@ -140,9 +136,7 @@ void main()
         public void Resize(in Point size)
         {
             var mat = Matrix4x4.CreateOrthographicOffCenter(0, size.X, size.Y, 0, -1, 1);
-
-            //m_shader.Activate();
-            //m_shader.Set("projection", mat);
+            m_pipeline.Uniforms.projection = mat;
         }
 
         private void AddCall(PrimitiveType type, IEnumerable<VectorFormatPCT> vectors, ITextureObject texture = null)
@@ -290,9 +284,14 @@ void main()
 
         public void Render()
         {
+            Resize(m_apiLayer.ViewBounds);
+
             ITextureObject last = null;
 
             m_vertexBuffer.Set(CollectionsMarshal.AsSpan(m_vectors));
+
+            m_pipeline.Activate(m_commandBuffer);
+            m_commandBuffer.Begin();
 
             foreach (var call in m_calls)
             {
@@ -300,13 +299,7 @@ void main()
                 {
                     if (call.Texture != null)
                     {
-#if false
-                        if (call.Texture.Format == PixelFormat.FormatA8)
-                            m_shader.Set("is8Bit", 1);
-                        else
-                            m_shader.Set("is8Bit", 0);
-#endif
-
+                        m_pipeline.Uniforms.is8Bit = call.Texture.Format == PixelFormat.FormatA8;
                         call.Texture.Activate();
                     }
                     else
@@ -322,9 +315,11 @@ void main()
 
             if (last != null)
             {
-                //m_shader.Set("is8Bit", 0);
+                m_pipeline.Uniforms.is8Bit = false;
                 m_commandBuffer.ClearBoundTexture();
             }
+
+            m_commandBuffer.End();
 
             m_vectors.Clear();
             m_calls.Clear();

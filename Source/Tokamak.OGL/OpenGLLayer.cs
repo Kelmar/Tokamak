@@ -25,6 +25,7 @@ namespace Tokamak.OGL
     {
         public event SimpleEvent<Point> OnResize;
         public event SimpleEvent<double> OnRender;
+        public event SimpleEvent OnLoad;
 
         private readonly IWindow m_window;
         private readonly IView m_view;
@@ -151,6 +152,8 @@ namespace Tokamak.OGL
 
             Array.Fill<byte>(m_whiteTexture.Bitmap.Data, 255);
             m_whiteTexture.Refresh();
+
+            OnLoad?.Invoke();
         }
 
         private void OnViewResized(Vector2D<int> bounds)
@@ -179,18 +182,23 @@ namespace Tokamak.OGL
                  * other objects to register for events before we start
                  * firing them.
                  */
-                
+
                 m_view.Initialize();
                 m_firstCall = false;
             }
+            else
+            {
+                m_view.DoEvents();
 
-            m_view.DoEvents();
+                if (!m_view.IsClosing)
+                    m_view.DoUpdate();
 
-            if (!m_view.IsClosing)
-                m_view.DoUpdate();
-
-            if (!m_view.IsClosing)
-                m_view.DoRender();
+                if (!m_view.IsClosing)
+                {
+                    m_view.DoRender();
+                    SwapBuffers();
+                }
+            }
         }
 
         public void SwapBuffers()

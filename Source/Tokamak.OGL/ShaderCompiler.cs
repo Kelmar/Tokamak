@@ -2,7 +2,7 @@
 
 using Silk.NET.OpenGL;
 
-using ShaderType = Tokamak.Tritium.APIs.ShaderType;
+using ShaderType = Tokamak.Tritium.Pipelines.Shaders.ShaderType;
 using GLShaderType = Silk.NET.OpenGL.ShaderType;
 
 namespace Tokamak.OGL

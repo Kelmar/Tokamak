@@ -7,6 +7,7 @@ using Tokamak.Mathematics;
 
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Pipelines;
+using Tokamak.Tritium.Pipelines.Shaders;
 
 using GLPrimType = Silk.NET.OpenGL.PrimitiveType;
 using GLBlendFact = Silk.NET.OpenGL.BlendingFactor;
@@ -24,6 +25,8 @@ namespace Tokamak.OGL
         {
             m_apiLayer = apiLayer;
             m_shader = shader;
+
+            Uniforms = new ShaderDynamic(m_shader);
         }
 
         public void Dispose()
@@ -37,6 +40,8 @@ namespace Tokamak.OGL
             get => (Color)m_clearColor;
             init => m_clearColor = (Vector4)value;
         }
+
+        public dynamic Uniforms { get; }
 
         public bool EnableBlend { get; init; }
 

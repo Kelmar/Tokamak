@@ -5,10 +5,8 @@ using System.Linq;
 using Silk.NET.Vulkan;
 
 using Tokamak.Core.Utilities;
-
-using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Pipelines;
-
+using Tokamak.Tritium.Pipelines.Shaders;
 using Tokamak.Vulkan.NativeWrapper;
 
 namespace Tokamak.Vulkan
@@ -45,16 +43,17 @@ namespace Tokamak.Vulkan
 
         public PipelineShaderStageCreateInfo[] GetShaderModules()
         {
-            var shaderList = m_config.Shaders.ToList();
+            var shaderSources = m_config.ShaderSources.ToList();
 
-            var items = new PipelineShaderStageCreateInfo[shaderList.Count];
+            var items = new PipelineShaderStageCreateInfo[shaderSources.Count];
             int index = 0;
 
-            foreach (var shader in shaderList)
+            foreach (var shaderSource in shaderSources)
             {
-                // TODO: Use VFS
-                byte[] data = File.ReadAllBytes(shader.Path);
-                var module = new VkShaderModule(m_device, data);
+                if (!shaderSource.Precompiled)
+                    throw new Exception($"Cannot compile shader from source!");
+
+                var module = new VkShaderModule(m_device, shaderSource.GetData());
 
                 m_trackedResource.Add(module);
 
@@ -64,7 +63,7 @@ namespace Tokamak.Vulkan
                 items[index] = new PipelineShaderStageCreateInfo
                 {
                     SType = StructureType.PipelineShaderStageCreateInfo,
-                    Stage = GetFlagsFromType(shader.Type),
+                    Stage = GetFlagsFromType(shaderSource.Type),
                     Module = module.Handle,
                     PName = name.Pointer
                 };

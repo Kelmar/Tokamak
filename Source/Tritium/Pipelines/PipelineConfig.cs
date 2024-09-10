@@ -2,15 +2,14 @@
 using System.Linq;
 
 using Tokamak.Mathematics;
-
-using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Buffers.Formats;
+using Tokamak.Tritium.Pipelines.Shaders;
 
 namespace Tokamak.Tritium.Pipelines
 {
     public class PipelineConfig
     {
-        private readonly List<ShaderInfo> m_shaders = new();
+        private readonly List<IShaderSource> m_shaders = new();
 
         internal PipelineConfig()
         {
@@ -18,7 +17,7 @@ namespace Tokamak.Tritium.Pipelines
 
         public Color ClearColor { get; private set; } = Color.Black;
 
-        public IEnumerable<ShaderInfo> Shaders => m_shaders;
+        public IEnumerable<IShaderSource> ShaderSources => m_shaders;
 
         public VectorFormat.Info InputFormat { get; private set; }
 
@@ -34,17 +33,22 @@ namespace Tokamak.Tritium.Pipelines
 
         public CullMode Culling { get; private set; } = CullMode.None;
 
-        public PipelineConfig UseShader(ShaderType type, string path)
+        public PipelineConfig AddShaderSource(IShaderSource source)
         {
-            if (m_shaders.Any(s => s.Path == path))
-                return this;
+            m_shaders.Add(source);
 
-            m_shaders.Add(new ShaderInfo
-            {
-                Type = type,
-                Path = path
-            });
+            return this;
+        }
 
+        public PipelineConfig AddShaderFile(ShaderType type, string path)
+        {
+            AddShaderSource(new ShaderSourceFile(type, path));
+            return this;
+        }
+
+        public PipelineConfig AddShaderCode(ShaderType type, string code)
+        {
+            AddShaderSource(new ShaderSourceCode(type, code));
             return this;
         }
 

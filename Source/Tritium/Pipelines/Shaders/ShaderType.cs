@@ -1,4 +1,4 @@
-﻿namespace Tokamak.Tritium.APIs
+﻿namespace Tokamak.Tritium.Pipelines.Shaders
 {
     public enum ShaderType
     {

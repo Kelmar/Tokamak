@@ -27,6 +27,11 @@ namespace Tokamak.Tritium.APIs
         event SimpleEvent<double> OnRender;
 
         /// <summary>
+        /// Called when the application has been loaded and is ready.
+        /// </summary>
+        event SimpleEvent OnLoad;
+
+        /// <summary>
         /// Get the current size of the view port in pixels.
         /// </summary>
         Point ViewBounds { get; }

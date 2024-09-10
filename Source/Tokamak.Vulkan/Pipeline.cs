@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Dynamic;
 
 using Silk.NET.Vulkan;
 
+using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Pipelines;
-
+using Tokamak.Tritium.Pipelines.Shaders;
 using Tokamak.Vulkan.NativeWrapper;
 
 using PLHandle = Silk.NET.Vulkan.Pipeline;
 
 namespace Tokamak.Vulkan
 {
-    internal unsafe class Pipeline : IPipeline
+    internal unsafe class Pipeline : IPipeline, IUniformAccess
     {
         private readonly VkDevice m_device;
 
@@ -24,6 +26,7 @@ namespace Tokamak.Vulkan
             RenderPass = new VkRenderPass(m_device, m_device.SwapChain.Format);
 
             Handle = CreateHandle(factory);
+            Uniforms = new ShaderDynamic(this);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -47,6 +50,8 @@ namespace Tokamak.Vulkan
         public VkRenderPass RenderPass { get; }
 
         public PLHandle Handle { get; }
+
+        public dynamic Uniforms { get; }
 
         private PLHandle CreateHandle(PipelineFactory factory)
         {
@@ -135,6 +140,27 @@ namespace Tokamak.Vulkan
 
                 return handle;
             }
+        }
+
+        public bool HasUniform(string name)
+        {
+            return false;
+        }
+
+        public object GetUniform(string name, Type t)
+        {
+            return null;
+        }
+
+        public void SetUniform(string name, object value)
+        {
+
+        }
+
+        public void Activate(ICommandList commandList)
+        {
+            var vkCmdList = (CommandList)commandList;
+            vkCmdList.Pipeline = this;
         }
     }
 }

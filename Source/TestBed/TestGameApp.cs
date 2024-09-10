@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,8 +42,8 @@ namespace TestBed
 
         //private TestObject m_test;
 
-        private IPipeline m_pipeline;
-        private ICommandList m_commandList;
+        //private IPipeline m_pipeline;
+        //private ICommandList m_commandList;
 
         private int m_frameCount;
         private DateTime m_lastCheck = DateTime.UtcNow;
@@ -71,10 +72,7 @@ namespace TestBed
 
         public void OnLoad()
         {
-#if false
-            m_canvas = new Canvas(m_platform);
-
-            using var shaderFact = m_platform.GetShaderFactory();
+            m_canvas = new Canvas(m_apiLayer);
 
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/dnk.ttf");
@@ -89,7 +87,6 @@ namespace TestBed
 
             //m_renderers.Add(m_scene);
             //m_renderers.Add(m_canvas);
-#endif
 
 #if false
 
@@ -122,8 +119,6 @@ namespace TestBed
             m_commandList.End();
 #endif
 
-            /*
-
             Pen pen = new Pen
             {
                 Width = 40,
@@ -133,6 +128,9 @@ namespace TestBed
 
             m_canvas.DrawText(pen, m_font, new Point(5, 30), String.Format("FPS: {0:000.0}", m_fps));
 
+            m_canvas.Render();
+
+            /*
             foreach (var r in m_renderers)
                 r.Render();
             */

@@ -12,11 +12,11 @@ namespace Tokamak.Vulkan.NativeWrapper
     {
         private readonly VkDevice m_device;
 
-        public VkShaderModule(VkDevice device, byte[] data)
+        public VkShaderModule(VkDevice device, Span<byte> data)
         {
             m_device = device;
 
-            Data = data;
+            Data = data.ToArray();
 
             Handle = CreateHandle();
         }
