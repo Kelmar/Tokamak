@@ -13,8 +13,6 @@ namespace Tokamak.VFS
 
         public MountSystem()
         {
-
-
             m_fileSystems["/"] = new IdentityFileSystem("/");
             m_fileSystems["/sys"] = new SystemFileSystem("/sys");
         }

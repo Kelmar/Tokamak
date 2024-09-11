@@ -71,7 +71,7 @@ namespace Tokamak.VFS
 
             var sb = new StringBuilder();
 
-            if (path.StartsWith('/'))
+            if (isRooted)
                 sb.Append('/');
 
             var leftOvers = stack.ToList();
