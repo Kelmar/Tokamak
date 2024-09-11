@@ -1,6 +1,4 @@
-﻿using System.Reflection.PortableExecutable;
-
-namespace Tokamak.Core
+﻿namespace Tokamak.Core
 {
     /// <summary>
     /// Service used to shutdown the GameHost
