@@ -2,8 +2,8 @@
 {
     internal class HostEnvironment : IHostEnvironment
     {
-        public string ApplicationName { get; set; }
+        public required string ApplicationName { get; set; }
 
-        public string EnvironmentName { get; set; }
+        public required string EnvironmentName { get; set; }
     }
 }

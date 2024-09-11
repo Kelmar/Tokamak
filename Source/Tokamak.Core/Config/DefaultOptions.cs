@@ -22,7 +22,7 @@ namespace Tokamak.Core.Config
 
         protected readonly static ConcurrentDictionary<Type, Func<IConfiguration, object>> s_factories = new();
 
-        public DefaultOptions(IConfiguration config, IConfigOptions<T> options = null)
+        public DefaultOptions(IConfiguration config, IConfigOptions<T>? options = null)
         {
             ConfigType = typeof(T);
             Value = new T();
@@ -31,10 +31,10 @@ namespace Tokamak.Core.Config
             section.ReadInto(Value);
         }
 
-        private string GetSectionName(IConfigOptions<T> options)
+        private string GetSectionName(IConfigOptions<T>? options)
         {
             // Options take priority.
-            string section = options?.Section;
+            string? section = options?.Section;
 
             if (String.IsNullOrWhiteSpace(section))
             {

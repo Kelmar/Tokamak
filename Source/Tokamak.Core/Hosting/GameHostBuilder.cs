@@ -20,21 +20,21 @@ namespace Tokamak.Core.Hosting
 
         private Func<IStashboxContainer> m_containerFactory;
 
-        private IStashboxContainer m_container;
+        private IStashboxContainer? m_container = null;
 
-        private IGameHost m_result = null;
+        private IGameHost? m_result = null;
 
         public GameHostBuilder()
         {
-            ContainerFactory = () => new StashboxContainer();
+            m_containerFactory = () => new StashboxContainer();
 
             m_hostConfig = new Lazy<IConfiguration>(BuildHostConfig);
             m_appConfig = new Lazy<IConfiguration>(BuildAppConfig);
         }
 
-        public IStashboxContainer Container => m_container;
+        public IStashboxContainer Container => m_container!;
 
-        public IHostEnvironment HostEnvironment { get; private set; }
+        public IHostEnvironment? HostEnvironment { get; private set; }
 
         public IConfiguration Configuration => m_appConfig.Value;
 
@@ -86,6 +86,8 @@ namespace Tokamak.Core.Hosting
 
         private IConfiguration BuildAppConfig()
         {
+            Debug.Assert(HostEnvironment != null);
+
             var configBuilder = new ConfigBuilder()
                 .AddConfiguration(m_hostConfig.Value);
 
@@ -95,7 +97,7 @@ namespace Tokamak.Core.Hosting
             return configBuilder.Build();
         }
 
-        private string GetEnvironmentName(Assembly asm)
+        private string GetEnvironmentName(Assembly? asm)
         {
             if (asm == null)
                 return "Release";
@@ -112,7 +114,7 @@ namespace Tokamak.Core.Hosting
         {
             var hostConfig = m_hostConfig.Value;
 
-            Assembly entry = Assembly.GetEntryAssembly();
+            Assembly? entry = Assembly.GetEntryAssembly();
 
             string name = hostConfig["ApplicationName"] ??
                 entry?.GetName().Name ??
@@ -128,12 +130,13 @@ namespace Tokamak.Core.Hosting
         private void InitServices()
         {
             Debug.Assert(ContainerFactory != null);
+            Debug.Assert(HostEnvironment != null);
 
             m_container = ContainerFactory();
 
             m_container.RegisterInstance(HostEnvironment);
 
-            m_container.RegisterInstance<IConfiguration>(Configuration);
+            m_container.RegisterInstance(Configuration);
 
             // Initialize default configuration readers
             m_container.Register(typeof(IConfigOptions<>), typeof(ConfigOptions<>));
@@ -150,6 +153,9 @@ namespace Tokamak.Core.Hosting
 
             InitEnvironment();
             InitServices();
+
+            Debug.Assert(m_container != null);
+            Debug.Assert(HostEnvironment != null);
 
             m_result = new GameHost(this);
             return m_result;

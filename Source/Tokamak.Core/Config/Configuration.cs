@@ -9,7 +9,7 @@ namespace Tokamak.Core.Config
 {
     internal sealed class Configuration : IConfiguration
     {
-        private readonly Dictionary<string, string> m_items;
+        private readonly Dictionary<string, string>? m_items;
 
         internal Configuration(IEnumerable<KeyValuePair<string, string>> items)
         {
@@ -35,9 +35,21 @@ namespace Tokamak.Core.Config
 
         public string Path { get; }
 
-        public IEnumerable<string> Keys => m_items.Keys;
+        public IEnumerable<string> Keys
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
-        public IEnumerable<string> Values => m_items.Values;
+        public IEnumerable<string> Values
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public string this[string path]
         {
@@ -54,19 +66,29 @@ namespace Tokamak.Core.Config
             });
         }
 
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => m_items.GetEnumerator();
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        {
+            throw new NotImplementedException();
+            //return m_items.GetEnumerator();
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => m_items.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+            //return m_items.GetEnumerator();
+        }
 
         public string Get(string path)
         {
             if (Root == this)
             {
+                Debug.Assert(m_items != null);
+
                 if (!ConfigPath.IsValidPath(path))
                     throw new ArgumentException("Invalid config path");
 
-                if (m_items.TryGetValue(path, out string value))
-                    return value;
+                if (m_items.TryGetValue(path, out string? value))
+                    return value ?? String.Empty;
 
                 return String.Empty;
             }
@@ -79,10 +101,12 @@ namespace Tokamak.Core.Config
         {
             if (Root == this)
             {
+                Debug.Assert(m_items != null);
+
                 if (!ConfigPath.IsValidPath(path))
                     throw new ArgumentException("Invalid config path");
 
-                if (!m_items.TryGetValue(path, out string old))
+                if (!m_items!.TryGetValue(path, out string? old))
                     old = String.Empty;
 
                 m_items[path] = value;

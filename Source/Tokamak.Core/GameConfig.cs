@@ -17,7 +17,7 @@ namespace Tokamak.Core
             return builder;
         }
 
-        public static IGameHostBuilder Configure<TOptions>(this IGameHostBuilder builder, Action<IConfigOptions<TOptions>> configurator = null)
+        public static IGameHostBuilder Configure<TOptions>(this IGameHostBuilder builder, Action<IConfigOptions<TOptions>>? configurator = null)
             where TOptions : class
         {
             builder.ConfigureServices(cfg =>

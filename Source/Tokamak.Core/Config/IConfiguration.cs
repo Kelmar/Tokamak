@@ -18,11 +18,11 @@ namespace Tokamak.Core.Config
         /// <summary>
         /// The key that was changed
         /// </summary>
-        public string Key { get; init; }
+        public required string Key { get; init; }
 
         /// <summary>
         /// The new value
         /// </summary>
-        public string Value { get; init; }
+        public required string Value { get; init; }
     }
 }

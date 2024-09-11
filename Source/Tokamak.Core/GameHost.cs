@@ -5,16 +5,14 @@ namespace Tokamak.Core
 {
     public static class GameHost
     {
-        public static IGameHost Instance { get; internal set; }
-
         /// <summary>
         /// Gets a builder that constructs the default generic GameHost.
         /// </summary>
         /// <param name="args">Application command line arguments.</param>
-        public static IGameHostBuilder GetDefaultBuilder(string[] args = null)
+        public static IGameHostBuilder GetDefaultBuilder(string[]? args = null)
         {
             var builder = new GameHostBuilder();
-            builder.ConfigureDefaults(args);
+            builder.ConfigureDefaults(args ?? []);
             return builder;
         }
 

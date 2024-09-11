@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 using Newtonsoft.Json.Linq;
@@ -26,12 +27,14 @@ namespace Tokamak.Core.Config
 
         public MemoryConfigProvider(T value)
         {
+            ArgumentNullException.ThrowIfNull(value);
+
             m_value = value;
         }
 
         public IEnumerable<KeyValuePair<string, string>> GetValues()
         {
-            var obj = new JObject(m_value);
+            var obj = new JObject(m_value!);
             return ConfigBuilder.RecombineJObject(obj) ?? new Dictionary<string, string>();
         }
     }

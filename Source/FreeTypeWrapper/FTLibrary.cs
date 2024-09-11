@@ -54,6 +54,19 @@ namespace FreeTypeWrapper
                 throw new FreeTypeException(err);
         }
 
+#if false
+        /// <summary>
+        /// Load a font face by file name
+        /// </summary>
+        /// <param name="filename">The file path to load.</param>
+        /// <returns></returns>
+        public FTFace GetFace(IMountSystem mountSys, string filename, float size, in Vector2 dpi)
+        {
+            var bytes = mountSys.ReadAllBytes(filename);
+            return GetFace(bytes, size, dpi);
+        }
+#endif
+
         /// <summary>
         /// Load a font face by file name
         /// </summary>
@@ -61,8 +74,7 @@ namespace FreeTypeWrapper
         /// <returns></returns>
         public FTFace GetFace(string filename, float size, in Vector2 dpi)
         {
-            var mountSys = Platform.Services.Find<IMountSystem>();
-            var bytes = mountSys.ReadAllBytes(filename);
+            var bytes = File.ReadAllBytes(filename);
             return GetFace(bytes, size, dpi);
         }
 

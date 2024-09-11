@@ -82,9 +82,9 @@ namespace Tokamak.Core.Config
             return builder;
         }
 
-        public static IConfigBuilder AddInMemoryConfig(this IConfigBuilder builder, IEnumerable<KeyValuePair<string, string>> values = null)
+        public static IConfigBuilder AddInMemoryConfig(this IConfigBuilder builder, IEnumerable<KeyValuePair<string, string>>? values = null)
         {
-            builder.AddProvider(new MemoryConfigProvider(values));
+            builder.AddProvider(new MemoryConfigProvider(values ?? []));
             return builder;
         }
 
@@ -110,14 +110,18 @@ namespace Tokamak.Core.Config
             foreach (var item in Environment.GetEnvironmentVariables())
             {
                 var entry = (DictionaryEntry)item;
-                string key = entry.Key.ToString();
+                string? key = entry.Key.ToString();
+                string? value = entry.Value?.ToString();
+
+                if (String.IsNullOrWhiteSpace(key))
+                    continue;
                 
                 var matches = regex.Matches(key);
 
-                if (matches.Count > 0)
+                if (matches.Count > 0 && !String.IsNullOrWhiteSpace(value))
                 {
                     string configKey = ConfigPath.Combine(pathRoot, matches[0].Groups[1].Value);
-                    result[configKey] = entry.Value.ToString();
+                    result[configKey] = value;
                 }
             }
 

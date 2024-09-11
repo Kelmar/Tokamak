@@ -11,9 +11,9 @@ namespace Tokamak.Core.Hosting
     {
         private class TickInfo
         {
-            public TickPriority Priority { get; set; }
+            public required TickPriority Priority { get; set; }
 
-            public ITick Ticker { get; set; }
+            public required ITick Ticker { get; set; }
         }
 
         private readonly Dictionary<ITick, TickInfo> m_tickers = new();
@@ -42,7 +42,7 @@ namespace Tokamak.Core.Hosting
 
         public void AddTick(ITick tick, TickPriority priority = TickPriority.Normal)
         {
-            if (m_tickers.TryGetValue(tick, out TickInfo info))
+            if (m_tickers.TryGetValue(tick, out TickInfo? info))
             {
                 if (info.Priority == priority)
                     return; // No change;
@@ -66,7 +66,7 @@ namespace Tokamak.Core.Hosting
 
         public bool RemoveTick(ITick tick)
         {
-            if (m_tickers.TryGetValue(tick, out TickInfo info))
+            if (m_tickers.TryGetValue(tick, out TickInfo? info))
             {
                 m_tickers.Remove(tick);
                 m_priorityLists[info.Priority].Remove(tick);

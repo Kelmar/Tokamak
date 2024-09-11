@@ -12,7 +12,7 @@ namespace Tokamak.Core.Logging
     {
         private readonly string m_name;
 
-        public ConsoleLog(string name = null)
+        public ConsoleLog(string name = "")
         {
             m_name = name;
         }
@@ -27,7 +27,7 @@ namespace Tokamak.Core.Logging
             return true;
         }
 
-        public void Log(LogLevel level, Exception ex, string format, params object[] args)
+        public void Log(LogLevel level, Exception? ex, string format, params object[] args)
         {
             string msg = args != null ? String.Format(format, args) : format;
 

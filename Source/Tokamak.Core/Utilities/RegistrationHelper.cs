@@ -10,7 +10,7 @@ namespace Tokamak.Core.Utilities
 
     public static class RegistrationHelper
     {
-        public static void RegisterFactory<T, TFactory>(this IStashboxContainer container, Action<RegistrationConfigurator<T, T>> configurator = null)
+        public static void RegisterFactory<T, TFactory>(this IStashboxContainer container, Action<RegistrationConfigurator<T, T>>? configurator = null)
             where T : class
             where TFactory : class, IFactory<T>
         {
@@ -25,7 +25,7 @@ namespace Tokamak.Core.Utilities
             });
         }
 
-        public static void TryRegister<T>(this IStashboxContainer container, object name = null)
+        public static void TryRegister<T>(this IStashboxContainer container, object? name = null)
             where T : class
         {
             if (container.IsRegistered<T>())
@@ -43,7 +43,7 @@ namespace Tokamak.Core.Utilities
             container.Register<T>(configurator);
         }
 
-        public static void TryRegister<TFrom>(this IStashboxContainer container, Type typeTo, Action<RegistrationConfigurator<TFrom, TFrom>> configurator = null)
+        public static void TryRegister<TFrom>(this IStashboxContainer container, Type typeTo, Action<RegistrationConfigurator<TFrom, TFrom>>? configurator = null)
             where TFrom : class
         {
             if (container.IsRegistered<TFrom>())
@@ -52,7 +52,7 @@ namespace Tokamak.Core.Utilities
             container.Register(typeTo, configurator);
         }
 
-        public static void TryRegister<TFrom, TTo>(this IStashboxContainer container, object name = null)
+        public static void TryRegister<TFrom, TTo>(this IStashboxContainer container, object? name = null)
             where TFrom : class
             where TTo : class, TFrom
         {

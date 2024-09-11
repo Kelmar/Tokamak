@@ -29,8 +29,6 @@ namespace Tokamak.Core.Hosting
 
         public GameHost(IGameHostBuilder builder)
         {
-            Core.GameHost.Instance = this;
-
             m_container = builder.Container;
 
             // Allow things to resolve us, but don't dispose, we're managing the lifetime of the container itself!
@@ -87,7 +85,7 @@ namespace Tokamak.Core.Hosting
                 .GetResult();
         }
 
-        private void AbortApp(object sender, ConsoleCancelEventArgs e)
+        private void AbortApp(object? _, ConsoleCancelEventArgs e)
         {
             if (m_gameLifetime.Running)
             {

@@ -39,7 +39,7 @@ namespace Tokamak.Core.Utilities
             if (m_base.Wait(timeSpan, cancellationToken))
                 return new Unlocker(m_base);
 
-            return null;
+            return Indisposable.Instance;
         }
 
         public async Task<IDisposable> LockAsync(CancellationToken cancellationToken = default)
@@ -53,7 +53,7 @@ namespace Tokamak.Core.Utilities
             if (await m_base.WaitAsync(timeSpan, cancellationToken))
                 return new Unlocker(m_base);
 
-            return null;
+            return Indisposable.Instance;
         }
     }
 }

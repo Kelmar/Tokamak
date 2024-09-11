@@ -40,7 +40,7 @@ namespace Tokamak.Core.Config
         /// <param name="o">The JObject to flatten</param>
         /// <param name="basePath">The base path of the given JObject</param>
         /// <returns>A list of KeyValuePairs for the given object.</returns>
-        internal static IEnumerable<KeyValuePair<string, string>> RecombineJObject(JObject o, string basePath = null)
+        internal static IEnumerable<KeyValuePair<string, string>> RecombineJObject(JObject o, string basePath = "")
         {
             Debug.Assert(o != null);
 
@@ -51,7 +51,7 @@ namespace Tokamak.Core.Config
             {
                 var p = child as JProperty;
 
-                string key = p.Name;
+                string key = p!.Name;
 
                 string fullPath = ConfigPath.Combine(basePath, key);
 
