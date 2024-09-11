@@ -9,8 +9,9 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Windowing;
 
+using Tokamak.Abstractions.Logging;
+
 using Tokamak.Core.Config;
-using Tokamak.Core.Logging;
 using Tokamak.Core.Utilities;
 
 using Tokamak.Mathematics;
@@ -34,7 +35,7 @@ namespace Tokamak.Vulkan
         private readonly ILogger m_log;
         private readonly VulkanConfig m_config;
 
-        private readonly List<VkDevice> m_devices = new();
+        private readonly List<VkDevice> m_devices = [];
 
         private readonly Func<VkDebug> m_debugFactory;
 
@@ -47,6 +48,7 @@ namespace Tokamak.Vulkan
         private DrawSurface m_surface = null;
 
         public VkPlatform(
+            ILogger<VkPlatform> logger,
             IWindow window,
             IOptions<VulkanConfig> config,
             Func<VkDebug> debugFactory)
@@ -54,7 +56,7 @@ namespace Tokamak.Vulkan
         {
             Window = window;
 
-            m_log = LogManager.GetLogger<VkPlatform>();
+            m_log = logger;
             m_config = config.Value;
             m_debugFactory = debugFactory;
 
@@ -287,7 +289,7 @@ namespace Tokamak.Vulkan
 
         public ICommandList GetCommandList()
         {
-            return new CommandList(m_device, m_commandPool);
+            return new CommandList(null, m_device, m_commandPool);
         }
 
         public IVertexBuffer<T> GetVertexBuffer<T>(BufferUsage usage)

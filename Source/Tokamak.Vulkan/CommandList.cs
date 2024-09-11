@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 using Silk.NET.Vulkan;
 
-using Tokamak.Core.Logging;
+using Tokamak.Abstractions.Logging;
 
 using Tokamak.Mathematics;
 
@@ -36,10 +36,11 @@ namespace Tokamak.Vulkan
         private bool m_inDraw;
 
         public CommandList(
+            ILogger<CommandList> logger,
             VkDevice device,
             VkCommandPool pool)
         {
-            m_log = LogManager.GetLogger<CommandList>();
+            m_log = logger;
 
             m_device = device;
             m_pool = pool;

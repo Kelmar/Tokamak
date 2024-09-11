@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tokamak.Core.Logging
+namespace Tokamak.Abstractions.Logging
 {
     public interface ILogger
     {

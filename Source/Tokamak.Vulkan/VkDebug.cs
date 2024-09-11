@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 
-using Tokamak.Core.Logging;
+using Tokamak.Abstractions.Logging;
 
 namespace Tokamak.Vulkan
 {
@@ -19,9 +19,9 @@ namespace Tokamak.Vulkan
         private ExtDebugUtils m_debugUtils;
         private DebugUtilsMessengerEXT m_messenger;
 
-        public VkDebug(VkPlatform platform)
+        public VkDebug(ILogger<VkDebug> logger, VkPlatform platform)
         {
-            m_log = LogManager.GetLogger<VkDebug>();
+            m_log = logger;
             m_platform = platform;
         }
 

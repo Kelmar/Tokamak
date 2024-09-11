@@ -1,5 +1,7 @@
 ﻿using Stashbox;
 
+using Tokamak.Abstractions.Logging;
+
 namespace Tokamak.Core.Logging
 {
     public static class ConsoleLogFactory

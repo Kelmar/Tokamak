@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reflection;
 
+using Tokamak.Abstractions.Logging;
+
 using Tokamak.Core.Utilities;
 
 namespace Tokamak.Core.Logging

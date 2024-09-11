@@ -7,7 +7,7 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Silk.NET.Windowing;
 
-using Tokamak.Core.Logging;
+using Tokamak.Abstractions.Logging;
 
 using Tokamak.Vulkan.NativeWrapper;
 
@@ -36,10 +36,10 @@ namespace Tokamak.Vulkan
         private SurfaceFormatKHR m_surfaceFormat;
         private PresentModeKHR m_presentMode;
 
-        public SwapChain(VkDevice device)
+        public SwapChain(ILogger<SwapChain> logger, VkDevice device)
         {
             m_device = device;
-            m_log = LogManager.GetLogger<SwapChain>();
+            m_log = logger;
 
             InitializeFormat();
 
