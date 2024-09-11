@@ -9,6 +9,8 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
+using Tokamak.Abstractions.Config;
+
 namespace Tokamak.Core.Config
 {
     public static class ConfigExtensions

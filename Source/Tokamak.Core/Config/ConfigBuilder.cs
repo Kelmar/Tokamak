@@ -4,6 +4,8 @@ using System.Diagnostics;
 
 using Newtonsoft.Json.Linq;
 
+using Tokamak.Abstractions.Config;
+
 using Tokamak.Core.Utilities;
 
 namespace Tokamak.Core.Config

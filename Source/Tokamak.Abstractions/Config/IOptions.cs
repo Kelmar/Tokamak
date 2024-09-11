@@ -1,4 +1,4 @@
-﻿namespace Tokamak.Core.Config
+﻿namespace Tokamak.Abstractions.Config
 {
     public interface IOptions<out T>
         where T : class

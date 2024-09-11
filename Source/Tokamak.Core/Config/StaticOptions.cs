@@ -1,4 +1,6 @@
-﻿namespace Tokamak.Core.Config
+﻿using Tokamak.Abstractions.Config;
+
+namespace Tokamak.Core.Config
 {
     /// <summary>
     /// Simple class for providing static configuration for an item.

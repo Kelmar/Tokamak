@@ -1,13 +1,11 @@
-﻿using Tokamak.Core.Utilities;
-
-namespace Tokamak.Core.Config
+﻿namespace Tokamak.Abstractions.Config
 {
     public interface IConfiguration : IConfigSection
     {
         /// <summary>
         /// Notifier to watch for configuration changes.
         /// </summary>
-        INotifier<ConfigNotice> OnChanged { get; }
+        //INotifier<ConfigNotice> OnChanged { get; }
     }
 
     /// <summary>

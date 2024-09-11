@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+using Tokamak.Abstractions.Config;
+
 using Tokamak.Core.Utilities;
 
 namespace Tokamak.Core.Config

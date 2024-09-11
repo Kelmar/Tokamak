@@ -2,6 +2,8 @@
 
 using Stashbox;
 
+using Tokamak.Abstractions.Config;
+
 using Tokamak.Core.Config;
 
 namespace Tokamak.Core
