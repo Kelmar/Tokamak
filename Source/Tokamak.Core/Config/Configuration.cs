@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 using Tokamak.Abstractions.Config;
 
@@ -41,7 +42,7 @@ namespace Tokamak.Core.Config
         {
             get
             {
-                throw new NotImplementedException();
+                return (Root == this) ? m_items!.Keys : Root.Keys.Where(k => k.StartsWith(Path));
             }
         }
 
@@ -49,7 +50,9 @@ namespace Tokamak.Core.Config
         {
             get
             {
-                throw new NotImplementedException();
+                return (Root == this) ?
+                    m_items!.Values :
+                    Root.Where(kvp => kvp.Key.StartsWith(Path)).Select(kvp => kvp.Value);
             }
         }
 
@@ -70,14 +73,16 @@ namespace Tokamak.Core.Config
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
-            throw new NotImplementedException();
-            //return m_items.GetEnumerator();
+            return (Root == this) ?
+                m_items!.GetEnumerator() :
+                Root.Where(kvp => kvp.Key.StartsWith(Path)).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
-            //return m_items.GetEnumerator();
+            return (Root == this) ?
+                m_items!.GetEnumerator() :
+                Root.Where(kvp => kvp.Key.StartsWith(Path)).GetEnumerator();
         }
 
         public string Get(string path)
