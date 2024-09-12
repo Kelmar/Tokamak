@@ -45,13 +45,11 @@ namespace TestBed
                 BuildVector(0.5f,-0.5f, 0),
                 BuildVector(-.5f, 0.5f, 0),
                 BuildVector(0.5f, 0.5f, 0)
-                
             };
 
             var indices = new uint[]
             {
-                0, 1, 2,
-                3
+                0, 1, 2, 3
             };
 
             m_elementCnt = indices.Length;
