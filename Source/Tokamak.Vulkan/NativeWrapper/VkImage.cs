@@ -55,7 +55,7 @@ namespace Tokamak.Vulkan.NativeWrapper
 
             ImageView view = default;
 
-            Device.Parent.SafeExecute(vk => vk.CreateImageView(Device.LogicalDevice, createInfo, null, out view));
+            Device.Parent.SafeExecute(vk => vk.CreateImageView(Device.LogicalDevice, ref createInfo, null, out view));
 
             return VkImageView.FromHandle(Device, view);
         }

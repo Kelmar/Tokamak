@@ -1,40 +1,36 @@
-﻿using Silk.NET.OpenGL;
+﻿using System;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Silk.NET.OpenGL;
 
-using Tokamak.Buffer;
+using Tokamak.Tritium.Buffers;
 
 namespace Tokamak.OGL
 {
     internal class ElementBuffer : IElementBuffer
     {
         private readonly uint m_ebo;
-        private readonly GLPlatform m_parent;
+        private readonly OpenGLLayer m_apiLayer;
 
         private readonly BufferUsageARB m_usageHint;
 
-        public ElementBuffer(GLPlatform device, BufferType type)
+        public ElementBuffer(OpenGLLayer apiLayer, BufferUsage usage)
         {
-            m_parent = device;
+            m_apiLayer = apiLayer;
 
-            m_usageHint = type.ToGLType();
+            m_usageHint = usage.ToGLUsage();
 
-            m_ebo = m_parent.GL.GenBuffer();
+            m_ebo = m_apiLayer.GL.GenBuffer();
         }
 
         public void Dispose()
         {
             if (m_ebo != 0)
-                m_parent.GL.DeleteBuffer(m_ebo);
+                m_apiLayer.GL.DeleteBuffer(m_ebo);
         }
 
         public void Activate()
         {
-            m_parent.GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, m_ebo);
+            m_apiLayer.GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, m_ebo);
         }
 
         public unsafe void Set(in ReadOnlySpan<uint> values)
@@ -43,7 +39,7 @@ namespace Tokamak.OGL
 
             uint size = (uint)(sizeof(uint) * values.Length);
 
-            m_parent.GL.BufferData(BufferTargetARB.ElementArrayBuffer, size, values, m_usageHint);
+            m_apiLayer.GL.BufferData(BufferTargetARB.ElementArrayBuffer, size, values, m_usageHint);
         }
     }
 }

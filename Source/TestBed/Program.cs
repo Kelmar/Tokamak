@@ -1,6 +1,11 @@
 ﻿using System;
 
-using Silk.NET.Windowing;
+using Tokamak.Core;
+using Tokamak.Core.Logging;
+
+using Tokamak.Tritium;
+
+using Tokamak.OGL;
 
 namespace TestBed
 {
@@ -8,9 +13,25 @@ namespace TestBed
     {
         static void Main(string[] args)
         {
-            using var window = new MainWindow();
-
-            window.Run();
+            try
+            {
+                BuildHost(args).Run();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("UNHANDLED ERROR: {0}", ex);
+            }
         }
+
+        static IGameHost BuildHost(string[] args) => GameHost
+            .GetDefaultBuilder(args)
+            .ConfigureServices(services =>
+            {
+                services.UseConsoleLogger();
+                services.UseTritium();
+                services.AllowOpenGL();
+            })
+            .UseGameApp<TestGameApp>()
+            .Build();
     }
 }

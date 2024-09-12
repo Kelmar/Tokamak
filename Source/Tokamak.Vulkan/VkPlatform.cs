@@ -4,56 +4,76 @@ using System.Linq;
 using System.Text;
 
 using Silk.NET.Core.Native;
+using Silk.NET.Maths;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Windowing;
 
-using Tokamak.Buffer;
-using Tokamak.Config;
-using Tokamak.Formats;
-using Tokamak.Logging;
+using Tokamak.Abstractions.Logging;
+using Tokamak.Abstractions.Config;
+
+using Tokamak.Core.Utilities;
+
 using Tokamak.Mathematics;
+
+using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Buffers;
+using Tokamak.Tritium.Buffers.Formats;
+using Tokamak.Tritium.Pipelines;
+
 using Tokamak.Vulkan.NativeWrapper;
 
 namespace Tokamak.Vulkan
 {
-    public unsafe class VkPlatform : Platform
+    [LogName("Tokamak.Vulkan")]
+    public unsafe class VkPlatform //: Platform
     {
         internal const string VK_VALIDATE_CALLS_CONFIG = "Vk.ValidateCalls";
 
         internal const string VK_VALIDATE_LAYER_NAME = "VK_LAYER_KHRONOS_validation";
 
         private readonly ILogger m_log;
-        private readonly IConfigReader m_config;
+        private readonly VulkanConfig m_config;
 
-        private readonly List<VkDevice> m_devices = new List<VkDevice>();
+        private readonly List<VkDevice> m_devices = [];
+
+        private readonly Func<VkDebug> m_debugFactory;
+
+        private readonly VkDevice m_device = null;
+
+        private readonly VkCommandPool m_commandPool = null;
 
         private VkDebug m_debug = null;
 
         private DrawSurface m_surface = null;
 
-        public VkPlatform(IWindow window)
+        public VkPlatform(
+            ILogger<VkPlatform> logger,
+            IWindow window,
+            IOptions<VulkanConfig> config,
+            Func<VkDebug> debugFactory)
+            : base()
         {
             Window = window;
 
-            m_log = Platform.Services.GetLogger<VkPlatform>();
-            m_config = Platform.Services.Find<IConfigReader>();
+            m_log = logger;
+            m_config = config.Value;
+            m_debugFactory = debugFactory;
 
             if (Window.VkSurface == null)
-            {
-                m_log.Error("Vulkan not supported by platform");
-                throw new Exception("Vulkan not supported by platform.");
-            }
+                throw new PlatformNotSupportedException("Vulkan not supported by platform.");
 
             Vk = Vk.GetApi();
 
             InitVK();
-
-            Monitors = EnumerateMonitors().ToList();
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
+            Window.Resize -= ViewResize;
+
+            m_commandPool.Dispose();
+
             // Release the physical/logical devices.
             foreach (var dev in m_devices)
                 dev.Dispose();
@@ -67,7 +87,7 @@ namespace Tokamak.Vulkan
 
             Vk.Dispose();
 
-            base.Dispose();
+            //base.Dispose();
         }
 
         internal Vk Vk { get; }
@@ -78,7 +98,7 @@ namespace Tokamak.Vulkan
 
         internal IWindow Window { get; }
 
-        private void InitVK()
+        private VkDevice InitVK()
         {
             CreateInstance();
 
@@ -93,6 +113,16 @@ namespace Tokamak.Vulkan
             m_log.Info("Using device: {0}", device.Name);
 
             device.InitLogicalDevice();
+
+            Window.Resize += ViewResize;
+
+            return device;
+        }
+
+        private void ViewResize(Vector2D<int> obj)
+        {
+            foreach (var dev in m_devices)
+                dev.SwapChain?.DeferredRebuild();
         }
 
         private void CreateInstance()
@@ -109,7 +139,7 @@ namespace Tokamak.Vulkan
 
             DebugUtilsMessengerCreateInfoEXT debugInfo;
 
-            if (m_config.Get(VK_VALIDATE_CALLS_CONFIG, false))
+            if (m_config.ValidateCalls)
             {
                 if (!layers.Any(l => l.LayerName == VK_VALIDATE_LAYER_NAME))
                     m_log.Warn($"{VK_VALIDATE_CALLS_CONFIG} is set, but validation layer not installed for Vulkan");
@@ -117,7 +147,7 @@ namespace Tokamak.Vulkan
                 {
                     enableLayers.Add(VK_VALIDATE_LAYER_NAME);
 
-                    m_debug = new VkDebug(this);
+                    m_debug = m_debugFactory();
                     debugInfo = m_debug.GetInstanceStartup();
                 }
             }
@@ -156,7 +186,7 @@ namespace Tokamak.Vulkan
 
             Instance instance;
 
-            var result = Vk.CreateInstance(info, null, out instance);
+            var result = Vk.CreateInstance(ref info, null, out instance);
 
             if (result != Result.Success)
                 throw new VulkanException(result);
@@ -225,7 +255,7 @@ namespace Tokamak.Vulkan
             if (!m_devices.Any())
             {
                 m_log.Fatal("No physical Vulkan devices detected!");
-                throw new Exception("No physical Vulkan devices detected!");
+                throw new PlatformNotSupportedException("No physical Vulkan devices detected!");
             }
         }
 
@@ -241,7 +271,7 @@ namespace Tokamak.Vulkan
             if (!candidates.Any())
             {
                 m_log.Fatal("No graphical Vulkan devices detected!");
-                throw new Exception("No graphical Vulkan devices detected.");
+                throw new PlatformNotSupportedException("No graphical Vulkan devices detected.");
             }
 
             VkDevice rval = candidates.First();
@@ -252,69 +282,30 @@ namespace Tokamak.Vulkan
             return rval;
         }
 
-        private IEnumerable<Monitor> EnumerateMonitors()
+        protected IFactory<IPipeline> GetPipelineFactory(PipelineConfig config)
         {
-            yield return new Monitor
-            {
-                Index = 0,
-                IsMain = true,
-                Gamma = 2.2f,
-                DPI = new Point(192, 192),
-                RawDPI = new System.Numerics.Vector2(192, 192),
-                WorkArea = new Rect(0, 0, 3840, 2160)
-            };
+            return new PipelineFactory(m_device, config);
         }
 
-        public override Rect Viewport 
-        { 
-            get => base.Viewport;
-            set
-            {
-                base.Viewport = value;
-
-                foreach (var dev in m_devices)
-                    dev.SwapChain?.Rebuild();
-            }
-        }
-
-        public override void ClearBoundTexture()
+        public ICommandList GetCommandList()
         {
+            return new CommandList(null, m_device, m_commandPool);
         }
 
-        public override void ClearBuffers(GlobalBuffer buffers)
-        {
-        }
-
-        public override void DrawArrays(PrimitiveType primitive, int vertexOffset, int vertexCount)
-        {
-        }
-
-        public override void DrawElements(PrimitiveType primitive, int length)
-        {
-        }
-
-        public override IElementBuffer GetElementBuffer(BufferType type)
+        public IVertexBuffer<T> GetVertexBuffer<T>(BufferUsage usage)
+           where T : unmanaged
         {
             return null;
         }
 
-        public override IShaderFactory GetShaderFactory()
+        public IElementBuffer GetElementBuffer(BufferUsage usage)
         {
-            return new ShaderFactory(this);
+            return null;
         }
 
-        public override ITextureObject GetTextureObject(PixelFormat format, Point size)
+        public ITextureObject GetTextureObject(PixelFormat format, Point size)
         {
             return new TextureObject(this, format, size);
-        }
-
-        public override IVertexBuffer<T> GetVertexBuffer<T>(BufferType type)
-        {
-            return null;
-        }
-
-        public override void SetRenderState(RenderState state)
-        {
         }
     }
 }

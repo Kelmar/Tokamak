@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-using FreeTypeSharp.Native;
+using FreeTypeSharp;
 
-using Tokamak.Buffer;
+using Tokamak.Tritium.Buffers;
 using Tokamak.Mathematics;
 
-using static FreeTypeSharp.Native.FT;
+using static FreeTypeSharp.FT;
 
 namespace FreeTypeWrapper
 {
@@ -24,8 +23,7 @@ namespace FreeTypeWrapper
         public const float POINTS_PER_INCH = 72f;
 
         private readonly IntPtr m_unmanaged;
-        private readonly IntPtr m_handle;
-        private readonly FT_FaceRec* m_faceRec;
+        private readonly FT_FaceRec_* m_faceRec;
 
         private bool m_disposed = false;
 
@@ -36,13 +34,13 @@ namespace FreeTypeWrapper
             m_unmanaged = Marshal.AllocHGlobal(data.Length);
             Marshal.Copy(data, 0, m_unmanaged, data.Length);
 
-            IntPtr h = IntPtr.Zero;
+            fixed (FT_FaceRec_** face = &m_faceRec)
+            {
+                FT_Error err = FT_New_Memory_Face(lib.Handle, (byte*)m_unmanaged, data.Length, 0, face);
 
-            SafeExecute(() => FT_New_Memory_Face(lib.Handle, m_unmanaged, data.Length, 0, out h));
-
-            m_handle = h;
-
-            m_faceRec = (FT_FaceRec*)m_handle;
+                if (err != FT_Error.FT_Err_Ok)
+                    throw new FreeTypeException(err);
+            }
 
             Size = size;
             DPI = dpi;
@@ -68,10 +66,10 @@ namespace FreeTypeWrapper
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing && m_handle != IntPtr.Zero)
+            if (disposing && m_faceRec != null)
             {
                 // Maybe log this if there's a problem, but not much we can do if it fails....
-                FT_Done_Face(m_handle);
+                FT_Done_Face(m_faceRec);
                 Marshal.FreeHGlobal(m_unmanaged);
             }
 
@@ -80,6 +78,8 @@ namespace FreeTypeWrapper
 
         public void Dispose()
         {
+            ObjectDisposedException.ThrowIf(m_disposed, this);
+
             Dispose(true);
         }
 
@@ -103,7 +103,7 @@ namespace FreeTypeWrapper
             int size = (int)Math.Round(Size * 64); // Magic number 64?
             //int size = (int)Math.Round(Size * 640);
 
-            SafeExecute(() => FT_Set_Char_Size(m_handle, 0, size, (uint)DPI.X, (uint)DPI.Y));
+            SafeExecute(() => FT_Set_Char_Size(m_faceRec, 0, size, (uint)DPI.X, (uint)DPI.Y));
         }
 
         public Vector2 DPI { get; }
@@ -123,20 +123,20 @@ namespace FreeTypeWrapper
         /// <remarks>
         /// This record has pointers and may require unsafe code to access correctly.
         /// </remarks>
-        public FT_FaceRec FaceRecRaw => *m_faceRec;
+        public FT_FaceRec_ FaceRecRaw => *m_faceRec;
 
         /// <summary>
         /// Gets the current glyph slot.
         /// </summary>
-        public FT_GlyphSlotRec Glyph => *FaceRecRaw.glyph;
+        public FT_GlyphSlotRec_ Glyph => *FaceRecRaw.glyph;
 
         /// <summary>
         /// Indicates that the face contains outline glyphs.
         /// </summary>
         /// <remarks>
-        /// This doesn't prvent bitmap strikes, i.e., a face can have both this and HasFixedSizes
+        /// This doesn't prevent bitmap strikes, i.e., a face can have both this and HasFixedSizes
         /// </remarks>
-        public bool IsScalable => HasFlag(FT_FACE_FLAG_SCALABLE);
+        public bool IsScalable => HasFlag(FT_FACE_FLAG.FT_FACE_FLAG_SCALABLE);
 
         /// <summary>
         /// Indicates that the face contains bitmap strikes.
@@ -144,17 +144,17 @@ namespace FreeTypeWrapper
         /// <remarks>
         /// This can appear in combination with IsScalable.
         /// </remarks>
-        public bool HasFixedSizes => HasFlag(FT_FACE_FLAG_FIXED_SIZES);
+        public bool HasFixedSizes => HasFlag(FT_FACE_FLAG.FT_FACE_FLAG_FIXED_SIZES);
 
         /// <summary>
         /// Indicates that the font face has color tables.
         /// </summary>
-        public bool HasColor => HasFlag(FT_FACE_FLAG_COLOR);
+        public bool HasColor => HasFlag(FT_FACE_FLAG.FT_FACE_FLAG_COLOR);
 
         /// <summary>
         /// Indicates that the face contains kerning information.
         /// </summary>
-        public bool HasKerning => HasFlag(FT_FACE_FLAG_KERNING);
+        public bool HasKerning => HasFlag(FT_FACE_FLAG.FT_FACE_FLAG_KERNING);
 
         public bool IsBold => HasStyle(FT_STYLE_FLAG_BOLD);
 
@@ -171,9 +171,11 @@ namespace FreeTypeWrapper
         /// </summary>
         public int LineSpacing => (int)FaceRecRaw.size->metrics.height >> 6;
 
-        public string FamilyName => Marshal.PtrToStringAnsi(FaceRecRaw.family_name);
+        public string FamilyName => Marshal.PtrToStringAnsi((nint)FaceRecRaw.family_name);
 
-        public string StyleName => Marshal.PtrToStringAnsi(FaceRecRaw.style_name);
+        public string StyleName => Marshal.PtrToStringAnsi((nint)FaceRecRaw.style_name);
+
+        public bool HasFlag(FT_FACE_FLAG flag) => HasFlag((int)flag);
 
         public bool HasFlag(int flag) => (FaceRecRaw.face_flags & flag) != 0;
 
@@ -182,10 +184,10 @@ namespace FreeTypeWrapper
         public uint GetCharIndexUTF32(char hi, char low)
         {
             int charCode = Char.ConvertToUtf32(hi, low);
-            return FT_Get_Char_Index(m_handle, (uint)charCode); // This is almost certianly going to break.
+            return FT_Get_Char_Index(m_faceRec, (uint)charCode); // This is almost certainly going to break.
         }
 
-        public uint GetCharIndex(char c) => FT_Get_Char_Index(m_handle, c);
+        public uint GetCharIndex(char c) => FT_Get_Char_Index(m_faceRec, c);
 
         public bool IsCharDefined(char c) => GetCharIndex(c) > 0;
 
@@ -197,12 +199,18 @@ namespace FreeTypeWrapper
         /// <returns>The kerning distance in pixels.</returns>
         public float GetKerning(char left, char right)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(nameof(FTFace));
+
             if (!HasKerning)
                 return 0;
 
-            FT_Vector aKern = new FT_Vector();
+            FT_Vector_ aKern;
 
-            SafeExecute(() => FT_Get_Kerning(m_handle, left, right, (int)FT_Kerning_Mode.FT_KERNING_UNFITTED, out aKern));
+            FT_Error err = FT_Get_Kerning(m_faceRec, left, right, FT_Kerning_Mode_.FT_KERNING_UNFITTED, &aKern);
+
+            if (err != FT_Error.FT_Err_Ok)
+                throw new FreeTypeException(err);
 
             return aKern.x * (1 / 64f); // Scale to pixel sizes.
         }
@@ -269,12 +277,12 @@ namespace FreeTypeWrapper
             if (Char.IsHighSurrogate(c))
                 throw new Exception("Not supported yet.");
 
-            int loadFlags = FT_LOAD_FORCE_AUTOHINT;
+            FT_LOAD loadFlags = FT_LOAD.FT_LOAD_FORCE_AUTOHINT;
 
             //if (HasColor)
             //    loadFlags |= FT_LOAD_COLOR;
 
-            FT_Error err = FT_Load_Char(m_handle, c, loadFlags);
+            FT_Error err = FT_Load_Char(m_faceRec, c, loadFlags);
             if (err != FT_Error.FT_Err_Ok)
                     throw new FreeTypeException(err);
 
@@ -303,13 +311,11 @@ namespace FreeTypeWrapper
         /// </summary>
         public GlyphMetrics RenderGlyph(Bitmap bitmap, in Point location)
         {
-            IntPtr glyph = (IntPtr)FaceRecRaw.glyph;
+            SafeExecute(() => FT_Render_Glyph(FaceRecRaw.glyph, FT_Render_Mode_.FT_RENDER_MODE_NORMAL));
 
-            SafeExecute(() => FT_Render_Glyph(glyph, FT_Render_Mode.FT_RENDER_MODE_NORMAL));
-
-            if (Glyph.bitmap.buffer != 0)
+            if (Glyph.bitmap.buffer != null)
             {
-                FT_Pixel_Mode pixelMode = (FT_Pixel_Mode)Glyph.bitmap.pixel_mode;
+                FT_Pixel_Mode_ pixelMode = Glyph.bitmap.pixel_mode;
 
                 int pixelWidth = (int)Glyph.bitmap.width;
                 int bitPitch = Glyph.bitmap.pitch;

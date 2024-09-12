@@ -1,13 +1,16 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 
-using Tokamak;
-using Tokamak.Buffer;
-using Tokamak.Formats;
+using Tokamak.Mathematics;
+
+using Tokamak.Tritium.Buffers;
+using Tokamak.Tritium.Buffers.Formats;
+
 using Tokamak.Readers.FBX;
-using Tokamak.Scenes;
+
+using TestBed.Scenes;
+using Tokamak.Tritium.APIs;
+
+//using Tokamak.Scenes;
 
 namespace TestBed
 {
@@ -20,11 +23,13 @@ namespace TestBed
 
         //private readonly Mesh m_mesh;
 
-        private readonly Platform m_device;
+        private readonly IAPILayer m_apiLayer;
 
-        public TestObject(Platform device)
+        private readonly int m_elementCnt;
+
+        public TestObject(IAPILayer apiLayer)
         {
-            m_device = device;
+            m_apiLayer = apiLayer;
 
             /*
             using var reader = new FBXReader(File.OpenRead(FILE));
@@ -36,20 +41,21 @@ namespace TestBed
 
             var verts = new VectorFormatPCT[]
             {
-                BuildVector(0.5f, 0.5f, 0),
-                BuildVector(0.5f,-0.5f, 0),
                 BuildVector(-.5f,-0.5f, 0),
-                BuildVector(-.5f, 0.5f, 0.5f)
+                BuildVector(0.5f,-0.5f, 0),
+                BuildVector(-.5f, 0.5f, 0),
+                BuildVector(0.5f, 0.5f, 0)
             };
 
             var indices = new uint[]
             {
-                0, 1, 3,
-                1, 2, 3
+                0, 1, 2, 3
             };
 
-            m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Static);
-            m_elementBuffer = m_device.GetElementBuffer(BufferType.Static);
+            m_elementCnt = indices.Length;
+
+            m_vertexBuffer = m_apiLayer.GetVertexBuffer<VectorFormatPCT>(BufferUsage.Static);
+            m_elementBuffer = m_apiLayer.GetElementBuffer(BufferUsage.Static);
 
             m_vertexBuffer.Set(verts);
             m_elementBuffer.Set(indices);
@@ -88,16 +94,12 @@ namespace TestBed
             };
         }
 
-        public override void Render()
+        public override void Render(ICommandList cmdList)
         {
             m_vertexBuffer.Activate();
-            //m_elementBuffer.Activate();
+            m_elementBuffer.Activate();
 
-            //m_device.DrawElements(PrimitiveType.TrangleList, m_mesh.Indicies.Count);
-
-            //m_device.DrawArrays(PrimitiveType.TrangleList, 0, m_mesh.Verts.Count);
-
-            m_device.DrawElements(PrimitiveType.TrangleList, 6);
+            cmdList.DrawElements(m_elementCnt);
         }
     }
 }

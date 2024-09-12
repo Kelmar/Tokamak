@@ -1,4 +1,4 @@
-﻿using Tokamak.Buffer;
+﻿using Tokamak.Tritium.Buffers;
 
 namespace Tokamak.Readers.FBX.ObjectWrappers
 {

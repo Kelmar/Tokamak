@@ -2,6 +2,7 @@
 
 using Silk.NET.OpenGL;
 
+using ShaderType = Tokamak.Tritium.Pipelines.Shaders.ShaderType;
 using GLShaderType = Silk.NET.OpenGL.ShaderType;
 
 namespace Tokamak.OGL
@@ -9,49 +10,78 @@ namespace Tokamak.OGL
     /// <summary>
     /// Compiler for GLSL shaders.
     /// </summary>
-    internal class ShaderCompiler : IDisposable
+    internal unsafe class ShaderCompiler : IDisposable
     {
-        private readonly GLPlatform m_device;
+        private readonly OpenGLLayer m_apiLayer;
 
-        public ShaderCompiler(GLPlatform device, ShaderType type, string source)
+        private readonly uint m_handle;
+
+        /// <summary>
+        /// Load/Compile a shader from source code.
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="type"></param>
+        /// <param name="source"></param>
+        public ShaderCompiler(OpenGLLayer apiLayer, ShaderType type, string source)
         {
-            m_device = device;
+            m_apiLayer = apiLayer;
 
-            Type = type switch
+            Type = type.ToGLShaderType();
+
+            m_handle = m_apiLayer.GL.CreateShader(Type);
+
+            m_apiLayer.GL.ShaderSource(m_handle, source);
+
+            Compile();
+        }
+
+        /// <summary>
+        /// Load/Compile a precompiled binary shader.
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="type"></param>
+        /// <param name="data"></param>
+        public ShaderCompiler(OpenGLLayer apiLayer, ShaderType type, in ReadOnlySpan<byte> data)
+        {
+            m_apiLayer = apiLayer;
+
+            Type = type.ToGLShaderType();
+
+            m_handle = m_apiLayer.GL.CreateShader(Type);
+
+            fixed (uint* h = &m_handle)
             {
-                ShaderType.Fragment => GLShaderType.FragmentShader,
-                ShaderType.Vertex => GLShaderType.VertexShader,
-                ShaderType.Geometry => GLShaderType.GeometryShader,
-                ShaderType.Compute => GLShaderType.ComputeShader,
-                _ => throw new Exception($"Unknown shader type: {type}")
-            };
+                uint len = (uint)data.Length;
+                m_apiLayer.GL.ShaderBinary(1, h, GLEnum.SpirVBinary, data, len);
+            }
 
-            Handle = m_device.GL.CreateShader(Type);
+            uint constIndex = 0;
+            uint constValue = 0;
 
-            m_device.GL.ShaderSource(Handle, source);
+            m_apiLayer.GL.SpecializeShader(m_handle, "main", 0, ref constIndex, ref constValue);
 
             Compile();
         }
 
         public void Dispose()
         {
-            if (Handle != 0)
-                m_device.GL.DeleteShader(Handle);
+            if (m_handle != 0)
+                m_apiLayer.GL.DeleteShader(m_handle);
         }
 
         public GLShaderType Type { get; }
 
-        public uint Handle { get; }
+        public uint Handle => m_handle;
 
         private void Compile()
         {
-            m_device.GL.CompileShader(Handle);
+            m_apiLayer.GL.CompileShader(m_handle);
 
-            m_device.GL.GetShader(Handle, GLEnum.CompileStatus, out int status);
+            m_apiLayer.GL.GetShader(m_handle, GLEnum.CompileStatus, out int status);
 
             if (status == 0)
             {
-                string infoLog = m_device.GL.GetShaderInfoLog(Handle);
+                string infoLog = m_apiLayer.GL.GetShaderInfoLog(m_handle);
                 throw new Exception($"Error compiling shader {Type}: {infoLog}");
             }
         }

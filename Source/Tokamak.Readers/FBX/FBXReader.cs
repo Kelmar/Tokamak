@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using Tokamak.Buffer;
 using Tokamak.Mathematics;
+
+using Tokamak.Tritium.Buffers;
+
 using Tokamak.Readers.FBX.ObjectWrappers;
 
 namespace Tokamak.Readers.FBX

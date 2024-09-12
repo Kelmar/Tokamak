@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Tokamak.Mathematics\Tokamak.Mathematics.csproj" />
-    <ProjectReference Include="..\Tokamak\Tokamak.csproj" />
+    <ProjectReference Include="..\Tritium\Tokamak.Tritium.csproj" />
   </ItemGroup>
 
 </Project>

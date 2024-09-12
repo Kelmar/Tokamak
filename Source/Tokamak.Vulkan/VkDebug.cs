@@ -5,12 +5,13 @@ using System.Runtime.InteropServices;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 
-using Tokamak.Config;
-using Tokamak.Logging;
+using Tokamak.Abstractions.Logging;
 
 namespace Tokamak.Vulkan
 {
-    internal unsafe class VkDebug : IDisposable
+    // TODO: Make this internal again.
+    [LogName("Vulkan")]
+    public unsafe class VkDebug : IDisposable
     {
         private readonly VkPlatform m_platform;
         private readonly ILogger m_log;
@@ -18,16 +19,10 @@ namespace Tokamak.Vulkan
         private ExtDebugUtils m_debugUtils;
         private DebugUtilsMessengerEXT m_messenger;
 
-        public VkDebug(VkPlatform platform)
+        public VkDebug(ILogger<VkDebug> logger, VkPlatform platform)
         {
+            m_log = logger;
             m_platform = platform;
-
-            var logFact = Platform.Services.Find<ILogFactory>();
-            m_log = logFact.GetLogger("Vulkan");
-
-            var conf = Platform.Services.Find<IConfigReader>();
-
-            ShouldLoad = conf.Get(VkPlatform.VK_VALIDATE_CALLS_CONFIG, false);
         }
 
         public void Dispose()
@@ -42,8 +37,6 @@ namespace Tokamak.Vulkan
         public string Name => "Vulkan Debugger";
 
         public string Identifier => String.Empty;
-
-        public bool ShouldLoad { get; }
 
         public IEnumerable<string> GetDependencies()
         {

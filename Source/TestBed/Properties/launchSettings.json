@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TestBed": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "TOKAMAK_HEADLESS": "true"
+      }
+    }
+  }
+}

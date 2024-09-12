@@ -77,8 +77,11 @@ namespace Tokamak.Mathematics
 
         public static bool operator !=(in Point rhs, in Point lhs) => (rhs.X != lhs.X || rhs.Y != lhs.Y);
 
-        public override bool Equals([NotNullWhen(true)] object obj)
+        public override readonly bool Equals([NotNullWhen(true)] object? obj)
         {
+            if (obj == null)
+                return false;
+
             var p = (Point)obj;
 
             return this == p;

@@ -1,4 +1,4 @@
-﻿using Tokamak;
+﻿using Tokamak.Mathematics;
 
 namespace Graphite
 {

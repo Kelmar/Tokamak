@@ -1,12 +1,13 @@
 ﻿using System;
 
-using Tokamak.Buffer;
 using Tokamak.Mathematics;
+
+using Tokamak.Tritium.Buffers;
 
 using Silk.NET.OpenGL;
 
 using GlPixelFormat = Silk.NET.OpenGL.PixelFormat;
-using TokPixelFormat = Tokamak.Formats.PixelFormat;
+using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
 
 namespace Tokamak.OGL
 {
@@ -14,16 +15,16 @@ namespace Tokamak.OGL
     {
         private readonly uint m_handle;
 
-        private readonly GLPlatform m_parent;
+        private readonly OpenGLLayer m_layer;
 
         private readonly GlPixelFormat m_glFormat;
         private readonly PixelType m_glType;
         private readonly InternalFormat m_glInternal;
 
-        public TextureObject(GLPlatform device, TokPixelFormat format, Point size)
+        public TextureObject(OpenGLLayer layer, TPixelFormat format, Point size)
         {
-            m_parent = device;
-            m_handle = m_parent.GL.GenTexture();
+            m_layer = layer;
+            m_handle = m_layer.GL.GenTexture();
 
             Format = format;
             Size = new Point(MathX.NextPow2(size.X), MathX.NextPow2(size.Y));
@@ -37,11 +38,11 @@ namespace Tokamak.OGL
 
         public void Dispose()
         {
-            m_parent.GL.DeleteTexture(m_handle);
+            m_layer.GL.DeleteTexture(m_handle);
             Bitmap.Dispose();
         }
 
-        public TokPixelFormat Format { get; }
+        public TPixelFormat Format { get; }
 
         public Point Size { get; }
 
@@ -49,20 +50,20 @@ namespace Tokamak.OGL
 
         public void Activate()
         {
-            m_parent.GL.ActiveTexture(TextureUnit.Texture0);
-            m_parent.GL.BindTexture(TextureTarget.Texture2D, m_handle);
+            m_layer.GL.ActiveTexture(TextureUnit.Texture0);
+            m_layer.GL.BindTexture(TextureTarget.Texture2D, m_handle);
         }
 
         public void Refresh()
         {
             Activate();
 
-            m_parent.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            m_parent.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            m_layer.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            m_layer.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
             var span = new ReadOnlySpan<byte>(Bitmap.Data);
 
-            m_parent.GL.TexImage2D(
+            m_layer.GL.TexImage2D(
                 TextureTarget.Texture2D,
                 0,
                 m_glInternal,
@@ -73,7 +74,7 @@ namespace Tokamak.OGL
                 m_glType,
                 span);
 
-            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            //m_layer.GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
     }
 }

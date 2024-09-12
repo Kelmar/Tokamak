@@ -1,33 +1,32 @@
 ﻿using System;
 using System.IO;
 using System.Numerics;
-using System.Runtime;
-using System.Runtime.InteropServices;
 
 using FreeTypeSharp;
-using FreeTypeSharp.Native;
 
-using static FreeTypeSharp.Native.FT;
+using static FreeTypeSharp.FT;
 
 namespace FreeTypeWrapper
 {
     public unsafe class FTLibrary : IDisposable
     {
-        private readonly IntPtr m_handle;
+        private readonly FT_LibraryRec_ *m_handle;
         private bool m_disposed = false;
 
-        public FTLibrary()
+        public unsafe FTLibrary()
         {
-            IntPtr handle = IntPtr.Zero;
+            fixed (FT_LibraryRec_** handle = &m_handle)
+            {
+                FT_Error err = FT_Init_FreeType(handle);
 
-            SafeExecute(() => FT_Init_FreeType(out handle));
-
-            m_handle = handle;
+                if (err != FT_Error.FT_Err_Ok)
+                    throw new FreeTypeException(err);
+            }
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing && m_handle != IntPtr.Zero)
+            if (disposing && m_handle != null)
             {
                 // Maybe log this if there's a problem, but not much we can do if it fails....
                 FT_Done_FreeType(m_handle);
@@ -36,7 +35,7 @@ namespace FreeTypeWrapper
             m_disposed = true;
         }
 
-        internal IntPtr Handle => m_handle;
+        internal FT_LibraryRec_ *Handle => m_handle;
 
         public void Dispose()
         {
@@ -55,6 +54,19 @@ namespace FreeTypeWrapper
                 throw new FreeTypeException(err);
         }
 
+#if false
+        /// <summary>
+        /// Load a font face by file name
+        /// </summary>
+        /// <param name="filename">The file path to load.</param>
+        /// <returns></returns>
+        public FTFace GetFace(IMountSystem mountSys, string filename, float size, in Vector2 dpi)
+        {
+            var bytes = mountSys.ReadAllBytes(filename);
+            return GetFace(bytes, size, dpi);
+        }
+#endif
+
         /// <summary>
         /// Load a font face by file name
         /// </summary>
@@ -62,9 +74,8 @@ namespace FreeTypeWrapper
         /// <returns></returns>
         public FTFace GetFace(string filename, float size, in Vector2 dpi)
         {
-            var data = File.ReadAllBytes(filename);
-
-            return GetFace(size, dpi, data);
+            var bytes = File.ReadAllBytes(filename);
+            return GetFace(bytes, size, dpi);
         }
 
         /// <summary>
@@ -76,7 +87,7 @@ namespace FreeTypeWrapper
         {
             using var ms = new MemoryStream();
             file.CopyTo(ms);
-            return GetFace(size, dpi, ms.ToArray());
+            return GetFace(ms.ToArray(), size, dpi);
         }
 
         /// <summary>
@@ -86,7 +97,7 @@ namespace FreeTypeWrapper
         /// <param name="length">The length of the data to read.</param>
         /// <param name="offset">Starting offset into the array to read.</param>
         /// <returns></returns>
-        public FTFace GetFace(float size, in Vector2 dpi, in ReadOnlySpan<byte> data)
+        public FTFace GetFace(in ReadOnlySpan<byte> data, float size, in Vector2 dpi)
         {
             return new FTFace(data.ToArray(), this, size, dpi);
         }

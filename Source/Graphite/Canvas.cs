@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 using FreeTypeWrapper;
 
-using Tokamak;
-using Tokamak.Buffer;
-using Tokamak.Formats;
 using Tokamak.Mathematics;
+
+using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Buffers;
+using Tokamak.Tritium.Buffers.Formats;
+using Tokamak.Tritium.Pipelines;
+using Tokamak.Tritium.Pipelines.Shaders;
 
 namespace Graphite
 {
@@ -22,7 +26,7 @@ namespace Graphite
     /// The canvas is designed to be reused between frame calls so that it does
     /// not allocate memory several times over and over again.
     /// </remarks>
-    public class Canvas : IRenderable
+    public class Canvas //: IRenderable
     {
         // For now we have some fairly basic shaders for testing the canvas out.
 
@@ -80,54 +84,59 @@ void main()
         private readonly List<CanvasCall> m_calls = new List<CanvasCall>(128);
         private readonly List<VectorFormatPCT> m_vectors = new List<VectorFormatPCT>(128);
 
-        private readonly Platform m_device;
-        private readonly IShader m_shader;
+        private readonly IAPILayer m_apiLayer;
+
+        private readonly IPipeline m_pipeline;
+        private readonly ICommandList m_commandList;
+
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
-        private readonly RenderState m_uiState;
-
-        public Canvas(Platform device)
+        public Canvas(IAPILayer apiLayer)
         {
             m_ftLibrary = new FTLibrary();
 
-            m_device = device;
-            m_vertexBuffer = m_device.GetVertexBuffer<VectorFormatPCT>(BufferType.Dyanmic);
+            m_apiLayer = apiLayer;
 
-            using var factory = m_device.GetShaderFactory();
+            m_pipeline = m_apiLayer.CreatePipeline(cfg => cfg
+                .UseInputFormat<VectorFormatPCT>()
+                .EnableDepthTest(false)
+                .EnableBlending(
+                    // A good blending function for 2D font antialiasing.
+                    sourceFactor: BlendFactor.SourceAlpha,
+                    destinationFactor: BlendFactor.One
+                )
+                .UseCulling(CullMode.None)
+                .AddShaderCode(ShaderType.Vertex, VERTEX)
+                .AddShaderCode(ShaderType.Fragment, FRAGMENT)
+            );
 
-            factory.AddShaderSource(ShaderType.Vertex, VERTEX);
-            factory.AddShaderSource(ShaderType.Fragment, FRAGMENT);
+            m_commandList = m_apiLayer.CreateCommandList();
 
-            m_shader = factory.Build();
-
-            m_uiState = new RenderState
-            {
-                CullFaces = false,
-                UseDepthTest = false
-            };
+            m_vertexBuffer = m_apiLayer.GetVertexBuffer<VectorFormatPCT>(BufferUsage.Dynamic);
         }
 
         public void Dispose()
         {
-            m_shader?.Dispose();
+            m_commandList.Dispose();
+
             m_vertexBuffer.Dispose();
+
+            m_pipeline.Dispose();
 
             m_ftLibrary.Dispose();
         }
 
         public Font GetFont(string filename, float size)
         {
-            var dpi = m_device.Monitors.FirstOrDefault()?.DPI ?? new Point(192, 192);
+            var dpi = m_apiLayer.GetMonitors().FirstOrDefault(m => m.IsMain)?.DPI ?? new Point(192, 192);
             var face = m_ftLibrary.GetFace(filename, size, dpi);
-            return new Font(m_device, face);
+            return new Font(m_apiLayer, face);
         }
 
         public void Resize(in Point size)
         {
             var mat = Matrix4x4.CreateOrthographicOffCenter(0, size.X, size.Y, 0, -1, 1);
-
-            m_shader.Activate();
-            m_shader.Set("projection", mat);
+            m_pipeline.Uniforms.projection = mat;
         }
 
         private void AddCall(PrimitiveType type, IEnumerable<VectorFormatPCT> vectors, ITextureObject texture = null)
@@ -181,7 +190,7 @@ void main()
 
             var renderer = new StrokeRenderer(stroke);
 
-            AddCall(PrimitiveType.TrangleStrip, renderer.Vectors);
+            AddCall(PrimitiveType.TriangleStrip, renderer.Vectors);
         }
 
         // This is a simple test function for now.
@@ -217,7 +226,7 @@ void main()
                 }
             };
 
-            AddCall(PrimitiveType.TrangleStrip, vects, texture);
+            AddCall(PrimitiveType.TriangleStrip, vects, texture);
         }
 
         public void DrawText(Pen pen, Font font, in Point location, string text)
@@ -241,15 +250,14 @@ void main()
                 var p = new Point(cursor.X + g.Bearing.X, cursor.Y - g.Bearing.Y);
 
                 var detail = new Tuple<Glyph, VectorFormatPCT[]>(g, 
-                    new VectorFormatPCT[6]
-                    {
+                    [
                         BuildVector(pen, p.X, p.Y, tl),
                         BuildVector(pen, p.X, p.Y + g.Size.Y, new Vector2(tl.X, br.Y)),
                         BuildVector(pen, p.X + g.Size.X, p.Y, new Vector2(br.X, tl.Y)),
                         BuildVector(pen, p.X, p.Y + g.Size.Y, new Vector2(tl.X, br.Y)),
                         BuildVector(pen, p.X + g.Size.X, p.Y, new Vector2(br.X, tl.Y)),
                         BuildVector(pen, p.X + g.Size.X, p.Y + g.Size.Y, br)
-                    }
+                    ]
                 );
 
                 glyphPolys.Add(detail);
@@ -270,19 +278,21 @@ void main()
                 var texture = font.GetSheet(grp.Key);
                 var grpVects = grp.SelectMany(i => i.Item2).ToList();
 
-                AddCall(PrimitiveType.TrangleList, grpVects, texture);
+                AddCall(PrimitiveType.TriangleList, grpVects, texture);
             }
         }
 
         public void Render()
         {
-            m_device.SetRenderState(m_uiState);
-
             ITextureObject last = null;
 
-            m_shader.Activate();
+            m_vertexBuffer.Set(CollectionsMarshal.AsSpan(m_vectors));
 
-            m_vertexBuffer.Set(m_vectors);
+            m_pipeline.Activate(m_commandList);
+
+            using var cmdScope = m_commandList.BeginScope();
+
+            Resize(m_apiLayer.ViewBounds);
 
             foreach (var call in m_calls)
             {
@@ -290,26 +300,24 @@ void main()
                 {
                     if (call.Texture != null)
                     {
-                        if (call.Texture.Format == PixelFormat.FormatA8)
-                            m_shader.Set("is8Bit", 1);
-                        else
-                            m_shader.Set("is8Bit", 0);
-
+                        m_pipeline.Uniforms.is8Bit = call.Texture.Format == PixelFormat.FormatA8;
                         call.Texture.Activate();
                     }
                     else
-                        m_device.ClearBoundTexture();
+                    {
+                        m_commandList.ClearBoundTexture();
+                    }
 
                     last = call.Texture;
                 }
 
-                m_device.DrawArrays(call.Type, call.VertexOffset, call.VertexCount);
+                m_commandList.DrawArrays(call.VertexOffset, call.VertexCount);
             }
 
             if (last != null)
             {
-                m_shader.Set("is8Bit", 0);
-                m_device.ClearBoundTexture();
+                m_pipeline.Uniforms.is8Bit = false;
+                m_commandList.ClearBoundTexture();
             }
 
             m_vectors.Clear();
