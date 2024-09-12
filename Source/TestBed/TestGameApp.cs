@@ -1,18 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Tokamak.Core;
 
 using Tokamak.Mathematics;
-
-using Tokamak.Tritium.Buffers;
-using Tokamak.Tritium.Buffers.Formats;
-
-using Tokamak.Tritium.Pipelines;
 
 //using Tokamak.Scenes;
 
@@ -20,30 +12,23 @@ using Tokamak.Tritium.APIs;
 
 using Graphite;
 
+using TestBed.Scenes;
+
 namespace TestBed
 {
     public class TestGameApp : IGameApp
     {
         private readonly IAPILayer m_apiLayer;
 
-        //private const string FRAG_SHADER = "resources/frag.spv";
-        //private const string VERT_SHADER = "resources/vert.spv";
+        private const float ROT_AMOUNT = 1;//0.5f;
 
-        private const string FRAG_SHADER = "../../../shaders/test.frag";
-        private const string VERT_SHADER = "../../../shaders/test.vert";
-
-        private const float ROT_AMOUNT = 0.5f;
-
-        private Canvas m_canvas;
-        private Font m_font;
-        //private Scene m_scene;
+        private Canvas m_canvas = null;
+        private Font m_font = null;
+        private Scene m_scene = null;
 
         //private readonly List<IRenderable> m_renderers = new List<IRenderable>();
 
-        //private TestObject m_test;
-
-        //private IPipeline m_pipeline;
-        //private ICommandList m_commandList;
+        private TestObject m_test;
 
         private int m_frameCount;
         private DateTime m_lastCheck = DateTime.UtcNow;
@@ -52,18 +37,20 @@ namespace TestBed
 
         public TestGameApp(IAPILayer layer)
         {
-            //m_apiLayer = GameHost.Instance.Services.Resolve<IAPILayer>();
             m_apiLayer = layer;
         }
 
         public void Dispose()
         {
-            //m_commandList.Dispose();
-            //m_pipeline.Dispose();
+            if (m_test != null)
+            {
+                m_scene.RemoveObject(m_test);
+                m_test.Dispose();
+            }
 
-            //m_scene.Dispose();
-            //m_font.Dispose();
-            //m_canvas.Dispose();
+            m_scene?.Dispose();
+            m_font?.Dispose();
+            m_canvas?.Dispose();
         }
 
         public void OnShutdown()
@@ -79,46 +66,20 @@ namespace TestBed
             string path = Path.Combine(Environment.SystemDirectory, "../Fonts/segoeui.ttf");
             m_font = m_canvas.GetFont(path, 12);
 
-            //m_scene = new Scene(m_platform);
-            //m_test = new TestObject(m_device);
+            m_scene = new Scene(m_apiLayer);
+            m_test = new TestObject(m_apiLayer);
 
-            //m_scene.AddObject(m_test);
-            //m_scene.Camera.Location = new System.Numerics.Vector3(0, 0, 10);
+            m_scene.AddObject(m_test);
+
+            m_scene.Camera.Location = new System.Numerics.Vector3(0, 0, 10);
+            m_scene.Camera.LookAt = System.Numerics.Vector3.Zero;
 
             //m_renderers.Add(m_scene);
             //m_renderers.Add(m_canvas);
-
-#if false
-
-            m_pipeline = m_platform.GetPipeline(cfg =>
-            {
-                cfg.UseInputFormat<VectorFormatP>();
-
-                cfg.UseShader(ShaderType.Fragment, FRAG_SHADER);
-                cfg.UseShader(ShaderType.Vertex, VERT_SHADER);
-
-                cfg.UseCulling(CullMode.Back);
-                cfg.UsePrimitive(PrimitiveType.TriangleList);
-            });
-
-            m_commandList = m_platform.GetCommandList();
-#endif
         }
 
         public void OnRender(double timeDelta)
         {
-#if false
-            m_commandList.Pipeline = m_pipeline;
-
-            m_commandList.Begin();
-
-            m_commandList.ClearBuffers(GlobalBuffer.ColorBuffer | GlobalBuffer.DepthBuffer);
-
-            m_commandList.DrawArrays(0, 3);
-
-            m_commandList.End();
-#endif
-
             Pen pen = new Pen
             {
                 Width = 40,
@@ -127,7 +88,9 @@ namespace TestBed
             };
 
             m_canvas.DrawText(pen, m_font, new Point(5, 30), String.Format("FPS: {0:000.0}", m_fps));
+            m_canvas.DrawText(pen, m_font, new Point(5, 60), String.Format("ROT: {0:0.000}", m_rot));
 
+            m_scene.Render();
             m_canvas.Render();
 
             /*
@@ -155,15 +118,19 @@ namespace TestBed
             //    m_trans = !m_trans;
 
             m_rot += (float)(ROT_AMOUNT * timeDelta);
+            //m_rot += 1;
 
-            //m_test.Rotation = new System.Numerics.Vector3(0, (float)m_rot, 0);
+            while (m_rot >= 360)
+                m_rot -= 360;
+
+            m_test.Rotation = new System.Numerics.Vector3(0, m_rot, 0);
         }
 
         private void ComputeFPS()
         {
             ++m_frameCount;
 
-            if (m_lastCheck != DateTime.UtcNow)
+            if (m_lastCheck.Second != DateTime.UtcNow.Second)
             {
                 var diff = DateTime.UtcNow - m_lastCheck;
                 m_fps = (float)(m_frameCount / diff.TotalSeconds);

@@ -78,6 +78,8 @@ namespace FreeTypeWrapper
 
         public void Dispose()
         {
+            ObjectDisposedException.ThrowIf(m_disposed, this);
+
             Dispose(true);
         }
 

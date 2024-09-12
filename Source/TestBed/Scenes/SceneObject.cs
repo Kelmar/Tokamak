@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Numerics;
 
+using Tokamak.Tritium.APIs;
+
 namespace TestBed.Scenes
 {
     public abstract class SceneObject : IDisposable
@@ -29,6 +31,6 @@ namespace TestBed.Scenes
             }
         }
 
-        public abstract void Render();
+        public abstract void Render(ICommandList cmdList);
     }
 }

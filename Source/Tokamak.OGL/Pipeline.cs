@@ -26,7 +26,7 @@ namespace Tokamak.OGL
             m_apiLayer = apiLayer;
             m_shader = shader;
 
-            Uniforms = new ShaderDynamic(m_shader);
+            Uniforms = new UniformBinder(m_shader);
         }
 
         public void Dispose()

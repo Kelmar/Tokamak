@@ -6,11 +6,11 @@ namespace Tokamak.Tritium.Pipelines.Shaders
     /// <summary>
     /// Provides dynamic binding access to pipeline uniforms.
     /// </summary>
-    public class ShaderDynamic : DynamicObject
+    public class UniformBinder : DynamicObject
     {
         private readonly IUniformAccess m_owner;
 
-        public ShaderDynamic(IUniformAccess owner)
+        public UniformBinder(IUniformAccess owner)
         {
             m_owner = owner;
         }

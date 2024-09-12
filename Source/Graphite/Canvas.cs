@@ -87,7 +87,7 @@ void main()
         private readonly IAPILayer m_apiLayer;
 
         private readonly IPipeline m_pipeline;
-        private readonly ICommandList m_commandBuffer;
+        private readonly ICommandList m_commandList;
 
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
@@ -110,14 +110,14 @@ void main()
                 .AddShaderCode(ShaderType.Fragment, FRAGMENT)
             );
 
-            m_commandBuffer = m_apiLayer.CreateCommandList();
+            m_commandList = m_apiLayer.CreateCommandList();
 
             m_vertexBuffer = m_apiLayer.GetVertexBuffer<VectorFormatPCT>(BufferUsage.Dynamic);
         }
 
         public void Dispose()
         {
-            m_commandBuffer.Dispose();
+            m_commandList.Dispose();
 
             m_vertexBuffer.Dispose();
 
@@ -284,15 +284,15 @@ void main()
 
         public void Render()
         {
-            Resize(m_apiLayer.ViewBounds);
-
             ITextureObject last = null;
 
             m_vertexBuffer.Set(CollectionsMarshal.AsSpan(m_vectors));
 
-            m_pipeline.Activate(m_commandBuffer);
-            m_commandBuffer.Begin();
-            m_commandBuffer.ClearBuffers(GlobalBuffer.ColorBuffer);
+            m_pipeline.Activate(m_commandList);
+
+            using var cmdScope = m_commandList.BeginScope();
+
+            Resize(m_apiLayer.ViewBounds);
 
             foreach (var call in m_calls)
             {
@@ -305,22 +305,20 @@ void main()
                     }
                     else
                     {
-                        m_commandBuffer.ClearBoundTexture();
+                        m_commandList.ClearBoundTexture();
                     }
 
                     last = call.Texture;
                 }
 
-                m_commandBuffer.DrawArrays(call.VertexOffset, call.VertexCount);
+                m_commandList.DrawArrays(call.VertexOffset, call.VertexCount);
             }
 
             if (last != null)
             {
                 m_pipeline.Uniforms.is8Bit = false;
-                m_commandBuffer.ClearBoundTexture();
+                m_commandList.ClearBoundTexture();
             }
-
-            m_commandBuffer.End();
 
             m_vectors.Clear();
             m_calls.Clear();

@@ -7,9 +7,7 @@ namespace Tokamak.Tritium.APIs
     {
         Vector4 ClearColor { get; set; }
 
-        void Begin();
-
-        void End();
+        IDisposable BeginScope();
 
         void ClearBuffers(GlobalBuffer buffers);
 

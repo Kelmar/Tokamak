@@ -10,10 +10,11 @@ using Silk.NET.Vulkan;
 
 using Tokamak.Abstractions.Logging;
 
+using Tokamak.Core.Utilities;
+
 using Tokamak.Mathematics;
 
 using Tokamak.Tritium.APIs;
-using Tokamak.Tritium.Pipelines;
 
 using Tokamak.Vulkan.NativeWrapper;
 
@@ -60,10 +61,10 @@ namespace Tokamak.Vulkan
             m_fence.Dispose();
         }
 
-        public IPipeline Pipeline
+        public Pipeline Pipeline
         {
             get => m_pipeline;
-            set => m_pipeline = (Pipeline)value;
+            set => m_pipeline = value;
         }
 
         public Vector4 ClearColor { get; set; }
@@ -88,7 +89,7 @@ namespace Tokamak.Vulkan
             return true;
         }
 
-        public void Begin()
+        public IDisposable BeginScope()
         {
             m_fence.Wait();
             m_fence.Reset();
@@ -96,7 +97,7 @@ namespace Tokamak.Vulkan
             m_inDraw = Reset();
 
             if (!m_inDraw)
-                return;
+                return Indisposable.Instance;
 
             //m_cmdBuffer.RenderArea = new Rect2D(
             //    new Offset2D(m_device.Parent.Viewport.Left, m_device.Parent.Viewport.Top),
@@ -117,9 +118,11 @@ namespace Tokamak.Vulkan
             VkFramebuffer framebuffer = m_device.SwapChain.Images[m_image.Index].Framebuffer;
             
             m_cmdBuffer.BeginRenderPass(ClearColor, m_pipeline.RenderPass, framebuffer);
+
+            return new DisposeAction(EndScope);
         }
 
-        public void End()
+        private void EndScope()
         {
             if (!m_inDraw)
                 return;

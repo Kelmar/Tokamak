@@ -25,6 +25,8 @@ namespace TestBed
 
         private readonly IAPILayer m_apiLayer;
 
+        private readonly int m_vertCnt;
+
         public TestObject(IAPILayer apiLayer)
         {
             m_apiLayer = apiLayer;
@@ -39,10 +41,11 @@ namespace TestBed
 
             var verts = new VectorFormatPCT[]
             {
-                BuildVector(0.5f, 0.5f, 0),
-                BuildVector(0.5f,-0.5f, 0),
                 BuildVector(-.5f,-0.5f, 0),
-                BuildVector(-.5f, 0.5f, 0.5f)
+                BuildVector(0.5f,-0.5f, 0),
+                BuildVector(-.5f, 0.5f, 0),
+                BuildVector(0.5f, 0.5f, 0)
+                
             };
 
             var indices = new uint[]
@@ -50,6 +53,8 @@ namespace TestBed
                 0, 1, 3,
                 1, 2, 3
             };
+
+            m_vertCnt = verts.Length;
 
             m_vertexBuffer = m_apiLayer.GetVertexBuffer<VectorFormatPCT>(BufferUsage.Static);
             m_elementBuffer = m_apiLayer.GetElementBuffer(BufferUsage.Static);
@@ -91,10 +96,12 @@ namespace TestBed
             };
         }
 
-        public override void Render()
+        public override void Render(ICommandList cmdList)
         {
             m_vertexBuffer.Activate();
             //m_elementBuffer.Activate();
+
+            cmdList.DrawArrays(0, m_vertCnt);
 
             //m_apiLayer.DrawElements(PrimitiveType.TriangleList, m_mesh.Indicies.Count);
 

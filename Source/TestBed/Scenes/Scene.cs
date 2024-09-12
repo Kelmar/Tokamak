@@ -7,6 +7,7 @@ using Tokamak.Mathematics;
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Buffers.Formats;
 using Tokamak.Tritium.Pipelines;
+using Tokamak.Tritium.Pipelines.Shaders;
 
 namespace TestBed.Scenes
 {
@@ -51,7 +52,10 @@ void main()
     fsout_Color = is8Bit != 0 ? vec4(fsin_Color.rgb, fsin_Color.a * tx.r) : tx * fsin_Color;
 }
 ";
+        private readonly IAPILayer m_apiLayer;
+
         private readonly IPipeline m_pipeline;
+        private readonly ICommandList m_commandList;
 
         private readonly List<SceneObject> m_objects = new List<SceneObject>();
 
@@ -59,31 +63,45 @@ void main()
 
         public Scene(IAPILayer apiLayer)
         {
-            m_pipeline = apiLayer.CreatePipeline(cfg =>
+            m_apiLayer = apiLayer;
+
+            m_apiLayer.OnResize += OnResize;
+
+            m_pipeline = m_apiLayer.CreatePipeline(cfg =>
             {
                 cfg.UseInputFormat<VectorFormatPCT>();
 
-                cfg.UseCulling(CullMode.Back);
-                //UseDepthTest = false
+                cfg.UseCulling(CullMode.None);
+                //cfg.EnableDepthTest(false);
+                cfg.UsePrimitive(PrimitiveType.TriangleStrip);
 
-                //cfg.UseShader(ShaderType.Vertex, VERTEX);
-                //cfg.UseShader(ShaderType.Fragment, FRAGMENT);
+                cfg.AddShaderCode(ShaderType.Vertex, VERTEX);
+                cfg.AddShaderCode(ShaderType.Fragment, FRAGMENT);
             });
 
-            //using var factory = m_device.GetPipelineFactory();
+            m_commandList = m_apiLayer.CreateCommandList();
 
-            //factory.AddShader(VERTEX, ShaderType.Vertex);
-            //factory.AddShader(FRAGMENT, ShaderType.Fragment);
+            Resize(m_apiLayer.ViewBounds);
+        }
 
-            //m_pipeline = factory.Build();
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                foreach (var obj in m_objects)
+                    obj.Dispose();
+
+                m_commandList.Dispose();
+                m_pipeline.Dispose();
+
+                m_apiLayer.OnResize -= OnResize;
+            }
         }
 
         public void Dispose()
         {
-            foreach (var obj in m_objects)
-                obj.Dispose();
-
-            m_pipeline.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public Matrix4x4 Projection { get; private set; }
@@ -104,7 +122,7 @@ void main()
             m_objects.Remove(obj);
         }
 
-        public void Resize(in Point size)
+        public void Resize(Point size)
         {
             float w = size.X;
             float h = size.Y;
@@ -114,20 +132,19 @@ void main()
 
         public void Render()
         {
-#if false
-            m_device.SetRenderState(m_sceneState);
+            m_pipeline.Activate(m_commandList);
 
-            m_pipeline.Activate();
+            using var cmdScope = m_commandList.BeginScope();
+            m_commandList.ClearBuffers(GlobalBuffer.ColorBuffer | GlobalBuffer.DepthBuffer | GlobalBuffer.StencilBuffer);
 
-            m_pipeline.Set("projection", Projection);
-            m_pipeline.Set("view", m_camera.View);
+            m_pipeline.Uniforms.projection = Projection;
+            m_pipeline.Uniforms.view = m_camera.View;
 
             foreach (var obj in m_objects)
             {
-                m_pipeline.Set("model", obj.Model);
-                obj.Render();
+                m_pipeline.Uniforms.model = obj.Model;
+                obj.Render(m_commandList);
             }
-#endif
         }
     }
 }

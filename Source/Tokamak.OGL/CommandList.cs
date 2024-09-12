@@ -1,7 +1,9 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 using Silk.NET.OpenGL;
 
+using Tokamak.Core.Utilities;
 using Tokamak.Tritium.APIs;
 
 using Tokamak.Tritium.Pipelines;
@@ -64,12 +66,6 @@ namespace Tokamak.OGL
             GL.DrawElements(m_pipeline.Primitive, (uint)length, DrawElementsType.UnsignedInt, ref indices);
         }
 
-        public void Begin()
-        {
-        }
-
-        public void End()
-        {
-        }
+        public IDisposable BeginScope() => Indisposable.Instance;
     }
 }

@@ -25,8 +25,6 @@ namespace Tokamak
 
         public Matrix4x4 ViewMatrix { get; set; }
 
-        virtual public Rect Viewport { get; set; }
-
         public void PushWorldMatrix(in Matrix4x4 newMatrix)
         {
             m_worldMatrixStack.Push(WorldMatrix);

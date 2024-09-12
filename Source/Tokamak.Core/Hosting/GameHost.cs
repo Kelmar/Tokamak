@@ -53,9 +53,6 @@ namespace Tokamak.Core.Hosting
             {
                 Console.CancelKeyPress -= AbortApp;
 
-                if (m_app.IsValueCreated)
-                    m_app.Value.Dispose();
-
                 m_scope.Dispose();
                 m_container.Dispose();
             }
@@ -154,8 +151,7 @@ namespace Tokamak.Core.Hosting
             {
                 m_gameLifetime.Tick();
 
-                // Compute delta for this frame
-                double delta = timer.ElapsedMilliseconds / 1000.0;
+                double delta = timer.Elapsed.TotalSeconds; // Get delta for the frame.
                 timer.Restart();
 
                 App.OnUpdate(delta);

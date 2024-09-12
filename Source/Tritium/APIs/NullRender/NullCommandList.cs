@@ -1,4 +1,7 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
+
+using Tokamak.Core.Utilities;
 
 namespace Tokamak.Tritium.APIs.NullRender
 {
@@ -13,13 +16,7 @@ namespace Tokamak.Tritium.APIs.NullRender
 
         public Vector4 ClearColor { get; set; }
 
-        public void Begin()
-        {
-        }
-
-        public void End()
-        {
-        }
+        public IDisposable BeginScope() => Indisposable.Instance;
 
         public void ClearBoundTexture()
         {
