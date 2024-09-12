@@ -65,7 +65,7 @@ void main()
         {
             m_apiLayer = apiLayer;
 
-            m_apiLayer.OnResize += OnResize;
+            m_apiLayer.OnResize += Resize;
 
             m_pipeline = m_apiLayer.CreatePipeline(cfg =>
             {
@@ -94,7 +94,7 @@ void main()
                 m_commandList.Dispose();
                 m_pipeline.Dispose();
 
-                m_apiLayer.OnResize -= OnResize;
+                m_apiLayer.OnResize -= Resize;
             }
         }
 

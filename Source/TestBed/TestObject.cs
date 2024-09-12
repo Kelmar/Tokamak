@@ -25,7 +25,7 @@ namespace TestBed
 
         private readonly IAPILayer m_apiLayer;
 
-        private readonly int m_vertCnt;
+        private readonly int m_elementCnt;
 
         public TestObject(IAPILayer apiLayer)
         {
@@ -50,11 +50,11 @@ namespace TestBed
 
             var indices = new uint[]
             {
-                0, 1, 3,
-                1, 2, 3
+                0, 1, 2,
+                3
             };
 
-            m_vertCnt = verts.Length;
+            m_elementCnt = indices.Length;
 
             m_vertexBuffer = m_apiLayer.GetVertexBuffer<VectorFormatPCT>(BufferUsage.Static);
             m_elementBuffer = m_apiLayer.GetElementBuffer(BufferUsage.Static);
@@ -99,15 +99,9 @@ namespace TestBed
         public override void Render(ICommandList cmdList)
         {
             m_vertexBuffer.Activate();
-            //m_elementBuffer.Activate();
+            m_elementBuffer.Activate();
 
-            cmdList.DrawArrays(0, m_vertCnt);
-
-            //m_apiLayer.DrawElements(PrimitiveType.TriangleList, m_mesh.Indicies.Count);
-
-            //m_apiLayer.DrawArrays(PrimitiveType.TriangleList, 0, m_mesh.Verts.Count);
-
-            //m_apiLayer.DrawElements(PrimitiveType.TriangleList, 6);
+            cmdList.DrawElements(m_elementCnt);
         }
     }
 }

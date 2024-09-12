@@ -62,8 +62,9 @@ namespace Tokamak.OGL
 
         public void DrawElements(int length)
         {
-            int indices = 0;
-            GL.DrawElements(m_pipeline.Primitive, (uint)length, DrawElementsType.UnsignedInt, ref indices);
+            //int indices = 0;
+            //GL.DrawElements(m_pipeline.Primitive, (uint)length, DrawElementsType.UnsignedInt, ref indices);
+            GL.DrawArrays(m_pipeline.Primitive, 0, (uint)length);
         }
 
         public IDisposable BeginScope() => Indisposable.Instance;
