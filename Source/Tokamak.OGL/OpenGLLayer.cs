@@ -35,6 +35,8 @@ namespace Tokamak.OGL
         private bool m_firstCall = true;
         private TextureObject m_whiteTexture = null;
 
+        private uint m_vba = 0;
+
         public OpenGLLayer(IHostEnvironment hostEnvironment, IGameLifetime gameLifetime)
         {
             m_gameLifetime = gameLifetime;
@@ -63,6 +65,10 @@ namespace Tokamak.OGL
                 if (GL != null)
                 {
                     m_whiteTexture?.Dispose();
+
+                    GL.BindVertexArray(0);
+                    GL.DeleteVertexArray(m_vba);
+
                     GL.Dispose();
                 }
 
@@ -147,6 +153,9 @@ namespace Tokamak.OGL
             // Initialize OpenGL now.
             GL = GL.GetApi(m_view);
 
+            m_vba = GL.GenVertexArray();
+            GL.BindVertexArray(m_vba);
+
             // Create a default 1x1 white texture as not all OpenGL implementations will do this for us.
             m_whiteTexture = new TextureObject(this, TPixelFormat.FormatR8G8B8A8, new Point(1, 1));
 
@@ -172,6 +181,7 @@ namespace Tokamak.OGL
 
         private void OnViewRender(double delta)
         {
+            GL.BindVertexArray(m_vba);
             OnRender?.Invoke(delta);
         }
 

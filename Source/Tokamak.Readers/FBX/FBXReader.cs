@@ -80,7 +80,7 @@ namespace Tokamak.Readers.FBX
         {
             Node dataRoot = GetNodes();
 
-            // At this point we should have a valid node structure, but we still need to recreate the object heirarchy.
+            // At this point we should have a valid node structure, but we still need to recreate the object hierarchy.
 
             var dataObjs = dataRoot.GetChildren("Objects");
 
@@ -173,6 +173,8 @@ namespace Tokamak.Readers.FBX
         private IEnumerable<Polygon> ToPolys(IEnumerable<int> values)
         {
             // FBX uses a negative number to indicate the end of a polygon.
+            // Note that the negative number is a bitwise negation of the last index
+            // In this way zero is represented as -1
 
             var lastPoly = new Polygon();
 
@@ -180,7 +182,7 @@ namespace Tokamak.Readers.FBX
             {
                 if (v < 0)
                 {
-                    lastPoly.Indices.Add((uint)-v);
+                    lastPoly.Indices.Add((uint)~v);
                     yield return lastPoly;
 
                     lastPoly = new Polygon();
@@ -189,7 +191,7 @@ namespace Tokamak.Readers.FBX
                     lastPoly.Indices.Add((uint)v);
             }
 
-            if (lastPoly.Indices.Any())
+            if (lastPoly.Indices.Count != 0)
                 yield return lastPoly;
         }
 

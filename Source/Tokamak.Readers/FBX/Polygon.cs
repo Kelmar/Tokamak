@@ -16,21 +16,22 @@ namespace Tokamak.Readers.FBX
 
             // For now we do a simple split, making the assumption that the polygon is convex.
 
-            uint last0 = Indices[0];
-            uint last1 = Indices[1];
+            uint first = Indices[0];
+            uint last = Indices[1];
 
             for (int i = 2; i < Indices.Count; ++i)
             {
                 var poly = new Polygon();
 
-                poly.Indices.Add(last0);
-                poly.Indices.Add(last1);
+                poly.Indices.Add(first);
+                poly.Indices.Add(last);
                 poly.Indices.Add(Indices[i]);
 
                 yield return poly;
 
-                last0 = last1;
-                last1 = Indices[i];
+                //last0 = last1;
+                //last1 = Indices[i];
+                last = Indices[i];
             }
         }
     }

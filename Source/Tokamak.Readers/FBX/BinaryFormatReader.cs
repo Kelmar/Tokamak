@@ -41,7 +41,7 @@ namespace Tokamak.Readers.FBX
             string s = Encoding.UTF8.GetString(data); // ASCII encoded?
 
             // The format and .NET are quite happy to accept nulls in this string.
-            // I susspect these are just being written as flat buffers by Blender.
+            // I suspect these are just being written as flat buffers by Blender.
             // Trim at null characters.
 
             int idx = s.IndexOf('\0');
@@ -259,7 +259,7 @@ namespace Tokamak.Readers.FBX
             string s = Encoding.UTF8.GetString(data); // ASCII encoded?
 
             // The format and .NET are quite happy to accept nulls in this string.
-            // I susspect these are just being written as flat buffers by Blender.
+            // I suspect these are just being written as flat buffers by Blender.
             // Trim at null characters.
             int idx = s.IndexOf('\0');
 

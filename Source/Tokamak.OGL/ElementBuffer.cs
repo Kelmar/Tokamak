@@ -37,9 +37,7 @@ namespace Tokamak.OGL
         {
             Activate();
 
-            uint size = (uint)(sizeof(uint) * values.Length);
-
-            m_apiLayer.GL.BufferData(BufferTargetARB.ElementArrayBuffer, size, values, m_usageHint);
+            m_apiLayer.GL.BufferData(BufferTargetARB.ElementArrayBuffer, values, m_usageHint);
         }
     }
 }

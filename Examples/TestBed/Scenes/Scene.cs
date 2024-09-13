@@ -72,8 +72,8 @@ void main()
                 cfg.UseInputFormat<VectorFormatPCT>();
 
                 cfg.UseCulling(CullMode.None);
-                //cfg.EnableDepthTest(false);
-                cfg.UsePrimitive(PrimitiveType.TriangleStrip);
+                cfg.EnableDepthTest(true);
+                cfg.UsePrimitive(PrimitiveType.TriangleList);
 
                 cfg.AddShaderCode(ShaderType.Vertex, VERTEX);
                 cfg.AddShaderCode(ShaderType.Fragment, FRAGMENT);
