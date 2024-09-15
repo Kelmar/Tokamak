@@ -9,6 +9,7 @@ using Tokamak.Mathematics;
 using Tokamak.Tritium.Buffers;
 
 using Tokamak.Readers.FBX.ObjectWrappers;
+using System.Numerics;
 
 namespace Tokamak.Readers.FBX
 {
@@ -120,78 +121,83 @@ namespace Tokamak.Readers.FBX
                 Mesh = new Mesh()
             };
 
-            var verts = mesh.GetChildren("Vertices");
-            var indices = mesh.GetChildren("PolygonVertexIndex");
-
-            rval.Mesh.Verts = verts
-                .Select(v => v.Properties[0])
-                .SelectMany(p => p.AsEnumerable<float>())
+            // Pull raw data from FBX structure
+            var vectors = mesh
+                .GetChildren("Vertices")
+                .SelectMany(v => v.Properties[0].AsEnumerable<float>())
                 .ToList() // Chunk needs the list to be realized first.
-                .Chunk(3)
-                .Select(v => v.ToVector3())
+                .Chunk(3) // Group into threes
+                .Select(MathX.ToVector3) // Convert to vertex
                 .ToList();
 
-            /*
-            foreach (var vertNode in verts)
-            {
-                var props = vertNode.Properties[0];
-                var values = props.AsEnumerable<float>();
-                var grps = values.ToList().Chunk(3);
-                rval.Mesh.Verts = grps.Select(v => v.ToVector3()).ToList();
-            }
-            */
-
-            var indexValues = indices
-                .Select(v => v.Properties[0])
-                .SelectMany(p => p.AsEnumerable<int>());
-
-            rval.Mesh.Indicies = ToPolys(indexValues)
-                .SelectMany(p => p.SplitIntoTriangles())
-                .SelectMany(p => p.Indices)
-                .ToList();
-
-            /*
             var normals = mesh
                 .GetChildren("LayerElementNormal")
-                .SelectMany(n => n.GetChildren("Normals"));
-
-            rval.Mesh.Normals = normals
-                .Select(n => n.Properties[0])
-                .SelectMany(p => p.AsEnumerable<float>())
+                .SelectMany(n => n.GetChildren("Normals"))
+                .SelectMany(n => n.Properties[0].AsEnumerable<float>())
+                .ToList()
                 .Chunk(3)
-                .Select(v => v.ToVector3())
+                .Select(MathX.ToVector3)
                 .ToList();
-            */
-            /*
-            var uvs = mesh.GetChildren("LayerElementUV");
-            var mats = mesh.GetChildren("LayerElementMaterial");
-            */
+
+            var indices = mesh
+                .GetChildren("PolygonVertexIndex")
+                .Select(n => n.Properties[0])
+                .SelectMany(p => p.AsEnumerable<int>());
+
+            //var texCoords = mesh
+            //    .GetChildren("LayerElementUV")
+            //    .Select(n => n.Properties[0])
+            //    .SelectMany(p => p.AsEnumerable<float>())
+            //    .ToList()
+            //    .Chunk(2)
+            //    .Select(MathX.ToVector2)
+            //    .ToList();
+
+            //var mats = mesh.GetChildren("LayerElementMaterial");
+
+            // Generate a list of polygons with normals.
+            rval.Mesh.Polygons = ToPolys(indices, vectors, normals).ToList();
 
             return rval;
         }
 
-        private IEnumerable<Polygon> ToPolys(IEnumerable<int> values)
+        private IEnumerable<Polygon> ToPolys(
+            IEnumerable<int> indices,
+            List<Vector3> vectors,
+            List<Vector3> normals)
         {
             // FBX uses a negative number to indicate the end of a polygon.
             // Note that the negative number is a bitwise negation of the last index
             // In this way zero is represented as -1
 
             var lastPoly = new Polygon();
+            int indexNo = 0; // Index of the index.... >_<
 
-            foreach (var v in values)
+            foreach (var index in indices)
             {
-                if (v < 0)
+                lastPoly.Normals.Add(normals[indexNo]);
+
+                if (index < 0)
                 {
-                    lastPoly.Indices.Add((uint)~v);
+                    int i = ~index;
+
+                    lastPoly.Vectors.Add(vectors[i]);
+                    lastPoly.TexCoord.Add(Vector2.Zero); // texCoords[i]);
+
                     yield return lastPoly;
 
                     lastPoly = new Polygon();
                 }
                 else
-                    lastPoly.Indices.Add((uint)v);
+                {
+                    lastPoly.Vectors.Add(vectors[index]);
+                    lastPoly.TexCoord.Add(Vector2.Zero); //texCoords[index]);
+                }
+
+                ++indexNo;
             }
 
-            if (lastPoly.Indices.Count != 0)
+            if (lastPoly.Vectors.Count > 2)
                 yield return lastPoly;
         }
 

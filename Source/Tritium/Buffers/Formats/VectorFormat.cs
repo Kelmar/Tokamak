@@ -147,7 +147,8 @@ namespace Tokamak.Tritium.Buffers.Formats
             {
                 typeof(VectorFormatP),
                 typeof(VectorFormatPC),
-                typeof(VectorFormatPCT)
+                typeof(VectorFormatPCT),
+                typeof(VectorFormatPNCT)
             };
 
             foreach (Type type in items)

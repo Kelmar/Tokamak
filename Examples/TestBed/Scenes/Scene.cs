@@ -20,15 +20,25 @@ uniform mat4 view;
 uniform mat4 model;
 
 layout(location = 0) in vec3 Point;
-layout(location = 1) in vec4 Color;
-layout(location = 2) in vec2 TexCoord;
+layout(location = 1) in vec3 Normal;
+layout(location = 2) in vec4 Color;
+layout(location = 3) in vec2 TexCoord;
 
 layout(location = 0) out vec4 fsin_Color;
 layout(location = 1) out vec2 fsin_TexCoord;
+layout(location = 2) out vec3 fsin_Normal;
+layout(location = 3) out vec3 fsin_Position;
 
 void main()
 {
+    //gl_Position = projection * view * model * vec4(Point, 1.0);
     gl_Position = vec4(Point, 1.0) * model * view * projection;
+
+    // Get the position in world space.
+    fsin_Position = vec3(model * vec4(Point, 1.0));
+
+    fsin_Normal = Normal * mat3(transpose(inverse(model)));
+
     fsin_Color = Color;
     fsin_TexCoord = TexCoord;
 }
@@ -39,17 +49,34 @@ void main()
 
 layout(location = 0) in vec4 fsin_Color;
 layout(location = 1) in vec2 fsin_TexCoord;
+layout(location = 2) in vec3 fsin_Normal;
+layout(location = 3) in vec3 fsin_Position;
 
 layout(location = 0) out vec4 fsout_Color;
 
 uniform int is8Bit;
+uniform vec3 lightColor;
+uniform vec3 lightPosition;
 uniform sampler2D texture0;
 
 void main()
 {
-    vec4 tx = texture(texture0, fsin_TexCoord);
+    float ambientStrength = 0.1;
 
-    fsout_Color = is8Bit != 0 ? vec4(fsin_Color.rgb, fsin_Color.a * tx.r) : tx * fsin_Color;
+    vec4 tx = texture(texture0, fsin_TexCoord);
+    vec4 clr = is8Bit != 0 ? vec4(fsin_Color.rgb, fsin_Color.a * tx.r) : tx * fsin_Color;
+
+    vec4 ambient = vec4(lightColor * ambientStrength, 1);
+
+    vec3 normal = normalize(fsin_Normal);
+    vec3 lightDirection = normalize(lightPosition - fsin_Position);
+
+    float diff = max(dot(normal, lightDirection), 0.0);
+    vec4 diffuse = vec4(diff * lightColor, 1);
+
+    vec4 result = (ambient + diffuse) * clr;
+
+    fsout_Color = result;
 }
 ";
         private readonly IAPILayer m_apiLayer;
@@ -69,7 +96,7 @@ void main()
 
             m_pipeline = m_apiLayer.CreatePipeline(cfg =>
             {
-                cfg.UseInputFormat<VectorFormatPCT>();
+                cfg.UseInputFormat<VectorFormatPNCT>();
 
                 cfg.UseCulling(CullMode.None);
                 cfg.EnableDepthTest(true);
@@ -139,6 +166,9 @@ void main()
 
             m_pipeline.Uniforms.projection = Projection;
             m_pipeline.Uniforms.view = m_camera.View;
+
+            m_pipeline.Uniforms.lightColor = new Vector3(1, 1, 1);
+            m_pipeline.Uniforms.lightPosition = new Vector3(10, 0, 10);
 
             foreach (var obj in m_objects)
             {

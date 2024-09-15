@@ -9,41 +9,59 @@ using Tokamak.Tritium.Buffers.Formats;
 
 namespace Tokamak.Tritium.Buffers
 {
-    public class Mesh : IDisposable
+    public class Mesh
     {
-        private List<Vector3> m_verts = new List<Vector3>();
-        private List<uint> m_indices = new List<uint>();
+        private List<Polygon> m_polygons;
 
-        virtual public void Dispose()
+        public List<Polygon> Polygons
         {
+            get => m_polygons;
+            set => m_polygons = value?.SelectMany(p => p.SplitIntoTriangles()).ToList() ?? new();
         }
 
-        public List<Vector3> Verts
+        public int ToBuffer(IVertexBuffer<VectorFormatPNCT> vertexBuffer, IElementBuffer elementBuffer)
         {
-            get => m_verts;
-            set => m_verts = value ?? new List<Vector3>();
-        }
+            // Dictionary is used to filter out duplicate vectors.
+            int preAllocate = m_polygons.Select(p => p.Vectors.Count).Sum();
+            var vectorFilter = new Dictionary<VectorFormatPNCT, uint>(preAllocate);
 
-        public List<uint> Indicies
-        {
-            get => m_indices;
-            set => m_indices = value ?? new List<uint>();
-        }
+            var indexList = new List<uint>(preAllocate);
 
-        public void ToVertexBuffer(IVertexBuffer<VectorFormatPCT> buffer)
-        {
-            buffer.Set(
-                Verts.Select(v => new VectorFormatPCT
+            foreach (var poly in m_polygons)
+            {
+                var items = ToVectorFormat(poly).ToList();
+
+                foreach (var item in items)
                 {
-                    Point = v,
-                    Color = (Vector4)Color.White,
-                    TexCoord = Vector2.Zero
-                }).ToArray());
+                    if (!vectorFilter.TryGetValue(item, out uint index))
+                    {
+                        // Add new index to the list
+                        index = (uint)vectorFilter.Count;
+                        vectorFilter[item] = index;
+                    }
+
+                    indexList.Add(index);
+                }
+            }
+
+            vertexBuffer.Set(vectorFilter.Keys.ToArray());
+            elementBuffer.Set(indexList.ToArray());
+
+            return indexList.Count;
         }
 
-        public void ToElementsBuffer(IElementBuffer buffer)
+        private IEnumerable<VectorFormatPNCT> ToVectorFormat(Polygon poly)
         {
-            buffer.Set(Indicies.ToArray());
+            for (int i = 0; i < poly.Vectors.Count; ++i)
+            {
+                yield return new VectorFormatPNCT
+                {
+                    Point = poly.Vectors[i],
+                    Color = (Vector4)Color.White,
+                    Normal = poly.Normals[i],
+                    TexCoord = poly.TexCoord[i]
+                };
+            }
         }
     }
 }
