@@ -7,7 +7,7 @@ namespace Tokamak.Readers.FBX
     /// A data node inside of an FBX file.
     /// </summary>
     /// <remarks>
-    /// FBX files are layed out in nodes, similar to how XML has a nested structure.
+    /// FBX files are laid out in nodes, similar to how XML has a nested structure.
     /// 
     /// These nodes however do not correspond to the model/mesh/etc hierarchy that we
     /// need for recreating an object in our engine.
@@ -19,8 +19,6 @@ namespace Tokamak.Readers.FBX
     {
         private readonly IDictionary<string, List<Node>> m_children =
             new Dictionary<string, List<Node>>(StringComparer.CurrentCultureIgnoreCase);
-
-        private List<Property> m_properties = new List<Property>();
 
         public string Name { get; set; }
 
@@ -43,6 +41,6 @@ namespace Tokamak.Readers.FBX
             return children;
         }
 
-        public List<Property> Properties => m_properties;
+        public List<Property> Properties { get; } = new();
     }
 }

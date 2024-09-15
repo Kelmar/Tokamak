@@ -1,10 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace Tokamak.Readers.FBX
 {
+    /// <summary>
+    /// Node property of an FBX file.
+    /// </summary>
+    /// <remarks>
+    /// Properties are not named in FBX files, but indexed.
+    /// 
+    /// This class contains some data conversion functions to
+    /// help with translating the format into something useful.
+    /// </remarks>
     internal class Property
     {
         public PropertyType Type { get; internal set; }
@@ -71,6 +79,13 @@ namespace Tokamak.Readers.FBX
             return (IEnumerable<T>)Data;
         }
 
+        /// <summary>
+        /// Used for dumping array data to a string.
+        /// </summary>
+        /// <remarks>
+        /// This is really only helpful for debugging.
+        /// </remarks>
+        /// <typeparam name="T">The array data type.</typeparam>
         private string DumpArray<T>()
             where T : struct
         {
@@ -83,7 +98,10 @@ namespace Tokamak.Readers.FBX
         }
     }
 
-    public enum PropertyType :  byte
+    /// <summary>
+    /// Values are defined by the FBX format itself.
+    /// </summary>
+    public enum PropertyType : byte
     {
         SignedShort = (byte)'Y',
         Boolean     = (byte)'C',

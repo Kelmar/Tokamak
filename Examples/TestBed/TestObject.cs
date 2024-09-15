@@ -24,8 +24,6 @@ namespace TestBed
         private readonly IVertexBuffer<VectorFormatPNCT> m_vertexBuffer;
         private readonly IElementBuffer m_elementBuffer;
 
-        private readonly Mesh m_mesh;
-
         private readonly IAPILayer m_apiLayer;
 
         private readonly int m_indexCount;
@@ -35,15 +33,15 @@ namespace TestBed
             m_apiLayer = apiLayer;
 
             using var reader = new FBXReader(File.OpenRead(FILE));
-            m_mesh = reader.Import().FirstOrDefault();
+            var mesh = reader.Import().FirstOrDefault();
 
-            if (m_mesh == null)
+            if (mesh == null)
                 throw new Exception($"Unable to load mesh.");
 
             m_vertexBuffer = m_apiLayer.GetVertexBuffer<VectorFormatPNCT>(BufferUsage.Static);
             m_elementBuffer = m_apiLayer.GetElementBuffer(BufferUsage.Static);
 
-            m_indexCount = m_mesh.ToBuffer(m_vertexBuffer, m_elementBuffer);
+            m_indexCount = mesh.ToBuffer(m_vertexBuffer, m_elementBuffer);
         }
 
         public override void Dispose()

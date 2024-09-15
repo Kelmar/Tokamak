@@ -5,9 +5,10 @@ using System.Numerics;
 
 using Tokamak.Mathematics;
 
+using Tokamak.Tritium.Buffers;
 using Tokamak.Tritium.Buffers.Formats;
 
-namespace Tokamak.Tritium.Buffers
+namespace Tokamak.Tritium.Geometry
 {
     public class Mesh
     {

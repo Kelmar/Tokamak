@@ -37,3 +37,4 @@ The current executable is the TestBed project where all the expiramentation is g
 - Currently the Vulkan driver is really broken, will likely need to rewrite portions of it.
 - Reorganized a good chunk of the project to clean up the code a bit.
 - Created a basic GameHost type hosting system similar to how Microsoft organizes most other .NET Core apps.
+- FBX Loading working (ish), still fragile and assumes the file isn't corrupt or messed up somehow.

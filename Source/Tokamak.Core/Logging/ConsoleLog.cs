@@ -51,7 +51,7 @@ namespace Tokamak.Core.Logging
         {
             var attr = t.GetCustomAttribute<LogNameAttribute>();
 
-            return attr?.Name ?? t.Name;
+            return attr?.Name ?? t.FullName ?? t.Name;
         }
     }
 }

@@ -2,10 +2,10 @@
 {
     internal interface IFBXObject
     {
-        int ID { get; set; }
+        int ID { get; }
 
-        string Name { get; set; }
+        string Name { get; }
 
-        Node Node { get; set; }
+        Node Node { get; }
     }
 }

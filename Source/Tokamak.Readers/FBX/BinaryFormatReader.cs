@@ -11,10 +11,12 @@ namespace Tokamak.Readers.FBX
     internal class BinaryFormatReader : IParser
     {
         private readonly Stream m_input;
+        private readonly Encoding m_encoding;
 
-        public BinaryFormatReader(Stream input)
+        public BinaryFormatReader(Stream input, Encoding encoding)
         {
             m_input = input;
+            m_encoding = encoding;
 
             // Magic has already been read.
             m_input.Seek(21, SeekOrigin.Begin);
@@ -38,11 +40,13 @@ namespace Tokamak.Readers.FBX
         private string ReadString(int length)
         {
             byte[] data = ReadExactly(length);
-            string s = Encoding.UTF8.GetString(data); // ASCII encoded?
+            string s = m_encoding.GetString(data);
 
-            // The format and .NET are quite happy to accept nulls in this string.
-            // I suspect these are just being written as flat buffers by Blender.
-            // Trim at null characters.
+            /*
+             * The format and .NET are quite happy to accept garbage in this string.
+             * I suspect these are just being written as flat buffers by Blender.
+             * Trim staring at null character.
+             */
 
             int idx = s.IndexOf('\0');
 
@@ -102,9 +106,9 @@ namespace Tokamak.Readers.FBX
         {
             long startPos = m_input.Position;
 
-            uint endOffset = ReadUInt32();      // Offset to end of file?
-            uint numProps = ReadUInt32();       // Count of properties
-            uint propListLen = ReadUInt32();    // Length of properties in bytes
+            uint endOffset = ReadUInt32();   // Offset to end of file?
+            uint numProps = ReadUInt32();    // Count of properties
+            uint propListLen = ReadUInt32(); // Length of properties in bytes
 
             byte nameLen = ReadByte();
 
@@ -147,25 +151,29 @@ namespace Tokamak.Readers.FBX
             var rval = new Property();
             rval.Type = (PropertyType)c;
 
-            switch (rval.Type)
+            rval.Data = rval.Type switch
             {
-            case PropertyType.SignedShort: rval.Data = ReadInt16(); break;
-            case PropertyType.Boolean: rval.Data = ReadByte(); break;
-            case PropertyType.SignedInt: rval.Data = ReadInt32(); break;
-            case PropertyType.Float: rval.Data = ReadFloat(); break;
-            case PropertyType.Double: rval.Data = ReadDouble(); break;
-            case PropertyType.SignedLong: rval.Data = ReadInt64(); break;
-            case PropertyType.FloatArray: rval.Data = ReadFloatArray(); break;
-            case PropertyType.DoubleArray: rval.Data = ReadDoubleArray(); break;
-            case PropertyType.LongArray: rval.Data = ReadLongArray(); break;
-            case PropertyType.IntArray: rval.Data = ReadIntArray(); break;
-            case PropertyType.BoolArray: rval.Data = ReadBoolArray(); break;
-            case PropertyType.String: rval.Data = ReadPropertyString(); break;
-            case PropertyType.RawBinary: rval.Data = ReadPropertyRaw(); break;
+                PropertyType.SignedShort => ReadInt16(),
+                PropertyType.Boolean => ReadByte(),
+                PropertyType.SignedInt => ReadInt32(),
+                PropertyType.Float => ReadFloat(),
+                PropertyType.Double => ReadDouble(),
+                PropertyType.SignedLong => ReadInt64(),
+                PropertyType.FloatArray => ReadFloatArray(),
+                PropertyType.DoubleArray => ReadDoubleArray(),
+                PropertyType.LongArray => ReadLongArray(),
+                PropertyType.IntArray => ReadIntArray(),
+                PropertyType.BoolArray => ReadBoolArray(),
+                PropertyType.String => ReadPropertyString(),
+                PropertyType.RawBinary => ReadPropertyRaw(),
 
-            default:
-                throw new Exception($"Unknown property type '{c}'");
-            }
+                /*
+                 * Unfortunately FBX doesn't tell us the size of a property,
+                 * for a single value, so if we don't know the type, we
+                 * can't recover. :(
+                 */
+                _ => throw new Exception($"Unknown property type '{c}'")
+            };
 
             return rval;
         }
@@ -196,8 +204,11 @@ namespace Tokamak.Readers.FBX
             {
                 data = Decompress(data);
 
-                Debug.Assert(data.Length / itemSize == length);
-                Debug.Assert(data.Length % itemSize == 0);
+                if ((data.Length / itemSize) != length ||
+                    (data.Length % itemSize) != 0)
+                {
+                    throw new Exception("Data length error attempting to decompress data in FBX file.");
+                }
             }
 
             return (data, length);
@@ -254,19 +265,7 @@ namespace Tokamak.Readers.FBX
         private string ReadPropertyString()
         {
             int length = (int)ReadUInt32();
-            byte[] data = ReadExactly(length);
-
-            string s = Encoding.UTF8.GetString(data); // ASCII encoded?
-
-            // The format and .NET are quite happy to accept nulls in this string.
-            // I suspect these are just being written as flat buffers by Blender.
-            // Trim at null characters.
-            int idx = s.IndexOf('\0');
-
-            if (idx > 0)
-                s = s.Substring(0, idx);
-
-            return s;
+            return ReadString(length);
         }
 
         private byte[] ReadPropertyRaw()

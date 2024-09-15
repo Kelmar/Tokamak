@@ -2,10 +2,17 @@
 {
     internal class ObjectWrapper : IFBXObject
     {
-        public int ID { get; set; }
+        public ObjectWrapper(Node node)
+        {
+            Node = node;
+            ID = Node.Properties[0].AsInt();
+            Name = Node.Properties[1].AsString();
+        }
 
-        public string Name { get; set; }
+        public int ID { get; }
 
-        public Node Node { get; set; }
+        public string Name { get; }
+
+        public Node Node { get; }
     }
 }

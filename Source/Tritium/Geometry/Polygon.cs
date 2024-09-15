@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 
-namespace Tokamak.Tritium.Buffers
+namespace Tokamak.Tritium.Geometry
 {
     public class Polygon
     {
@@ -13,8 +13,8 @@ namespace Tokamak.Tritium.Buffers
 
         private Polygon MakeTriangle(int i1, int i2, int i3) => new Polygon
         {
-            Vectors  = [Vectors[i1] , Vectors[i2] , Vectors[i3] ],
-            Normals  = [Normals[i1] , Normals[i2] , Normals[i3] ],
+            Vectors = [Vectors[i1], Vectors[i2], Vectors[i3]],
+            Normals = [Normals[i1], Normals[i2], Normals[i3]],
             TexCoord = [TexCoord[i1], TexCoord[i2], TexCoord[i3]]
         };
 
