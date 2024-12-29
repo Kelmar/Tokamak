@@ -19,7 +19,7 @@ namespace Tokamak.Vulkan
     {
         private class SubmittedWork
         {
-            public VkCommandBuffer CommandBuffer { get; set; }
+            public NVkCommandBuffer CommandBuffer { get; set; }
 
             public VkFence Fence { get; set; }
         }
@@ -163,7 +163,7 @@ namespace Tokamak.Vulkan
             return rval;
         }
 
-        public void QueueSubmit(Queue queue, VkCommandBuffer cmdBuffer)
+        public void QueueSubmit(Queue queue, NVkCommandBuffer cmdBuffer)
         {
             var handles = stackalloc[] { cmdBuffer.Handle };
 

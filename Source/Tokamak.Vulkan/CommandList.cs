@@ -25,21 +25,21 @@ namespace Tokamak.Vulkan
         private readonly ILogger<CommandList> m_log;
 
         private readonly VkDevice m_device;
-        private readonly VkCommandPool m_pool;
+        private readonly NVkCommandPool m_pool;
 
         private readonly VkFence m_fence;
 
         private SwapChainImage m_image;
         
         private Pipeline m_pipeline;
-        private VkCommandBuffer m_cmdBuffer;
+        private NVkCommandBuffer m_cmdBuffer;
 
         private bool m_inDraw;
 
         public CommandList(
             ILogger<CommandList> logger,
             VkDevice device,
-            VkCommandPool pool)
+            NVkCommandPool pool)
         {
             m_log = logger;
 
@@ -48,7 +48,7 @@ namespace Tokamak.Vulkan
 
             m_fence = new VkFence(m_device, true);
 
-            m_cmdBuffer = new VkCommandBuffer(m_device, m_pool);
+            m_cmdBuffer = new NVkCommandBuffer(m_device, m_pool);
         }
 
         public void Dispose()

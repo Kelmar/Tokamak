@@ -4,11 +4,11 @@ using Silk.NET.Vulkan;
 
 namespace Tokamak.Vulkan.NativeWrapper
 {
-    internal unsafe sealed class VkCommandPool : IDisposable
+    internal unsafe sealed class NVkCommandPool : IDisposable
     {
         private readonly VkDevice m_device;
 
-        public VkCommandPool(VkDevice device)
+        public NVkCommandPool(VkDevice device)
         {
             m_device = device;
             Handle = CreateHandle();

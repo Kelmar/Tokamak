@@ -3,7 +3,7 @@
 namespace Tokamak.Mathematics
 {
     /// <summary>
-    /// Mathmatical representation of a 3D plane.
+    /// Mathematical representation of a 3D plane.
     /// </summary>
     /// <remarks>
     /// Mathematically we define a plane as having a normalized vector 

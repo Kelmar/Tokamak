@@ -11,6 +11,7 @@ using Tokamak.Mathematics;
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Buffers;
 using Tokamak.Tritium.Buffers.Formats;
+using Tokamak.Tritium.Geometry;
 using Tokamak.Tritium.Pipelines;
 using Tokamak.Tritium.Pipelines.Shaders;
 

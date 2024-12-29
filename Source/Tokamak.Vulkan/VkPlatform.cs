@@ -41,11 +41,11 @@ namespace Tokamak.Vulkan
 
         private readonly VkDevice m_device = null;
 
-        private readonly VkCommandPool m_commandPool = null;
+        private readonly NVkCommandPool m_commandPool = null;
 
         private VkDebug m_debug = null;
 
-        private DrawSurface m_surface = null;
+        private NVkDrawSurface m_surface = null;
 
         public VkPlatform(
             ILogger<VkPlatform> logger,
@@ -94,7 +94,7 @@ namespace Tokamak.Vulkan
 
         internal Instance Instance { get; private set; }
 
-        internal DrawSurface Surface => m_surface;
+        internal NVkDrawSurface Surface => m_surface;
 
         internal IWindow Window { get; }
 
@@ -104,7 +104,7 @@ namespace Tokamak.Vulkan
 
             m_debug?.Initialize();
 
-            m_surface = new DrawSurface(this, Window.VkSurface);
+            m_surface = new NVkDrawSurface(this, Window.VkSurface);
 
             EnumerateDevices();
 
@@ -132,7 +132,7 @@ namespace Tokamak.Vulkan
             var layers = VkLayerProperties.InstanceEnumerate(this).ToList();
             DumpInstanceLayers(layers);
 
-            var extensions = VkExtensionsProperties.InstanceEnumerate(this).ToList();
+            var extensions = NVkExtensionsProperties.InstanceEnumerate(this).ToList();
             DumpInstanceExtensions(extensions);
 
             var enableLayers = new List<string>();
@@ -224,7 +224,7 @@ namespace Tokamak.Vulkan
             m_log.Debug("Detected Vulkan instance layers:{0}", sb);
         }
 
-        private void DumpInstanceExtensions(List<VkExtensionsProperties> extensions)
+        private void DumpInstanceExtensions(List<NVkExtensionsProperties> extensions)
         {
             if (!m_log.LevelEnabled(LogLevel.Debug))
                 return;

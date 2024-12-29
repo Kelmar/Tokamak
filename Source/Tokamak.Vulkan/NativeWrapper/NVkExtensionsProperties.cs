@@ -6,10 +6,10 @@ using Silk.NET.Vulkan;
 
 namespace Tokamak.Vulkan.NativeWrapper
 {
-    internal class VkExtensionsProperties
+    internal class NVkExtensionsProperties
     {
 
-        private VkExtensionsProperties(string extensionName, uint specVersion)
+        private NVkExtensionsProperties(string extensionName, uint specVersion)
         {
             ExtensionName = extensionName;
             SpecVersion = specVersion;
@@ -19,14 +19,14 @@ namespace Tokamak.Vulkan.NativeWrapper
 
         public uint SpecVersion { get; }
 
-        public static unsafe IEnumerable<VkExtensionsProperties> InstanceEnumerate(VkPlatform platform)
+        public static unsafe IEnumerable<NVkExtensionsProperties> InstanceEnumerate(VkPlatform platform)
         {
             uint extCnt = 0;
             uint* cnt = &extCnt;
 
             platform.SafeExecute(vk => vk.EnumerateInstanceExtensionProperties((byte*)null, cnt, null));
 
-            var rval = new List<VkExtensionsProperties>((int)extCnt);
+            var rval = new List<NVkExtensionsProperties>((int)extCnt);
 
             if (extCnt > 0)
             {
@@ -40,7 +40,7 @@ namespace Tokamak.Vulkan.NativeWrapper
                     {
                         string name = Marshal.PtrToStringAnsi((IntPtr)pExt[i].ExtensionName);
 
-                        rval.Add(new VkExtensionsProperties(name, pExt[i].SpecVersion));
+                        rval.Add(new NVkExtensionsProperties(name, pExt[i].SpecVersion));
                     }
                 }
             }

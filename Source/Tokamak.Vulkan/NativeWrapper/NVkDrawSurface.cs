@@ -8,14 +8,14 @@ using Silk.NET.Vulkan.Extensions.KHR;
 
 namespace Tokamak.Vulkan.NativeWrapper
 {
-    internal unsafe class DrawSurface : IDisposable
+    internal unsafe class NVkDrawSurface : IDisposable
     {
         private readonly VkPlatform m_platform;
 
         private readonly KhrSurface m_khrSurface;
         private readonly SurfaceKHR m_surface;
 
-        public DrawSurface(VkPlatform platform, IVkSurface surface)
+        public NVkDrawSurface(VkPlatform platform, IVkSurface surface)
         {
             m_platform = platform;
 

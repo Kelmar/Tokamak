@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 using Tokamak.Mathematics;
+
 using Tokamak.Tritium.Buffers.Formats;
+using Tokamak.Tritium.Geometry;
 using Tokamak.Tritium.Pipelines.Shaders;
 
 namespace Tokamak.Tritium.Pipelines
@@ -21,6 +22,9 @@ namespace Tokamak.Tritium.Pipelines
 
         public VectorFormat.Info InputFormat { get; private set; }
 
+        /// <summary>
+        /// Gets/sets the type of drawing primitive to use for this pipeline.
+        /// </summary>
         public PrimitiveType Primitive { get; private set; } = PrimitiveType.TriangleList;
 
         public bool Blending { get; private set; } = false;
@@ -29,8 +33,14 @@ namespace Tokamak.Tritium.Pipelines
 
         public BlendFactor DestinationBlendFactor { get; private set; }
 
+        /// <summary>
+        /// Gets/sets if the pipeline should perform depth sorting.
+        /// </summary>
         public bool DepthTest { get; private set; } = false;
 
+        /// <summary>
+        /// Gets/sets if and how culling should occur in this pipeline.
+        /// </summary>
         public CullMode Culling { get; private set; } = CullMode.None;
 
         public PipelineConfig AddShaderSource(IShaderSource source)

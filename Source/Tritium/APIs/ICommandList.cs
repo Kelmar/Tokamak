@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Numerics;
 
 namespace Tokamak.Tritium.APIs
 {
-    public interface ICommandList : IDisposable
+    public interface ICommandList : IDeviceResource
     {
-        Vector4 ClearColor { get; set; }
-
         IDisposable BeginScope();
 
         void ClearBuffers(GlobalBuffer buffers);

@@ -7,12 +7,12 @@ using CBHandle = Silk.NET.Vulkan.CommandBuffer;
 
 namespace Tokamak.Vulkan.NativeWrapper
 {
-    internal unsafe class VkCommandBuffer : IDisposable
+    internal unsafe class NVkCommandBuffer : IDisposable
     {
         private readonly VkDevice m_device;
-        private readonly VkCommandPool m_pool;
+        private readonly NVkCommandPool m_pool;
 
-        public VkCommandBuffer(VkDevice device, VkCommandPool pool)
+        public NVkCommandBuffer(VkDevice device, NVkCommandPool pool)
         {
             m_device = device;
             m_pool = pool;

@@ -7,6 +7,9 @@ namespace Tokamak.Mathematics
     {
         private const float BYTE_MAX_F = (float)Byte.MaxValue;
 
+        // TODO: Make this configurable
+        private const double GAMMA_VALUE = 2.2;
+
         private static readonly Color s_black = new Color(0, 0, 0);
 
         private static readonly Color s_darkBlue = new Color(0, 0, 128);
@@ -120,7 +123,11 @@ namespace Tokamak.Mathematics
                 b = x;
             }
 
-            return new Color(r.ToByteRange(), g.ToByteRange(), b.ToByteRange(), alpha);
+            return new Color(
+                MathX.LinearToGamma(r, GAMMA_VALUE),
+                MathX.LinearToGamma(g, GAMMA_VALUE),
+                MathX.LinearToGamma(b, GAMMA_VALUE),
+                alpha);
         }
 
         /// <summary>
@@ -160,7 +167,16 @@ namespace Tokamak.Mathematics
         }
 
         // Convert to/from Vector4
-        public static explicit operator Vector4(in Color c) => new Vector4(c.Red, c.Green, c.Blue, c.Alpha) / BYTE_MAX_F;
-        public static explicit operator Color(in Vector4 v) => new Color(v.X.ToByteRange(), v.Y.ToByteRange(), v.Z.ToByteRange(), v.W.ToByteRange());
+        public static explicit operator Vector4(in Color c) => new Vector4(
+            (float)MathX.GammaToLinear(c.Red, GAMMA_VALUE),
+            (float)MathX.GammaToLinear(c.Green, GAMMA_VALUE),
+            (float)MathX.GammaToLinear(c.Blue, GAMMA_VALUE),
+            c.Alpha / BYTE_MAX_F);
+
+        public static explicit operator Color(in Vector4 v) => new Color(
+            MathX.LinearToGamma(v.X, GAMMA_VALUE),
+            MathX.LinearToGamma(v.Y, GAMMA_VALUE),
+            MathX.LinearToGamma(v.Z, GAMMA_VALUE),
+            v.W.ToByteRange());
     }
 }

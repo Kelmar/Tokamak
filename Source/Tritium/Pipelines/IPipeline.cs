@@ -1,10 +1,8 @@
-﻿using System;
-
-using Tokamak.Tritium.APIs;
+﻿using Tokamak.Tritium.APIs;
 
 namespace Tokamak.Tritium.Pipelines
 {
-    public interface IPipeline : IDisposable
+    public interface IPipeline : IDeviceResource
     {
         dynamic Uniforms { get; }
 
