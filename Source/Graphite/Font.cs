@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-using FreeTypeWrapper;
-
 using Tokamak.Mathematics;
 
 using Tokamak.Tritium.APIs;
@@ -13,6 +11,36 @@ using Tokamak.Tritium.Buffers.Formats;
 
 namespace Graphite
 {
+    public class Font : IDisposable
+    {
+        public void Dispose()
+        {
+        }
+
+        public bool HasKerning => false;
+
+        public string FamilyName => String.Empty;
+
+        public string StyleName => String.Empty;
+
+        public int LineSpacing => 0;
+
+        public float Size => 0;
+
+        internal ITextureObject GetSheet(int index) => null;
+
+        public Glyph GetGlyph(char c)
+        {
+            return new Glyph();
+        }
+
+        public float GetKerning(char l, char r)
+        {
+            return HasKerning ? 0 : 0;
+        }
+    }
+
+#if false
     public class Font : IDisposable
     {
         private const int CACHE_SHEET_SIZE = 512;
@@ -155,4 +183,5 @@ namespace Graphite
             return rval;
         }
     }
+#endif
 }

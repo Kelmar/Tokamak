@@ -4,8 +4,6 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-using FreeTypeWrapper;
-
 using Tokamak.Mathematics;
 
 using Tokamak.Tritium.APIs;
@@ -80,8 +78,6 @@ void main()
             public ITextureObject Texture { get; set; }
         }
 
-        private readonly FTLibrary m_ftLibrary;
-
         private readonly List<CanvasCall> m_calls = new List<CanvasCall>(128);
         private readonly List<VectorFormatPCT> m_vectors = new List<VectorFormatPCT>(128);
 
@@ -94,8 +90,6 @@ void main()
 
         public Canvas(IAPILayer apiLayer)
         {
-            m_ftLibrary = new FTLibrary();
-
             m_apiLayer = apiLayer;
 
             m_pipeline = m_apiLayer.CreatePipeline(cfg => cfg
@@ -123,15 +117,14 @@ void main()
             m_vertexBuffer.Dispose();
 
             m_pipeline.Dispose();
-
-            m_ftLibrary.Dispose();
         }
 
         public Font GetFont(string filename, float size)
         {
             var dpi = m_apiLayer.GetMonitors().FirstOrDefault(m => m.IsMain)?.DPI ?? new Point(192, 192);
-            var face = m_ftLibrary.GetFace(filename, size, dpi);
-            return new Font(m_apiLayer, face);
+            //var face = m_ftLibrary.GetFace(filename, size, dpi);
+            //return new Font(m_apiLayer, face);
+            return null;
         }
 
         public void Resize(in Point size)
@@ -302,7 +295,7 @@ void main()
                     if (call.Texture != null)
                     {
                         m_pipeline.Uniforms.is8Bit = call.Texture.Format == PixelFormat.FormatA8;
-                        call.Texture.Activate();
+                        //call.Texture.Activate();
                     }
                     else
                     {

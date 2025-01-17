@@ -33,23 +33,40 @@ namespace Tokamak.Mathematics
 
         public int Y { get; set; } = 0;
 
-        public int[] ToArray() { return new int[] { X, Y }; }
+        public int[] ToArray() { return [X, Y]; }
 
         public override string ToString() => $"({X},{Y})";
 
+        /// <summary>
+        /// Makes a new point from the current point offset by the specified x and y values.
+        /// </summary>
+        public Point Offset(int x, int y)
+        {
+            return new Point(X + x, Y + y);
+        }
+
+        /// <summary>
+        /// Translates the Vector2 to a Point by rounding down.
+        /// </summary>
         public static Point Ceiling(in Vector2 v)
         {
-            return new Point((int)Math.Ceiling(v.X), (int)Math.Ceiling(v.Y));
+            return new Point((int)MathF.Ceiling(v.X), (int)MathF.Ceiling(v.Y));
         }
 
+        /// <summary>
+        /// Translates the Vector2 to a Point by rounding up.
+        /// </summary>
         public static Point Floor(in Vector2 v)
         {
-            return new Point((int)Math.Floor(v.X), (int)Math.Floor(v.Y));
+            return new Point((int)MathF.Floor(v.X), (int)MathF.Floor(v.Y));
         }
 
+        /// <summary>
+        /// Translates the Vector2 to a Point by rounding.
+        /// </summary>
         public static Point Round(in Vector2 v)
         {
-            return new Point((int)Math.Round(v.X), (int)Math.Round(v.Y));
+            return new Point((int)MathF.Round(v.X), (int)MathF.Round(v.Y));
         }
 
         // More specific to less specific, require a cast.
@@ -72,6 +89,18 @@ namespace Tokamak.Mathematics
         public static Point operator +(in Point rhs, in Point lhs) => new Point(rhs.X + lhs.X, rhs.Y + lhs.Y);
 
         public static Point operator -(in Point rhs, in Point lhs) => new Point(rhs.X - lhs.X, rhs.Y - lhs.Y);
+
+        public static Point operator *(int rhs, in Point lhs) => new Point(rhs * lhs.X, rhs * lhs.Y);
+
+        public static Point operator *(in Point rhs, int lhs) => new Point(rhs.X * lhs, rhs.Y * lhs);
+
+        public static Vector2 operator *(float rhs, in Point lhs) => new Vector2(rhs * lhs.X, rhs * lhs.Y);
+
+        public static Vector2 operator *(in Point rhs, float lhs) => new Vector2(rhs.X * lhs, rhs.Y * lhs);
+
+        public static Point operator /(in Point rhs, int lhs) => new Point(rhs.X / lhs, rhs.Y / lhs);
+
+        public static Vector2 operator /(in Point rhs, float lhs) => new Vector2(rhs.X / lhs, rhs.Y / lhs);
 
         public static bool operator ==(in Point rhs, in Point lhs) => (rhs.X == lhs.X && rhs.Y == lhs.Y);
 

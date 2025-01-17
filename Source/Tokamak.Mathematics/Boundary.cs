@@ -7,7 +7,7 @@
     public enum Boundary
     {
         /// <summary>
-        /// Point is on the back side of the plane.
+        /// Point is behind the plane.
         /// </summary>
         Back = -1,
 
@@ -22,7 +22,7 @@
         On = 0,
 
         /// <summary>
-        /// Point is on the front face of the plane.
+        /// Point is in front of the plane.
         /// </summary>
         Front = 1,
 

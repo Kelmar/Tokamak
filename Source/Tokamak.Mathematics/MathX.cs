@@ -20,6 +20,7 @@ namespace Tokamak.Mathematics
         /// <param name="delta">Distance to interpolate by</param>
         /// <param name="v1">Starting value</param>
         /// <param name="v2">Ending value</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double Lerp(double delta, double v1, double v2)
         {
             delta = Clamp(delta, 0, 1);
@@ -32,6 +33,7 @@ namespace Tokamak.Mathematics
         /// <param name="delta">Distance to interpolate by</param>
         /// <param name="v1">Starting value</param>
         /// <param name="v2">Ending value</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float LerpF(float delta, float v1, float v2)
         {
             delta = ClampF(delta, 0, 1);
@@ -44,6 +46,7 @@ namespace Tokamak.Mathematics
         /// <param name="delta">Distance to interpolate by</param>
         /// <param name="v1">Starting value</param>
         /// <param name="v2">Ending value</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector2 Lerp(float delta, in Vector2 v1, in Vector2 v2)
         {
             delta = ClampF(delta, 0, 1);
@@ -56,6 +59,7 @@ namespace Tokamak.Mathematics
         /// <param name="delta">Distance to interpolate by</param>
         /// <param name="v1">Starting value</param>
         /// <param name="v2">Ending value</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector3 Lerp(float delta, in Vector3 v1, in Vector3 v2)
         {
             delta = ClampF(delta, 0, 1);
@@ -68,6 +72,7 @@ namespace Tokamak.Mathematics
         /// <param name="delta">Distance to interpolate by</param>
         /// <param name="v1">Starting value</param>
         /// <param name="v2">Ending value</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector4 Lerp(float delta, in Vector4 v1, in Vector4 v2)
         {
             delta = ClampF(delta, 0, 1);
@@ -75,30 +80,90 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Clamps a value to a given range
+        /// Solves a Quadradic Bézier curve point using the Bernstein method.
+        /// </summary>
+        /// <remarks>
+        /// See notes on <seealso cref="CubicBezierSolve(in Vector2, in Vector2, in Vector2, in Vector2, float)"/>
+        /// for more details.
+        /// </remarks>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <param name="v3"></param>
+        /// <param name="delta"Time over curve from 0 to 1></param>
+        /// <returns>A point along the Bézier curve.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static Vector2 QuadBezierSolve(in Vector2 v1, in Vector2 v2, in Vector2 v3, float delta)
+        {
+            delta = ClampF(delta, 0, 1);
+
+            float sqDelta = delta * delta;
+
+            return
+                v1 * (delta - 1) * (delta - 1) +
+                v2 * (2 * delta - 2 * sqDelta) +
+                v3 * sqDelta;
+        }
+
+        /// <summary>
+        /// Solves a Cubic Bézier curve point using the Bernstein method.
+        /// </summary>
+        /// <remarks>
+        /// References:
+        /// https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+        /// https://www.youtube.com/watch?v=aVwxzDHniEw
+        /// 
+        /// In summary the Bernstein method is what you get if you carray out the
+        /// DeCasteljau version of using lerp and reduce down to a large polynomial.
+        /// 
+        /// The DeCasteljau version is if you performed lerps on each of the line
+        /// segments recursively.
+        /// </remarks>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <param name="v3"></param>
+        /// <param name="v4"></param>
+        /// <param name="delta">Time over curve from 0 to 1</param>
+        /// <returns>A point along the Bézier curve.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static Vector2 CubicBezierSolve(in Vector2 v1, in Vector2 v2, in Vector2 v3, in Vector2 v4, float delta)
+        {
+            delta = ClampF(delta, 0, 1);
+
+            float cubeDelta = delta * delta * delta;
+            float sqDelta = delta * delta;
+
+            return
+                v1 * (-cubeDelta + 3 * sqDelta - 3 * delta + 1) +
+                v2 * (3 * cubeDelta - 6 * sqDelta + 3 * delta) +
+                v3 * (-3 * cubeDelta + 3 * sqDelta) +
+                v4 * (cubeDelta);
+        }
+
+        /// <summary>
+        /// Clamps a value to a given range.
         /// </summary>
         /// <param name="v">Value to clamp</param>
         /// <param name="min">The minimum allowed value.</param>
         /// <param name="max">The maximum allowed value.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int Clamp(int v, int min, int max) => Math.Max(Math.Min(v, max), min);
 
         /// <summary>
-        /// Clamps a value to a given range
+        /// Clamps a value to a given range.
         /// </summary>
         /// <param name="v">Value to clamp</param>
         /// <param name="min">The minimum allowed value.</param>
         /// <param name="max">The maximum allowed value.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float ClampF(float v, float min, float max) => MathF.Max(MathF.Min(v, max), min);
 
         /// <summary>
-        /// Clamps a value to a given range
+        /// Clamps a value to a given range.
         /// </summary>
         /// <param name="v">Value to clamp</param>
         /// <param name="min">The minimum allowed value.</param>
         /// <param name="max">The maximum allowed value.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double Clamp(double v, double min, double max) => Math.Max(Math.Min(v, max), min);
 
         /// <summary>
@@ -128,7 +193,7 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Convert float array to a Vector2
+        /// Convert float array to a Vector2.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 ToVector2(this float[] a)
@@ -137,7 +202,7 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Convert a float array to a Vector3
+        /// Convert a float array to a Vector3.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 ToVector3(this float[] a)
@@ -146,7 +211,7 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Convert a float array to a Vector4
+        /// Convert a float array to a Vector4.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 ToVector4(this float[] a)
@@ -155,28 +220,43 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Converts a floating point value from 0 to 1 into a byte from 0 to 255
+        /// Gets the distance from the current vector to the other vector.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float DistanceTo(this in Vector2 v1, in Vector2 v2)
+        {
+            return (v1 - v2).Length();
+        }
+
+        /// <summary>
+        /// Gets the distance from the current vector to the other vector.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float DistanceTo(this in Vector3 v1, in Vector3 v2)
+        {
+            return (v1 - v2).Length();
+        }
+
+        /// <summary>
+        /// Gets the distance from the current vector to the other vector.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float DistanceTo(this in Vector4 v1, in Vector4 v2)
+        {
+            return (v1 - v2).Length();
+        }
+
+        /// <summary>
+        /// Converts a floating point value from 0 to 1 into a byte from 0 to 255.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte ToByteRange(this float v) => (byte)(ClampF(v, 0, 1) * Byte.MaxValue);
 
         /// <summary>
-        /// Converts a floating point value from 0 to 1 into a byte from 0 to 255
+        /// Converts a floating point value from 0 to 1 into a byte from 0 to 255.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte ToByteRange(this double v) => (byte)(Clamp(v, 0, 1) * Byte.MaxValue);
-
-        /// <summary>
-        /// Convert gamma color value to linear color value.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double GammaToLinear(byte b, double gamma) => (255d * Math.Pow(b / 255d, gamma));
-
-        /// <summary>
-        /// Convert linear color value to gamma color value.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte LinearToGamma(double d, double gamma) => (byte)Math.Round(255 * Math.Pow(d / 255d, 1 / gamma));
 
         /// <summary>
         /// Returns a vector with a unit length.
@@ -249,28 +329,28 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Convert degrees to radians
+        /// Convert degrees to radians.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float DegToRadF(float d) => d / 180 * MathF.PI;
+        public static float DegToRadF(float d) => d / 180f * MathF.PI;
 
         /// <summary>
-        /// Convert degrees to radians
+        /// Convert degrees to radians.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double DegToRad(double d) => d / 180 * Math.PI;
-
-        /// <summary>
-        /// Convert radians to degrees.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float RadToDegF(float r) => r / MathF.PI * 180;
+        public static double DegToRad(double d) => d / 180d * Math.PI;
 
         /// <summary>
         /// Convert radians to degrees.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double RadToDeg(double r) => r / MathF.PI * 180;
+        public static float RadToDegF(float r) => r / MathF.PI * 180f;
+
+        /// <summary>
+        /// Convert radians to degrees.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double RadToDeg(double r) => r / MathF.PI * 180d;
 
         /// <summary>
         /// Gets the most significant bit set.

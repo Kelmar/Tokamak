@@ -54,7 +54,7 @@ namespace Tokamak.Mathematics
         /// <summary>
         /// Gets a boolean indicating if this rectangle is valid or not.
         /// </summary>
-        public bool IsValid => Size.X > 0 && Size.Y > 0;
+        public bool IsValid => (Size.X > 0) && (Size.Y > 0);
 
         /// <summary>
         /// Get the rectangle that intersects with the supplied rectangle and this rectangle.
@@ -110,6 +110,19 @@ namespace Tokamak.Mathematics
             Rect rval = r;
             rval.Location -= p;
             return rval;
+        }
+
+        public override string ToString() => $"<{Left},{Top}>-<{Right},{Bottom}>";
+
+        public static Rect FromCoordinates(in Point p1, in Point p2)
+        {
+            int x = Math.Min(p1.X, p2.X);
+            int y = Math.Min(p1.Y, p2.Y);
+
+            int w = Math.Max(p1.X, p2.X) - x;
+            int h = Math.Max(p1.Y, p2.Y) - y;
+
+            return new Rect(x, y, w, h);
         }
     }
 }

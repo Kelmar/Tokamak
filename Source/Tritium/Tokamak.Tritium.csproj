@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Stashbox" Version="5.16.0" />
+    <PackageReference Include="Stashbox" Version="5.17.0" />
   </ItemGroup>
 
   <ItemGroup>

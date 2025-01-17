@@ -54,8 +54,8 @@ namespace TestBed
 
         public override void Render(ICommandList cmdList)
         {
-            m_elementBuffer.Activate();
-            m_vertexBuffer.Activate();
+            //m_elementBuffer.Activate();
+            //m_vertexBuffer.Activate();
 
             cmdList.DrawElements(m_indexCount);
         }

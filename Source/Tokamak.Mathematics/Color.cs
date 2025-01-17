@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Tokamak.Mathematics
 {
@@ -124,9 +125,9 @@ namespace Tokamak.Mathematics
             }
 
             return new Color(
-                MathX.LinearToGamma(r, GAMMA_VALUE),
-                MathX.LinearToGamma(g, GAMMA_VALUE),
-                MathX.LinearToGamma(b, GAMMA_VALUE),
+                LinearToGamma(r, GAMMA_VALUE),
+                LinearToGamma(g, GAMMA_VALUE),
+                LinearToGamma(b, GAMMA_VALUE),
                 alpha);
         }
 
@@ -168,15 +169,27 @@ namespace Tokamak.Mathematics
 
         // Convert to/from Vector4
         public static explicit operator Vector4(in Color c) => new Vector4(
-            (float)MathX.GammaToLinear(c.Red, GAMMA_VALUE),
-            (float)MathX.GammaToLinear(c.Green, GAMMA_VALUE),
-            (float)MathX.GammaToLinear(c.Blue, GAMMA_VALUE),
+            (float)GammaToLinear(c.Red, GAMMA_VALUE),
+            (float)GammaToLinear(c.Green, GAMMA_VALUE),
+            (float)GammaToLinear(c.Blue, GAMMA_VALUE),
             c.Alpha / BYTE_MAX_F);
 
         public static explicit operator Color(in Vector4 v) => new Color(
-            MathX.LinearToGamma(v.X, GAMMA_VALUE),
-            MathX.LinearToGamma(v.Y, GAMMA_VALUE),
-            MathX.LinearToGamma(v.Z, GAMMA_VALUE),
+            LinearToGamma(v.X, GAMMA_VALUE),
+            LinearToGamma(v.Y, GAMMA_VALUE),
+            LinearToGamma(v.Z, GAMMA_VALUE),
             v.W.ToByteRange());
+
+        /// <summary>
+        /// Convert gamma color value to linear color value.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double GammaToLinear(byte b, double gamma) => (255d * Math.Pow(b / 255d, gamma));
+
+        /// <summary>
+        /// Convert linear color value to gamma color value.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static byte LinearToGamma(double d, double gamma) => (byte)Math.Round(255 * Math.Pow(d / 255d, 1 / gamma));
     }
 }

@@ -40,8 +40,7 @@ namespace Tokamak.Mathematics
         /// <returns>True if the two spheres overlap with each other.</returns>
         public bool Overlaps(in Sphere other)
         {
-            float distance = (Location - other.Location).Length();
-            return distance < (Radius + other.Radius);
+            return Location.DistanceTo(other.Location) < (Radius + other.Radius);
         }
 
         /// <summary>
@@ -51,8 +50,7 @@ namespace Tokamak.Mathematics
         /// <returns>The location of the point relative to the sphere.</returns>
         public Boundary Contains(in Vector3 point)
         {
-            float distance = (Location - point).Length();
-            return distance switch
+            return Location.DistanceTo(point) switch
             {
                 float f when f < -MathX.FUZ => Boundary.Inside,
                 float f when f > MathX.FUZ => Boundary.Outside,
