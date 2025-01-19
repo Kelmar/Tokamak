@@ -5,7 +5,10 @@ namespace Tokamak.Quill
 {
     public class Font
     {
-        internal Font() { }
+        internal Font(ICharacterMapper charMapper)
+        {
+            CharMapper = charMapper;
+        }
 
         public required string FontId { get; init; }
 
@@ -25,6 +28,8 @@ namespace Tokamak.Quill
         /// </summary>
         internal Vector2 Scale { get; init; }
 
+        public required IReadOnlyList<IGlyph> Glyphs { get; init; }
+
         public int GetGlyphIdFor(char c)
         {
             return CharMapper.MapChar(c);
@@ -35,7 +40,5 @@ namespace Tokamak.Quill
             int id = CharMapper.MapChar(c);
             return Glyphs[id];
         }
-
-        public IReadOnlyList<IGlyph> Glyphs { get; init; }
     }
 }

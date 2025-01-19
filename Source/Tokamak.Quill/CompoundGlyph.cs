@@ -10,9 +10,9 @@ namespace Tokamak.Quill
     {
         private class ChildInfo
         {
-            public IGlyph Glyph { get; set; }
+            public required IGlyph Glyph { get; set; }
 
-            public Matrix3x2 Transform { get; set; }
+            public required Matrix3x2 Transform { get; set; }
         }
 
         private List<ChildInfo> m_children = new();

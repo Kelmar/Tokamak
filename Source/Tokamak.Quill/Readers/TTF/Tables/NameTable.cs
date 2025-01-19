@@ -10,28 +10,22 @@ namespace Tokamak.Quill.Readers.TTF.Tables
             /// <summary>
             /// This is PlatformID specific.
             /// </summary>
-            public int LanguageId { get; set; }
+            public required int LanguageId { get; set; }
 
-            public NameId NameId { get; set; }
+            public required NameId NameId { get; set; }
 
-            public string Name { get; set; }
+            public required string Name { get; set; }
         }
 
-        private static NameRecord ReadNameRecord(ParseState state, long storePosition)
+        private static NameRecord? ReadNameRecord(ParseState state, long storePosition)
         {
             var platform = (PlatformId)state.ReadUInt16();
             UInt16 encodingId = state.ReadUInt16();
 
-            Encoding encoding = EncodingMap.FindEncodingFor(platform, encodingId);
+            Encoding? encoding = EncodingMap.FindEncodingFor(platform, encodingId);
 
             if (encoding == null)
                 return null;
-
-            var rval = new NameRecord
-            {
-                LanguageId = state.ReadUInt16(),
-                NameId = (NameId)state.ReadUInt16()
-            };
 
             int length = state.ReadUInt16();
             int stringOffset = state.ReadUInt16();
@@ -39,9 +33,13 @@ namespace Tokamak.Quill.Readers.TTF.Tables
             using var ctx = state.ReadContext(storePosition + stringOffset);
 
             byte[] b = state.ReadBytes(length);
-            rval.Name = encoding.GetString(b);
 
-            return rval;
+            return new NameRecord
+            {
+                LanguageId = state.ReadUInt16(),
+                NameId = (NameId)state.ReadUInt16(),
+                Name = encoding.GetString(b)
+            };
         }
 
         public static void Load(ParseState state)

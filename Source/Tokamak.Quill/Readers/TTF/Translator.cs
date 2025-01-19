@@ -56,7 +56,9 @@ namespace Tokamak.Quill.Readers.TTF
 
         private IGlyph GetGlyph(int index)
         {
-            if (m_glyphs.TryGetValue(index, out IGlyph rval))
+            IGlyph? rval;
+
+            if (m_glyphs.TryGetValue(index, out rval))
                 return rval;
 
             // Glyph could be an alias to another index.
@@ -79,7 +81,7 @@ namespace Tokamak.Quill.Readers.TTF
 
             Segment current = new Segment();
 
-            TTFSimpleGlyph.Point last = null;
+            TTFSimpleGlyph.Point? last = null;
 
             foreach (var point in work)
             {
@@ -170,12 +172,11 @@ namespace Tokamak.Quill.Readers.TTF
 
             Vector2 scale = pointSize * DPI / (POINTS_PER_INCH * m_state.UnitsPerEm);
 
-            return new Font
+            return new Font(m_state.CharMapper)
             {
                 FontId = m_state.NameSearch(NameId.FontId, NameId.Family, NameId.FontName),
                 Family = m_state.NameSearch(NameId.Family, NameId.FontId, NameId.FontName),
                 Subfamily = m_state.NameSearch(NameId.Subfamily),
-                CharMapper = m_state.CharMapper,
                 Glyphs = glyphs.ToList().AsReadOnly(),
                 Points = pointSize,
                 Scale = scale

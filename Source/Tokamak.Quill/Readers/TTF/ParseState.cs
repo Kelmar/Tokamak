@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 
+using Tokamak.Quill.Readers.TTF.CharMaps;
+
 namespace Tokamak.Quill.Readers.TTF
 {
     internal class ParseState
@@ -37,9 +39,9 @@ namespace Tokamak.Quill.Readers.TTF
 
         public FontFormat Format { get; set; }
 
-        public Version Version { get; set; }
+        public Version? Version { get; set; }
 
-        public Version Revision { get; set; }
+        public Version? Revision { get; set; }
 
         public UInt32 ChecksumAdjust { get; set; }
 
@@ -79,13 +81,13 @@ namespace Tokamak.Quill.Readers.TTF
 
         public List<ITTFGlyph> Glyphs { get; set; } = new();
 
-        public ICharacterMapper CharMapper { get; set; }
+        public ICharacterMapper CharMapper { get; set; } = new NullMap();
 
         public string NameSearch(params NameId[] ids)
         {
             foreach (var id in ids)
             {
-                if (Names.TryGetValue(id, out string rval))
+                if (Names.TryGetValue(id, out string? rval))
                     return rval;
             }
 
@@ -99,9 +101,9 @@ namespace Tokamak.Quill.Readers.TTF
 
         public bool HasEntry(string name) => Tables.ContainsKey(name);
 
-        public TableEntry JumpToEntry(string name)
+        public TableEntry? JumpToEntry(string name)
         {
-            if (!Tables.TryGetValue(name, out TableEntry rval))
+            if (!Tables.TryGetValue(name, out TableEntry? rval))
                 return null;
 
             JumpToEntry(rval);
@@ -111,7 +113,7 @@ namespace Tokamak.Quill.Readers.TTF
 
         public TableEntry JumpToEntryOrFail(string name)
         {
-            TableEntry entry = JumpToEntry(name);
+            TableEntry? entry = JumpToEntry(name);
 
             if (entry == null)
                 throw new FontFileException($"Unable to find {name} table");

@@ -163,7 +163,7 @@ namespace Tokamak.Quill.Readers.TTF.Tables
 
             // Rebuild into list of bits need for translation to internal format.
 
-            TTFSimpleGlyph.Contour current = null;
+            TTFSimpleGlyph.Contour? current = null;
 
             for (int i = 0, j = 0; i < pointCount; ++i)
             {
@@ -284,7 +284,7 @@ namespace Tokamak.Quill.Readers.TTF.Tables
             return rval;
         }
 
-        private static ITTFGlyph ReadSingleGlyph(ParseState state, long tableOffset, int index)
+        private static ITTFGlyph? ReadSingleGlyph(ParseState state, long tableOffset, int index)
         {
             long len = state.GlyphOffsets[index + 1] - state.GlyphOffsets[index];
 
@@ -324,11 +324,11 @@ namespace Tokamak.Quill.Readers.TTF.Tables
 
         private static IEnumerable<ITTFGlyph> Enumerate(ParseState state, TableEntry entry)
         {
-            ITTFGlyph last = null;
+            ITTFGlyph? last = null;
 
             for (int index = 0; index < state.GlyphCount; ++index)
             {
-                ITTFGlyph g = ReadSingleGlyph(state, entry.Offset, index);
+                ITTFGlyph? g = ReadSingleGlyph(state, entry.Offset, index);
 
                 if (g == null)
                 {

@@ -72,12 +72,12 @@ namespace Tokamak.Quill.Readers.TTF
             s_platformEncodingMap[PlatformId.Windows] = s_windowsEncodings;
         }
 
-        public static Encoding FindEncodingFor(PlatformId platformId, int encodingId)
+        public static Encoding? FindEncodingFor(PlatformId platformId, int encodingId)
         {
             if (!s_platformEncodingMap.TryGetValue(platformId, out var encodingMap))
                 return null; // Unsuported platform
 
-            if (!encodingMap.TryGetValue(encodingId, out Encoding encoding))
+            if (!encodingMap.TryGetValue(encodingId, out Encoding? encoding))
                 return null; // Unsupported encoding
 
             return encoding;

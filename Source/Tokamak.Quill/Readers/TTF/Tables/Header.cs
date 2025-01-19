@@ -74,7 +74,7 @@ namespace Tokamak.Quill.Readers.TTF.Tables
              * of the bhed table as a flag to indicate if the font is a bitmap or vector
              * based font.
              */
-            TableEntry entry = state.JumpToEntry("bhed");
+            TableEntry? entry = state.JumpToEntry("bhed");
 
             if (entry != null)
                 state.Format = FontFormat.Bitmap;
