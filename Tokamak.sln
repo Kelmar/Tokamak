@@ -48,6 +48,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBed", "Examples\TestBed
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Quill", "Source\Tokamak.Quill\Tokamak.Quill.csproj", "{B16C2035-A0CB-4F48-8DF5-57F83D461CA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Graphite", "Source\Tokamak.Graphite\Tokamak.Graphite.csproj", "{25639DDF-AE50-4076-A0EB-1E658C7E2ADC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +112,10 @@ Global
 		{B16C2035-A0CB-4F48-8DF5-57F83D461CA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B16C2035-A0CB-4F48-8DF5-57F83D461CA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B16C2035-A0CB-4F48-8DF5-57F83D461CA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25639DDF-AE50-4076-A0EB-1E658C7E2ADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25639DDF-AE50-4076-A0EB-1E658C7E2ADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25639DDF-AE50-4076-A0EB-1E658C7E2ADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25639DDF-AE50-4076-A0EB-1E658C7E2ADC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
