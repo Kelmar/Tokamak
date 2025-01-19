@@ -17,6 +17,11 @@ namespace Tokamak.Quill
         public required string Subfamily { get; init; }
 
         /// <summary>
+        /// Gets the spacing between each line of the font.
+        /// </summary>
+        public int LineSpacing { get; init; }
+
+        /// <summary>
         /// The point size for this font
         /// </summary>
         public required float Points { get; init; }

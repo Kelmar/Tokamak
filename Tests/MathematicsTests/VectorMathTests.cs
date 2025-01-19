@@ -4,9 +4,9 @@ using NUnit.Framework;
 
 using Tokamak.Mathematics;
 
-namespace GraphiteTests
+namespace MathTests
 {
-    public class MathTests
+    public class VectorMathTests
     {
         //[SetUp]
         //public void Setup()

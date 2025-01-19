@@ -5,6 +5,9 @@ using Tokamak.Mathematics;
 
 namespace Graphite
 {
+    /// <summary>
+    /// Represents a stroked shape to be drawn to the screen.
+    /// </summary>
     internal class Stroke
     {
         public bool Closed { get; set; }
