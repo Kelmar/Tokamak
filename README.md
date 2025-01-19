@@ -27,7 +27,7 @@ The current executable is the TestBed project where all the expiramentation is g
   - [X] Basic line drawing
   - [ ] Bitmap drawing (basic blits working)
   - [ ] Text rendering (in progress)
-	- [X] Basics for debugging
+	- [ ] Basics for debugging (reworking)
 	- [ ] Advanced formatting and layout
   - [ ] Complex shape drawing
   - [ ] Animation
