@@ -4,28 +4,28 @@ A C# engine for games and virtual worlds.
 This project is just starting out.  The goal is to provide the basis for doing the basic building blocks of a game engine that can be used in a variety of different ways.
 
 ## Projects
-- Abstractions
+- Abstractions\
   This project holds all of the key abstraction interfaces.
 
-- Core
+- Core\
   Base runtime classes, provides configuration and application host management.  Similar to the NET Generic Host, but with a focus on applications with realtime processing.
 
-- Graphite
+- Graphite\
   2D Graphics library with a rich set of functions for rendering beautiful UIs and other 2D graphics.
 
-- Mathmatics
+- Mathmatics\
   Additional mahtmatical functions for processing color, basic physics primitives and hit testing.
 
-- Quill
+- Quill\
   Library for doing reading and rendering of typography.
 
-- Readers
+- Readers\
   Generic list of format readers.
 
-- Tritium
+- Tritium\
   Base graphics hardware management and rendering.
 
-- VFS
+- VFS\
   A Virtual File System library
 
 # Building
