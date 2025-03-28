@@ -86,25 +86,25 @@ namespace Tokamak.Mathematics
 
         public static Point operator -(in Point p) => new Point(-p.X, -p.Y);
 
-        public static Point operator +(in Point rhs, in Point lhs) => new Point(rhs.X + lhs.X, rhs.Y + lhs.Y);
+        public static Point operator +(in Point lhs, in Point rhs) => new Point(lhs.X + rhs.X, lhs.Y + rhs.Y);
 
-        public static Point operator -(in Point rhs, in Point lhs) => new Point(rhs.X - lhs.X, rhs.Y - lhs.Y);
+        public static Point operator -(in Point lhs, in Point rhs) => new Point(lhs.X - rhs.X, lhs.Y - rhs.Y);
 
-        public static Point operator *(int rhs, in Point lhs) => new Point(rhs * lhs.X, rhs * lhs.Y);
+        public static Point operator *(int lhs, in Point rhs) => new Point(lhs * rhs.X, lhs * rhs.Y);
 
-        public static Point operator *(in Point rhs, int lhs) => new Point(rhs.X * lhs, rhs.Y * lhs);
+        public static Point operator *(in Point lhs, int rhs) => new Point(lhs.X * rhs, lhs.Y * rhs);
 
-        public static Vector2 operator *(float rhs, in Point lhs) => new Vector2(rhs * lhs.X, rhs * lhs.Y);
+        public static Vector2 operator *(float lhs, in Point rhs) => new Vector2(lhs * rhs.X, lhs * rhs.Y);
 
-        public static Vector2 operator *(in Point rhs, float lhs) => new Vector2(rhs.X * lhs, rhs.Y * lhs);
+        public static Vector2 operator *(in Point lhs, float rhs) => new Vector2(lhs.X * rhs, lhs.Y * rhs);
 
-        public static Point operator /(in Point rhs, int lhs) => new Point(rhs.X / lhs, rhs.Y / lhs);
+        public static Point operator /(in Point lhs, int rhs) => new Point(lhs.X / rhs, lhs.Y / rhs);
 
-        public static Vector2 operator /(in Point rhs, float lhs) => new Vector2(rhs.X / lhs, rhs.Y / lhs);
+        public static Vector2 operator /(in Point lhs, float rhs) => new Vector2(lhs.X / rhs, lhs.Y / rhs);
 
-        public static bool operator ==(in Point rhs, in Point lhs) => (rhs.X == lhs.X && rhs.Y == lhs.Y);
+        public static bool operator ==(in Point lhs, in Point rhs) => (lhs.X == rhs.X && lhs.Y == rhs.Y);
 
-        public static bool operator !=(in Point rhs, in Point lhs) => (rhs.X != lhs.X || rhs.Y != lhs.Y);
+        public static bool operator !=(in Point lhs, in Point rhs) => (lhs.X != rhs.X || lhs.Y != rhs.Y);
 
         public override readonly bool Equals([NotNullWhen(true)] object? obj)
         {

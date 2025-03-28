@@ -21,6 +21,10 @@ namespace Tokamak.Quill
 
         public RectF Bounds { get; init; }
 
+        public Point Bearing => Point.One;
+
+        public Vector2 Advance => Vector2.One;
+
         public IEnumerable<IGlyph> Children => m_children.Select(ci => ci.Glyph);
 
         public void AddChild(IGlyph child, Matrix3x2 transform)

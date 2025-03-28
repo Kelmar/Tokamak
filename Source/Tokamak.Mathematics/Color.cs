@@ -78,8 +78,8 @@ namespace Tokamak.Mathematics
                 hue += 1;
 
             hue *= 360;
-            saturation = MathX.ClampF(saturation, 0, 1);
-            value = MathX.ClampF(value, 0, 1);
+            saturation = Math.Clamp(saturation, 0, 1);
+            value = Math.Clamp(value, 0, 1);
 
             float c = value * saturation;
             float x = c * (1 - MathF.Abs((hue / 60) % 2 - 1));
@@ -155,7 +155,7 @@ namespace Tokamak.Mathematics
         /// <returns>Mixed color between the two colors.</returns>
         public static Color Lerp(double distance, in Color c1, in Color c2)
         {
-            distance = MathX.Clamp(distance, 0, 1);
+            distance = Math.Clamp(distance, 0, 1);
             double oneMinus = 1 - distance;
 
             return new Color

@@ -15,6 +15,18 @@ namespace Tokamak.Mathematics
         public const float FUZ = 0.000001f;
 
         /// <summary>
+        /// Fuzzy almost equals compare.
+        /// </summary>
+        /// <param name="lhs">Left hand side</param>
+        /// <param name="rhs">Right hand side</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static bool AlmostEquals(float lhs, float rhs)
+        {
+            float diff = Math.Abs(lhs - rhs);
+            return diff <= FUZ;
+        }
+
+        /// <summary>
         /// Linearly interpolate between two values.
         /// </summary>
         /// <param name="delta">Distance to interpolate by</param>
@@ -23,7 +35,7 @@ namespace Tokamak.Mathematics
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double Lerp(double delta, double v1, double v2)
         {
-            delta = Clamp(delta, 0, 1);
+            delta = Math.Clamp(delta, 0, 1);
             return (v1 * (1 - delta)) + (v2 * delta);
         }
 
@@ -36,7 +48,7 @@ namespace Tokamak.Mathematics
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float LerpF(float delta, float v1, float v2)
         {
-            delta = ClampF(delta, 0, 1);
+            delta = Math.Clamp(delta, 0, 1);
             return (v1 * (1 - delta)) + (v2 * delta);
         }
 
@@ -49,7 +61,7 @@ namespace Tokamak.Mathematics
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector2 Lerp(float delta, in Vector2 v1, in Vector2 v2)
         {
-            delta = ClampF(delta, 0, 1);
+            delta = Math.Clamp(delta, 0, 1);
             return (v1 * (1 - delta)) + (v2 * delta);
         }
 
@@ -62,7 +74,7 @@ namespace Tokamak.Mathematics
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector3 Lerp(float delta, in Vector3 v1, in Vector3 v2)
         {
-            delta = ClampF(delta, 0, 1);
+            delta = Math.Clamp(delta, 0, 1);
             return (v1 * (1 - delta)) + (v2 * delta);
         }
 
@@ -75,7 +87,7 @@ namespace Tokamak.Mathematics
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector4 Lerp(float delta, in Vector4 v1, in Vector4 v2)
         {
-            delta = ClampF(delta, 0, 1);
+            delta = Math.Clamp(delta, 0, 1);
             return (v1 * (1 - delta)) + (v2 * delta);
         }
 
@@ -94,7 +106,7 @@ namespace Tokamak.Mathematics
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector2 QuadBezierSolve(in Vector2 v1, in Vector2 v2, in Vector2 v3, float delta)
         {
-            delta = ClampF(delta, 0, 1);
+            delta = Math.Clamp(delta, 0, 1);
 
             float sqDelta = delta * delta;
 
@@ -127,7 +139,7 @@ namespace Tokamak.Mathematics
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector2 CubicBezierSolve(in Vector2 v1, in Vector2 v2, in Vector2 v3, in Vector2 v4, float delta)
         {
-            delta = ClampF(delta, 0, 1);
+            delta = Math.Clamp(delta, 0, 1);
 
             float cubeDelta = delta * delta * delta;
             float sqDelta = delta * delta;
@@ -138,33 +150,6 @@ namespace Tokamak.Mathematics
                 v3 * (-3 * cubeDelta + 3 * sqDelta) +
                 v4 * (cubeDelta);
         }
-
-        /// <summary>
-        /// Clamps a value to a given range.
-        /// </summary>
-        /// <param name="v">Value to clamp</param>
-        /// <param name="min">The minimum allowed value.</param>
-        /// <param name="max">The maximum allowed value.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static int Clamp(int v, int min, int max) => Math.Max(Math.Min(v, max), min);
-
-        /// <summary>
-        /// Clamps a value to a given range.
-        /// </summary>
-        /// <param name="v">Value to clamp</param>
-        /// <param name="min">The minimum allowed value.</param>
-        /// <param name="max">The maximum allowed value.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static float ClampF(float v, float min, float max) => MathF.Max(MathF.Min(v, max), min);
-
-        /// <summary>
-        /// Clamps a value to a given range.
-        /// </summary>
-        /// <param name="v">Value to clamp</param>
-        /// <param name="min">The minimum allowed value.</param>
-        /// <param name="max">The maximum allowed value.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static double Clamp(double v, double min, double max) => Math.Max(Math.Min(v, max), min);
 
         /// <summary>
         /// Wraps a value around a given max value.
@@ -250,13 +235,13 @@ namespace Tokamak.Mathematics
         /// Converts a floating point value from 0 to 1 into a byte from 0 to 255.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte ToByteRange(this float v) => (byte)(ClampF(v, 0, 1) * Byte.MaxValue);
+        public static byte ToByteRange(this float v) => (byte)(Math.Clamp(v, 0, 1) * Byte.MaxValue);
 
         /// <summary>
         /// Converts a floating point value from 0 to 1 into a byte from 0 to 255.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte ToByteRange(this double v) => (byte)(Clamp(v, 0, 1) * Byte.MaxValue);
+        public static byte ToByteRange(this double v) => (byte)(Math.Clamp(v, 0, 1) * Byte.MaxValue);
 
         /// <summary>
         /// Returns a vector with a unit length.

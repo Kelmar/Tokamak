@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 
 using Tokamak.Mathematics;
 
@@ -11,6 +12,9 @@ namespace Tokamak.Quill
         public RectF Bounds { get; init; }
 
         public int Index { get; init; }
+        public Point Bearing => Point.One;
+
+        public Vector2 Advance => Vector2.One;
 
         public List<Loop> Loops
         {

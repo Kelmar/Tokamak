@@ -33,11 +33,14 @@ namespace Tokamak.OGL
             m_apiLayer.GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, m_ebo);
         }
 
-        public unsafe void Set(in ReadOnlySpan<uint> values)
+        public unsafe void Set(in ReadOnlySpan<uint> data)
         {
+            if (data.Length == 0)
+                return; // OpenGL doesn't like it if we send an empty list.
+
             Activate();
 
-            m_apiLayer.GL.BufferData(BufferTargetARB.ElementArrayBuffer, values, m_usageHint);
+            m_apiLayer.GL.BufferData(BufferTargetARB.ElementArrayBuffer, data, m_usageHint);
         }
     }
 }

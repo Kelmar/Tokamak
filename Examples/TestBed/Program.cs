@@ -15,7 +15,8 @@ namespace TestBed
         {
             try
             {
-                BuildHost(args).Run();
+                BuildHost(args)
+                    .Run();
             }
             catch (Exception ex)
             {

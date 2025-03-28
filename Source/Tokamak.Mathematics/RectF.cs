@@ -25,38 +25,56 @@ namespace Tokamak.Mathematics
 
         public RectF()
         {
-            Location = Vector2.Zero;
-            Size = Vector2.Zero;
+            X = 0;
+            Y = 0;
+            Width = 0;
+            Height = 0;
         }
 
         public RectF(in Vector2 location, in Vector2 extent)
         {
-            Location = location;
-            Size = extent;
+            X = location.X;
+            Y = location.Y;
+            Width = extent.X;
+            Height = extent.Y;
         }
 
         public RectF(float x, float y, float width, float height)
         {
-            Location = new Vector2(x, y);
-            Size = new Vector2(width, height);
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
         }
 
-        public Vector2 Location { get; set; }
+        public float X { get; set; }
 
-        public Vector2 Size { get; set; }
+        public float Y { get; set; }
 
-        public float Left => Location.X;
+        public float Width { get; set; }
 
-        public float Top => Location.Y;
+        public float Height { get; set; }
 
-        public float Right => Location.X + Size.X;
+        public float Left => X;
 
-        public float Bottom => Location.Y + Size.Y;
+        public float Top => Y;
+
+        public float Right => X + Width;
+
+        public float Bottom => Y + Height;
+
+        public Vector2 TopLeft => new Vector2(Left, Top);
+
+        public Vector2 TopRight => new Vector2(Right, Top);
+
+        public Vector2 BottomLeft => new Vector2(Left, Bottom);
+
+        public Vector2 BottomRight => new Vector2(Right, Bottom);
 
         /// <summary>
-        /// Gets a boolean indicating if this rectangle is valid or not.
+        /// Checks if the rectangle is less than or equal to a zero size.
         /// </summary>
-        public bool IsValid => (Size.X > 0) || (Size.Y > 0);
+        public bool IsEmpty => (Width <= 0) || (Width == float.NaN) || (Height <= 0) || (Height == float.NaN);
 
         /// <summary>
         /// Get the rectangle that intersects with the supplied rectangle and this rectangle.
@@ -68,8 +86,8 @@ namespace Tokamak.Mathematics
             float x = Math.Min(Right - 1, clipRect.Right - 1);
             float y = Math.Min(Bottom - 1, clipRect.Bottom - 1);
 
-            float w = x - Location.X + 1;
-            float h = y - Location.Y + 1;
+            float w = x - X + 1;
+            float h = y - Y + 1;
 
             return new RectF(x, y, w, h);
         }
@@ -83,8 +101,8 @@ namespace Tokamak.Mathematics
         {
             float x = Left + by.X;
             float y = Top + by.Y;
-            float w = Size.X - 2 * by.X;
-            float h = Size.Y - 2 * by.Y;
+            float w = Width - 2 * by.X;
+            float h = Width - 2 * by.Y;
 
             return new RectF(x, y, w, h);
         }
@@ -97,8 +115,6 @@ namespace Tokamak.Mathematics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(Vector2 v) => (Left >= v.X) && (Top >= v.Y) && (v.X <= Right) && (v.Y <= Bottom);
 
-        public override string ToString() => $"<{Left},{Top}>-<{Right},{Bottom}>";
-
         public static RectF FromCoordinates(in Vector2 v1, in Vector2 v2)
         {
             float x = MathF.Min(v1.X, v2.X);
@@ -109,5 +125,7 @@ namespace Tokamak.Mathematics
 
             return new RectF(x, y, w, h);
         }
+
+        public override string ToString() => $"<{Left},{Top}>-<{Right},{Bottom}>";
     }
 }

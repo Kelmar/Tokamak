@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.IO;
 
 using Tokamak.Core;
@@ -10,9 +11,12 @@ using Tokamak.Mathematics;
 
 using Tokamak.Tritium.APIs;
 
-using Graphite;
+using Tokamak.Graphite;
+using Tokamak.Quill;
 
 using TestBed.Scenes;
+
+using TTF = Tokamak.Quill.Readers.TTF;
 
 namespace TestBed
 {
@@ -22,7 +26,7 @@ namespace TestBed
 
         private const float ROT_AMOUNT = 1;//0.5f;
 
-        private Canvas m_canvas = null;
+        private Context m_context = null;
         private Font m_font = null;
         private Scene m_scene = null;
 
@@ -49,8 +53,8 @@ namespace TestBed
             }
 
             m_scene?.Dispose();
-            m_font?.Dispose();
-            m_canvas?.Dispose();
+            //m_font?.Dispose();
+            m_context?.Dispose();
         }
 
         public void OnShutdown()
@@ -59,12 +63,13 @@ namespace TestBed
 
         public void OnLoad()
         {
-            m_canvas = new Canvas(m_apiLayer);
+            m_context = new Context(m_apiLayer);
 
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/dnk.ttf");
             string path = Path.Combine(Environment.SystemDirectory, "../Fonts/segoeui.ttf");
-            m_font = m_canvas.GetFont(path, 12);
+
+            //m_font = m_context.GetFont(path, 12);
 
             m_scene = new Scene(m_apiLayer);
             m_test = new TestObject(m_apiLayer);
@@ -87,11 +92,19 @@ namespace TestBed
                 //LineJoin = LineJoin.Bevel
             };
 
-            m_canvas.DrawText(pen, m_font, new Point(5, 30), String.Format("FPS: {0:000.0}", m_fps));
-            m_canvas.DrawText(pen, m_font, new Point(5, 60), String.Format("ROT: {0:0.000}", m_rot));
+            var canvas = m_context.GetCanvas();
+
+            canvas.MoveTo(10, 10);
+            canvas.LineTo(100, 100);
+
+            canvas.StrokeColor = Color.LiteRed;
+            canvas.Stroke();
+
+            //m_canvas.DrawText(pen, m_font, new Point(5, 30), String.Format("FPS: {0:000.0}", m_fps));
+            //m_canvas.DrawText(pen, m_font, new Point(5, 60), String.Format("ROT: {0:0.000}", m_rot));
 
             m_scene.Render();
-            m_canvas.Render();
+            m_context.Render();
 
             /*
             foreach (var r in m_renderers)

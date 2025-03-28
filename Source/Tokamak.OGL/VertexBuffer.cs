@@ -48,6 +48,9 @@ namespace Tokamak.OGL
 
         public void Set(in ReadOnlySpan<T> data)
         {
+            if (data.Length == 0)
+                return; // OpenGL doesn't like it if we send an empty list.
+
             Activate();
 
             m_apiLayer.GL.BufferData(BufferTargetARB.ArrayBuffer, data, m_usageHint);
