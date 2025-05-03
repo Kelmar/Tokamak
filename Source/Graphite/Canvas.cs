@@ -155,7 +155,7 @@ void main()
             return new VectorFormatPCT
             {
                 Point = new Vector3(p.X, p.Y, 0),
-                Color = (Vector4)(pen?.Color ?? Color.White),
+                Color = (pen?.Color ?? Color.White).ToVector(),
                 TexCoord = texCoord
             };
         }
@@ -165,7 +165,7 @@ void main()
             return new VectorFormatPCT
             {
                 Point = new Vector3(x, y, 0),
-                Color = (Vector4)(pen?.Color ?? Color.White),
+                Color = (pen?.Color ?? Color.White).ToVector(),
                 TexCoord = texCoord
             };
         }
@@ -190,7 +190,7 @@ void main()
         // This is a simple test function for now.
         public void DrawImage(ITextureObject texture, Point p)
         {
-            Vector4 color = (Vector4)Color.White;
+            Vector4 color = Color.White.ToVector();
 
             var vects = new VectorFormatPCT[4]
             {

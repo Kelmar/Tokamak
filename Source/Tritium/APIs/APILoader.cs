@@ -12,8 +12,8 @@ namespace Tokamak.Tritium.APIs
     internal class APILoader
     {
         private readonly ILogger m_log;
-        private readonly IDictionary<string, IAPIDescriptor> m_descriptors;
         private readonly TritiumConfig m_config;
+        private readonly IDictionary<string, IAPIDescriptor> m_descriptors;
 
         public APILoader(
             ILogger<APILoader> log,
@@ -21,8 +21,8 @@ namespace Tokamak.Tritium.APIs
             IList<IAPIDescriptor> descriptors)
         {
             m_log = log;
-            m_descriptors = descriptors.ToDictionary(a => a.ID, a => a, StringComparer.InvariantCultureIgnoreCase);
             m_config = config.Value;
+            m_descriptors = descriptors.ToDictionary(a => a.ID, a => a, StringComparer.InvariantCultureIgnoreCase);
         }
 
         private IAPIDescriptor SelectAPI()
@@ -53,7 +53,7 @@ namespace Tokamak.Tritium.APIs
                     .FirstOrDefault();
 
                 if (rval == null)
-                    throw new Exception($"Unable to find a suitable graphics API to use!");
+                    throw new NotSupportedException("Unable to find a suitable graphics API to use!");
             }
 
             m_log.Info("Using Graphics API: {0}", rval.Name);

@@ -123,7 +123,7 @@ void main()
             return new VectorFormatPCT
             {
                 Point = new Vector3(v.X, v.Y, 0),
-                Color = (Vector4)color,
+                Color = color.ToVector(),
                 TexCoord = texCoord
             };
         }

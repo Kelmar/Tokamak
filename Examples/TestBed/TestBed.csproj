@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Stashbox" Version="5.17.0" />
+    <PackageReference Include="Stashbox" Version="5.17.1" />
     <PackageReference Include="StbImageSharp" Version="2.30.15" />
   </ItemGroup>
 

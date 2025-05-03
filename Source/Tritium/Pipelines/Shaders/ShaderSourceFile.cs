@@ -13,10 +13,10 @@ namespace Tokamak.Tritium.Pipelines.Shaders
             Type = type;
             m_path = path;
 
+            // TODO: Fix this, not using the VFS
+
             if (!File.Exists(m_path))
-            {
-                throw new Exception($"Shader file not found: {m_path}");
-            }
+                throw new FileNotFoundException("Shader file not found.", m_path);
         }
 
         public ShaderType Type { get; }

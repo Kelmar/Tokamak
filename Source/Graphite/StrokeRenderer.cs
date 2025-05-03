@@ -67,7 +67,7 @@ namespace Graphite
             Vectors.Add(new VectorFormatPCT
             {
                 Point = new Vector3(vector.X, vector.Y, 0),
-                Color = (Vector4)m_stroke.Pen.Color,
+                Color = m_stroke.Pen.Color.ToVector(),
                 TexCoord = new Vector2(0, 0)
             });
         }

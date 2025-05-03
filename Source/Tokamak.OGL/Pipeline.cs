@@ -37,8 +37,8 @@ namespace Tokamak.OGL
 
         public Color ClearColor
         {
-            get => (Color)m_clearColor;
-            init => m_clearColor = (Vector4)value;
+            get => Color.FromVector(m_clearColor);
+            init => m_clearColor = value.ToVector();
         }
 
         public dynamic Uniforms { get; }

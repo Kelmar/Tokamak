@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tokamak.Tritium.APIs
+﻿namespace Tokamak.Tritium.APIs
 {
     /// <summary>
     /// Support level for a graphics API
@@ -12,6 +6,15 @@ namespace Tokamak.Tritium.APIs
     /// <remarks>
     /// This enum represents a "weighted" value.
     /// The higher the value the more preferred that API is to be used.
+    /// 
+    /// Note that we leave a fairly large gap between values to allow for multiple APIs
+    /// at the same level but still providing more preferred weights over one or the other.
+    /// 
+    /// For example on Mac OS X APIs might have the following weights:
+    /// DirectX = 100 -- DirectX emulated through Metal
+    /// OpenGL  = 200 -- Implemented, but less desirable than more optimized Vulkan layer.
+    /// Vulkan  = 210 -- Prefer Vulkan over OpenGL
+    /// Metal   = 300 -- Preferred native implementation.
     /// </remarks>
     public enum SupportLevel
     {
