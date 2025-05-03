@@ -1,7 +1,8 @@
 # Tokamak
 A C# engine for games and virtual worlds.
 
-This project is just starting out.  The goal is to provide the basis for doing the basic building blocks of a game engine that can be used in a variety of different ways.
+This project is just starting out.  The goal is to provide a set up easily understood building blocks that can be combined togehter to build the application, or to be 
+replaced, updated, and extended however the user wishes to fill their desired needs.
 
 ## Projects
 - Abstractions\
