@@ -76,8 +76,8 @@ namespace TestBed
 
             m_scene.AddObject(m_test);
 
-            m_scene.Camera.Location = new System.Numerics.Vector3(0, 0, 10);
-            m_scene.Camera.LookAt = System.Numerics.Vector3.Zero;
+            m_scene.Camera.Location = new Vector3(0, 0, 10);
+            m_scene.Camera.LookAt = Vector3.Zero;
 
             //m_renderers.Add(m_scene);
             //m_renderers.Add(m_canvas);
@@ -136,7 +136,7 @@ namespace TestBed
             while (m_rot >= 360)
                 m_rot -= 360;
 
-            m_test.Rotation = new System.Numerics.Vector3(0, m_rot, 0);
+            m_test.Rotation = new Vector3(0, m_rot, 0);
         }
 
         private void ComputeFPS()

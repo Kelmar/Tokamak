@@ -10,6 +10,8 @@ namespace Tokamak.Tritium.Buffers
 {
     public interface IElementBuffer : IDeviceResource
     {
+        void Activate();
+
         void Set(in ReadOnlySpan<uint> values);
     }
 }

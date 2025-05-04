@@ -36,7 +36,7 @@ namespace TestBed
             var mesh = reader.Import().FirstOrDefault();
 
             if (mesh == null)
-                throw new Exception($"Unable to load mesh.");
+                throw new Exception("Unable to load mesh.");
 
             m_vertexBuffer = m_apiLayer.GetVertexBuffer<VectorFormatPNCT>(BufferUsage.Static);
             m_elementBuffer = m_apiLayer.GetElementBuffer(BufferUsage.Static);
@@ -54,8 +54,8 @@ namespace TestBed
 
         public override void Render(ICommandList cmdList)
         {
-            //m_elementBuffer.Activate();
-            //m_vertexBuffer.Activate();
+            m_elementBuffer.Activate();
+            m_vertexBuffer.Activate();
 
             cmdList.DrawElements(m_indexCount);
         }
