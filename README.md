@@ -1,7 +1,7 @@
 # Tokamak
 A C# engine for games and virtual worlds.
 
-This project is just starting out.  The goal is to provide a set up easily understood building blocks that can be combined togehter to build the application, or to be 
+This project is just starting out.  The goal is to provide a set up easily understood building blocks that can be combined together to build the application, or to be 
 replaced, updated, and extended however the user wishes to fill their desired needs.
 
 ## Projects
@@ -9,13 +9,13 @@ replaced, updated, and extended however the user wishes to fill their desired ne
   This project holds all of the key abstraction interfaces.
 
 - Core\
-  Base runtime classes, provides configuration and application host management.  Similar to the NET Generic Host, but with a focus on applications with realtime processing.
+  Base runtime classes, provides configuration and application host management.  Similar to the NET Generic Host, but with a focus on applications with real time processing.
 
 - Graphite\
   2D Graphics library with a rich set of functions for rendering beautiful UIs and other 2D graphics.
 
-- Mathmatics\
-  Additional mahtmatical functions for processing color, basic physics primitives and hit testing.
+- Mathematics\
+  Additional mathematical functions for processing color, basic physics primitives and hit testing.
 
 - Quill\
   Library for doing reading and rendering of typography.
@@ -37,7 +37,7 @@ Not yet tested it under Linux or Mac OS X, but if you have the .NET 8.0 tools in
 dotnet build Tokamak.sln
 ```
 
-The current executable is the TestBed project where all the expiramentation is going on.
+The current executable is the TestBed project where all the experimentation is going on.
 
 # TODOS
 - [ ] Abstractions

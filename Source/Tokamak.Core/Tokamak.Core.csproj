@@ -4,7 +4,30 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Tokamak Core Hosting</Title>
+    <PackageProjectUrl>https://github.com/Kelmar/Tokamak</PackageProjectUrl>
+    <Copyright>Copyright (c) 2022-2024 Bryce Simonds</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>tokamak_logo_outlined_128x128.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Kelmar/Tokamak</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <Authors>Kelmar</Authors>
+    <PackageTags>game; hosting; app</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+        <Pack>True</Pack>
+        <PackagePath>..\..\README.md</PackagePath>
+    </None>
+    <None Include="..\..\docs\tokamak_logo_outlined_128x128.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
