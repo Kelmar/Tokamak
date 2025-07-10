@@ -34,7 +34,14 @@ namespace Tokamak.Core.Hosting
             m_appConfig = new Lazy<IConfiguration>(BuildAppConfig);
         }
 
-        public IStashboxContainer Container => m_container!;
+        public IStashboxContainer Container
+        {
+            get
+            {
+                Debug.Assert(m_container != null);
+                return m_container;
+            }
+        }
 
         public IHostEnvironment? HostEnvironment { get; private set; }
 

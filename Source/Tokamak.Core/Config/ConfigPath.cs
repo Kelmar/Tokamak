@@ -62,7 +62,7 @@ namespace Tokamak.Core.Config
         /// <param name="sections">A list of keys to combine into a path.</param>
         /// <returns>A combined path.</returns>
         public static string Combine(params string[] sections) =>
-             String.Join(SEPARATOR, sections
+            String.Join(SEPARATOR, sections
                 .Where(s => !String.IsNullOrWhiteSpace(s))
                 .Select(SanitizeKey)
             );
