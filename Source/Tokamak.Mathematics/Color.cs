@@ -18,6 +18,8 @@ namespace Tokamak.Mathematics
         /// </remarks>
         public const double DefaultGamma = 2.2;
 
+        public const double InverseGamma = 1.0 / DefaultGamma;
+
         private static readonly Color s_black = new Color(0, 0, 0);
 
         private static readonly Color s_darkBlue = new Color(0, 0, 128);
@@ -25,7 +27,8 @@ namespace Tokamak.Mathematics
         private static readonly Color s_darkCyan = new Color(0, 128, 128);
         private static readonly Color s_darkRed = new Color(128, 0, 0);
         private static readonly Color s_purple = new Color(128, 0, 128);
-        private static readonly Color s_brown = new Color(128, 128, 0);
+        private static readonly Color s_brown = new Color(113, 91, 79);
+        private static readonly Color s_darkYellow = new Color(128, 128, 0);
         private static readonly Color s_grey = new Color(192, 192, 192);
         private static readonly Color s_darkGrey = new Color(128, 128, 128);
 
@@ -34,6 +37,7 @@ namespace Tokamak.Mathematics
         private static readonly Color s_liteCyan = new Color(0, 255, 255);
         private static readonly Color s_liteRed = new Color(255, 0, 0);
         private static readonly Color s_magenta = new Color(255, 0, 255);
+        private static readonly Color s_beige = new Color(208, 197, 189);
         private static readonly Color s_yellow = new Color(255, 255, 0);
 
         private static readonly Color s_white = new Color(255, 255, 255);
@@ -46,15 +50,19 @@ namespace Tokamak.Mathematics
         public static ref readonly Color DarkRed => ref s_darkRed;
         public static ref readonly Color Purple => ref s_purple;
         public static ref readonly Color Brown => ref s_brown;
+        public static ref readonly Color DarkYellow => ref s_darkYellow;
         public static ref readonly Color Grey => ref s_grey;
+        public static ref readonly Color Gray => ref s_grey;
 
         public static ref readonly Color DarkGrey => ref s_darkGrey;
+        public static ref readonly Color DarkGray => ref s_darkGrey;
         public static ref readonly Color LiteBlue => ref s_liteBlue;
         public static ref readonly Color LiteGreen => ref s_liteGreen;
         public static ref readonly Color LiteCyan => ref s_liteCyan;
         public static ref readonly Color LiteRed => ref s_liteRed;
         public static ref readonly Color Magenta => ref s_magenta;
         public static ref readonly Color Yellow => ref s_yellow;
+        public static ref readonly Color Beige => ref s_beige;
 
         public static ref readonly Color White => ref s_white;
 
@@ -187,14 +195,14 @@ namespace Tokamak.Mathematics
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GammaToLinear(byte b, double gamma = DefaultGamma)
-            => (255d * Math.Pow(b / 255d, gamma));
+            => Math.Pow(b / 255d, gamma);
 
         /// <summary>
         /// Convert linear color value to gamma color value.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte LinearToGamma(double d, double gamma = DefaultGamma)
-            => (byte)Math.Round(255 * Math.Pow(d / 255d, 1 / gamma));
+            => (byte)Math.Round(255 * Math.Pow(d, 1 / gamma));
 
         /// <summary>
         /// Linearly interpolate between two colors.
