@@ -6,6 +6,8 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
+using Tokamak.Abstractions.Logging;
+
 using Tokamak.Core;
 using Tokamak.Core.Utilities;
 
@@ -21,6 +23,7 @@ using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
 
 namespace Tokamak.OGL
 {
+    [LogName("OpenGL")]
     internal class OpenGLLayer : IAPILayer, ITick
     {
         public event SimpleEvent<Point> OnResize;

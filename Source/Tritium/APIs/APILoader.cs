@@ -9,6 +9,7 @@ using Tokamak.Tritium.APIs.NullRender;
 
 namespace Tokamak.Tritium.APIs
 {
+    [LogName("APILoader")]
     internal class APILoader
     {
         private readonly ILogger m_log;
