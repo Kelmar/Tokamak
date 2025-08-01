@@ -76,7 +76,7 @@ namespace TestBed
 
             m_scene.AddObject(m_test);
 
-            m_scene.Camera.Location = new Vector3(0, 0, 10);
+            m_scene.Camera.Location = new Vector3(0, 0, 3);
             m_scene.Camera.LookAt = Vector3.Zero;
 
             //m_renderers.Add(m_scene);
@@ -84,6 +84,19 @@ namespace TestBed
         }
 
         public void OnRender(double timeDelta)
+        {
+            RenderUI();
+
+            m_scene.Render();
+            m_context.Render();
+
+            /*
+            foreach (var r in m_renderers)
+                r.Render();
+            */
+        }
+
+        private void RenderUI()
         {
             Pen pen = new Pen
             {
@@ -102,14 +115,6 @@ namespace TestBed
 
             //m_canvas.DrawText(pen, m_font, new Point(5, 30), String.Format("FPS: {0:000.0}", m_fps));
             //m_canvas.DrawText(pen, m_font, new Point(5, 60), String.Format("ROT: {0:0.000}", m_rot));
-
-            m_scene.Render();
-            m_context.Render();
-
-            /*
-            foreach (var r in m_renderers)
-                r.Render();
-            */
         }
 
         public void OnUpdate(double timeDelta)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
 
 using Tokamak.Mathematics;
@@ -14,72 +15,6 @@ namespace TestBed.Scenes
 {
     public class Scene : IDisposable//, IRenderable
     {
-        public const string VERTEX = @"#version 450
-
-uniform mat4 projection;
-uniform mat4 view;
-uniform mat4 model;
-
-layout(location = 0) in vec3 Point;
-layout(location = 1) in vec3 Normal;
-layout(location = 2) in vec4 Color;
-layout(location = 3) in vec2 TexCoord;
-
-layout(location = 0) out vec4 fsin_Color;
-layout(location = 1) out vec2 fsin_TexCoord;
-layout(location = 2) out vec3 fsin_Normal;
-layout(location = 3) out vec3 fsin_Position;
-
-void main()
-{
-    //gl_Position = projection * view * model * vec4(Point, 1.0);
-    gl_Position = vec4(Point, 1.0) * model * view * projection;
-
-    // Get the position in world space.
-    fsin_Position = vec3(model * vec4(Point, 1.0));
-
-    fsin_Normal = Normal * mat3(transpose(inverse(model)));
-
-    fsin_Color = Color;
-    fsin_TexCoord = TexCoord;
-}
-";
-
-
-        public const string FRAGMENT = @"#version 450
-
-layout(location = 0) in vec4 fsin_Color;
-layout(location = 1) in vec2 fsin_TexCoord;
-layout(location = 2) in vec3 fsin_Normal;
-layout(location = 3) in vec3 fsin_Position;
-
-layout(location = 0) out vec4 fsout_Color;
-
-uniform int is8Bit;
-uniform vec3 lightColor;
-uniform vec3 lightPosition;
-uniform sampler2D texture0;
-
-void main()
-{
-    float ambientStrength = 0.1;
-
-    vec4 tx = texture(texture0, fsin_TexCoord);
-    vec4 clr = is8Bit != 0 ? vec4(fsin_Color.rgb, fsin_Color.a * tx.r) : tx * fsin_Color;
-
-    vec4 ambient = vec4(lightColor * ambientStrength, 1);
-
-    vec3 normal = normalize(fsin_Normal);
-    vec3 lightDirection = normalize(lightPosition - fsin_Position);
-
-    float diff = max(dot(normal, lightDirection), 0.0);
-    vec4 diffuse = vec4(diff * lightColor, 1);
-
-    vec4 result = (ambient + diffuse) * clr;
-
-    fsout_Color = result;
-}
-";
         private readonly IAPILayer m_apiLayer;
 
         private readonly IPipeline m_pipeline;
@@ -95,6 +30,9 @@ void main()
 
             m_apiLayer.OnResize += Resize;
 
+            string vertexShader = File.ReadAllText("shaders/basic.vert");
+            string fragmentShader = File.ReadAllText("shaders/basic.frag");
+
             m_pipeline = m_apiLayer.CreatePipeline(cfg =>
             {
                 cfg.UseInputFormat<VectorFormatPNCT>();
@@ -103,8 +41,8 @@ void main()
                 cfg.EnableDepthTest(true);
                 cfg.UsePrimitive(PrimitiveType.TriangleList);
 
-                cfg.AddShaderCode(ShaderType.Vertex, VERTEX);
-                cfg.AddShaderCode(ShaderType.Fragment, FRAGMENT);
+                cfg.AddShaderCode(ShaderType.Vertex, vertexShader);
+                cfg.AddShaderCode(ShaderType.Fragment, fragmentShader);
             });
 
             m_commandList = m_apiLayer.CreateCommandList();
@@ -167,6 +105,8 @@ void main()
 
             m_pipeline.Uniforms.projection = Projection;
             m_pipeline.Uniforms.view = m_camera.View;
+            m_pipeline.Uniforms.gamma = (float)Color.InverseGamma;
+            m_pipeline.Uniforms.camera = m_camera.Location;
 
             m_pipeline.Uniforms.lightColor = new Vector3(1, 1, 1);
             m_pipeline.Uniforms.lightPosition = new Vector3(10, 0, 10);
