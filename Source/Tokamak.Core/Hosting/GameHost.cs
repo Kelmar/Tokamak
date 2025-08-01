@@ -15,6 +15,7 @@ namespace Tokamak.Core.Hosting
     /// <summary>
     /// GameHost implementation.
     /// </summary>
+    [LogName("GameHost")]
     public class GameHost : IGameHost
     {
         private readonly IStashboxContainer m_container;
@@ -140,7 +141,7 @@ namespace Tokamak.Core.Hosting
             StartBackground();
             StartComponents();
 
-            App.OnLoad();
+            // The App.OnLoad() gets called by the API Layer when it creates the main window.
         }
 
         public virtual void MainLoop()
