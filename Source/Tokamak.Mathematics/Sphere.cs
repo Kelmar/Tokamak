@@ -48,17 +48,23 @@ namespace Tokamak.Mathematics
         /// Check to see if a point is inside the sphere or not.
         /// </summary>
         /// <param name="point">Point to check</param>
-        /// <returns>The location of the point relative to the sphere.</returns>
+        /// <returns>Relation of the point to the sphere's surface.</returns>
         public Boundary Contains(in Vector3 point)
         {
             return Location.DistanceTo(point) switch
             {
-                float f when f < -MathX.FUZ => Boundary.Inside,
-                float f when f > MathX.FUZ => Boundary.Outside,
+                float f when f < (Radius - MathX.FUZ) => Boundary.Inside,
+                float f when f > (Radius + MathX.FUZ) => Boundary.Outside,
                 _ => Boundary.On
             };
         }
 
+        /// <summary>
+        /// Tests to see if the supplied ray segment intersects with the sphere.
+        /// </summary>
+        /// <param name="start">The starting point of the ray segment.</param>
+        /// <param name="end">The ending point of the ray segment.</param>
+        /// <returns>True if the ray intersects with the sphere, false if not.</returns>
         public bool RayTest(in Vector3 start, in Vector3 end)
         {
             Vector3 dir = (end - start).Normalize();

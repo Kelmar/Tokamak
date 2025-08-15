@@ -50,9 +50,9 @@ namespace Tokamak.Mathematics
         public int Bottom => Location.Y + Size.Y;
 
         /// <summary>
-        /// Gets a boolean indicating if this rectangle is valid or not.
+        /// Checks if the rectangle is less than or equal to a zero size.
         /// </summary>
-        public bool IsValid => (Size.X > 0) && (Size.Y > 0);
+        public bool IsEmpty => (Size.X <= 0) || (Size.Y <= 0);
 
         /// <summary>
         /// Get the rectangle that intersects with the supplied rectangle and this rectangle.
