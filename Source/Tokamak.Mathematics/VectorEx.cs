@@ -10,45 +10,6 @@ namespace Tokamak.Mathematics
     public static class VectorEx
     {
         /// <summary>
-        /// Linearly interpolate between two vectors.
-        /// </summary>
-        /// <param name="delta">Distance to interpolate by</param>
-        /// <param name="v1">Starting value</param>
-        /// <param name="v2">Ending value</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Vector2 Lerp(float delta, in Vector2 v1, in Vector2 v2)
-        {
-            delta = Math.Clamp(delta, 0, 1);
-            return (v1 * (1 - delta)) + (v2 * delta);
-        }
-
-        /// <summary>
-        /// Linearly interpolate between two vectors.
-        /// </summary>
-        /// <param name="delta">Distance to interpolate by</param>
-        /// <param name="v1">Starting value</param>
-        /// <param name="v2">Ending value</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Vector3 Lerp(float delta, in Vector3 v1, in Vector3 v2)
-        {
-            delta = Math.Clamp(delta, 0, 1);
-            return (v1 * (1 - delta)) + (v2 * delta);
-        }
-
-        /// <summary>
-        /// Linearly interpolate between two vectors.
-        /// </summary>
-        /// <param name="delta">Distance to interpolate by</param>
-        /// <param name="v1">Starting value</param>
-        /// <param name="v2">Ending value</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Vector4 Lerp(float delta, in Vector4 v1, in Vector4 v2)
-        {
-            delta = Math.Clamp(delta, 0, 1);
-            return (v1 * (1 - delta)) + (v2 * delta);
-        }
-
-        /// <summary>
         /// Convert float array to a Vector2.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

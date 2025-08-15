@@ -29,11 +29,11 @@ namespace Tokamak.Mathematics
         /// <summary>
         /// Linearly interpolate between two values.
         /// </summary>
-        /// <param name="delta">Distance to interpolate by</param>
         /// <param name="v1">Starting value</param>
         /// <param name="v2">Ending value</param>
+        /// <param name="delta">Distance to interpolate by</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static double Lerp(double delta, double v1, double v2)
+        public static double Lerp(double v1, double v2, double delta)
         {
             delta = Math.Clamp(delta, 0, 1);
             return (v1 * (1 - delta)) + (v2 * delta);
@@ -42,11 +42,11 @@ namespace Tokamak.Mathematics
         /// <summary>
         /// Linearly interpolate between two values.
         /// </summary>
-        /// <param name="delta">Distance to interpolate by</param>
         /// <param name="v1">Starting value</param>
         /// <param name="v2">Ending value</param>
+        /// <param name="delta">Distance to interpolate by</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static float LerpF(float delta, float v1, float v2)
+        public static float LerpF(float v1, float v2, float delta)
         {
             delta = Math.Clamp(delta, 0, 1);
             return (v1 * (1 - delta)) + (v2 * delta);
