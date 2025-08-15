@@ -52,7 +52,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
                 .SelectMany(v => v.Properties[0].AsEnumerable<float>())
                 .ToList() // Chunk needs the list to be realized first.
                 .Chunk(3) // Group into threes
-                .Select(MathX.ToVector3) // Convert to vertex
+                .Select(VectorEx.ToVector3) // Convert to vertex
                 .ToList();
 
             var normals = Node
@@ -61,7 +61,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
                 .SelectMany(n => n.Properties[0].AsEnumerable<float>())
                 .ToList()
                 .Chunk(3)
-                .Select(MathX.ToVector3)
+                .Select(VectorEx.ToVector3)
                 .ToList();
 
             var indices = Node

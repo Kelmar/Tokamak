@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-using Silk.NET.Maths;
-
 namespace Tokamak.Mathematics
 {
     /// <summary>
@@ -94,9 +92,6 @@ namespace Tokamak.Mathematics
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(Point p) => (Left >= p.X) && (Top >= p.Y) && (p.X <= Right) && (p.Y <= Bottom);
-
-        public static implicit operator Rectangle<int>(in Rect r) => new Rectangle<int>(r.Location, r.Size);
-        public static implicit operator Rect(in Rectangle<int> r) => new Rect(r.Origin, r.Size);
 
         public static Rect operator +(in Rect r, in Point p)
         {

@@ -53,5 +53,28 @@ namespace Tokamak.Mathematics
         /// </returns>
         public static Boundary WhichSide(this in Plane plane, in Sphere sphere) =>
             WhichSide(plane, sphere.Location, sphere.Radius);
+
+
+        /// <summary>
+        /// Test to see if a ray segment intersects the plane.
+        /// </summary>
+        /// <param name="plane">The plane that the intersection will be tested against.</param>
+        /// <param name="start">The start of the ray segment</param>
+        /// <param name="end">The end of the ray segment.</param>
+        /// <param name="t">The resulting time delta along the ray originating from start where the intersection occurs.</param>
+        /// <returns>true the ray intersects, false if not.</returns>
+        public static bool RayTest(this in Plane plane, in Vector3 start, in Vector3 end, out float t)
+        {
+            float den = Vector3.Dot(end - start, plane.Normal);
+
+            if (MathX.AlmostEquals(den, 0))
+            {
+                t = 0;
+                return false;
+            }
+
+            t = -plane.DistanceTo(start) / den;
+            return true;
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace MathTests
             Vector2 v1 = new Vector2(3, -5);
             Vector2 v2 = new Vector2(7, 5);
 
-            float res = MathX.Cross(v1, v2);
+            float res = VectorEx.Cross(v1, v2);
 
             Assert.That(res, Is.EqualTo(50));
         }

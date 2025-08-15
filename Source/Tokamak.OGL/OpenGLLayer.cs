@@ -12,6 +12,7 @@ using Tokamak.Core;
 using Tokamak.Core.Utilities;
 
 using Tokamak.Mathematics;
+using Tokamak.Mathematics.Silk;
 
 using Tokamak.Tritium.APIs;
 
@@ -112,7 +113,7 @@ namespace Tokamak.OGL
                     Gamma = m.Gamma,
                     DPI = new Point(192, 192),
                     RawDPI = new Vector2(192, 192),
-                    WorkArea = m.Bounds
+                    WorkArea = m.Bounds.ToRect()
                 };
             }
         }

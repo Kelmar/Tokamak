@@ -2,8 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
-using Silk.NET.Maths;
-
 namespace Tokamak.Mathematics
 {
     /// <summary>
@@ -78,9 +76,6 @@ namespace Tokamak.Mathematics
         public static implicit operator Vector2(Point p) => new Vector2(p.X, p.Y);
         public static implicit operator Vector3(Point p) => new Vector3(p.X, p.Y, 0);
         public static implicit operator Vector4(Point p) => new Vector4(p.X, p.Y, 0, 1);
-
-        public static implicit operator Point(Vector2D<int> p) => new Point(p.X, p.Y);
-        public static implicit operator Vector2D<int>(Point p) => new Vector2D<int>(p.X, p.Y);
 
         public static Point operator +(in Point p) => p;
 

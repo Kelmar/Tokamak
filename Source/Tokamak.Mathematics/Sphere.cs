@@ -61,7 +61,7 @@ namespace Tokamak.Mathematics
 
         public bool RayTest(in Vector3 start, in Vector3 end)
         {
-            var dir = (end - start).Normalize();
+            Vector3 dir = (end - start).Normalize();
 
             Vector3 oc = start - Location;
 
