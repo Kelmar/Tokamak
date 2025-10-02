@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 using Stashbox;
 
-using Tokamak.Abstractions.Logging;
-using Tokamak.Abstractions.Config;
+using Tokamak.Logging.Abstractions;
+using Tokamak.Config.Abstractions;
 
 namespace Tokamak.Core.Hosting
 {

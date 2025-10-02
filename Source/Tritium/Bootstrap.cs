@@ -1,6 +1,6 @@
 ﻿using Stashbox;
 
-using Tokamak.Core;
+using Tokamak.Hosting.Abstractions;
 
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.APIs.NullRender;

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-using Tokamak.Abstractions.VFS;
+using Tokamak.VFS.Abstractions;
 
 namespace Tokamak.VFS
 {

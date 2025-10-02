@@ -1,4 +1,4 @@
-﻿namespace Tokamak.Abstractions.VFS
+﻿namespace Tokamak.VFS.Abstractions
 {
     public record MountInfo
     {

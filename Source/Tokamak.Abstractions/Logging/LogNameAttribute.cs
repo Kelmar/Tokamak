@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tokamak.Abstractions.Logging
+namespace Tokamak.Logging.Abstractions
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public sealed class LogNameAttribute : Attribute

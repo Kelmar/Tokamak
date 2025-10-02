@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-using Tokamak.Abstractions.Config;
+using Tokamak.Config.Abstractions;
 
 using Tokamak.Core.Utilities;
 

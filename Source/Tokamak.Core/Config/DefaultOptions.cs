@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-using Tokamak.Abstractions.Config;
+using Tokamak.Config.Abstractions;
 
 namespace Tokamak.Core.Config
 {

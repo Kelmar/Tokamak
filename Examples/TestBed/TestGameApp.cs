@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.IO;
 
-using Tokamak.Core;
+using Tokamak.Hosting.Abstractions;
 
 using Tokamak.Mathematics;
 
@@ -27,7 +27,7 @@ namespace TestBed
         private const float ROT_AMOUNT = 1;//0.5f;
 
         private Context m_context = null;
-        private Font m_font = null;
+        //private Font m_font = null;
         private Scene m_scene = null;
 
         //private readonly List<IRenderable> m_renderers = new List<IRenderable>();

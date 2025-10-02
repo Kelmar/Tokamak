@@ -1,4 +1,4 @@
-﻿using Tokamak.Core.Utilities;
+﻿using Tokamak.Utilities;
 
 namespace Tokamak.Tritium.APIs
 {

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Tokamak.Abstractions.VFS
+namespace Tokamak.VFS.Abstractions
 {
     public interface IFileSystem
     {

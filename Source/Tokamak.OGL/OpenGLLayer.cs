@@ -6,10 +6,10 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
-using Tokamak.Abstractions.Logging;
+using Tokamak.Logging.Abstractions;
+using Tokamak.Hosting.Abstractions;
 
-using Tokamak.Core;
-using Tokamak.Core.Utilities;
+using Tokamak.Utilities;
 
 using Tokamak.Mathematics;
 using Tokamak.Mathematics.Silk;

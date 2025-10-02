@@ -1,4 +1,4 @@
-﻿namespace Tokamak.Abstractions.Config
+﻿namespace Tokamak.Config.Abstractions
 {
     public interface IConfiguration : IConfigSection
     {

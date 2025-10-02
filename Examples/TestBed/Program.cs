@@ -1,7 +1,9 @@
 ﻿using System;
 
-using Tokamak.Core;
-using Tokamak.Core.Logging;
+using Tokamak.Hosting.Abstractions;
+
+using Tokamak.Hosting;
+using Tokamak.Logging;
 
 using Tokamak.Tritium;
 

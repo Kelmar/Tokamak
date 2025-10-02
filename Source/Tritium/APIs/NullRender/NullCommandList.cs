@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-using Tokamak.Core.Utilities;
+using Tokamak.Utilities;
 
 namespace Tokamak.Tritium.APIs.NullRender
 {

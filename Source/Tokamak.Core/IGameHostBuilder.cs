@@ -2,7 +2,7 @@
 
 using Stashbox;
 
-using Tokamak.Abstractions.Config;
+using Tokamak.Config.Abstractions;
 
 using Tokamak.Core.Config;
 

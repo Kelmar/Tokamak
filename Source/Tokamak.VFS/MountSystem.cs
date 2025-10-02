@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using Tokamak.Abstractions.VFS;
+using Tokamak.VFS.Abstractions;
 
 namespace Tokamak.VFS
 {

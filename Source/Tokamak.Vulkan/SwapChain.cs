@@ -7,7 +7,7 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Silk.NET.Windowing;
 
-using Tokamak.Abstractions.Logging;
+using Tokamak.Logging.Abstractions;
 
 using Tokamak.Vulkan.NativeWrapper;
 

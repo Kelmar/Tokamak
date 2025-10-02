@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-using Tokamak.Abstractions.Logging;
+using Tokamak.Logging.Abstractions;
 
 using Tokamak.Core.Utilities;
 

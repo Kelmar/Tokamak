@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using Tokamak.Core.Utilities;
+using Tokamak.Utilities;
 
 using Tokamak.Tritium.Pipelines;
 

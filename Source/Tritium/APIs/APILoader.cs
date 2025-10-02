@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Tokamak.Abstractions.Config;
-using Tokamak.Abstractions.Logging;
+using Tokamak.Config.Abstractions;
+using Tokamak.Logging.Abstractions;
 
 using Tokamak.Tritium.APIs.NullRender;
 

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 using Silk.NET.Vulkan;
 
-using Tokamak.Abstractions.Logging;
+using Tokamak.Logging.Abstractions;
 
-using Tokamak.Core.Utilities;
+using Tokamak.Utilities;
 
 using Tokamak.Mathematics;
 

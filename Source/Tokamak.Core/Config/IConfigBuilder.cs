@@ -1,4 +1,4 @@
-﻿using Tokamak.Abstractions.Config;
+﻿using Tokamak.Config.Abstractions;
 
 namespace Tokamak.Core.Config
 {

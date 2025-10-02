@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Tokamak.Abstractions.Logging
+namespace Tokamak.Logging.Abstractions
 {
     /// <summary>
     /// Void logger

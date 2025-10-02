@@ -3,9 +3,9 @@ using System.Numerics;
 
 using Silk.NET.OpenGL;
 
-using Tokamak.Core.Utilities;
-using Tokamak.Tritium.APIs;
+using Tokamak.Utilities;
 
+using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Pipelines;
 
 namespace Tokamak.OGL

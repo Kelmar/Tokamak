@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
-using Tokamak.Abstractions.Config;
+using Tokamak.Config.Abstractions;
 
 namespace Tokamak.Core.Config
 {

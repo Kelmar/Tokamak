@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace Tokamak.Abstractions.VFS
+namespace Tokamak.VFS.Abstractions
 {
     public interface IMountSystem
     {

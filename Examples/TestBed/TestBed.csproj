@@ -26,14 +26,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Source\Tokamak.Abstractions\Tokamak.Abstractions.csproj" />
-    <ProjectReference Include="..\..\Source\Tokamak.Core\Tokamak.Core.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Graphite\Tokamak.Graphite.csproj" />
+    <ProjectReference Include="..\..\Source\Tokamak.Hosting\Tokamak.Hosting.csproj" />
+    <ProjectReference Include="..\..\Source\Tokamak.Logging\Tokamak.Logging.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.OGL\Tokamak.OGL.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Quill\Tokamak.Quill.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Readers\Tokamak.Readers.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.VFS\Tokamak.VFS.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Vulkan\Tokamak.Vulkan.csproj" />
     <ProjectReference Include="..\..\Source\Tritium\Tokamak.Tritium.csproj" />
+    <ProjectReference Include="..\..\Tokamak.Utilities\Tokamak.Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>

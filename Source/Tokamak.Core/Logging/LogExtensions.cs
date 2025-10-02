@@ -1,6 +1,6 @@
 ﻿using Stashbox;
 
-using Tokamak.Abstractions.Logging;
+using Tokamak.Logging.Abstractions;
 
 namespace Tokamak.Core.Logging
 {

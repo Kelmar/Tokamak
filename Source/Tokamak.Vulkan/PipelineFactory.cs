@@ -4,9 +4,11 @@ using System.Linq;
 
 using Silk.NET.Vulkan;
 
-using Tokamak.Core.Utilities;
+using Tokamak.Utilities;
+
 using Tokamak.Tritium.Pipelines;
 using Tokamak.Tritium.Pipelines.Shaders;
+
 using Tokamak.Vulkan.NativeWrapper;
 
 namespace Tokamak.Vulkan

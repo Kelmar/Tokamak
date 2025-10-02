@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tokamak.Abstractions.Config
+namespace Tokamak.Config.Abstractions
 {
     public interface IConfigSection : IEnumerable<KeyValuePair<string, string>>
     {
