@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -7,9 +8,12 @@ using System.Runtime.InteropServices;
 using Tokamak.Mathematics;
 
 using Tokamak.Tritium.APIs;
+
 using Tokamak.Tritium.Buffers;
 using Tokamak.Tritium.Buffers.Formats;
+
 using Tokamak.Tritium.Geometry;
+
 using Tokamak.Tritium.Pipelines;
 using Tokamak.Tritium.Pipelines.Shaders;
 
@@ -113,9 +117,9 @@ void main()
 
         public void Draw(PrimitiveType primitiveType, IEnumerable<Vector2> vectors, Color color, ITextureObject? texture = null)
         {
-            var vects = vectors.Select(v => BuildVectorPCT(v, color, Vector2.Zero));
+            var vectorList = vectors.Select(v => BuildVectorPCT(v, color, Vector2.Zero));
 
-            AddCall(primitiveType, vects, texture);
+            AddCall(primitiveType, vectorList, texture);
         }
 
         private VectorFormatPCT BuildVectorPCT(in Vector2 v, Color color, Vector2 texCoord)
@@ -130,17 +134,17 @@ void main()
 
         internal void AddCall(PrimitiveType type, IEnumerable<VectorFormatPCT> vectors, ITextureObject? texture = null)
         {
-            var vects = vectors.ToList();
+            var vectorList = vectors.ToList();
 
             var call = new RenderCall
             {
                 Type = type,
                 VertexOffset = m_vectors.Count,
-                VertexCount = vects.Count(),
+                VertexCount = vectorList.Count(),
                 Texture = texture
             };
 
-            m_vectors.AddRange(vects);
+            m_vectors.AddRange(vectorList);
 
             m_calls.Add(call);
         }
@@ -153,7 +157,24 @@ void main()
         public void Render()
         {
             if (m_vectors.Count == 0 || m_calls.Count == 0)
-                return; // Nothing to do
+            {
+                // Nothing to do
+#if DEBUG
+                // Debugging sanity checks.
+
+                if (m_vectors.Count != 0 && m_calls.Count == 0)
+                    Debug.Fail("Got vectors without calls?");
+
+                if (m_calls.Count != 0 && m_vectors.Count == 0)
+                    Debug.Fail("Got calls without vectors?");
+#endif
+
+                m_vectors.Clear();
+                m_calls.Clear();
+
+                return; 
+            }
+
 
             ITextureObject? last = null;
 

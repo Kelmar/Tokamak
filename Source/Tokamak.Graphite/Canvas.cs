@@ -79,7 +79,7 @@ namespace Tokamak.Graphite
             if (m_path.Count < 2 || StrokeWidth <= 0 || StrokeColor.Alpha == 0)
                 return; // Do nothing
 
-            m_context.Draw(PrimitiveType.TriangleStrip, m_path, StrokeColor);
+            m_context.Draw(PrimitiveType.TriangleList, m_path, StrokeColor);
         }
 
         public void Fill()
@@ -89,7 +89,7 @@ namespace Tokamak.Graphite
 
             var res = new List<Vector2>();
 
-            // Simulating a triangle fan (navie aproach)
+            // Simulating a triangle fan (naïve approach)
             Vector2 first = m_path[0];
             Vector2 prev = m_path[1];
 

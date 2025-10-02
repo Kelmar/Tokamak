@@ -99,7 +99,7 @@ namespace Graphite
                     p1.MiterDirection *= scale;
                 }
 
-                float cross = MathX.Cross(p1.Direction, p0.Direction);
+                float cross = VectorEx.Cross(p1.Direction, p0.Direction);
 
                 if (cross > 0)
                 {

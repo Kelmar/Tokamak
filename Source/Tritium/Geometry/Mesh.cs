@@ -58,7 +58,9 @@ namespace Tokamak.Tritium.Geometry
                 yield return new VectorFormatPNCT
                 {
                     Point = poly.Vectors[i],
-                    Color = Color.White.ToVector(),
+                    //Color = Color.White.ToVector(),
+                    //Color = Color.Brown.ToVector(),
+                    Color = Color.Beige.ToVector(),
                     Normal = poly.Normals[i],
                     TexCoord = poly.TexCoord[i]
                 };
