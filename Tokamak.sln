@@ -54,6 +54,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Utilities", "Tokama
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Tritium", "Source\Tokamak.Tritium\Tokamak.Tritium.csproj", "{CD8BE6E9-E1DF-B00B-FB88-E0E3D6BC303D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{6C7D234E-0815-47D2-B8B8-263E6885FC13}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{99620BDD-FBD4-4DC6-A1A0-6CE5626C025F}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -135,6 +142,8 @@ Global
 		{8131B79B-763A-4105-AB32-D188E6092C2B} = {5859A128-E628-4FC7-AA18-1D6CB70357ED}
 		{744C8586-80BB-4F8C-8839-C163BFE3BEA6} = {ABC6E9C2-43F2-455A-9168-3CD73578E8E2}
 		{58994960-F8A5-D0F2-61A1-61D45AFB0FDB} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{6C7D234E-0815-47D2-B8B8-263E6885FC13} = {B1FD1B91-527C-47F9-8F1D-78F6A1108420}
+		{99620BDD-FBD4-4DC6-A1A0-6CE5626C025F} = {6C7D234E-0815-47D2-B8B8-263E6885FC13}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {05871E1D-40C8-45D6-A51D-0E321A9A7D4F}
