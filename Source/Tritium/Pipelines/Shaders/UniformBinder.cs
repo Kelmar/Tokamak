@@ -15,7 +15,7 @@ namespace Tokamak.Tritium.Pipelines.Shaders
             m_owner = owner;
         }
 
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        public override bool TryGetMember(GetMemberBinder binder, out object? result)
         {
             if (!m_owner.HasUniform(binder.Name))
             {
@@ -37,8 +37,11 @@ namespace Tokamak.Tritium.Pipelines.Shaders
             return true;
         }
 
-        public override bool TrySetMember(SetMemberBinder binder, object value)
+        public override bool TrySetMember(SetMemberBinder binder, object? value)
         {
+            if (value == null)
+                return false;
+
             if (!m_owner.HasUniform(binder.Name))
                 return false;
 

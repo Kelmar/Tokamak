@@ -31,7 +31,7 @@ namespace Tokamak.Tritium.Scene
         /// <summary>
         /// The SceneManager that is handling this object.
         /// </summary>
-        public SceneManager SceneManager { get; internal set; } = null;
+        public SceneManager? SceneManager { get; internal set; } = null;
 
         /// <summary>
         /// Flags for changing the behavior of how the object is rendered/managed by the SceneManager.

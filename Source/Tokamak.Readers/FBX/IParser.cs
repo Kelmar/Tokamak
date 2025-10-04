@@ -2,6 +2,6 @@
 {
     internal interface IParser
     {
-        Node ReadNode();
+        Node? ReadNode();
     }
 }

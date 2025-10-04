@@ -1,4 +1,6 @@
-﻿namespace Tokamak.Tritium.APIs
+﻿using System;
+
+namespace Tokamak.Tritium.APIs
 {
     /// <summary>
     /// Describes a rendering device of the platform.
@@ -24,6 +26,6 @@
         /// <summary>
         /// Human readable string that names the device.
         /// </summary>
-        public string Name { get; init; }
+        public string Name { get; init; } = String.Empty;
     }
 }

@@ -102,7 +102,7 @@ namespace Tokamak.Readers.FBX
             return BitConverter.ToDouble(buffer, 0);
         }
 
-        public Node ReadNode()
+        public Node? ReadNode()
         {
             long startPos = m_input.Position;
 

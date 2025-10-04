@@ -20,11 +20,11 @@ namespace Tokamak.Readers.FBX
         private readonly IDictionary<string, List<Node>> m_children =
             new Dictionary<string, List<Node>>(StringComparer.CurrentCultureIgnoreCase);
 
-        public string Name { get; set; }
+        public string Name { get; set; } = String.Empty;
 
         public void AddChild(Node child)
         {
-            if (!m_children.TryGetValue(child.Name, out List<Node> children))
+            if (!m_children.TryGetValue(child.Name, out List<Node>? children))
             {
                 children = new List<Node>();
                 m_children[child.Name] = children;
@@ -35,7 +35,7 @@ namespace Tokamak.Readers.FBX
 
         public IEnumerable<Node> GetChildren(string name)
         {
-            if (!m_children.TryGetValue(name, out List<Node> children))
+            if (!m_children.TryGetValue(name, out List<Node>? children))
                 return new List<Node>();
 
             return children;

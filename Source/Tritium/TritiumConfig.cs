@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tokamak.Tritium
 {
@@ -12,7 +8,7 @@ namespace Tokamak.Tritium
         /// Gets or sets which graphics API to use.
         /// </summary>
         /// <example>OpenGL</example>
-        public string API { get; set; }
+        public string API { get; set; } = String.Empty;
 
         /// <summary>
         /// Set if the application is running "headless" mode.

@@ -55,7 +55,7 @@ namespace Tokamak.Tritium.Buffers.Formats
                         Index = -1, // We fill this in later.
                         Offset = offset,
                         BaseType = attr.BaseType,
-                        DeclaringType = field.DeclaringType,
+                        DeclaringType = field.DeclaringType ?? Type, // TODO: Double check this.
                         Count = attr.Count
                     }
                 ).ToList();
@@ -69,6 +69,7 @@ namespace Tokamak.Tritium.Buffers.Formats
                         Offset = item.Offset,
                         Stride = stride,
                         BaseType = item.BaseType,
+                        DeclaringType = item.DeclaringType,
                         Count = item.Count
                     })
                     .ToList();
@@ -98,6 +99,9 @@ namespace Tokamak.Tritium.Buffers.Formats
         /// <summary>
         /// Information about a single field in a layout structure.
         /// </summary>
+        /// <remarks>
+        /// TODO: Migh re-evaluate as a record instead of a class.
+        /// </remarks>
         public class ItemInfo
         {
             /// <summary>
@@ -126,7 +130,7 @@ namespace Tokamak.Tritium.Buffers.Formats
             /// <summary>
             /// The type that was actually declared in the structure.
             /// </summary>
-            public Type DeclaringType { get; set; }
+            public required Type DeclaringType { get; set; }
 
             /// <summary>
             /// The number of BaseType items this field holds.
@@ -161,7 +165,7 @@ namespace Tokamak.Tritium.Buffers.Formats
         {
             Type t = typeof(T);
 
-            if (s_layouts.TryGetValue(t, out Info info))
+            if (s_layouts.TryGetValue(t, out Info? info))
                 return info;
 
             info = new Info(t);

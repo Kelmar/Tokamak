@@ -28,7 +28,7 @@ namespace Tokamak.Tritium.APIs
 
         private IAPIDescriptor SelectAPI()
         {
-            IAPIDescriptor rval = null;
+            IAPIDescriptor? rval = null;
 
             if (m_config.Headless)
             {

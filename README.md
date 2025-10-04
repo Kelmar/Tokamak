@@ -8,7 +8,7 @@ replaced, updated, and extended however the user wishes to fill their desired ne
 - Abstractions\
   This project holds all of the key abstraction interfaces.
 
-- Core\
+- Hosting\
   Base runtime classes, provides configuration and application host management.  Similar to the NET Generic Host, but with a focus on applications with real time processing.
 
 - Graphite\
@@ -25,6 +25,9 @@ replaced, updated, and extended however the user wishes to fill their desired ne
 
 - Tritium\
   Base graphics hardware management and rendering.
+
+- Utilities\
+  Generic runtime utility classes and methods.
 
 - VFS\
   A Virtual File System library

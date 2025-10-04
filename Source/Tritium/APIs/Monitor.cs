@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
+
 using Tokamak.Mathematics;
 
 namespace Tokamak.Tritium.APIs
@@ -21,7 +23,7 @@ namespace Tokamak.Tritium.APIs
         /// <summary>
         /// Name of the monitor registered with the OS if any.
         /// </summary>
-        public string Name { get; init; }
+        public string Name { get; init; } = String.Empty;
 
         /// <summary>
         /// Gets the gamma setting for this monitor.

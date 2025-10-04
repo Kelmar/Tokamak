@@ -18,13 +18,15 @@ namespace Tokamak.Tritium.APIs.NullRender
     /// </summary>
     internal sealed class NullLayer : ITick, IAPILayer
     {
-        // These events are not called from this layer
+        // Warning CS0067: Event declared but never used.
+
 #pragma warning disable 00067
-        public event SimpleEvent<Point> OnResize;
-        public event SimpleEvent<double> OnRender;
+        // These events are not called from this layer
+        public event SimpleEvent<Point> OnResize = delegate { };
+        public event SimpleEvent<double> OnRender = delegate { };
 #pragma warning restore 00067
 
-        public event SimpleEvent OnLoad;
+        public event SimpleEvent? OnLoad;
 
         private bool m_firstTick = true;
 

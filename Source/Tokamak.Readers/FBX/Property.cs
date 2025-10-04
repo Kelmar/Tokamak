@@ -17,11 +17,11 @@ namespace Tokamak.Readers.FBX
     {
         public PropertyType Type { get; internal set; }
 
-        public object Data { get; internal set; }
+        public object? Data { get; internal set; }
 
         public int AsInt() => Convert.ToInt32(Data);
 
-        public string AsString() => Convert.ToString(Data);
+        public string AsString() => Convert.ToString(Data) ?? String.Empty;
 
         public override string ToString()
         {
@@ -69,14 +69,14 @@ namespace Tokamak.Readers.FBX
         {
             Type t = typeof(TTo);
 
-            var rdr = (IEnumerable<TFrom>)Data;
-            return rdr.Select(i => (TTo)Convert.ChangeType(i, t));
+            var rdr = (IEnumerable<TFrom>?)Data;
+            return rdr?.Select(i => (TTo)Convert.ChangeType(i, t)) ?? Enumerable.Empty<TTo>();
         }
 
         private IEnumerable<T> GetReader<T>()
             where T : unmanaged
         {
-            return (IEnumerable<T>)Data;
+            return (IEnumerable<T>?)Data ?? Enumerable.Empty<T>();
         }
 
         /// <summary>

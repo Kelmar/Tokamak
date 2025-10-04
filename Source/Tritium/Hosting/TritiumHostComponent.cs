@@ -5,6 +5,7 @@ using Tokamak.Logging.Abstractions;
 using Tokamak.Hosting.Abstractions;
 
 using Tokamak.Tritium.APIs;
+using System.Diagnostics;
 
 namespace Tokamak.Tritium.Hosting
 {
@@ -16,7 +17,7 @@ namespace Tokamak.Tritium.Hosting
         private readonly IGameHost m_host;
         private readonly Func<IAPILayer> m_layerFactory;
 
-        private IAPILayer m_apiLayer = null;
+        private IAPILayer? m_apiLayer = null;
 
         public TritiumHostComponent(
             ILogger<TritiumHostComponent> log,
@@ -37,16 +38,21 @@ namespace Tokamak.Tritium.Hosting
 
         public void Start()
         {
-            m_log.Debug("Tridium starting.");
+            m_log.Debug("Tritium starting.");
 
             m_apiLayer = m_layerFactory();
+
+            Debug.Assert(m_apiLayer != null, "No API Layer created!");
+
             m_apiLayer.OnRender += m_host.App.OnRender;
             m_apiLayer.OnLoad += m_host.App.OnLoad;
         }
 
         public void Stop()
         {
-            m_log.Debug("Tridium stopping.");
+            m_log.Debug("Tritium stopping.");
+
+            Debug.Assert(m_apiLayer != null, "No API Layer created!");
 
             m_apiLayer.OnLoad -= m_host.App.OnLoad;
             m_apiLayer.OnRender -= m_host.App.OnRender;

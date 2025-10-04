@@ -22,7 +22,7 @@ namespace Tokamak.Readers.FBX
 
         private readonly Encoding m_encoding;
 
-        public FBXReader(Stream input, Encoding encoding = null)
+        public FBXReader(Stream input, Encoding? encoding = null)
         {
             ArgumentNullException.ThrowIfNull(input);
 
@@ -75,7 +75,7 @@ namespace Tokamak.Readers.FBX
 
             for (;;)
             {
-                Node node = m_parser.ReadNode();
+                Node? node = m_parser.ReadNode();
 
                 if (node == null)
                     break;

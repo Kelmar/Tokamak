@@ -12,7 +12,7 @@ namespace Tokamak.Tritium.Geometry
 {
     public class Mesh
     {
-        private List<Polygon> m_polygons;
+        private List<Polygon> m_polygons = new();
 
         public List<Polygon> Polygons
         {
