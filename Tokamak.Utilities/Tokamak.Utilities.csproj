@@ -6,6 +6,14 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Title>Tokamak Utility Library</Title>
+    <PackageProjectUrl>https://github.com/Kelmar/Tokamak</PackageProjectUrl>
+    <Copyright>Copyright (c) 2022-2024 Bryce Simonds</Copyright>
+    <PackageIcon>tokamak_logo_outlined_128x128.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Kelmar/Tokamak</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>Bryce Simonds</Authors>
+    <PackageTags>game; utilities</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

@@ -8,6 +8,14 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Title>Tokamak 3D Graphics Layer</Title>
+    <PackageProjectUrl>https://github.com/Kelmar/Tokamak</PackageProjectUrl>
+    <Copyright>Copyright (c) 2022-2024 Bryce Simonds</Copyright>
+    <PackageIcon>tokamak_logo_outlined_128x128.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Kelmar/Tokamak</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>Bryce Simonds</Authors>
+    <PackageTags>game; graphics</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +29,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\docs\tokamak_logo_outlined_128x128.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
