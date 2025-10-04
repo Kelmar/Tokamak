@@ -22,6 +22,7 @@
     <ProjectReference Include="..\Tokamak.Mathematics.Silk\Tokamak.Mathematics.Silk.csproj" />
     <ProjectReference Include="..\Tokamak.Mathematics\Tokamak.Mathematics.csproj" />
     <ProjectReference Include="..\Tokamak.Tritium\Tokamak.Tritium.csproj" />
+    <ProjectReference Include="..\Tokamak.Utilities\Tokamak.Utilities.csproj" />
   </ItemGroup>
 
 </Project>
