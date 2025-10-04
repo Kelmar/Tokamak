@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Tokamak.Utilities\Tokamak.Utilities.csproj" />
     <ProjectReference Include="..\Tokamak.Abstractions\Tokamak.Abstractions.csproj" />
     <ProjectReference Include="..\Tokamak.Mathematics\Tokamak.Mathematics.csproj" />
     <ProjectReference Include="..\Tokamak.Tritium\Tokamak.Tritium.csproj" />

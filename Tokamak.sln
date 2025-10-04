@@ -50,8 +50,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Hosting", "Source\T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Logging", "Source\Tokamak.Logging\Tokamak.Logging.csproj", "{DB251503-0A9F-4A87-A46A-A4ED0B94E5BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Utilities", "Tokamak.Utilities\Tokamak.Utilities.csproj", "{2BC01369-4189-4EA5-9E44-F5FAE0F8F0D8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Tritium", "Source\Tokamak.Tritium\Tokamak.Tritium.csproj", "{CD8BE6E9-E1DF-B00B-FB88-E0E3D6BC303D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{6C7D234E-0815-47D2-B8B8-263E6885FC13}"
@@ -60,6 +58,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Utilities", "Source\Tokamak.Utilities\Tokamak.Utilities.csproj", "{11966C12-5F97-9941-EAEE-D1C761498477}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -123,14 +123,14 @@ Global
 		{DB251503-0A9F-4A87-A46A-A4ED0B94E5BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB251503-0A9F-4A87-A46A-A4ED0B94E5BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB251503-0A9F-4A87-A46A-A4ED0B94E5BF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2BC01369-4189-4EA5-9E44-F5FAE0F8F0D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2BC01369-4189-4EA5-9E44-F5FAE0F8F0D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2BC01369-4189-4EA5-9E44-F5FAE0F8F0D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2BC01369-4189-4EA5-9E44-F5FAE0F8F0D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD8BE6E9-E1DF-B00B-FB88-E0E3D6BC303D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD8BE6E9-E1DF-B00B-FB88-E0E3D6BC303D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD8BE6E9-E1DF-B00B-FB88-E0E3D6BC303D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD8BE6E9-E1DF-B00B-FB88-E0E3D6BC303D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11966C12-5F97-9941-EAEE-D1C761498477}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11966C12-5F97-9941-EAEE-D1C761498477}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11966C12-5F97-9941-EAEE-D1C761498477}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11966C12-5F97-9941-EAEE-D1C761498477}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

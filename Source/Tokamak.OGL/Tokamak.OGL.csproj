@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Tokamak.Utilities\Tokamak.Utilities.csproj" />
     <ProjectReference Include="..\Tokamak.Abstractions\Tokamak.Abstractions.csproj" />
     <ProjectReference Include="..\Tokamak.Mathematics.Silk\Tokamak.Mathematics.Silk.csproj" />
     <ProjectReference Include="..\Tokamak.Mathematics\Tokamak.Mathematics.csproj" />
