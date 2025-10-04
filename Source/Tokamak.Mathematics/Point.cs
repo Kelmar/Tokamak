@@ -9,30 +9,70 @@ namespace Tokamak.Mathematics
     /// </summary>
     public struct Point
     {
+        #region Pseudo Constant Points
+
         private static Point s_zero = new Point(0, 0);
-
-        private static Point s_one = new Point(1, 1);
-
+        private static Point s_unit = new Point(1, 1);
+        private static Point s_unitX = new Point(1, 0);
+        private static Point s_unitY = new Point(0, 1);
+        
+        /// <summary>
+        /// A readonly point that lies at the origin.
+        /// </summary>
         public static ref readonly Point Zero => ref s_zero;
 
-        public static ref readonly Point One => ref s_one;
+        /// <summary>
+        /// A readonly point that lies at (1, 1)
+        /// </summary>
+        public static ref readonly Point Unit => ref s_unit;
 
+        /// <summary>
+        /// A readonly point that lies at (1, 0)
+        /// </summary>
+        public static ref readonly Point UnitX => ref s_unitX;
+
+        /// <summary>
+        /// A readonly point that lies at (0, 1)
+        /// </summary>
+        public static ref readonly Point UnitY => ref s_unitY;
+
+        #endregion Pseudo Constant Points
+
+        /// <summary>
+        /// Constructs a default point.
+        /// </summary>
         public Point()
         {
         }
 
+        /// <summary>
+        /// Constructs a point with the given X and Y values.
+        /// </summary>
+        /// <param name="x">The X value to use.</param>
+        /// <param name="y">The Y value to use.</param>
         public Point(int x, int y)
         {
             X = x;
             Y = y;
         }
 
+        /// <summary>
+        /// Gets or sets the X value of the point.
+        /// </summary>
         public int X { get; set; } = 0;
 
+        /// <summary>
+        /// Gets or sets teh Y value of the point.
+        /// </summary>
         public int Y { get; set; } = 0;
 
+        /// <summary>
+        /// Converts the point to an array.
+        /// </summary>
+        /// <returns>A two element array where X is the first value an Y is the second.</returns>
         public int[] ToArray() { return [X, Y]; }
 
+        /// <inheritdoc />
         public override string ToString() => $"({X},{Y})";
 
         /// <summary>
@@ -44,7 +84,7 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Translates the Vector2 to a Point by rounding down.
+        /// Translates the Vector2 to a Point by rounding up.
         /// </summary>
         public static Point Ceiling(in Vector2 v)
         {
@@ -52,7 +92,7 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Translates the Vector2 to a Point by rounding up.
+        /// Translates the Vector2 to a Point by rounding down.
         /// </summary>
         public static Point Floor(in Vector2 v)
         {
@@ -101,6 +141,7 @@ namespace Tokamak.Mathematics
 
         public static bool operator !=(in Point lhs, in Point rhs) => (lhs.X != rhs.X || lhs.Y != rhs.Y);
 
+        /// <inheritdoc />
         public override readonly bool Equals([NotNullWhen(true)] object? obj)
         {
             if (obj == null)
@@ -111,6 +152,7 @@ namespace Tokamak.Mathematics
             return this == p;
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             return X ^ Y;

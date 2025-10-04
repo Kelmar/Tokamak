@@ -18,7 +18,12 @@ namespace Tokamak.Mathematics
         /// </remarks>
         public const double DefaultGamma = 2.2;
 
+        /// <summary>
+        /// Inverse of the <seealso cref="DefaultGamma" /> constant.
+        /// </summary>
         public const double InverseGamma = 1.0 / DefaultGamma;
+
+        #region Color Pseudo Constants
 
         private static readonly Color s_black = new Color(0, 0, 0);
 
@@ -65,6 +70,8 @@ namespace Tokamak.Mathematics
         public static ref readonly Color Beige => ref s_beige;
 
         public static ref readonly Color White => ref s_white;
+
+        #endregion Color Pseudo Constants
 
         public byte Red { get; set; }
 
@@ -143,7 +150,8 @@ namespace Tokamak.Mathematics
                 LinearToGamma(r, gamma),
                 LinearToGamma(g, gamma),
                 LinearToGamma(b, gamma),
-             alpha);
+                alpha
+            );
         }
 
         /// <summary>
@@ -163,6 +171,38 @@ namespace Tokamak.Mathematics
         /// </summary>
         public static Color FromHSV(in Vector4 v, double gamma = DefaultGamma)
             => FromHSV(v.X, v.Y, v.Z, v.W, gamma);
+
+        /// <summary>
+        /// Converts the color to a 4 element RGBA byte array.
+        /// </summary>
+        /// <returns>An array with red, green, blue and alpha in that order.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public byte[] ToArrayRGBA()
+            => [Red, Green, Blue, Alpha];
+
+        /// <summary>
+        /// Converts the color to a 3 element RGB byte array.
+        /// </summary>
+        /// <returns>An array with red, green, and blue that order.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public byte[] ToArrayRGB()
+            => [Red, Green, Blue];
+
+        /// <summary>
+        /// Converts the color to a 4 element BGRA byte array.
+        /// </summary>
+        /// <returns>An array with blue, green, red and alpha in that order.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public byte[] ToArrayBGRA()
+            => [Blue, Green, Red, Alpha];
+
+        /// <summary>
+        /// Converts the color to a 3 element BGR byte array.
+        /// </summary>
+        /// <returns>An array with blue, green, and red in that order.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public byte[] ToArrayBGR()
+            => [Blue, Green, Red];
 
         // Convert to/from Vector4
         /// <summary>

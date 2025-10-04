@@ -32,7 +32,7 @@ double pd = MathX.Lerp(0, 1, 0.5); // Should return 0.5
 ```
 
 ### Wrap functions
-You can use the Warp and WrapF functions to wrap a float or double around to some arbitrary minimum/maximum values.
+You can use the Warp and WrapF functions to wrap a float or double around to some arbitrary maximum value.
 ```csharp
 float angle = MathX.WrapF(v, 359); // Keep a value between 0 and 359
 ```

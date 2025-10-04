@@ -12,7 +12,8 @@ namespace Tokamak.Quill
         public RectF Bounds { get; init; }
 
         public int Index { get; init; }
-        public Point Bearing => Point.One;
+
+        public Point Bearing => Point.Unit;
 
         public Vector2 Advance => Vector2.One;
 

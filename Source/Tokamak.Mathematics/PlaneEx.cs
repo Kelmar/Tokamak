@@ -21,14 +21,14 @@ namespace Tokamak.Mathematics
         /// Find out which side of the plane the given point falls on.
         /// </summary>
         /// <remarks>
-        /// This case is basically like the sphere test, but we're basically
-        /// considering the point to be a very very small sphere who's radius is MathX.FUZ.
+        /// This case is basically like the sphere test, but we're considering
+        /// the point to be a very small sphere who's radius is MathX.FUZ.
         /// </remarks>
         /// <param name="plane">The plane to check</param>
         /// <param name="location">The point to check</param>
         /// <returns>
         /// Boundary.Back: Point is behind the plane.
-        /// Boundary.Front: Point infront of the plane.
+        /// Boundary.Front: Point in front of the plane.
         /// Boundary.On: Point is directly on the plane.
         /// </returns>
         public static Boundary WhichSide(this in Plane plane, in Vector3 location, float radius = MathX.FUZ)
@@ -48,12 +48,11 @@ namespace Tokamak.Mathematics
         /// <param name="sphere">The sphere to check</param>
         /// <returns>
         /// Boundary.Back: Sphere is completely behind the plane.
-        /// Boundary.Front: Sphere is complete infront of the plane.
+        /// Boundary.Front: Sphere is complete in front of the plane.
         /// Boundary.On: Sphere intersects the plane in some way.
         /// </returns>
         public static Boundary WhichSide(this in Plane plane, in Sphere sphere) =>
             WhichSide(plane, sphere.Location, sphere.Radius);
-
 
         /// <summary>
         /// Test to see if a ray segment intersects the plane.

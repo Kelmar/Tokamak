@@ -60,7 +60,7 @@ namespace Tokamak.Tritium.Geometry
                     Point = poly.Vectors[i],
                     //Color = Color.White.ToVector(),
                     //Color = Color.Brown.ToVector(),
-                    Color = Color.Beige.ToVector(),
+                    Color = Color.Beige.ToVector(), // Pure white looked blown out.
                     Normal = poly.Normals[i],
                     TexCoord = poly.TexCoord[i]
                 };
