@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tokamak.Quill\Tokamak.Quill.csproj" />
-    <ProjectReference Include="..\Tritium\Tokamak.Tritium.csproj" />
   </ItemGroup>
 
 </Project>

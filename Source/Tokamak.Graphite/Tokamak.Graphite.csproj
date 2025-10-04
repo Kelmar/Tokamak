@@ -10,7 +10,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Tokamak.Mathematics\Tokamak.Mathematics.csproj" />
     <ProjectReference Include="..\Tokamak.Quill\Tokamak.Quill.csproj" />
-    <ProjectReference Include="..\Tritium\Tokamak.Tritium.csproj" />
   </ItemGroup>
 
 </Project>
