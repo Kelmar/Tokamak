@@ -8,23 +8,6 @@ namespace Tokamak.Utilities
     /// </summary>
     public class Notifier : INotifier
     {
-        private sealed class Remover : IDisposable
-        {
-            private readonly ISet<Action> m_watchers;
-            private readonly Action m_watcher;
-
-            public Remover(ISet<Action> watchers, Action watcher)
-            {
-                m_watchers = watchers;
-                m_watcher = watcher;
-            }
-
-            public void Dispose()
-            {
-                m_watchers.Remove(m_watcher);
-            }
-        }
-
         private HashSet<Action> m_watchers = new();
 
         /// <summary>
@@ -43,7 +26,7 @@ namespace Tokamak.Utilities
         public IDisposable Subscribe(Action watcher)
         {
             m_watchers.Add(watcher);
-            return new Remover(m_watchers, watcher);
+            return new DisposeAction(() => m_watchers.Remove(watcher));
         }
 
         /// <summary>
@@ -81,23 +64,6 @@ namespace Tokamak.Utilities
     /// <typeparam name="T">Value type to transmit to the watchers.</typeparam>
     public class Notifier<T> : INotifier<T>
     {
-        private sealed class Remover : IDisposable
-        {
-            private readonly ISet<Action<T>> m_watchers;
-            private readonly Action<T> m_watcher;
-
-            public Remover(ISet<Action<T>> watchers, Action<T> watcher)
-            {
-                m_watchers = watchers;
-                m_watcher = watcher;
-            }
-
-            public void Dispose()
-            {
-                m_watchers.Remove(m_watcher);
-            }
-        }
-
         private HashSet<Action<T>> m_watchers = new();
 
         /// <summary>
@@ -116,7 +82,7 @@ namespace Tokamak.Utilities
         public IDisposable Subscribe(Action<T> watcher)
         {
             m_watchers.Add(watcher);
-            return new Remover(m_watchers, watcher);
+            return new DisposeAction(() => m_watchers.Remove(watcher));
         }
 
         /// <summary>

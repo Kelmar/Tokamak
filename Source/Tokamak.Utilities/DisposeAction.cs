@@ -5,6 +5,14 @@ namespace Tokamak.Utilities
     /// <summary>
     /// Utility that will call the supplied action when it is disposed.
     /// </summary>
+    /// <remarks>
+    /// This is similar in behavior to a finally keyword, except that it
+    /// can be returned to a caller so that it may clean up a resource
+    /// when it is done with it.
+    /// 
+    /// This is mostly useful for when writing a whole new class to
+    /// effectively execute a single method would normally be overkill.
+    /// </remarks>
     public class DisposeAction : IDisposable
     {
         private Action m_action;

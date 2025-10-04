@@ -122,6 +122,7 @@ namespace Tokamak.Vulkan
             return new DisposeAction(EndScope);
         }
 
+        // Called via DisposeAction
         private void EndScope()
         {
             if (!m_inDraw)
