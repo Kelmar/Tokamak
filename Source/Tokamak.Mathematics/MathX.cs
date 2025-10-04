@@ -53,66 +53,6 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Solves a Quadradic Bézier curve point using the Bernstein method.
-        /// </summary>
-        /// <remarks>
-        /// See notes on <seealso cref="CubicBezierSolve(in Vector2, in Vector2, in Vector2, in Vector2, float)"/>
-        /// for more details.
-        /// </remarks>
-        /// <param name="v1"></param>
-        /// <param name="v2"></param>
-        /// <param name="v3"></param>
-        /// <param name="delta"Time over curve from 0 to 1></param>
-        /// <returns>A point along the Bézier curve.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Vector2 QuadBezierSolve(in Vector2 v1, in Vector2 v2, in Vector2 v3, float delta)
-        {
-            delta = Math.Clamp(delta, 0, 1);
-
-            float sqDelta = delta * delta;
-
-            return
-                v1 * (delta - 1) * (delta - 1) +
-                v2 * (2 * delta - 2 * sqDelta) +
-                v3 * sqDelta;
-        }
-
-        /// <summary>
-        /// Solves a Cubic Bézier curve point using the Bernstein method.
-        /// </summary>
-        /// <remarks>
-        /// References:
-        /// https://en.wikipedia.org/wiki/B%C3%A9zier_curve
-        /// https://www.youtube.com/watch?v=aVwxzDHniEw
-        /// 
-        /// In summary the Bernstein method is what you get if you carray out the
-        /// DeCasteljau version of using lerp and reduce down to a large polynomial.
-        /// 
-        /// The DeCasteljau version is if you performed lerps on each of the line
-        /// segments recursively.
-        /// </remarks>
-        /// <param name="v1"></param>
-        /// <param name="v2"></param>
-        /// <param name="v3"></param>
-        /// <param name="v4"></param>
-        /// <param name="delta">Time over curve from 0 to 1</param>
-        /// <returns>A point along the Bézier curve.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Vector2 CubicBezierSolve(in Vector2 v1, in Vector2 v2, in Vector2 v3, in Vector2 v4, float delta)
-        {
-            delta = Math.Clamp(delta, 0, 1);
-
-            float cubeDelta = delta * delta * delta;
-            float sqDelta = delta * delta;
-
-            return
-                v1 * (-cubeDelta + 3 * sqDelta - 3 * delta + 1) +
-                v2 * (3 * cubeDelta - 6 * sqDelta + 3 * delta) +
-                v3 * (-3 * cubeDelta + 3 * sqDelta) +
-                v4 * (cubeDelta);
-        }
-
-        /// <summary>
         /// Wraps a value around a given max value.
         /// </summary>
         /// <param name="v"></param>
@@ -149,28 +89,6 @@ namespace Tokamak.Mathematics
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte ToByteRange(this double v) => (byte)(Math.Clamp(v, 0, 1) * Byte.MaxValue);
-
-        /// <summary>
-        /// Create a 3x2 matrix that skews along the X axis.
-        /// </summary>
-        public static Matrix3x2 CreateSkewX(float a)
-        {
-            Matrix3x2 rval = Matrix3x2.Identity;
-            rval.M21 = MathF.Tan(a);
-
-            return rval;
-        }
-
-        /// <summary>
-        /// Create a 3x2 matrix that skews along the Y axis.
-        /// </summary>
-        public static Matrix3x2 CreateSkewY(float a)
-        {
-            Matrix3x2 rval = Matrix3x2.Identity;
-            rval.M12 = MathF.Tan(a);
-
-            return rval;
-        }
 
         /// <summary>
         /// Convert degrees to radians.
