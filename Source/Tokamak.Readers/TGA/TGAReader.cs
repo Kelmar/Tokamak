@@ -117,7 +117,8 @@ namespace Tokamak.Readers.TGA
             byte idLength = m_reader.ReadByte();
 
             // Color map type (Field 2)
-            byte colorMapType = m_reader.ReadByte();
+            m_input.Seek(1, SeekOrigin.Current); // Skip color type
+            //byte colorMapType = m_reader.ReadByte();
 
             // Image type (Field 3)
             Format = (FormatType)m_reader.ReadByte();
@@ -129,8 +130,9 @@ namespace Tokamak.Readers.TGA
 
             // Image Specification (Field 5)  - 10 bytes
 
-            int xOrigin = m_reader.ReadUInt16(); // 2 bytes
-            int yOrigin = m_reader.ReadUInt16(); // 2 bytes
+            m_input.Seek(4, SeekOrigin.Current); // Skip x & y origin values.
+            //int xOrigin = m_reader.ReadUInt16(); // 2 bytes
+            //int yOrigin = m_reader.ReadUInt16(); // 2 bytes
 
             m_width = m_reader.ReadUInt16(); // 2 bytes
             m_height = m_reader.ReadUInt16(); // 2 bytes
@@ -148,7 +150,8 @@ namespace Tokamak.Readers.TGA
                 _ => throw new FileFormatException($"Unknown bit depth in TGA file: {m_bitsPerPixel}")
             };
 
-            byte imageDescriptor = m_reader.ReadByte(); // 1 byte
+            m_input.Seek(1, SeekOrigin.Current); // Skip image descriptor.
+            //byte imageDescriptor = m_reader.ReadByte(); // 1 byte
 
             // Image ID (Field 6)
             m_input.Seek(idLength, SeekOrigin.Current); // Skip the ID field, we don't really care about it.
