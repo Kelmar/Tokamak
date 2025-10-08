@@ -5,8 +5,6 @@ using System.IO;
 using Tokamak.Tritium.Buffers;
 using Tokamak.Tritium.Buffers.Formats;
 
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
 namespace Tokamak.Readers.TGA
 {
     /// <summary>
