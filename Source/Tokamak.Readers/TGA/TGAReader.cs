@@ -294,6 +294,8 @@ namespace Tokamak.Readers.TGA
                     DoPixel();
             }
 
+            m_result.Invalidate();
+
             return m_result;
         }
     }

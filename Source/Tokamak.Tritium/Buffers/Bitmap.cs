@@ -44,6 +44,9 @@ namespace Tokamak.Tritium.Buffers
         /// <summary>
         /// Set if the data in the bitmap has recently been modified.
         /// </summary>
+        /// <remarks>
+        /// Used for updating underlying video card texture.
+        /// </remarks>
         public bool Dirty { get; private set; }
 
         /// <summary>
@@ -76,6 +79,15 @@ namespace Tokamak.Tritium.Buffers
         public void Clear()
         {
             Array.Fill<byte>(Data, 0);
+            Invalidate();
+        }
+
+        /// <summary>
+        /// Mark bitmap as having it's data changed.
+        /// </summary>
+        public void Invalidate()
+        {
+            Dirty = true;
         }
 
         public void NotDirty()
