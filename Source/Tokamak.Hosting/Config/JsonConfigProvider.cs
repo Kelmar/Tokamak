@@ -26,7 +26,7 @@ namespace Tokamak.Hosting.Config
             if (m_optional && !File.Exists(m_filename))
                 return new Dictionary<string, string>(); // Return empty object.
 
-            string text = File.ReadAllText(m_filename); // Will throw file not found if not optional.
+            string text = File.ReadAllText(m_filename); // Will throw file not found & not optional.
             var obj = JObject.Parse(text);
             return ConfigBuilder.RecombineJObject(obj);
         }

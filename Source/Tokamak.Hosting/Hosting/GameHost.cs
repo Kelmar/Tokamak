@@ -118,7 +118,7 @@ namespace Tokamak.Hosting.Implementation
             SendBackgroundCommand(s => s.StopAsync(cts.Token));
 
             if (cts.IsCancellationRequested)
-                Log.Info("Background services timed out on shutdown!");
+                Log.Info("One or more background services timed out on shutdown!");
         }
 
         protected virtual void StartComponents()

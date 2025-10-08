@@ -31,16 +31,43 @@ namespace Tokamak.Tritium.Buffers
             Data = ArrayPool<byte>.Shared.Rent(len);
         }
 
+        public Bitmap(int width, int height, PixelFormat format)
+            : this(new Point(width, height), format)
+        {
+        }
+
         public void Dispose()
         {
             ArrayPool<byte>.Shared.Return(Data);
         }
 
+        /// <summary>
+        /// Set if the data in the bitmap has recently been modified.
+        /// </summary>
         public bool Dirty { get; private set; }
 
+        /// <summary>
+        /// Visible size of the bitmap.
+        /// </summary>
+        /// <remarks>
+        /// Note that the bitmap may allocate more memory than the desired size in order
+        /// to optimize usage on a display device.  Be sure to check the <seealso cref="Pitch"/>
+        /// property when working with the raw pixel data.
+        /// </remarks>
         public Point Size { get; }
 
+        /// <summary>
+        /// Size in bytes per line.
+        /// </summary>
+        /// <remarks>
+        /// The pitch might be larger than the actual desired bitmap width.
+        /// </remarks>
         public int Pitch { get; }
+
+        /// <summary>
+        /// Size in bytes of the visible area of the bitmap.
+        /// </summary>
+        public int WidthBytes => m_bytesPerPixel * Size.X;
 
         public PixelFormat Format { get; }
 

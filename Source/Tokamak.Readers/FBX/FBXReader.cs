@@ -5,17 +5,15 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 
-using Tokamak.Mathematics;
-
 using Tokamak.Tritium.Geometry;
 
 using Tokamak.Readers.FBX.ObjectWrappers;
 
 namespace Tokamak.Readers.FBX
 {
-    public class FBXReader : IDisposable
+    public sealed class FBXReader : IDisposable
     {
-        private const string BINARY_MAGIC = "Kaydara FBX Binary  ";
+        internal const string BINARY_MAGIC = "Kaydara FBX Binary  ";
 
         private readonly Stream m_input;
         private readonly IParser m_parser;
@@ -24,15 +22,15 @@ namespace Tokamak.Readers.FBX
 
         public FBXReader(Stream input, Encoding? encoding = null)
         {
-            ArgumentNullException.ThrowIfNull(input);
+            ArgumentNullException.ThrowIfNull(input, nameof(input));
 
             if (!input.CanRead)
                 throw new ArgumentException("Stream not open for reading", nameof(input));
 
+            m_input = input;
+
             // Use ASCII by default?
             m_encoding = encoding ?? Encoding.UTF8;
-
-            m_input = input;
 
             m_input.Seek(0, SeekOrigin.Begin);
 
@@ -55,6 +53,7 @@ namespace Tokamak.Readers.FBX
         public void Dispose()
         {
             m_input.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         private string ReadString(int length)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO.Compression;
 using System.IO;
 using System.Linq;
@@ -11,11 +10,13 @@ namespace Tokamak.Readers.FBX
     internal class BinaryFormatReader : IParser
     {
         private readonly Stream m_input;
+        private readonly BinaryReader m_reader;
         private readonly Encoding m_encoding;
 
         public BinaryFormatReader(Stream input, Encoding encoding)
         {
             m_input = input;
+            m_reader = new BinaryReader(m_input, encoding, true);
             m_encoding = encoding;
 
             // Magic has already been read.
@@ -23,23 +24,12 @@ namespace Tokamak.Readers.FBX
 
             m_input.Seek(2, SeekOrigin.Current); // Ignore 0x1A 0x00 (validate these bytes?)
 
-            uint version = ReadUInt32();
-        }
-
-        private byte[] ReadExactly(int length)
-        {
-            byte[] buffer = new byte[length];
-            int rd = m_input.Read(buffer);
-
-            if (rd != length)
-                throw new Exception("Unexpected end of file.");
-
-            return buffer;
+            uint version = m_reader.ReadUInt32();
         }
 
         private string ReadString(int length)
         {
-            byte[] data = ReadExactly(length);
+            byte[] data = m_reader.ReadExactly(length);
             string s = m_encoding.GetString(data);
 
             /*
@@ -56,61 +46,15 @@ namespace Tokamak.Readers.FBX
             return s;
         }
 
-        private byte ReadByte()
-        {
-            int i = m_input.ReadByte();
-
-            if (i == -1)
-                throw new Exception("Unexpected end of file.");
-
-            return (byte)i;
-        }
-
-        private short ReadInt16()
-        {
-            byte[] buffer = ReadExactly(2);
-            return BitConverter.ToInt16(buffer, 0);
-        }
-
-        private uint ReadUInt32()
-        {
-            byte[] buffer = ReadExactly(4);
-            return BitConverter.ToUInt32(buffer, 0);
-        }
-
-        private int ReadInt32()
-        {
-            byte[] buffer = ReadExactly(4);
-            return BitConverter.ToInt32(buffer, 0);
-        }
-
-        private long ReadInt64()
-        {
-            byte[] buffer = ReadExactly(8);
-            return BitConverter.ToInt64(buffer, 0);
-        }
-
-        private float ReadFloat()
-        {
-            byte[] buffer = ReadExactly(4);
-            return BitConverter.ToSingle(buffer, 0);
-        }
-
-        private double ReadDouble()
-        {
-            byte[] buffer = ReadExactly(8);
-            return BitConverter.ToDouble(buffer, 0);
-        }
-
         public Node? ReadNode()
         {
             long startPos = m_input.Position;
 
-            uint endOffset = ReadUInt32();   // Offset to end of file?
-            uint numProps = ReadUInt32();    // Count of properties
-            uint propListLen = ReadUInt32(); // Length of properties in bytes
+            uint endOffset = m_reader.ReadUInt32();   // Offset to end of file?
+            uint numProps = m_reader.ReadUInt32();    // Count of properties
+            uint propListLen = m_reader.ReadUInt32(); // Length of properties in bytes
 
-            byte nameLen = ReadByte();
+            byte nameLen = m_reader.ReadByte();
 
             if (endOffset == 0 && nameLen == 0)
                 return null;
@@ -146,19 +90,19 @@ namespace Tokamak.Readers.FBX
 
         private Property ReadProperty()
         {
-            char c = (char)ReadByte();
+            char c = (char)m_reader.ReadByte();
 
             var rval = new Property();
             rval.Type = (PropertyType)c;
 
             rval.Data = rval.Type switch
             {
-                PropertyType.SignedShort => ReadInt16(),
-                PropertyType.Boolean => ReadByte(),
-                PropertyType.SignedInt => ReadInt32(),
-                PropertyType.Float => ReadFloat(),
-                PropertyType.Double => ReadDouble(),
-                PropertyType.SignedLong => ReadInt64(),
+                PropertyType.SignedShort => m_reader.ReadInt16(),
+                PropertyType.Boolean => m_reader.ReadByte(),
+                PropertyType.SignedInt => m_reader.ReadInt32(),
+                PropertyType.Float => m_reader.ReadSingle(),
+                PropertyType.Double => m_reader.ReadDouble(),
+                PropertyType.SignedLong => m_reader.ReadInt64(),
                 PropertyType.FloatArray => ReadFloatArray(),
                 PropertyType.DoubleArray => ReadDoubleArray(),
                 PropertyType.LongArray => ReadLongArray(),
@@ -191,14 +135,14 @@ namespace Tokamak.Readers.FBX
 
         private (byte[] data, int length) RawReadArray<T>()
         {
-            int length = (int)ReadUInt32();
-            bool compressed = ReadUInt32() == 1;
-            int physicalLength = (int)ReadUInt32();
+            int length = (int)m_reader.ReadUInt32();
+            bool compressed = m_reader.ReadUInt32() == 1;
+            int physicalLength = (int)m_reader.ReadUInt32();
 
             int itemSize = Marshal.SizeOf<T>();
             int recordSize = compressed ? physicalLength : (length * itemSize);
 
-            byte[] data = ReadExactly(recordSize);
+            byte[] data = m_reader.ReadExactly(recordSize);
 
             if (compressed)
             {
@@ -264,14 +208,14 @@ namespace Tokamak.Readers.FBX
 
         private string ReadPropertyString()
         {
-            int length = (int)ReadUInt32();
+            int length = (int)m_reader.ReadUInt32();
             return ReadString(length);
         }
 
         private byte[] ReadPropertyRaw()
         {
-            int length = (int)ReadUInt32();
-            return ReadExactly(length);
+            int length = (int)m_reader.ReadUInt32();
+            return m_reader.ReadExactly(length);
         }
     }
 }
