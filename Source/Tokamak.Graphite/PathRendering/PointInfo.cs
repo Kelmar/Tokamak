@@ -3,8 +3,12 @@
 namespace Tokamak.Graphite.PathRendering
 {
     /// <summary>
-    /// Information about our points.
+    /// Information about points in a stroke.
     /// </summary>
+    /// <remarks>
+    /// The StrokeRenderer.Render() function uses the details in this structure
+    /// to build out the polygon/texture info for rendering our path to the screen.
+    /// </remarks>
     internal class PointInfo
     {
         /// <summary>

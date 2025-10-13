@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
+using Tokamak.Graphite.PathRendering;
+
 namespace Tokamak.Graphite
 {
     internal class Path

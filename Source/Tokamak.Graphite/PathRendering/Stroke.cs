@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 
-namespace Tokamak.Graphite
+namespace Tokamak.Graphite.PathRendering
 {
     /// <summary>
     /// Holds details of a single stroke along a path.

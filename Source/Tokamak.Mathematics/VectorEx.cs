@@ -64,46 +64,12 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Returns a vector with a unit length.
+        /// Computes a line that is perpendicular to the given vector.
         /// </summary>
+        /// <param name="v">The starting vector.</param>
+        /// <returns>A vector that is perpendicular to the supplied vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector2 Normalize(this in Vector2 v)
-        {
-            float len = v.Length();
-
-            if (len == 0)
-                return Vector2.Zero;
-
-            return v / len;
-        }
-
-        /// <summary>
-        /// Returns a vector with a unit length.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 Normalize(this in Vector3 v)
-        {
-            float len = v.Length();
-
-            if (len == 0)
-                return Vector3.Zero;
-
-            return v / len;
-        }
-
-        /// <summary>
-        /// Returns a vector with a unit length.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 Normalize(this in Vector4 v)
-        {
-            float len = v.Length();
-
-            if (len == 0)
-                return Vector4.Zero;
-
-            return v / len;
-        }
+        public static Vector2 LineNormal(this in Vector2 v) => new Vector2(-v.Y, v.X);
 
         /// <summary>
         /// Returns the cross product of two 2D vectors.

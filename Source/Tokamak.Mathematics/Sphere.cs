@@ -67,7 +67,7 @@ namespace Tokamak.Mathematics
         /// <returns>True if the ray intersects with the sphere, false if not.</returns>
         public bool RayTest(in Vector3 start, in Vector3 end)
         {
-            Vector3 dir = (end - start).Normalize();
+            Vector3 dir = Vector3.Normalize(end - start);
 
             Vector3 oc = start - Location;
 
@@ -76,14 +76,14 @@ namespace Tokamak.Mathematics
             float b = 2 * Vector3.Dot(dir, oc);
             float c = oc.LengthSquared() - (Radius * Radius);
 
-            //float descriminate = (b * b) - (4 * a * c);
-            float descriminate = (b * b) - (4 * c);
+            //float discriminant = (b * b) - (4 * a * c);
+            float discriminant = (b * b) - (4 * c);
 
-            // If the discriminate is less than zero then the ray missed the sphere entirely.
-            if (descriminate < 0)
+            // If the discriminant is less than zero then the ray missed the sphere entirely.
+            if (discriminant < 0)
                 return false;
 
-            float dSqrt = MathF.Sqrt(descriminate);
+            float dSqrt = MathF.Sqrt(discriminant);
 
             /*
              * Because we have a square root, there are actually two values
@@ -110,7 +110,7 @@ namespace Tokamak.Mathematics
             // This would return the time delta along the ray the intersection is at:
 
             // If t0 is less than zero the point is at t1
-            //return t0 < 0 ? t1 : t0; 
+            //return t0 < 0 ? t1 : t0;
 
             return true;
         }

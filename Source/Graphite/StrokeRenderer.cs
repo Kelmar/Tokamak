@@ -272,7 +272,7 @@ namespace Graphite
             if (!m_stroke.Closed)
             {
                 // Add start end cap
-                lineDirection = (m_stroke.Points[index1].Position - m_stroke.Points[index0].Position).Normalize();
+                lineDirection = Vector2.Normalize(m_stroke.Points[index1].Position - m_stroke.Points[index0].Position);
                 ButtCapStart(m_stroke.Points[index0], lineDirection);
             }
 
@@ -298,7 +298,7 @@ namespace Graphite
             if (!m_stroke.Closed)
             {
                 // Add an end cap
-                lineDirection = (m_stroke.Points[index1].Position - m_stroke.Points[index0].Position).Normalize();
+                lineDirection = Vector2.Normalize(m_stroke.Points[index1].Position - m_stroke.Points[index0].Position);
                 ButtCapEnd(m_stroke.Points[index1], lineDirection);
             }
             else

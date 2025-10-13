@@ -29,11 +29,7 @@ namespace Tokamak.Tritium.Scene
         public Vector3 Up
         {
             get => m_up;
-            set
-            {
-                m_up = value;
-                m_up.Normalize();
-            }
+            set => m_up = Vector3.Normalize(value);
         }
 
         /// <summary>
@@ -42,11 +38,7 @@ namespace Tokamak.Tritium.Scene
         public Vector3 Forward
         {
             get => m_forward;
-            set
-            {
-                m_forward = value;
-                m_forward.Normalize();
-            }
+            set => m_forward = Vector3.Normalize(value);
         }
 
         /// <summary>
