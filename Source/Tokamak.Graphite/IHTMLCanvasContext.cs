@@ -27,9 +27,9 @@ namespace Tokamak.Graphite
 
         int GlobalAlpha { get; set; }
 
-        int ImageSmothingEnable { get; set; }
+        int ImageSmoothingEnable { get; set; }
 
-        int ImageSomthingQuality { get; set; }
+        int ImageSmoothingQuality { get; set; }
 
         int LetterSpacing { get; set; }
 
@@ -113,7 +113,7 @@ namespace Tokamak.Graphite
 
 
 
-        // Haven't clasified these yet.
+        // Haven't classified these yet.
 
 
 
@@ -127,7 +127,7 @@ namespace Tokamak.Graphite
 
         void CreateLinearGradient();
 
-        void CreatePatern();
+        void CreatePattern();
 
         void CreateRadialGradient();
 
@@ -166,7 +166,7 @@ namespace Tokamak.Graphite
         void SetLineDash();
 
 
-        // Actuall pushes the paths out to the context?
+        // Actual pushes the paths out to the context?
         void Stroke();
 
         void StrokeRect();

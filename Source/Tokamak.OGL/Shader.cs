@@ -12,6 +12,8 @@ namespace Tokamak.OGL
 {
     internal class Shader : IUniformAccess
     {
+        // TODO: Look into SPIR-V shaders, should be supported by OGL, Vulkan, and DirectX 12
+
         private readonly IDictionary<string, int> m_uniforms = new Dictionary<string, int>();
 
         private readonly OpenGLLayer m_apiLayer;

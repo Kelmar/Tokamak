@@ -236,8 +236,21 @@ namespace Tokamak.Graphite.PathRendering
 
         #endregion Initialization
 
-        public void Render()
+        public IEnumerable<Vector2> Render()
         {
+            // A very basic implementation just map the points +/- miter for now.
+
+            var rval = new List<Vector2>(m_points.Count * 2 + (m_stroke.Closed ? 1 : 0));
+
+            rval.AddRange(m_points.SelectMany<PointInfo, Vector2>(p => [p.Point + p.Miter, p.Point - p.Miter]));
+
+            if (m_stroke.Closed)
+            {
+                var first = m_points.First();
+                rval.AddRange([first.Point + first.Miter, first.Point - first.Miter]);
+            }
+
+            return rval;
         }
     }
 }

@@ -23,6 +23,8 @@ namespace Tokamak.Graphite
     {
         // For now we have some fairly basic shaders for testing the canvas out.
 
+        // TODO: Look into SPIR-V shaders, should be supported by OGL, Vulkan, and DirectX 12
+
         public const string VERTEX = @"#version 450
 
 uniform mat4 projection;
@@ -59,6 +61,8 @@ void main()
     fsout_Color = is8Bit != 0 ? vec4(fsin_Color.rgb, fsin_Color.a * tx.r) : tx * fsin_Color;
 }
 ";
+
+        // TODO: Does it make sense to have a generic call list processor in Tritium?
 
         private class RenderCall
         {
@@ -115,6 +119,43 @@ void main()
             m_pipeline.Uniforms.projection = mat;
         }
 
+        public void DrawImage(ITextureObject texture, in Point p) =>
+            DrawImage(texture, p, Color.White);
+
+        public void DrawImage(ITextureObject texture, in Point p, in Color color)
+        {
+            AddCall(
+                PrimitiveType.TriangleStrip,
+                [
+                    BuildPointPCT(p, color, Vector2.Zero),
+                    BuildPointPCT(new Point(p.X + texture.Size.X, p.Y), color, Vector2.UnitX),
+                    BuildPointPCT(new Point(p.X, p.Y + texture.Size.Y), color, Vector2.UnitY),
+                    BuildPointPCT(p + texture.Size, color, Vector2.One)
+                ],
+                texture
+            );
+        }
+
+        public void DrawImage(ITextureObject texture, in Point p, in Vector2 topLeftUV, in Vector2 bottomRightUV) =>
+            DrawImage(texture, p, topLeftUV, bottomRightUV, Color.White);
+
+        public void DrawImage(ITextureObject texture, in Point p, in Vector2 topLeftUV, in Vector2 bottomRightUV, in Color color)
+        {
+            Vector2 topRightUV = new Vector2(bottomRightUV.X, topLeftUV.Y);
+            Vector2 bottomLeftUV = new Vector2(topLeftUV.X, bottomRightUV.Y);
+
+            AddCall(
+                PrimitiveType.TriangleStrip,
+                [
+                    BuildPointPCT(p, color, topLeftUV),
+                    BuildPointPCT(new Point(p.X + texture.Size.X, p.Y), color, topRightUV),
+                    BuildPointPCT(new Point(p.X, p.Y + texture.Size.Y), color, bottomLeftUV),
+                    BuildPointPCT(p + texture.Size, color, bottomRightUV)
+                ],
+                texture
+            );
+        }
+
         public void Draw(PrimitiveType primitiveType, IEnumerable<Vector2> vectors, Color color, ITextureObject? texture = null)
         {
             var vectorList = vectors.Select(v => BuildVectorPCT(v, color, Vector2.Zero));
@@ -122,13 +163,23 @@ void main()
             AddCall(primitiveType, vectorList, texture);
         }
 
-        private VectorFormatPCT BuildVectorPCT(in Vector2 v, Color color, Vector2 texCoord)
+        private VectorFormatPCT BuildPointPCT(in Point p, in Color color, in Vector2 uv)
+        {
+            return new VectorFormatPCT
+            {
+                Point = new Vector3(p.X, p.Y, 0),
+                Color = color.ToVector(),
+                TexCoord = uv
+            };
+        }
+
+        private VectorFormatPCT BuildVectorPCT(in Vector2 v, Color color, Vector2 uv)
         {
             return new VectorFormatPCT
             {
                 Point = new Vector3(v.X, v.Y, 0),
                 Color = color.ToVector(),
-                TexCoord = texCoord
+                TexCoord = uv
             };
         }
 
@@ -154,27 +205,29 @@ void main()
             return new Canvas(this);
         }
 
+        [Conditional("DEBUG")]
+        private void Render_SanityCheck()
+        {
+            // Debugging sanity checks.
+
+            if (m_vectors.Count != 0 && m_calls.Count == 0)
+                Debug.Fail("Got vectors without calls?");
+
+            if (m_calls.Count != 0 && m_vectors.Count == 0)
+                Debug.Fail("Got calls without vectors?");
+
+            m_vectors.Clear();
+            m_calls.Clear();
+        }
+
         public void Render()
         {
             if (m_vectors.Count == 0 || m_calls.Count == 0)
             {
                 // Nothing to do
-#if DEBUG
-                // Debugging sanity checks.
-
-                if (m_vectors.Count != 0 && m_calls.Count == 0)
-                    Debug.Fail("Got vectors without calls?");
-
-                if (m_calls.Count != 0 && m_vectors.Count == 0)
-                    Debug.Fail("Got calls without vectors?");
-#endif
-
-                m_vectors.Clear();
-                m_calls.Clear();
-
+                Render_SanityCheck();
                 return; 
             }
-
 
             ITextureObject? last = null;
 
@@ -184,36 +237,41 @@ void main()
 
             using var cmdScope = m_commandList.BeginScope();
 
-            Resize(m_apiLayer.ViewBounds);
+            Resize(m_apiLayer.ViewBounds); // TODO: Move this, better to be elsewhere.
 
-            foreach (var call in m_calls)
+            try
             {
-                if (call.Texture != last)
+                foreach (var call in m_calls)
                 {
-                    if (call.Texture != null)
+                    if (call.Texture != last)
                     {
-                        m_pipeline.Uniforms.is8Bit = call.Texture.Format == PixelFormat.FormatA8;
-                        //call.Texture.Activate();
-                    }
-                    else
-                    {
-                        m_commandList.ClearBoundTexture();
+                        if (call.Texture != null)
+                        {
+                            m_pipeline.Uniforms.is8Bit = call.Texture.Format == PixelFormat.FormatA8;
+                            //call.Texture.Activate();
+                        }
+                        else
+                        {
+                            m_commandList.ClearBoundTexture();
+                        }
+
+                        last = call.Texture;
                     }
 
-                    last = call.Texture;
+                    m_commandList.DrawArrays(call.VertexOffset, call.VertexCount);
                 }
 
-                m_commandList.DrawArrays(call.VertexOffset, call.VertexCount);
+                if (last != null)
+                {
+                    m_pipeline.Uniforms.is8Bit = false;
+                    m_commandList.ClearBoundTexture();
+                }
             }
-
-            if (last != null)
+            finally
             {
-                m_pipeline.Uniforms.is8Bit = false;
-                m_commandList.ClearBoundTexture();
+                m_vectors.Clear();
+                m_calls.Clear();
             }
-
-            m_vectors.Clear();
-            m_calls.Clear();
         }
     }
 }

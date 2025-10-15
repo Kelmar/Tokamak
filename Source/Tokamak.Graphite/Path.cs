@@ -7,7 +7,7 @@ using Tokamak.Graphite.PathRendering;
 
 namespace Tokamak.Graphite
 {
-    internal class Path
+    internal class Path : IPath
     {
         internal List<Stroke> m_strokes = new();
 
@@ -42,9 +42,6 @@ namespace Tokamak.Graphite
                 m_current.Points.Add(Vector2.Zero);
         }
 
-        public void MoveTo(float x, float y)
-            => MoveTo(new Vector2(x, y));
-
         public void MoveTo(in Vector2 v)
         {
             if (m_current.Points.Count > 1)
@@ -59,15 +56,28 @@ namespace Tokamak.Graphite
                 m_current.Points[0] = v;
         }
 
-        public void LineTo(float x, float y)
-            => LineTo(new Vector2(x, y));
-
         public void LineTo(in Vector2 v)
         {
             AddFirstMove();
 
             m_current.Points.Add(v);
             m_current.Actions.Add(PathAction.Line);
+        }
+
+        public void BezierQuadradicCurveTo(in Vector2 control, in Vector2 end)
+        {
+            AddFirstMove();
+
+            m_current.Points.AddRange([control, end]);
+            m_current.Actions.Add(PathAction.BezierQuadradic);
+        }
+
+        public void BezierCubicCurveTo(in Vector2 control1, in Vector2 control2, in Vector2 end)
+        {
+            AddFirstMove();
+
+            m_current.Points.AddRange([control1, control2, end]);
+            m_current.Actions.Add(PathAction.BezierQuadradic);
         }
 
         public void Close()

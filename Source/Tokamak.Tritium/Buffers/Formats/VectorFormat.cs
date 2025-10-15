@@ -44,6 +44,10 @@ namespace Tokamak.Tritium.Buffers.Formats
                  * TODO: Look into a nicer way to verify this and provide a clearer error.
                  */
 
+                /*
+                 * First pass, get a list of all the fields, we'll compute 
+                 * their memory index on the second pass.
+                 */
                 var firstPass =
                 (
                     from field in fields
@@ -60,14 +64,19 @@ namespace Tokamak.Tritium.Buffers.Formats
                     }
                 ).ToList();
 
-                int stride = firstPass.Count() > 1 ? Size : 0;
+                if (firstPass.Count() == 0)
+                    throw new Exception($"Type {Type.FullName ?? Type.Name} doesn't have any fields to map.");
 
+                /*
+                 * Second pass, fill in the index values and other details about how
+                 * the structure is laid out in memory.
+                 */
                 return firstPass
                     .Select((item, index) => new ItemInfo
                     {
                         Index = index,
                         Offset = item.Offset,
-                        Stride = stride,
+                        Stride = Size,
                         BaseType = item.BaseType,
                         DeclaringType = item.DeclaringType,
                         Count = item.Count
@@ -100,7 +109,7 @@ namespace Tokamak.Tritium.Buffers.Formats
         /// Information about a single field in a layout structure.
         /// </summary>
         /// <remarks>
-        /// TODO: Migh re-evaluate as a record instead of a class.
+        /// TODO: Might re-evaluate as a record instead of a class.
         /// </remarks>
         public class ItemInfo
         {
