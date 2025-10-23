@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 
 using Tokamak.Mathematics;
@@ -73,27 +75,85 @@ namespace Tokamak.Graphite.PathRendering
             return miter * m_halfWidth / Vector2.Dot(miter, lastDirection.LineNormal());
         }
 
+        private IEnumerable<PathSegment> InitSegments()
+        {
+            var points = new Queue<Vector2>(m_stroke.Points);
+            Vector2 p1 = points.Dequeue();
+
+            foreach (var action in m_stroke.Actions)
+            {
+                switch (action)
+                {
+                case PathAction.Line:
+                    {
+                        Vector2 p2 = points.Dequeue();
+                        yield return new PathSegment(p1, p2);
+                        p1 = p2;
+                    }
+                    break;
+
+                case PathAction.BezierQuadradic:
+                    {
+                        Vector2 last = p1;
+
+                        Vector2 p2 = points.Dequeue();
+                        Vector2 p3 = points.Dequeue();
+
+                        for (int i = 1; i <= m_curveResolution; ++i)
+                        {
+                            float delta = i * m_curveStepping;
+                            Vector2 next = Bezier.QuadSolve(p1, p2, p3, delta);
+
+                            yield return new PathSegment(last, next);
+                            last = next;
+                        }
+
+                        Debug.Assert(last == p3, "Do not reach desired point in CubicSolve!");
+                        p1 = p3;
+                    }
+                    break;
+
+                case PathAction.BezierCubic:
+                    {
+                        Vector2 last = p1;
+
+                        Vector2 p2 = points.Dequeue();
+                        Vector2 p3 = points.Dequeue();
+                        Vector2 p4 = points.Dequeue();
+
+                        for (int i = 1; i <= m_curveResolution; ++i)
+                        {
+                            float delta = i * m_curveStepping;
+                            Vector2 next = Bezier.CubicSolve(p1, p2, p3, p4, delta);
+
+                            yield return new PathSegment(last, next);
+                            last = next;
+                        }
+
+                        Debug.Assert(last == p4, "Do not reach desired point in CubicSolve!");
+                        p1 = p4;
+                    }
+                    break;
+
+
+                default:
+                    throw new NotImplementedException($"Unknown path action {action}");
+                }
+            }
+
+            if (m_stroke.Closed)
+                yield return new PathSegment(p1, m_stroke.Points[0]);
+
+            Debug.Assert(points.Count == 0, "Not all points used for generating segments");
+        }
+
         public IEnumerable<Vector2> Render()
         {
-            Debug.Assert(m_stroke.Points.Count >= 2, "Need at least two points for a stroke!");
+            Debug.Assert(m_stroke.Points.Count >= 2, "Need at least two points for a stroke");
 
-            int segmentCount = m_stroke.Points.Count;
-            segmentCount -= m_stroke.Closed ? 0 : 1;
+            var segments = InitSegments().ToList();
 
-            if (segmentCount < 1)
-                return [];
-
-            var points = new List<Vector2>(m_stroke.Points.Count * 2);
-            var segments = new PathSegment[segmentCount];
-            int i;
-
-            for (i = 0; i < segmentCount; ++i)
-            {
-                Vector2 p1 = m_stroke.Points[i];
-                Vector2 p2 = m_stroke.Points[(i + 1) % m_stroke.Points.Count];
-
-                segments[i] = new PathSegment(p1, p2);
-            }
+            var points = new List<Vector2>(segments.Count * 2);
 
             /*
              * Use the last segment's direction for miter computation if closed.
@@ -101,27 +161,19 @@ namespace Tokamak.Graphite.PathRendering
              * Otherwise use the first segment's direction to effectively get a right angle to the same line.
              */
             Vector2 lastDirection = m_stroke.Closed ?
-                segments[segmentCount - 1].Direction :
-                segments[0].Direction;
+                segments.Last().Direction :
+                segments.First().Direction;
 
-            /*
-             * Compiler demands this be assigned to here, even though
-             * it isn't possible for segmentCount to be less than 1.
-             */
-            Vector2 miter = Vector2.Zero;
-
-            for (i = 0; i < segmentCount; ++i)
+            foreach (var segment in segments)
             {
-                var current = segments[i];
-
                 // Figure out the miter for the current point.
 
-                miter = ComputeMiter(current.Direction, lastDirection);
+                Vector2 miter = ComputeMiter(segment.Direction, lastDirection);
 
-                points.Add(current.Start + miter);
-                points.Add(current.Start - miter);
+                points.Add(segment.Start + miter);
+                points.Add(segment.Start - miter);
 
-                lastDirection = current.Direction;
+                lastDirection = segment.Direction;
             }
 
             if (m_stroke.Closed)
@@ -132,9 +184,12 @@ namespace Tokamak.Graphite.PathRendering
             }
             else
             {
-                --i;
-                points.Add(segments[i].End + miter);
-                points.Add(segments[i].End - miter);
+                var segment = segments.Last();
+
+                Vector2 miter = ComputeMiter(segment.Direction, segment.Direction);
+
+                points.Add(segments.Last().End + miter);
+                points.Add(segments.Last().End - miter);
             }
 
             return points;

@@ -110,8 +110,9 @@ namespace TestBed
             Pen pen = new Pen
             {
                 Width = 20,
+                Color = Color.Grey
                 //Color = Color.White
-                Color = Color.DarkGreen
+                //Color = Color.DarkGreen
                 //, LineJoin = LineJoin.Bevel
             };
 
@@ -150,23 +151,30 @@ namespace TestBed
             //path.Close();
 
             // Complex Test 2 (scaled)
-            float scale = 4;
-            path.MoveTo(new Vector2(40, 40) * scale);
-            path.LineTo(new Vector2(80, 30) * scale);
-            path.LineTo(new Vector2(80, 60) * scale);
-            path.LineTo(new Vector2(125, 33) * scale);
-            path.LineTo(new Vector2(115, 100) * scale);
-            path.LineTo(new Vector2(50, 120) * scale);
-            path.LineTo(new Vector2(30, 100) * scale);
-            path.Close();
+            //float scale = 4;
+            //path.MoveTo(new Vector2(40, 40) * scale);
+            //path.LineTo(new Vector2(80, 30) * scale);
+            //path.LineTo(new Vector2(80, 60) * scale);
+            //path.LineTo(new Vector2(125, 33) * scale);
+            //path.LineTo(new Vector2(115, 100) * scale);
+            //path.LineTo(new Vector2(50, 120) * scale);
+            //path.LineTo(new Vector2(30, 100) * scale);
+            //path.Close();
+
+            // Quadradic Bezier Curve Test
+            //path.MoveTo(50, 400);
+            //path.BezierQuadradicCurveTo(
+            //    new Vector2(250, 50),
+            //    new Vector2(500, 400)
+            //);
 
             // Cubic Bezier Curve Test
-            //path.MoveTo(50, 50);
-            //path.BezierCubicCurveTo(
-            //    new Vector2(100, 100),
-            //    new Vector2(1000, 150),
-            //    new Vector2(200, 400)
-            //);
+            path.MoveTo(50, 50);
+            path.BezierCubicCurveTo(
+                new Vector2(200, 200),
+                new Vector2(1000, 275),
+                new Vector2(250, 400)
+            );
 
             m_context.Stroke(path, pen);
         }

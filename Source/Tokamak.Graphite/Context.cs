@@ -22,6 +22,13 @@ namespace Tokamak.Graphite
 {
     public class Context : IDisposable//, IRenderable
     {
+        /*
+         * For now we hard code for 100 segments, probably should
+         * dynamically calculate this based on scaling in the future.
+         */
+        private const int PATH_RESOLUTION = 100;
+
+
         // For now we have some fairly basic shaders for testing the canvas out.
 
         // TODO: Look into SPIR-V shaders, should be supported by OGL, Vulkan, and DirectX 12
@@ -173,7 +180,7 @@ void main()
         {
             foreach (var stroke in path.m_strokes)
             {
-                var renderer = new StrokeRenderer(stroke, 0, pen.Width);
+                var renderer = new StrokeRenderer(stroke, PATH_RESOLUTION, pen.Width);
 
                 Draw(PrimitiveType.TriangleList, renderer.Render(), pen.Color);
             }

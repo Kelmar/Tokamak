@@ -78,7 +78,7 @@ namespace Tokamak.Graphite
             AddFirstMove();
 
             m_current.Points.AddRange([control1, control2, end]);
-            m_current.Actions.Add(PathAction.BezierQuadradic);
+            m_current.Actions.Add(PathAction.BezierCubic);
         }
 
         public void ArcTo(in Vector2 center, float radius)
