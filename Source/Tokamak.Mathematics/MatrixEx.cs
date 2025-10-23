@@ -4,13 +4,14 @@ using System.Numerics;
 namespace Tokamak.Mathematics
 {
     /// <summary>
-    /// Extensions to System.Numerics matrix classes.
+    /// Extensions to <seealso cref="System.Numerics"/> matrix classes.
     /// </summary>
     public static class MatrixEx
     {
         /// <summary>
-        /// Create a 3x2 matrix that skews along the X axis.
+        /// Create a <seealso cref="Matrix3x2"/> that skews along the X axis.
         /// </summary>
+        /// <param name="a">How far along the X axis to skew.</param>
         public static Matrix3x2 CreateSkewX(float a)
         {
             Matrix3x2 rval = Matrix3x2.Identity;
@@ -20,8 +21,9 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Create a 3x2 matrix that skews along the Y axis.
+        /// Create a <seealso cref="Matrix3x2"/> that skews along the Y axis.
         /// </summary>
+        /// <param name="a">How far along the Y axis to skew.</param>
         public static Matrix3x2 CreateSkewY(float a)
         {
             Matrix3x2 rval = Matrix3x2.Identity;
@@ -29,6 +31,5 @@ namespace Tokamak.Mathematics
 
             return rval;
         }
-
     }
 }

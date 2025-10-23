@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace Tokamak.Mathematics
 {
     /// <summary>
-    /// Extensions for System.Numerics.Plane
+    /// Extensions for <seealso cref="Plane"/>
     /// </summary>
     public static class PlaneEx
     {
@@ -18,18 +18,30 @@ namespace Tokamak.Mathematics
             (plane.Normal.X * location.X) + (plane.Normal.Y * location.Y) + (plane.Normal.Z * location.Z) - plane.D;
 
         /// <summary>
-        /// Find out which side of the plane the given point falls on.
+        /// Find out which side of a <seealso cref="Plane"/> the given point falls on.
         /// </summary>
         /// <remarks>
-        /// This case is basically like the sphere test, but we're considering
-        /// the point to be a very small sphere who's radius is MathX.FUZ.
+        /// This case is the same as the sphere test, but we consider a point to
+        /// be a very small sphere who's radius is <seealso cref="MathX.FUZ"/>.
         /// </remarks>
         /// <param name="plane">The plane to check</param>
         /// <param name="location">The point to check</param>
+        /// <param name="radius">Optional parameter to indicate the radius of the sphere to test.</param>
         /// <returns>
-        /// Boundary.Back: Point is behind the plane.
-        /// Boundary.Front: Point in front of the plane.
-        /// Boundary.On: Point is directly on the plane.
+        /// <list type="table">
+        /// <item>
+        ///     <term><seealso cref="Boundary.Back"/></term>
+        ///     <description>Point is behind the plane.</description>
+        /// </item>
+        /// <item>
+        ///     <term><seealso cref="Boundary.On"/></term>
+        ///     <description>Point is directly on the plane.</description>
+        /// </item>
+        /// <item>
+        ///     <term><seealso cref="Boundary.Front"/></term>
+        ///     <description>Point in front of the plane.</description>
+        /// </item>
+        /// </list>
         /// </returns>
         public static Boundary WhichSide(this in Plane plane, in Vector3 location, float radius = MathX.FUZ)
         {
@@ -42,26 +54,37 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Find out which side of the plane the given sphere falls on.
+        /// Find out which side of the  <seealso cref="Plane"/> the given <seealso cref="Sphere"/> falls on.
         /// </summary>
         /// <param name="plane">The plane to check</param>
         /// <param name="sphere">The sphere to check</param>
         /// <returns>
-        /// Boundary.Back: Sphere is completely behind the plane.
-        /// Boundary.Front: Sphere is complete in front of the plane.
-        /// Boundary.On: Sphere intersects the plane in some way.
+        /// <list type="table">
+        /// <item>
+        ///     <term><seealso cref="Boundary.Back"/></term>
+        ///     <description>Sphere is completely behind the plane.</description>
+        /// </item>
+        /// <item>
+        ///     <term><seealso cref="Boundary.On"/></term>
+        ///     <description>Sphere intersects the plane in some way.</description>
+        /// </item>
+        /// <item>
+        ///     <term><seealso cref="Boundary.Front"/></term>
+        ///     <description>Sphere is completely in front of the plane.</description>
+        /// </item>
+        /// </list>
         /// </returns>
         public static Boundary WhichSide(this in Plane plane, in Sphere sphere) =>
             WhichSide(plane, sphere.Location, sphere.Radius);
 
         /// <summary>
-        /// Test to see if a ray segment intersects the plane.
+        /// Test to see if a ray segment intersects a <seealso cref="Plane"/>.
         /// </summary>
         /// <param name="plane">The plane that the intersection will be tested against.</param>
         /// <param name="start">The start of the ray segment</param>
         /// <param name="end">The end of the ray segment.</param>
         /// <param name="t">The resulting time delta along the ray originating from start where the intersection occurs.</param>
-        /// <returns>true the ray intersects, false if not.</returns>
+        /// <returns><c>true</c> the ray intersects, <c>false</c> if not.</returns>
         public static bool RayTest(this in Plane plane, in Vector3 start, in Vector3 end, out float t)
         {
             float den = Vector3.Dot(end - start, plane.Normal);

@@ -32,7 +32,7 @@ replaced, updated, and extended however the user wishes to fill their desired ne
 - VFS\
   A Virtual File System library
 
-# Building
+## Building
 Should be a mater of opening the solution in Visual Studio and hitting build.
 
 Not yet tested it under Linux or Mac OS X, but if you have the .NET 8.0 tools installed you should be able to run:
@@ -42,13 +42,13 @@ dotnet build Tokamak.sln
 
 The current executable is the TestBed project where all the experimentation is going on.
 
-# TODOS
+## TODOS
 - [ ] Abstractions
   - [ ] OpenGL (in progress)
   - [ ] DirectX
   - [ ] Metal
   - [ ] Vulkan (in progress)
-	- [ ] Extension loader system
+    - [ ] Extension loader system
   - [ ] OS level GUI objects (e.g. the main window/screen)
   - [ ] Direct hardware input (e.g. DirectInput)
   - [ ] Sound
@@ -63,7 +63,7 @@ The current executable is the TestBed project where all the experimentation is g
 - [ ] Quill (Fonts)
 - [ ] In engine UI
 
-# Status
+## Status
 - Currently the Vulkan driver is really broken, will likely need to rewrite portions of it.
 - Reorganized a good chunk of the project to clean up the code a bit.
 - Created a basic GameHost type hosting system similar to how Microsoft organizes most other .NET Core apps.

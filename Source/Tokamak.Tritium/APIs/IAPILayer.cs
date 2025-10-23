@@ -11,6 +11,9 @@ using Tokamak.Tritium.Pipelines;
 
 namespace Tokamak.Tritium.APIs
 {
+    /// <summary>
+    /// Abstraction to graphics API.
+    /// </summary>
     public interface IAPILayer : IDisposable
     {
         /// <summary>
