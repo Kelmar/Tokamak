@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 namespace Tokamak.Mathematics
 {
     /// <summary>
-    /// Bezier math functions
+    /// Bézier math functions
     /// </summary>
     /// <remarks>
     /// References:

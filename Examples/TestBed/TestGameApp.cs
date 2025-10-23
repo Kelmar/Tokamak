@@ -162,11 +162,11 @@ namespace TestBed
             //path.Close();
 
             // Quadradic Bezier Curve Test
-            path.MoveTo(50, 400);
-            path.BezierQuadradicCurveTo(
-                new Vector2(250, 50),
-                new Vector2(500, 400)
-            );
+            //path.MoveTo(50, 400);
+            //path.BezierQuadradicCurveTo(
+            //    new Vector2(250, 50),
+            //    new Vector2(500, 400)
+            //);
 
             // Cubic Bezier Curve Test
             //path.MoveTo(50, 50);
@@ -176,10 +176,27 @@ namespace TestBed
             //    new Vector2(250, 400)
             //);
 
+            // Arc Test
+            path.ArcTo(new Vector2(300, 500), new Vector2(100, 250), 0, MathF.Tau);
+            path.Close();
+
+            path.ArcTo(new Vector2(300, 500), 50, 0, MathF.Tau);
+
             // Rectangle Test
             //path.Rectangle(new Vector2(50, 50), new Vector2(1000, 1000));
 
             m_context.Stroke(path, pen);
+
+            var path2 = new Tokamak.Graphite.Path();
+            path2.ArcTo(new Vector2(300, 500), 50, 0, MathF.Tau);
+
+            var pen2 = new Pen
+            {
+                Color = Color.DarkRed,
+                Width = 10
+            };
+
+            m_context.Stroke(path2, pen2);
         }
 
         //private void DrawSingleSquare()

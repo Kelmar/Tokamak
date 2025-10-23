@@ -3,7 +3,7 @@
     internal enum PathAction
     {
         /// <summary>
-        /// For reference, not used.
+        /// Used as flag to ignore first point on some shapes.
         /// </summary>
         Move,
 
@@ -11,6 +11,11 @@
         /// Add a line
         /// </summary>
         Line,
+
+        /// <summary>
+        /// Add a simple arc.
+        /// </summary>
+        Arc,
 
         /// <summary>
         /// Add a quadradic Bezier curve

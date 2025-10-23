@@ -43,20 +43,32 @@ namespace Tokamak.Graphite
                 m_current.Points.Add(Vector2.Zero);
         }
 
+        /// <summary>
+        /// Moves the drawing cursor to a new location.
+        /// </summary>
+        /// <param name="v">The new location of the drawing cursor.</param>
         public void MoveTo(in Vector2 v)
         {
             if (m_current.Points.Count > 1)
             {
+                // Create a new stroke.
                 m_current = new();
                 m_strokes.Add(m_current);
             }
 
             if (m_current.Points.Count == 0)
+            {
                 m_current.Points.Add(v);
+                m_current.Actions.Add(PathAction.Move);
+            }
             else
                 m_current.Points[0] = v;
         }
 
+        /// <summary>
+        /// Draw a line from the current cursor location to the new one.
+        /// </summary>
+        /// <param name="v">The location to draw to.</param>
         public void LineTo(in Vector2 v)
         {
             AddFirstMove();
@@ -65,6 +77,11 @@ namespace Tokamak.Graphite
             m_current.Actions.Add(PathAction.Line);
         }
 
+        /// <summary>
+        /// Draw a quadradic Bézier curve starting from the current cursor location.
+        /// </summary>
+        /// <param name="control">The control point of the curve.</param>
+        /// <param name="end">The ending point of the curve.</param>
         public void BezierQuadradicCurveTo(in Vector2 control, in Vector2 end)
         {
             AddFirstMove();
@@ -73,6 +90,12 @@ namespace Tokamak.Graphite
             m_current.Actions.Add(PathAction.BezierQuadradic);
         }
 
+        /// <summary>
+        /// Draw a cubic Bézier curve starting from the current cursor location.
+        /// </summary>
+        /// <param name="control1">The first control point of the curve.</param>
+        /// <param name="control2">The second control point of the curve.</param>
+        /// <param name="end">The ending point of the curve.</param>
         public void BezierCubicCurveTo(in Vector2 control1, in Vector2 control2, in Vector2 end)
         {
             AddFirstMove();
@@ -81,9 +104,19 @@ namespace Tokamak.Graphite
             m_current.Actions.Add(PathAction.BezierCubic);
         }
 
-        public void ArcTo(in Vector2 center, float radius)
+        /// <summary>
+        /// Add an elliptical arc to the the path.
+        /// </summary>
+        /// <param name="center">The center of the ellipse to arc through.</param>
+        /// <param name="radius">The X and Y radius of the ellipse to draw.</param>
+        /// <param name="start">The starting angle to draw at.</param>
+        /// <param name="end">The angle to end drawing at.</param>
+        public void ArcTo(in Vector2 center, in Vector2 radius, float start, float end)
         {
+            AddFirstMove();
 
+            m_current.Points.AddRange([center, radius, new Vector2(start, end)]);
+            m_current.Actions.Add(PathAction.Arc);
         }
 
         public void Rectangle(in Vector2 topLeft, in Vector2 bottomRight, float roundEdges = 0)
