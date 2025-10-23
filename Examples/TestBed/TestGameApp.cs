@@ -162,19 +162,22 @@ namespace TestBed
             //path.Close();
 
             // Quadradic Bezier Curve Test
-            //path.MoveTo(50, 400);
-            //path.BezierQuadradicCurveTo(
-            //    new Vector2(250, 50),
-            //    new Vector2(500, 400)
-            //);
+            path.MoveTo(50, 400);
+            path.BezierQuadradicCurveTo(
+                new Vector2(250, 50),
+                new Vector2(500, 400)
+            );
 
             // Cubic Bezier Curve Test
-            path.MoveTo(50, 50);
-            path.BezierCubicCurveTo(
-                new Vector2(200, 200),
-                new Vector2(1000, 275),
-                new Vector2(250, 400)
-            );
+            //path.MoveTo(50, 50);
+            //path.BezierCubicCurveTo(
+            //    new Vector2(200, 200),
+            //    new Vector2(1000, 275),
+            //    new Vector2(250, 400)
+            //);
+
+            // Rectangle Test
+            //path.Rectangle(new Vector2(50, 50), new Vector2(1000, 1000));
 
             m_context.Stroke(path, pen);
         }
