@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
 
 using Tokamak.Mathematics;
@@ -46,11 +44,6 @@ namespace Tokamak.Graphite.PathRendering
     {
         private readonly Stroke m_stroke;
 
-        /// <summary>
-        /// List of <seealso cref="PointInfo"/> objects.
-        /// </summary>
-        private readonly List<PointInfo> m_points = new();
-
         private readonly int m_curveResolution;
         private readonly float m_curveStepping;
 
@@ -64,7 +57,7 @@ namespace Tokamak.Graphite.PathRendering
         /// Note that the more steps in a curve resolution we have, the smoother the resulting
         /// apparent curve approximation we'll get, but this comes at a cost to compute time.
         /// </remarks>
-        public StrokeRenderer(Stroke stroke, int curveResolution, float lineWidth = 1)
+        public StrokeRenderer(Stroke stroke, int curveResolution, float lineWidth)
         {
             m_stroke = stroke;
 
@@ -72,185 +65,79 @@ namespace Tokamak.Graphite.PathRendering
             m_curveStepping = 1f / m_curveResolution;
 
             m_halfWidth = lineWidth / 2f;
-
-            InitPoints();
-
-            ComputeNormalsAndMiter();
         }
 
-        #region Initialization
-
-        /// <summary>
-        /// Initialize the m_points list
-        /// </summary>
-        /// <remarks>
-        /// This is a first pass initialization loop; we compute the point and it's
-        /// basic direction here, which is then used to compute details about the
-        /// point normals and miter information.
-        /// </remarks>
-        private void InitPoints()
+        private Vector2 ComputeMiter(in Vector2 direction, in Vector2 lastDirection)
         {
-            var pointQueue = new Queue<Vector2>(m_stroke.Points);
-            var actions = new Queue<PathAction>(m_stroke.Actions);
-
-            Vector2 current = pointQueue.Dequeue();
-
-            // TODO: Is it worth while to precompute number of entries in the m_points list?
-
-            while (actions.TryDequeue(out PathAction action))
-            {
-                switch (action)
-                {
-                case PathAction.Line:
-                    current = AddLine(current, pointQueue);
-                    break;
-
-                case PathAction.BezierQuadradic:
-                    current = AddQuadradic(current, pointQueue);
-                    break;
-
-                case PathAction.BezierCubic:
-                    current = AddCubic(current, pointQueue);
-                    break;
-
-                default:
-                    Debug.Fail($"Unknown path action {action}");
-                    break;
-                }
-            }
+            Vector2 miter = ((direction + lastDirection) / 2).LineNormal();
+            return miter * m_halfWidth / Vector2.Dot(miter, lastDirection.LineNormal());
         }
-
-        private void AddPointInfo(in Vector2 point, in Vector2 next)
-        {
-            m_points.Add(new PointInfo
-            {
-                Point = point,
-                Direction = next - point
-            });
-        }
-
-        private Vector2 AddLine(in Vector2 current, Queue<Vector2> points)
-        {
-            Debug.Assert(points.Count > 0, "Not enough points for AddLine()");
-
-            Vector2 next = points.Dequeue();
-
-            /*
-             * TODO: Need to check if were joining two lines or if the previous/
-             * next items are curves.  If they're curves we will likely want to 
-             * compute how we join them different to make them smooth.
-             */
-
-            AddPointInfo(current, next);
-
-            return next;
-        }
-
-        private Vector2 Stepped(in Vector2 start, Func<float, Vector2> compute)
-        {
-            /*
-             * Floating point values can be really imprecise when it comes to addition.
-             * 
-             * Take for example the following:
-             * float delta = 0;
-             * 
-             * for (int i = 0; i < 100; ++i)
-             *      delta += 0.01f;
-             * 
-             * Console.WriteLine("d = {0}", d); // This will NOT print 1 as expected.
-             * 
-             * For this reason we compute the step as:
-             * delta = step * (1 / m_curveResolution);
-             */
-
-            Vector2 loopCurrent = start;
-
-            for (int step = 1; step <= m_curveResolution; ++step)
-            {
-                Vector2 next = compute(step * m_curveStepping);
-                AddPointInfo(loopCurrent, next);
-                loopCurrent = next;
-            }
-
-            return loopCurrent; // Should correctly equal the last point.
-        }
-
-        private Vector2 AddQuadradic(in Vector2 current, Queue<Vector2> points)
-        {
-            Debug.Assert(points.Count >= 2, "Not enough points for AddQuadradic()");
-
-            Vector2 start = current;
-
-            Vector2 control = points.Dequeue();
-            Vector2 last = points.Dequeue();
-
-            Vector2 computeLast = Stepped(current, step => Bezier.QuadSolve(start, control, last, step));
-
-            Debug.Assert(computeLast == last, "AddQuadradic() did not reach last point");
-
-            return last;
-        }
-
-        private Vector2 AddCubic(in Vector2 current, Queue<Vector2> points)
-        {
-            Debug.Assert(points.Count >= 3, "Not enough points for AddCubic()");
-
-            Vector2 start = current;
-
-            Vector2 control1 = points.Dequeue();
-            Vector2 control2 = points.Dequeue();
-            Vector2 last = points.Dequeue();
-
-            Vector2 computeLast = Stepped(current, step => Bezier.CubicSolve(start, control1, control2, last, step));
-
-            Debug.Assert(computeLast == last, "AddCubic() did not reach last point");
-
-            return last;
-        }
-
-        /// <summary>
-        /// Fills out additional information for the <seealso cref="PointInfo" /> objects.
-        /// </summary>
-        /// <remarks>
-        /// Second pass initialization loop, this is dependent on the computed direction value
-        /// in the first pass initialization.
-        /// </remarks>
-        private void ComputeNormalsAndMiter()
-        {
-            PointInfo last = m_points.Last();
-
-            for (int i = 0; i < m_points.Count; ++i)
-            {
-                PointInfo current = m_points[i];
-
-                Vector2 tangent = Vector2.Normalize(last.Direction + current.Direction);
-                current.Normal = tangent.LineNormal();
-
-                float scale = m_halfWidth / Vector2.Dot(current.Normal, last.Normal);
-
-                current.Miter *= current.Normal * scale;
-
-                last = current;
-            }
-        }
-
-        #endregion Initialization
 
         public IEnumerable<Vector2> Render()
         {
-            // A very basic implementation just map the points +/- miter for now.
+            Debug.Assert(m_stroke.Points.Count >= 2, "Need at least two points for a stroke!");
 
-            var rval = new List<Vector2>(m_points.Count * 2 + (m_stroke.Closed ? 1 : 0));
+            int segmentCount = m_stroke.Points.Count;
+            segmentCount -= m_stroke.Closed ? 0 : 1;
 
-            rval.AddRange(m_points.SelectMany<PointInfo, Vector2>(p => [p.Point + p.Miter, p.Point - p.Miter]));
+            if (segmentCount < 1)
+                return [];
+
+            var points = new List<Vector2>(m_stroke.Points.Count * 2);
+            var segments = new PathSegment[segmentCount];
+            int i;
+
+            for (i = 0; i < segmentCount; ++i)
+            {
+                Vector2 p1 = m_stroke.Points[i];
+                Vector2 p2 = m_stroke.Points[(i + 1) % m_stroke.Points.Count];
+
+                segments[i] = new PathSegment(p1, p2);
+            }
+
+            /*
+             * Use the last segment's direction for miter computation if closed.
+             * 
+             * Otherwise use the first segment's direction to effectively get a right angle to the same line.
+             */
+            Vector2 lastDirection = m_stroke.Closed ?
+                segments[segmentCount - 1].Direction :
+                segments[0].Direction;
+
+            /*
+             * Compiler demands this be assigned to here, even though
+             * it isn't possible for segmentCount to be less than 1.
+             */
+            Vector2 miter = Vector2.Zero;
+
+            for (i = 0; i < segmentCount; ++i)
+            {
+                var current = segments[i];
+
+                // Figure out the miter for the current point.
+
+                miter = ComputeMiter(current.Direction, lastDirection);
+
+                points.Add(current.Start + miter);
+                points.Add(current.Start - miter);
+
+                lastDirection = current.Direction;
+            }
 
             if (m_stroke.Closed)
             {
-                var first = m_points.First();
-                rval.AddRange([first.Point + first.Miter, first.Point - first.Miter]);
+                // Re-add first points
+                points.Add(points[0]);
+                points.Add(points[1]);
+            }
+            else
+            {
+                --i;
+                points.Add(segments[i].End + miter);
+                points.Add(segments[i].End - miter);
             }
 
-            return rval;
+            return points;
         }
     }
 }

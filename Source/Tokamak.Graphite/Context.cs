@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
+using Tokamak.Graphite.PathRendering;
 using Tokamak.Mathematics;
 
 using Tokamak.Tritium.APIs;
@@ -90,12 +91,15 @@ void main()
 
             m_pipeline = m_apiLayer.CreatePipeline(cfg => cfg
                 .UseInputFormat<VectorFormatPCT>()
+                .UsePrimitive(PrimitiveType.TriangleStrip)
                 .EnableDepthTest(false)
+                .DisableBlending()
+                /*
                 .EnableBlending(
                     // A good blending function for 2D font antialiasing.
                     sourceFactor: BlendFactor.SourceAlpha,
                     destinationFactor: BlendFactor.One
-                )
+                )*/
                 .UseCulling(CullMode.None)
                 .AddShaderCode(ShaderType.Vertex, VERTEX)
                 .AddShaderCode(ShaderType.Fragment, FRAGMENT)
@@ -158,9 +162,44 @@ void main()
 
         public void Draw(PrimitiveType primitiveType, IEnumerable<Vector2> vectors, Color color, ITextureObject? texture = null)
         {
+            Debug.Assert(vectors.Any(), "No vectors in Draw() call.");
+
             var vectorList = vectors.Select(v => BuildVectorPCT(v, color, Vector2.Zero));
 
             AddCall(primitiveType, vectorList, texture);
+        }
+
+        public void Stroke(Path path, Pen pen)
+        {
+            foreach (var stroke in path.m_strokes)
+            {
+                var renderer = new StrokeRenderer(stroke, 0, pen.Width);
+
+                Draw(PrimitiveType.TriangleList, renderer.Render(), pen.Color);
+            }
+        }
+
+        public void Fill(Path path, Pen pen)
+        {
+            throw new NotImplementedException();
+#if false
+            if (path.Count < 3 || pen.Color.Alpha == 0)
+                return; // Do nothing
+
+            var res = new List<Vector2>();
+
+            // Simulating a triangle fan (naïve approach)
+            Vector2 first = path[0];
+            Vector2 prev = path[1];
+
+            for (int i = 2; i < path.Count; ++i)
+            {
+                res.AddRange([first, prev, path[i]]);
+                prev = path[i];
+            }
+
+            Draw(PrimitiveType.TriangleList, res, pen.Color);
+#endif
         }
 
         private VectorFormatPCT BuildPointPCT(in Point p, in Color color, in Vector2 uv)
@@ -198,11 +237,6 @@ void main()
             m_vectors.AddRange(vectorList);
 
             m_calls.Add(call);
-        }
-
-        public ICanvas GetCanvas()
-        {
-            return new Canvas(this);
         }
 
         [Conditional("DEBUG")]

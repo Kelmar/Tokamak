@@ -4,10 +4,11 @@ using System.Linq;
 using System.Numerics;
 
 using Tokamak.Graphite.PathRendering;
+using Tokamak.Mathematics;
 
 namespace Tokamak.Graphite
 {
-    internal class Path : IPath
+    public class Path
     {
         internal List<Stroke> m_strokes = new();
 
@@ -78,6 +79,29 @@ namespace Tokamak.Graphite
 
             m_current.Points.AddRange([control1, control2, end]);
             m_current.Actions.Add(PathAction.BezierQuadradic);
+        }
+
+        public void ArcTo(in Vector2 center, float radius)
+        {
+
+        }
+
+        public void Rectangle(in Vector2 topLeft, in Vector2 bottomRight, float roundEdges = 0)
+        {
+            if (MathX.AlmostEquals(roundEdges, 0))
+            {
+                MoveTo(topLeft);
+
+                m_current.Points.AddRange([
+                    new Vector2(bottomRight.X, topLeft.Y),
+                    bottomRight,
+                    new Vector2(topLeft.X, bottomRight.Y)
+                ]);
+
+                m_current.Actions.AddRange([PathAction.Line, PathAction.Line, PathAction.Line]);
+            }
+
+            Close();
         }
 
         public void Close()

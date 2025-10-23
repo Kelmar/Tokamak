@@ -10,6 +10,7 @@ using Tokamak.Quill;
 
 namespace Tokamak.Graphite
 {
+#if false
     internal class GraphiteFontRenderer : IFontRenderer
     {
         private readonly Canvas m_owner;
@@ -39,4 +40,5 @@ namespace Tokamak.Graphite
         {
         }
     }
+#endif
 }

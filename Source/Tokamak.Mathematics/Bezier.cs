@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -33,12 +36,12 @@ namespace Tokamak.Mathematics
         {
             delta = Math.Clamp(delta, 0, 1);
 
-            float sqDelta = delta * delta;
+            float omd = 1 - delta;
 
             return
-                v1 * (delta - 1) * (delta - 1) +
-                v2 * (2 * delta - 2 * sqDelta) +
-                v3 * sqDelta;
+                v1 * omd * omd +
+                v2 * 2 * omd * delta +
+                v3 * delta * delta;
         }
 
         /// <summary>
@@ -54,12 +57,12 @@ namespace Tokamak.Mathematics
         {
             delta = Math.Clamp(delta, 0, 1);
 
-            float sqDelta = delta * delta;
+            float omd = 1 - delta;
 
             return
-                v1 * (delta - 1) * (delta - 1) +
-                v2 * (2 * delta - 2 * sqDelta) +
-                v3 * sqDelta;
+                v1 * omd * omd +
+                v2 * 2 * omd * delta +
+                v3 * delta * delta;
         }
 
         /// <summary>
@@ -76,14 +79,13 @@ namespace Tokamak.Mathematics
         {
             delta = Math.Clamp(delta, 0, 1);
 
-            float cubeDelta = delta * delta * delta;
-            float sqDelta = delta * delta;
+            float omd = 1 - delta;
 
             return
-                v1 * (-cubeDelta + 3 * sqDelta - 3 * delta + 1) +
-                v2 * (3 * cubeDelta - 6 * sqDelta + 3 * delta) +
-                v3 * (-3 * cubeDelta + 3 * sqDelta) +
-                v4 * (cubeDelta);
+                v1 * omd * omd * omd +
+                v2 * 3 * omd * omd * delta +
+                v3 * 3 * omd * delta * delta +
+                v4 * delta * delta * delta;
         }
 
         /// <summary>
@@ -100,14 +102,89 @@ namespace Tokamak.Mathematics
         {
             delta = Math.Clamp(delta, 0, 1);
 
-            float cubeDelta = delta * delta * delta;
-            float sqDelta = delta * delta;
+            float omd = 1 - delta;
 
             return
-                v1 * (-cubeDelta + 3 * sqDelta - 3 * delta + 1) +
-                v2 * (3 * cubeDelta - 6 * sqDelta + 3 * delta) +
-                v3 * (-3 * cubeDelta + 3 * sqDelta) +
-                v4 * (cubeDelta);
+                v1 * omd * omd * omd +
+                v2 * 3 * omd * omd * delta +
+                v3 * 3 * omd * delta * delta +
+                v4 * delta * delta * delta;
+        }
+
+        /// <summary>
+        /// Solves an arbitrarily complex Bézier curve with N points.
+        /// </summary>
+        /// <param name="vectors">List of vectors to process.</param>
+        /// <param name="delta">The time delta from 0 to 1 to solve on the Bézier curve.</param>
+        /// <remarks>
+        /// The vector list must have at least 3 vectors to solve.
+        /// 
+        /// For lists of 3 or 4 vectors using <seealso cref="QuadSolve"/> and <seealso cref="CubicSolve"/> would be faster.
+        /// </remarks>
+        /// <returns>A point along the computed Bézier curve.</returns>
+        public static Vector2 SolveN(IEnumerable<Vector2> vectors, float delta)
+        {
+            var allVectors = vectors.ToArray();
+            Debug.Assert(allVectors.Length > 2, "Invalid Bézier curve");
+
+            // We only call the QuadSolve() and CubicSolve() in release builds.
+            // This is so we can use this method to help validate unit tests of the above functions.
+#if !DEBUG
+            // Use unrolled versions if available.
+            if (allVectors.Length == 3)
+                return QuadSolve(allVectors[0], allVectors[1], allVectors[2], delta);
+            else if (allVectors.Length == 4)
+                return CubicSolve(allVectors[0], allVectors[1], allVectors[2], allVectors[3], delta);
+#endif
+
+            delta = Math.Clamp(delta, 0, 1);
+
+            float omd = 1 - delta;
+
+            Vector2 sum = Vector2.Zero;
+
+            for (int i = 0; i < allVectors.Length; i++)
+                sum += allVectors[i] * MathF.Pow(omd, allVectors.Length - i) * MathF.Pow(delta, i);
+
+            return sum;
+        }
+
+        /// <summary>
+        /// Solves an arbitrarily complex 3D Bézier curve with N points.
+        /// </summary>
+        /// <param name="vectors">List of vectors to process.</param>
+        /// <param name="delta">The time delta from 0 to 1 to solve on the Bézier curve.</param>
+        /// <remarks>
+        /// The vector list must have at least 3 vectors to solve.
+        /// 
+        /// For lists of 3 or 4 vectors using <seealso cref="QuadSolve"/> and <seealso cref="CubicSolve"/> would be faster.
+        /// </remarks>
+        /// <returns>A point along the computed Bézier curve.</returns>
+        public static Vector3 SolveN(IEnumerable<Vector3> vectors, float delta)
+        {
+            var allVectors = vectors.ToArray();
+            Debug.Assert(allVectors.Length > 2, "Invalid Bézier curve");
+
+            // We only call the QuadSolve() and CubicSolve() in release builds.
+            // This is so we can use this method to help validate unit tests of the above functions.
+#if !DEBUG
+            // Use unrolled versions if available.
+            if (allVectors.Length == 3)
+                return QuadSolve(allVectors[0], allVectors[1], allVectors[2], delta);
+            else if (allVectors.Length == 4)
+                return CubicSolve(allVectors[0], allVectors[1], allVectors[2], allVectors[3], delta);
+#endif
+
+            delta = Math.Clamp(delta, 0, 1);
+
+            float omd = 1 - delta;
+
+            Vector3 sum = Vector3.Zero;
+
+            for (int i = 0; i < allVectors.Length; i++)
+                sum += allVectors[i] * MathF.Pow(omd, allVectors.Length - i) * MathF.Pow(delta, i);
+
+            return sum;
         }
     }
 }
