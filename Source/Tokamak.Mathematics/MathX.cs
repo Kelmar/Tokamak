@@ -146,6 +146,9 @@ namespace Tokamak.Mathematics
             return (i & ~(i >> 1));
         }
 
+        public static int Factorial(int n) => 
+            n <= 1 ? 1 : (n * Factorial(n - 1));
+
         /// <summary>
         /// Gets the next power of 2 for the given value.
         /// </summary>

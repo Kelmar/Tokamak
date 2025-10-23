@@ -120,6 +120,9 @@ namespace Tokamak.Mathematics
         /// The vector list must have at least 3 vectors to solve.
         /// 
         /// For lists of 3 or 4 vectors using <seealso cref="QuadSolve"/> and <seealso cref="CubicSolve"/> would be faster.
+        /// 
+        /// Note that because this function actually does the long work of multiplying and summing each part of the polynomial
+        /// separately it can lead to some rather inaccurate results compared to just calling the above functions.
         /// </remarks>
         /// <returns>A point along the computed Bézier curve.</returns>
         public static Vector2 SolveN(IEnumerable<Vector2> vectors, float delta)
@@ -140,11 +143,21 @@ namespace Tokamak.Mathematics
             delta = Math.Clamp(delta, 0, 1);
 
             float omd = 1 - delta;
+            int n = allVectors.Length - 1;
+            float factN = MathX.Factorial(n);
 
             Vector2 sum = Vector2.Zero;
 
             for (int i = 0; i < allVectors.Length; i++)
-                sum += allVectors[i] * MathF.Pow(omd, allVectors.Length - i) * MathF.Pow(delta, i);
+            {
+                int factI = MathX.Factorial(i);
+                float fact = factN / (factI * MathX.Factorial(n - i));
+                
+                float p = MathF.Pow(omd, n - i);
+                float d = MathF.Pow(delta, i);
+
+                sum += allVectors[i] * p * d * fact;
+            }
 
             return sum;
         }
@@ -158,6 +171,9 @@ namespace Tokamak.Mathematics
         /// The vector list must have at least 3 vectors to solve.
         /// 
         /// For lists of 3 or 4 vectors using <seealso cref="QuadSolve"/> and <seealso cref="CubicSolve"/> would be faster.
+        /// 
+        /// Note that because this function actually does the long work of multiplying and summing each part of the polynomial
+        /// separately it can lead to some rather inaccurate results compared to just calling the above functions.
         /// </remarks>
         /// <returns>A point along the computed Bézier curve.</returns>
         public static Vector3 SolveN(IEnumerable<Vector3> vectors, float delta)
@@ -178,11 +194,21 @@ namespace Tokamak.Mathematics
             delta = Math.Clamp(delta, 0, 1);
 
             float omd = 1 - delta;
+            int n = allVectors.Length - 1;
+            float factN = MathX.Factorial(n);
 
             Vector3 sum = Vector3.Zero;
 
             for (int i = 0; i < allVectors.Length; i++)
-                sum += allVectors[i] * MathF.Pow(omd, allVectors.Length - i) * MathF.Pow(delta, i);
+            {
+                int factI = MathX.Factorial(i);
+                float fact = factN / (factI * MathX.Factorial(n - i));
+
+                float p = MathF.Pow(omd, n - i);
+                float d = MathF.Pow(delta, i);
+
+                sum += allVectors[i] * p * d * fact;
+            }
 
             return sum;
         }
