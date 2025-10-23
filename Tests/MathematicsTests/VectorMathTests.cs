@@ -8,11 +8,6 @@ namespace MathTests
 {
     public class VectorMathTests
     {
-        //[SetUp]
-        //public void Setup()
-        //{
-        //}
-
         [Test]
         public void CrossProduct2DWorks()
         {
