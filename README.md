@@ -54,8 +54,8 @@ The current executable is the TestBed project where all the experimentation is g
   - [ ] Sound
 - [ ] Graphite (2D Graphics)
   - [X] Basic line drawing
-  - [-] Complex shape drawing (in progress, several functions working)
-  - [-] Bitmap drawing (basic blits working)
+  - [ ] Complex shape drawing (in progress, several functions working)
+  - [ ] Bitmap drawing (basic blits working)
   - [ ] Text rendering (in progress)
     - [ ] Basics for debugging (reworking)
     - [ ] Advanced formatting and layout
