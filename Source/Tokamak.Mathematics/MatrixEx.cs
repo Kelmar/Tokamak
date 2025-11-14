@@ -8,28 +8,31 @@ namespace Tokamak.Mathematics
     /// </summary>
     public static class MatrixEx
     {
-        /// <summary>
-        /// Create a <seealso cref="Matrix3x2"/> that skews along the X axis.
-        /// </summary>
-        /// <param name="a">How far along the X axis to skew.</param>
-        public static Matrix3x2 CreateSkewX(float a)
+        extension(in Matrix3x2 mat)
         {
-            Matrix3x2 rval = Matrix3x2.Identity;
-            rval.M21 = MathF.Tan(a);
+            /// <summary>
+            /// Create a <seealso cref="Matrix3x2"/> that skews along the X axis.
+            /// </summary>
+            /// <param name="a">How far along the X axis to skew.</param>
+            public static Matrix3x2 CreateSkewX(float a)
+            {
+                Matrix3x2 rval = Matrix3x2.Identity;
+                rval.M21 = MathF.Tan(a);
 
-            return rval;
-        }
+                return rval;
+            }
 
-        /// <summary>
-        /// Create a <seealso cref="Matrix3x2"/> that skews along the Y axis.
-        /// </summary>
-        /// <param name="a">How far along the Y axis to skew.</param>
-        public static Matrix3x2 CreateSkewY(float a)
-        {
-            Matrix3x2 rval = Matrix3x2.Identity;
-            rval.M12 = MathF.Tan(a);
+            /// <summary>
+            /// Create a <seealso cref="Matrix3x2"/> that skews along the Y axis.
+            /// </summary>
+            /// <param name="a">How far along the Y axis to skew.</param>
+            public static Matrix3x2 CreateSkewY(float a)
+            {
+                Matrix3x2 rval = Matrix3x2.Identity;
+                rval.M12 = MathF.Tan(a);
 
-            return rval;
+                return rval;
+            }
         }
     }
 }

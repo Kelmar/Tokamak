@@ -158,7 +158,7 @@ namespace Tokamak.Mathematics
         /// Gets a color from Hue, Saturation, Value, and Alpha values
         /// </summary>
         public static Color FromHSV(float hue, float saturation, float value, float alpha = 1, double gamma = DefaultGamma)
-            => FromHSV(hue, saturation, value, alpha.ToByteRange(), gamma);
+            => FromHSV(hue, saturation, value, float.ToByteRange(alpha), gamma);
 
         /// <summary>
         /// Gets a color from Hue, Saturation, Value, and Alpha values
@@ -227,7 +227,7 @@ namespace Tokamak.Mathematics
                 LinearToGamma(v.X, DefaultGamma),
                 LinearToGamma(v.Y, gamma),
                 LinearToGamma(v.Z, gamma),
-                v.W.ToByteRange()
+                float.ToByteRange(v.W)
             );
 
         /// <summary>

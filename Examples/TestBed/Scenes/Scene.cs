@@ -93,7 +93,7 @@ namespace TestBed.Scenes
             float w = size.X;
             float h = size.Y;
 
-            Projection = Matrix4x4.CreatePerspectiveFieldOfView((float)MathX.DegToRad(45), w / h, 0.1f, 100f);
+            Projection = Matrix4x4.CreatePerspectiveFieldOfView(float.DegreesToRadians(45), w / h, 0.1f, 100f);
         }
 
         public void Render()

@@ -42,25 +42,6 @@ namespace MathTests
             (2048, 4096)
         ];
 
-        public static float[] FloatLerpCases = [0, 0.5f, 1];
-        public static double[] DoubleLerpCases = [0, 0.5, 1];
-
-        [TestCaseSource(nameof(FloatLerpCases))]
-        public void TestFloatLerp(float value)
-        {
-            float result = MathX.LerpF(0, 1, value);
-
-            Assert.That(result, Is.InRange(value - MathX.FUZ, value + MathX.FUZ));
-        }
-
-        [TestCaseSource(nameof(DoubleLerpCases))]
-        public void TestDoubleLerp(double value)
-        {
-            double result = MathX.Lerp(0, 1, value);
-
-            Assert.That(result, Is.InRange(value - MathX.FUZ, value + MathX.FUZ));
-        }
-
         [TestCaseSource(nameof(FactorialCases))]
         public void TestFactorial((int Value, int Expected) testCase)
         {

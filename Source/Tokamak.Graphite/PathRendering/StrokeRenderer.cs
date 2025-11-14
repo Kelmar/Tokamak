@@ -161,7 +161,7 @@ namespace Tokamak.Graphite.PathRendering
 
                         p1 = ComputeStepped(p1, lastAction == PathAction.Move, d =>
                         {
-                            float angle = MathX.LerpF(start, end, d);
+                            float angle = float.Lerp(start, end, d);
                             return new Vector2(center.X + MathF.Cos(angle) * radius.X, center.Y + MathF.Sin(angle) * radius.Y);
                         });
                     }

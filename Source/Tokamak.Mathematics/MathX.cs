@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 
 namespace Tokamak.Mathematics
 {
@@ -13,159 +12,142 @@ namespace Tokamak.Mathematics
         /// </summary>
         public const float FUZ = 0.000001f;
 
-        /// <summary>
-        /// Fuzzy almost equals compare.
-        /// </summary>
-        /// <param name="lhs">Left hand side</param>
-        /// <param name="rhs">Right hand side</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static bool AlmostEquals(float lhs, float rhs)
+        extension (double d)
         {
-            float diff = Math.Abs(lhs - rhs);
-            return diff <= FUZ;
+            /// <summary>
+            /// Fuzzy almost equals compare.
+            /// </summary>
+            /// <param name="lhs">Left hand side</param>
+            /// <param name="rhs">Right hand side</param>
+            public static bool AlmostEquals(double lhs, double rhs)
+            {
+                double diff = Math.Abs(lhs - rhs);
+                return diff <= FUZ;
+            }
+
+            /// <summary>
+            /// Wraps a value around a given max value.
+            /// </summary>
+            /// <param name="v"></param>
+            /// <param name="max"></param>
+            public static double Wrap(double v, double max)
+            {
+                while (v > max)
+                    v -= max;
+
+                return v;
+            }
+
+            /// <summary>
+            /// Converts a floating point value from 0 to 1 into a byte from 0 to 255.
+            /// </summary>
+            public static byte ToByteRange(double value) => (byte)(Math.Clamp(value, 0, 1) * Byte.MaxValue);
         }
 
-        /// <summary>
-        /// Linearly interpolate between two values.
-        /// </summary>
-        /// <param name="v1">Starting value</param>
-        /// <param name="v2">Ending value</param>
-        /// <param name="delta">Distance to interpolate by</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static double Lerp(double v1, double v2, double delta)
+        extension (float f)
         {
-            delta = Math.Clamp(delta, 0, 1);
-            return (v1 * (1 - delta)) + (v2 * delta);
+            /// <summary>
+            /// Fuzzy almost equals compare.
+            /// </summary>
+            /// <param name="lhs">Left hand side</param>
+            /// <param name="rhs">Right hand side</param>
+            public static bool AlmostEquals(float lhs, float rhs)
+            {
+                float diff = Math.Abs(lhs - rhs);
+                return diff <= FUZ;
+            }
+
+            /// <summary>
+            /// Wraps a value around a given max value.
+            /// </summary>
+            /// <param name="v"></param>
+            /// <param name="max"></param>
+            public static float Wrap(float v, float max)
+            {
+                while (v > max)
+                    v -= max;
+
+                return v;
+            }
+
+            /// <summary>
+            /// Converts a floating point value from 0 to 1 into a byte from 0 to 255.
+            /// </summary>
+            public static byte ToByteRange(float value) => (byte)(Math.Clamp(value, 0, 1) * Byte.MaxValue);
         }
 
-        /// <summary>
-        /// Linearly interpolate between two values.
-        /// </summary>
-        /// <param name="v1">Starting value</param>
-        /// <param name="v2">Ending value</param>
-        /// <param name="delta">Distance to interpolate by</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static float LerpF(float v1, float v2, float delta)
+        extension (UInt32 i)
         {
-            delta = Math.Clamp(delta, 0, 1);
-            return (v1 * (1 - delta)) + (v2 * delta);
+            /// <summary>
+            /// Gets the most significant bit set.
+            /// </summary>
+            public static UInt32 MSB(UInt32 value)
+            {
+                value |= (value >> 1);
+                value |= (value >> 2);
+                value |= (value >> 4);
+                value |= (value >> 8);
+                value |= (value >> 16);
+
+                return (value & ~(value >> 1));
+            }
+
+            /// <summary>
+            /// Gets the next power of 2 for the given value.
+            /// </summary>
+            /// <remarks>
+            /// This function will get the next highest power of two that will
+            /// hold the supplied integer value.
+            /// </remarks>
+            /// <example>
+            /// int i = MathX.NextPow2(640); // Returns 1024
+            /// int n = MathX.NextPow2(1024); // Returns 2048
+            /// </example>
+            public static UInt32 NextPow2(UInt32 value) =>
+                value == 0 ? 1 : MSB(value) << 1;
         }
 
-        /// <summary>
-        /// Wraps a value around a given max value.
-        /// </summary>
-        /// <param name="v"></param>
-        /// <param name="max"></param>
-        public static float WrapF(float v, float max)
+        extension (Int32 i)
         {
-            while (v > max)
-                v -= max;
+            /// <summary>
+            /// Get the most significant bit set.
+            /// </summary>
+            /// <remarks>
+            /// Ignores the sign bit.
+            /// </remarks>
+            public static Int32 MSB(Int32 value)
+            {
+                // Remove sign bit
+                value = value < 0 ? -value : value;
 
-            return v;
+                value |= (value >> 1);
+                value |= (value >> 2);
+                value |= (value >> 4);
+                value |= (value >> 8);
+
+                return (value & ~(value >> 1));
+            }
+
+            /// <summary>
+            /// Compute the factorial of the given positive integer <c>n</c>
+            /// </summary>
+            /// <param name="n">Positive integer to get the factorial of.</param>
+            public static int Factorial(int n) =>
+                n <= 1 ? 1 : (n * Factorial(n - 1));
+
+            /// <summary>
+            /// Gets the next power of 2 for the given value.
+            /// </summary>
+            /// <remarks>
+            /// This function will get the next highest power of two that will
+            /// hold the supplied integer value.
+            /// </remarks>
+            /// <example>
+            /// int i = MathX.NextPow2(640); // Returns 1024
+            /// int n = MathX.NextPow2(1024); // Returns 2048
+            /// </example>
+            public static int NextPow2(int value) =>
+                value == 0 ? 1 : MSB(value) << 1;
         }
-
-        /// <summary>
-        /// Wraps a value around a given max value.
-        /// </summary>
-        /// <param name="v"></param>
-        /// <param name="max"></param>
-        public static double Wrap(double v, double max)
-        {
-            while (v > max)
-                v -= max;
-
-            return v;
-        }
-
-        /// <summary>
-        /// Converts a floating point value from 0 to 1 into a byte from 0 to 255.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte ToByteRange(this float v) => (byte)(Math.Clamp(v, 0, 1) * Byte.MaxValue);
-
-        /// <summary>
-        /// Converts a floating point value from 0 to 1 into a byte from 0 to 255.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte ToByteRange(this double v) => (byte)(Math.Clamp(v, 0, 1) * Byte.MaxValue);
-
-        /// <summary>
-        /// Convert degrees to radians.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float DegToRadF(float d) => d / 180f * MathF.PI;
-
-        /// <summary>
-        /// Convert degrees to radians.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double DegToRad(double d) => d / 180d * Math.PI;
-
-        /// <summary>
-        /// Convert radians to degrees.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float RadToDegF(float r) => r / MathF.PI * 180f;
-
-        /// <summary>
-        /// Convert radians to degrees.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double RadToDeg(double r) => r / MathF.PI * 180d;
-
-        /// <summary>
-        /// Gets the most significant bit set.
-        /// </summary>
-        public static UInt32 MSB(UInt32 i)
-        {
-            i |= (i >> 1);
-            i |= (i >> 2);
-            i |= (i >> 4);
-            i |= (i >> 8);
-            i |= (i >> 16);
-
-            return (i & ~(i >> 1));
-        }
-
-        /// <summary>
-        /// Get the most significant bit set.
-        /// </summary>
-        /// <remarks>
-        /// Ignores the sign bit.
-        /// </remarks>
-        public static Int32 MSB(Int32 i)
-        {
-            // Remove sign bit
-            i = i < 0 ? -i : i;
-
-            i |= (i >> 1);
-            i |= (i >> 2);
-            i |= (i >> 4);
-            i |= (i >> 8);
-
-            return (i & ~(i >> 1));
-        }
-
-        /// <summary>
-        /// Compute the factorial of the given positive integer <c>n</c>
-        /// </summary>
-        /// <param name="n">Positive integer to get the factorial of.</param>
-        public static int Factorial(int n) => 
-            n <= 1 ? 1 : (n * Factorial(n - 1));
-
-        /// <summary>
-        /// Gets the next power of 2 for the given value.
-        /// </summary>
-        /// <remarks>
-        /// This function will get the next highest power of two that will
-        /// hold the supplied integer value.
-        /// </remarks>
-        /// <example>
-        /// int i = MathX.NextPow2(640); // Returns 1024
-        /// int n = MathX.NextPow2(1024); // Returns 2048
-        /// </example>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int NextPow2(int value) => 
-            value == 0 ? 1 : MSB(value) << 1;
     }
 }

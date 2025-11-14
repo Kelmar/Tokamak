@@ -50,7 +50,7 @@ namespace Tokamak.Tritium.Scene
         public Point ViewBounds { get; set; }
 
         public Matrix4x4 GetViewMatrix() =>
-            Matrix4x4.CreatePerspectiveFieldOfView(MathX.DegToRadF(FieldOfView), ViewBounds.X / ViewBounds.Y, 0.1f, 100f);
+            Matrix4x4.CreatePerspectiveFieldOfView(float.DegreesToRadians(FieldOfView), ViewBounds.X / ViewBounds.Y, 0.1f, 100f);
 
         /// <summary>
         /// Gets the projection matrix for the camera a it's current world location.
