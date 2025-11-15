@@ -112,7 +112,6 @@ namespace Tokamak.Mathematics
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(Vector2 v) => (Left >= v.X) && (Top >= v.Y) && (v.X <= Right) && (v.Y <= Bottom);
 
         public static RectF FromCoordinates(in Vector2 v1, in Vector2 v2)

@@ -90,93 +90,9 @@ namespace Tokamak.Mathematics
         }
 
         /// <summary>
-        /// Gets a color from Hue, Saturation, Value, and Alpha values
-        /// </summary>
-        public static Color FromHSV(float hue, float saturation, float value, byte alpha, double gamma = DefaultGamma)
-        {
-            hue %= 1;
-
-            if (hue < 0)
-                hue += 1;
-
-            hue *= 360;
-            saturation = Math.Clamp(saturation, 0, 1);
-            value = Math.Clamp(value, 0, 1);
-
-            float c = value * saturation;
-            float x = c * (1 - MathF.Abs((hue / 60) % 2 - 1));
-            float m = value - c;
-
-            float r, g, b;
-
-            if (hue < 60)
-            {
-                r = c;
-                g = x;
-                b = 0;
-            }
-            else if (hue < 120)
-            {
-                r = x;
-                g = c;
-                b = 0;
-            }
-            else if (hue < 180)
-            {
-                r = 0;
-                g = c;
-                b = x;
-            }
-            else if (hue < 240)
-            {
-                r = 0;
-                g = x;
-                b = c;
-            }
-            else if (hue < 300)
-            {
-                r = x;
-                g = 0;
-                b = c;
-            }
-            else
-            {
-                r = c;
-                g = 0;
-                b = x;
-            }
-
-            return new Color(
-                LinearToGamma(r, gamma),
-                LinearToGamma(g, gamma),
-                LinearToGamma(b, gamma),
-                alpha
-            );
-        }
-
-        /// <summary>
-        /// Gets a color from Hue, Saturation, Value, and Alpha values
-        /// </summary>
-        public static Color FromHSV(float hue, float saturation, float value, float alpha = 1, double gamma = DefaultGamma)
-            => FromHSV(hue, saturation, value, float.ToByteRange(alpha), gamma);
-
-        /// <summary>
-        /// Gets a color from Hue, Saturation, Value, and Alpha values
-        /// </summary>
-        public static Color FromHSV(in Vector3 v, double gamma = DefaultGamma)
-            => FromHSV(v.X, v.Y, v.Z, 1f, gamma);
-
-        /// <summary>
-        /// Gets a color from Hue, Saturation, Value, and Alpha values
-        /// </summary>
-        public static Color FromHSV(in Vector4 v, double gamma = DefaultGamma)
-            => FromHSV(v.X, v.Y, v.Z, v.W, gamma);
-
-        /// <summary>
         /// Converts the color to a 4 element RGBA byte array.
         /// </summary>
         /// <returns>An array with red, green, blue and alpha in that order.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte[] ToArrayRGBA()
             => [Red, Green, Blue, Alpha];
 
@@ -184,7 +100,6 @@ namespace Tokamak.Mathematics
         /// Converts the color to a 3 element RGB byte array.
         /// </summary>
         /// <returns>An array with red, green, and blue that order.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte[] ToArrayRGB()
             => [Red, Green, Blue];
 
@@ -192,7 +107,6 @@ namespace Tokamak.Mathematics
         /// Converts the color to a 4 element BGRA byte array.
         /// </summary>
         /// <returns>An array with blue, green, red and alpha in that order.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte[] ToArrayBGRA()
             => [Blue, Green, Red, Alpha];
 
@@ -200,13 +114,22 @@ namespace Tokamak.Mathematics
         /// Converts the color to a 3 element BGR byte array.
         /// </summary>
         /// <returns>An array with blue, green, and red in that order.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte[] ToArrayBGR()
             => [Blue, Green, Red];
 
-        // Convert to/from Vector4
         /// <summary>
-        /// Convert a Color into a Vector4
+        /// Convert a Color into a <seealso cref="Vector3"/>
+        /// </summary>
+        /// <param name="gamma">Optional gamma value to use for converting gamma color to linear color.</param>
+        public Vector3 ToVector3(double gamma = DefaultGamma)
+            => new Vector3(
+                (float)GammaToLinear(Red, gamma),
+                (float)GammaToLinear(Green, gamma),
+                (float)GammaToLinear(Blue, gamma)
+            );
+
+        /// <summary>
+        /// Convert a Color into a <seealso cref="Vector4">
         /// </summary>
         /// <param name="gamma">Optional gamma value to use for converting gamma color to linear color.</param>
         public Vector4 ToVector(double gamma = DefaultGamma)
@@ -218,7 +141,21 @@ namespace Tokamak.Mathematics
             );
 
         /// <summary>
-        /// Convert a Vector4 to a Color value.
+        /// Convert a <seealso cref="Vector3"/> to a Color value.
+        /// </summary>
+        /// <param name="v">Vector to convert</param>
+        /// <param name="alpha">The alpha value for the color.</param>
+        /// <param name="gamma">Optional gamma value to use for linear to gamma color space conversion.</param>
+        public static Color FromVector(in Vector3 v, float alpha = 1, double gamma = DefaultGamma)
+            => new Color(
+                LinearToGamma(v.X, DefaultGamma),
+                LinearToGamma(v.Y, gamma),
+                LinearToGamma(v.Z, gamma),
+                float.ToByteRange(alpha)
+            );
+
+        /// <summary>
+        /// Convert a <seealso cref="Vector4"/> to a Color value.
         /// </summary>
         /// <param name="v">Vector to convert</param>
         /// <param name="gamma">Optional gamma value to use for linear to gamma color space conversion.</param>
@@ -233,14 +170,12 @@ namespace Tokamak.Mathematics
         /// <summary>
         /// Convert gamma color value to linear color value.
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GammaToLinear(byte b, double gamma = DefaultGamma)
             => Math.Pow(b / 255d, gamma);
 
         /// <summary>
         /// Convert linear color value to gamma color value.
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte LinearToGamma(double d, double gamma = DefaultGamma)
             => (byte)Math.Round(255 * Math.Pow(d, 1 / gamma));
 
@@ -264,5 +199,13 @@ namespace Tokamak.Mathematics
                 Alpha = (byte)Math.Round(c1.Alpha * oneMinus + c2.Alpha * distance)
             };
         }
+
+        // Less specific to more specific, no cast required.
+        public static implicit operator Color(in Vector3 v) => Color.FromVector(v);
+        public static implicit operator Color(in Vector4 v) => Color.FromVector(v);
+
+        // More specific to less specific, require cast.
+        public static explicit operator Vector4(in Color c) => c.ToVector();
+        public static explicit operator Vector3(in Color c) => c.ToVector3();
     }
 }

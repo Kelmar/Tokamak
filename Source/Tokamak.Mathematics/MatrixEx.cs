@@ -8,7 +8,7 @@ namespace Tokamak.Mathematics
     /// </summary>
     public static class MatrixEx
     {
-        extension(in Matrix3x2 mat)
+        extension (in Matrix3x2 mat)
         {
             /// <summary>
             /// Create a <seealso cref="Matrix3x2"/> that skews along the X axis.

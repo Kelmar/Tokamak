@@ -112,6 +112,12 @@ namespace Tokamak.Mathematics
             // If t0 is less than zero the point is at t1
             //return t0 < 0 ? t1 : t0;
 
+            /*
+             * Finding the delta along the ray could be useful if you want to
+             * also calculate the tangent on the sphere the ray intersects at.
+             * (I.e. full on ray tracing.)
+             */
+
             return true;
         }
     }

@@ -31,7 +31,6 @@ namespace Tokamak.Mathematics
         /// <param name="v3"></param>
         /// <param name="delta">Time over curve from 0 to 1></param>
         /// <returns>A point along the Bézier curve.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector2 QuadSolve(in Vector2 v1, in Vector2 v2, in Vector2 v3, float delta)
         {
             delta = Math.Clamp(delta, 0, 1);
@@ -52,7 +51,6 @@ namespace Tokamak.Mathematics
         /// <param name="v3"></param>
         /// <param name="delta">Time over curve from 0 to 1></param>
         /// <returns>A point along the Bézier curve.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector3 QuadSolve(in Vector3 v1, in Vector3 v2, in Vector3 v3, float delta)
         {
             delta = Math.Clamp(delta, 0, 1);
@@ -74,7 +72,6 @@ namespace Tokamak.Mathematics
         /// <param name="v4"></param>
         /// <param name="delta">Time over curve from 0 to 1</param>
         /// <returns>A point along the Bézier curve.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector2 CubicSolve(in Vector2 v1, in Vector2 v2, in Vector2 v3, in Vector2 v4, float delta)
         {
             delta = Math.Clamp(delta, 0, 1);
@@ -97,7 +94,6 @@ namespace Tokamak.Mathematics
         /// <param name="v4"></param>
         /// <param name="delta">Time over curve from 0 to 1</param>
         /// <returns>A point along the Bézier curve.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector3 CubicSolve(in Vector3 v1, in Vector3 v2, in Vector3 v3, in Vector3 v4, float delta)
         {
             delta = Math.Clamp(delta, 0, 1);
