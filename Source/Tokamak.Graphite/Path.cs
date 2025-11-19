@@ -57,13 +57,18 @@ namespace Tokamak.Graphite
             }
 
             if (m_current.Points.Count == 0)
-            {
                 m_current.Points.Add(v);
-                m_current.Actions.Add(PathAction.Move);
-            }
             else
                 m_current.Points[0] = v;
         }
+
+        /// <summary>
+        /// Moves the drawing cursor to a new location.
+        /// </summary>
+        /// <param name="x">The X coordinate to move to.</param>
+        /// <param name="y">The Y coordinate to move to.</param>
+        public void MoveTo(float x, float y)
+            => MoveTo(new Vector2(x, y));
 
         /// <summary>
         /// Draw a line from the current cursor location to the new one.
@@ -104,6 +109,15 @@ namespace Tokamak.Graphite
             m_current.Actions.Add(PathAction.BezierCubic);
         }
 
+        private void AddArc(in Vector2 center, in Vector2 radius, float start, float end)
+        {
+            m_current.Points.AddRange([center, radius, new Vector2(start, end)]);
+            m_current.Actions.Add(PathAction.Arc);
+        }
+
+        private void AddArc(in Vector2 center, float radius, float start, float end)
+            => AddArc(center, new Vector2(radius, radius), start, end);
+
         /// <summary>
         /// Add an elliptical arc to the the path.
         /// </summary>
@@ -115,8 +129,7 @@ namespace Tokamak.Graphite
         {
             AddFirstMove();
 
-            m_current.Points.AddRange([center, radius, new Vector2(start, end)]);
-            m_current.Actions.Add(PathAction.Arc);
+            AddArc(center, radius, start, end);
         }
 
         public void Rectangle(in Vector2 topLeft, in Vector2 bottomRight, float roundEdges = 0)
@@ -125,13 +138,36 @@ namespace Tokamak.Graphite
             {
                 MoveTo(topLeft);
 
-                m_current.Points.AddRange([
-                    new Vector2(bottomRight.X, topLeft.Y),
-                    bottomRight,
-                    new Vector2(topLeft.X, bottomRight.Y)
-                ]);
+                var topRight = new Vector2(bottomRight.X, topLeft.Y);
+                var bottomLeft = new Vector2(topLeft.X, bottomRight.Y);
 
+                m_current.Points.AddRange([topLeft, topRight, bottomRight, bottomLeft]);
                 m_current.Actions.AddRange([PathAction.Line, PathAction.Line, PathAction.Line]);
+            }
+            else
+            {
+                m_current.Points.Add(new Vector2(bottomRight.X - roundEdges, topLeft.Y));
+
+                var arcPoint = new Vector2(bottomRight.X - roundEdges, topLeft.Y + roundEdges);
+                AddArc(arcPoint, roundEdges, MathF.Tau * 0.75f, MathF.Tau);
+
+                m_current.Points.Add(new Vector2(bottomRight.X, bottomRight.Y - roundEdges));
+                m_current.Actions.Add(PathAction.Line);
+
+                arcPoint = new Vector2(bottomRight.X - roundEdges, bottomRight.Y - roundEdges);
+                AddArc(arcPoint, roundEdges, 0, MathF.PI / 2);
+
+                m_current.Points.Add(new Vector2(topLeft.X + roundEdges, bottomRight.Y));
+                m_current.Actions.Add(PathAction.Line);
+
+                arcPoint = new Vector2(topLeft.X + roundEdges, bottomRight.Y - roundEdges);
+                AddArc(arcPoint, roundEdges, MathF.PI / 2, MathF.PI);
+
+                m_current.Points.Add(new Vector2(topLeft.X, topLeft.Y + roundEdges));
+                m_current.Actions.Add(PathAction.Line);
+
+                arcPoint = new Vector2(topLeft.X + roundEdges, topLeft.Y + roundEdges);
+                AddArc(arcPoint, roundEdges, MathF.PI, MathF.Tau * 0.75f);
             }
 
             Close();
