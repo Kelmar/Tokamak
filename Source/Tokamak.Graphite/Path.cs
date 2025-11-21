@@ -146,7 +146,7 @@ namespace Tokamak.Graphite
             }
             else
             {
-                m_current.Points.Add(new Vector2(bottomRight.X - roundEdges, topLeft.Y));
+                MoveTo(new Vector2(bottomRight.X - roundEdges, topLeft.Y));
 
                 var arcPoint = new Vector2(bottomRight.X - roundEdges, topLeft.Y + roundEdges);
                 AddArc(arcPoint, roundEdges, MathF.Tau * 0.75f, MathF.Tau);
