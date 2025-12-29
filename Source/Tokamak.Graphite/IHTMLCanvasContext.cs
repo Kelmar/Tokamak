@@ -166,7 +166,7 @@ namespace Tokamak.Graphite
         void SetLineDash();
 
 
-        // Actual pushes the paths out to the context?
+        // Actually pushes the paths out to the context?
         void Stroke();
 
         void StrokeRect();

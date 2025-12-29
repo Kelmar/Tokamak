@@ -11,11 +11,26 @@ namespace Tokamak.Mathematics
     /// </remarks>
     public struct Sphere
     {
+        #region Pseudo Constant Spheres
+
+        private static Sphere s_zero = new Sphere(Vector3.Zero, 0f);
+        private static Sphere s_unit = new Sphere();
+
+        /// <summary>
+        /// A readonly empty sphere.
+        /// </summary>
+        public static ref readonly Sphere Zero => ref s_zero;
+
+        /// <summary>
+        /// A readonly unit sphere at the origin.
+        /// </summary>
+        public static ref readonly Sphere Unit => ref s_unit;
+
+        #endregion
+
         public Sphere()
+            : this(Vector3.Zero, 1f) // Default to unit sphere at origin.
         {
-            // Default to unit sphere at center of space.
-            Location = Vector3.Zero;
-            Radius = 1f;
         }
 
         public Sphere(Vector3 location, float radius)
@@ -33,6 +48,11 @@ namespace Tokamak.Mathematics
         /// The sphere's radius.
         /// </summary>
         public float Radius { get; set; }
+
+        /// <summary>
+        /// Check to see if sphere is empty.
+        /// </summary>
+        public readonly bool IsEmpty => Radius <= 0f || float.IsNaN(Radius);
 
         /// <summary>
         /// Check to see if other sphere overlaps with this sphere.

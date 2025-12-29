@@ -16,6 +16,8 @@ using Tokamak.Quill;
 
 using TestBed.Scenes;
 
+using Tokamak.Readers.SVG;
+
 using TTF = Tokamak.Quill.Readers.TTF;
 
 namespace TestBed
@@ -81,6 +83,11 @@ namespace TestBed
 
             //m_renderers.Add(m_scene);
             //m_renderers.Add(m_canvas);
+
+            var stream = File.Open("resources/test.svg", FileMode.Open, FileAccess.Read);
+            var reader = new SVGReader(stream);
+
+            reader.Import();
         }
 
         public void OnRender(double timeDelta)
@@ -184,6 +191,7 @@ namespace TestBed
 
             // Rectangle Test
             //path.Rectangle(new Vector2(50, 50), new Vector2(1000, 1000));
+            path.Rectangle(new Vector2(50, 50), new Vector2(1000, 1000), 50);
 
             m_context.Stroke(path, pen);
 

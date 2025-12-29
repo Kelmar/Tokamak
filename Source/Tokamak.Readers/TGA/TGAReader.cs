@@ -31,6 +31,7 @@ namespace Tokamak.Readers.TGA
             RunLengthEncodedGrayscale = 11
         }
 
+        private readonly bool m_closeStream;
         private readonly Stream m_input;
         private readonly BinaryReader m_reader;
 
@@ -54,13 +55,14 @@ namespace Tokamak.Readers.TGA
 
         private PixelFormat m_pixelFormat = PixelFormat.FormatA8;
 
-        public TGAReader(Stream input)
+        public TGAReader(Stream input, bool closeStream = true)
         {
             ArgumentNullException.ThrowIfNull(input, nameof(input));
 
             if (!input.CanRead)
                 throw new ArgumentException("Stream not open for reading", nameof(input));
 
+            m_closeStream = closeStream;
             m_input = input;
             m_reader = new BinaryReader(input);
             m_colorMap = new ColorMap(m_reader);
@@ -73,7 +75,9 @@ namespace Tokamak.Readers.TGA
 
         public void Dispose()
         {
-            m_input.Dispose();
+            if (m_closeStream)
+                m_input.Dispose();
+
             GC.SuppressFinalize(this);
         }
 

@@ -59,21 +59,29 @@ namespace Tokamak.Mathematics
         /// <summary>
         /// Gets or sets the X value of the point.
         /// </summary>
-        public int X { get; set; } = 0;
+        public int X { readonly get; set; } = 0;
 
         /// <summary>
         /// Gets or sets teh Y value of the point.
         /// </summary>
-        public int Y { get; set; } = 0;
+        public int Y { readonly get; set; } = 0;
 
         /// <summary>
         /// Converts the point to an array.
         /// </summary>
         /// <returns>A two element array where X is the first value an Y is the second.</returns>
-        public int[] ToArray() { return [X, Y]; }
+        public readonly int[] ToArray() => [X, Y];
 
         /// <inheritdoc />
-        public override string ToString() => $"({X},{Y})";
+        public override readonly string ToString() => $"({X},{Y})";
+
+        /// <inheritdoc />
+        public override readonly bool Equals([NotNullWhen(true)] object? obj) => (obj is Point p) && Equals(p);
+
+        public readonly bool Equals(in Point other) => this == other;
+
+        /// <inheritdoc />
+        public override readonly int GetHashCode() => HashCode.Combine(X, Y);
 
         /// <summary>
         /// Makes a new point from the current point offset by the specified x and y values.
@@ -107,6 +115,8 @@ namespace Tokamak.Mathematics
             return new Point((int)MathF.Round(v.X), (int)MathF.Round(v.Y));
         }
 
+        #region Casts
+
         // More specific to less specific, require a cast.
         public static explicit operator Point(Vector2 v) => new Point((int)v.X, (int)v.Y);
         public static explicit operator Point(Vector3 v) => new Point((int)v.X, (int)v.Y);
@@ -116,6 +126,8 @@ namespace Tokamak.Mathematics
         public static implicit operator Vector2(Point p) => new Vector2(p.X, p.Y);
         public static implicit operator Vector3(Point p) => new Vector3(p.X, p.Y, 0);
         public static implicit operator Vector4(Point p) => new Vector4(p.X, p.Y, 0, 1);
+
+        #endregion Casts
 
         public static Point operator +(in Point p) => p;
 
@@ -140,22 +152,5 @@ namespace Tokamak.Mathematics
         public static bool operator ==(in Point lhs, in Point rhs) => (lhs.X == rhs.X && lhs.Y == rhs.Y);
 
         public static bool operator !=(in Point lhs, in Point rhs) => (lhs.X != rhs.X || lhs.Y != rhs.Y);
-
-        /// <inheritdoc />
-        public override readonly bool Equals([NotNullWhen(true)] object? obj)
-        {
-            if (obj == null)
-                return false;
-
-            var p = (Point)obj;
-
-            return this == p;
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return X ^ Y;
-        }
     }
 }

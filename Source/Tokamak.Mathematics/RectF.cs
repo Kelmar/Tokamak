@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -9,7 +11,6 @@ namespace Tokamak.Mathematics
     /// </summary>
     public struct RectF
     {
-
         private static readonly RectF s_zero = new RectF(0, 0, 0, 0);
         private static readonly RectF s_one = new RectF(0, 0, 1, 1);
 
@@ -25,56 +26,46 @@ namespace Tokamak.Mathematics
 
         public RectF()
         {
-            X = 0;
-            Y = 0;
-            Width = 0;
-            Height = 0;
+            Location = Vector2.Zero;
+            Size = Vector2.Zero;
         }
 
-        public RectF(in Vector2 location, in Vector2 extent)
+        public RectF(in Vector2 location, in Vector2 size)
         {
-            X = location.X;
-            Y = location.Y;
-            Width = extent.X;
-            Height = extent.Y;
+            Location = location;
+            Size = size;
         }
 
         public RectF(float x, float y, float width, float height)
         {
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
+            Location = new Vector2(x, y);
+            Size = new Vector2(width, height);
         }
 
-        public float X { get; set; }
+        public Vector2 Location { readonly get; set; }
 
-        public float Y { get; set; }
+        public Vector2 Size { readonly get; set; }
 
-        public float Width { get; set; }
+        public readonly float Left => Location.X;
 
-        public float Height { get; set; }
+        public readonly float Top => Location.Y;
 
-        public float Left => X;
+        public readonly float Right => Location.X + Size.X;
 
-        public float Top => Y;
+        public readonly float Bottom => Location.Y + Size.Y;
 
-        public float Right => X + Width;
+        public readonly Vector2 TopLeft => new Vector2(Left, Top);
 
-        public float Bottom => Y + Height;
+        public readonly Vector2 TopRight => new Vector2(Right, Top);
 
-        public Vector2 TopLeft => new Vector2(Left, Top);
+        public readonly Vector2 BottomLeft => new Vector2(Left, Bottom);
 
-        public Vector2 TopRight => new Vector2(Right, Top);
-
-        public Vector2 BottomLeft => new Vector2(Left, Bottom);
-
-        public Vector2 BottomRight => new Vector2(Right, Bottom);
+        public readonly Vector2 BottomRight => new Vector2(Right, Bottom);
 
         /// <summary>
         /// Checks if the rectangle is less than or equal to a zero size.
         /// </summary>
-        public bool IsEmpty => (Width <= 0) || (Width == float.NaN) || (Height <= 0) || (Height == float.NaN);
+        public readonly bool IsEmpty => (Size.X <= 0) || (Size.X == float.NaN) || (Size.Y <= 0) || (Size.Y == float.NaN);
 
         /// <summary>
         /// Get the rectangle that intersects with the supplied rectangle and this rectangle.
@@ -86,8 +77,8 @@ namespace Tokamak.Mathematics
             float x = Math.Min(Right - 1, clipRect.Right - 1);
             float y = Math.Min(Bottom - 1, clipRect.Bottom - 1);
 
-            float w = x - X + 1;
-            float h = y - Y + 1;
+            float w = x - Location.X + 1;
+            float h = y - Location.Y + 1;
 
             return new RectF(x, y, w, h);
         }
@@ -101,8 +92,8 @@ namespace Tokamak.Mathematics
         {
             float x = Left + by.X;
             float y = Top + by.Y;
-            float w = Width - 2 * by.X;
-            float h = Width - 2 * by.Y;
+            float w = Size.X - 2 * by.X;
+            float h = Size.Y - 2 * by.Y;
 
             return new RectF(x, y, w, h);
         }
@@ -112,7 +103,18 @@ namespace Tokamak.Mathematics
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        public bool Contains(Vector2 v) => (Left >= v.X) && (Top >= v.Y) && (v.X <= Right) && (v.Y <= Bottom);
+        public readonly bool Contains(in Vector2 v) => (Left >= v.X) && (Top >= v.Y) && (v.X <= Right) && (v.Y <= Bottom);
+
+        /// <inheritdoc />
+        public override readonly string ToString() => $"<{Left},{Top}>-<{Right},{Bottom}>";
+
+        /// <inheritdoc />
+        public override bool Equals([NotNullWhen(true)] object? obj) => (obj is RectF r) && Equals(r);
+
+        public bool Equals(RectF other) => this == other;
+
+        /// <inheritdoc />
+        public override readonly int GetHashCode() => HashCode.Combine(Left, Top, Size.X, Size.Y);
 
         public static RectF FromCoordinates(in Vector2 v1, in Vector2 v2)
         {
@@ -125,6 +127,26 @@ namespace Tokamak.Mathematics
             return new RectF(x, y, w, h);
         }
 
-        public override string ToString() => $"<{Left},{Top}>-<{Right},{Bottom}>";
+        public static RectF operator +(in RectF r, in Vector2 p)
+        {
+            RectF rval = r;
+            rval.Location += p;
+            return rval;
+        }
+
+        public static RectF operator -(in RectF r, in Vector2 p)
+        {
+            RectF rval = r;
+            rval.Location -= p;
+            return rval;
+        }
+
+        // Casts already defined in Rect class.
+
+        public static bool operator ==(in RectF lhs, in RectF rhs)
+            => lhs.Left == rhs.Left && lhs.Top == rhs.Top && lhs.Size.X == rhs.Size.X && lhs.Size.Y == rhs.Size.Y;
+
+        public static bool operator !=(in RectF lhs, in RectF rhs)
+            => lhs.Left != rhs.Left || lhs.Top != rhs.Top || lhs.Size.X != rhs.Size.X || lhs.Size.Y != rhs.Size.Y;
     }
 }

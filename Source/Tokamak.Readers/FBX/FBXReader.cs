@@ -17,10 +17,11 @@ namespace Tokamak.Readers.FBX
 
         private readonly Stream m_input;
         private readonly IParser m_parser;
+        private readonly bool m_closeStream;
 
         private readonly Encoding m_encoding;
 
-        public FBXReader(Stream input, Encoding? encoding = null)
+        public FBXReader(Stream input, Encoding? encoding = null, bool closeStream = true)
         {
             ArgumentNullException.ThrowIfNull(input, nameof(input));
 
@@ -28,6 +29,7 @@ namespace Tokamak.Readers.FBX
                 throw new ArgumentException("Stream not open for reading", nameof(input));
 
             m_input = input;
+            m_closeStream = closeStream;
 
             // Use ASCII by default?
             m_encoding = encoding ?? Encoding.UTF8;
@@ -52,7 +54,12 @@ namespace Tokamak.Readers.FBX
 
         public void Dispose()
         {
-            m_input.Dispose();
+            if (m_closeStream)
+            {
+                m_input.Close();
+                m_input.Dispose();
+            }
+
             GC.SuppressFinalize(this);
         }
 

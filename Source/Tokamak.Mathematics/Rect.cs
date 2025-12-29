@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Tokamak.Mathematics
 {
@@ -25,10 +25,10 @@ namespace Tokamak.Mathematics
         {
         }
 
-        public Rect(Point location, Point extent)
+        public Rect(Point location, Point size)
         {
             Location = location;
-            Size = extent;
+            Size = size;
         }
 
         public Rect(int x, int y, int width, int height)
@@ -37,22 +37,22 @@ namespace Tokamak.Mathematics
             Size = new Point(width, height);
         }
 
-        public Point Location { get; set; }
+        public Point Location { readonly get; set; }
 
-        public Point Size { get; set; }
+        public Point Size { readonly get; set; }
 
-        public int Left => Location.X;
+        public readonly int Left => Location.X;
 
-        public int Top => Location.Y;
+        public readonly int Top => Location.Y;
 
-        public int Right => Location.X + Size.X;
+        public readonly int Right => Location.X + Size.X;
 
-        public int Bottom => Location.Y + Size.Y;
+        public readonly int Bottom => Location.Y + Size.Y;
 
         /// <summary>
         /// Checks if the rectangle is less than or equal to a zero size.
         /// </summary>
-        public bool IsEmpty => (Size.X <= 0) || (Size.Y <= 0);
+        public readonly bool IsEmpty => (Size.X <= 0) || (Size.Y <= 0);
 
         /// <summary>
         /// Get the rectangle that intersects with the supplied rectangle and this rectangle.
@@ -90,8 +90,29 @@ namespace Tokamak.Mathematics
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Contains(Point p) => (Left >= p.X) && (Top >= p.Y) && (p.X <= Right) && (p.Y <= Bottom);
+        public readonly bool Contains(in Point p) => (Left >= p.X) && (Top >= p.Y) && (p.X <= Right) && (p.Y <= Bottom);
+
+        /// <inheritdoc />
+        public override readonly string ToString() => $"<{Left},{Top}>-<{Right},{Bottom}>";
+
+        /// <inheritdoc />
+        public override readonly bool Equals([NotNullWhen(true)] object? obj) => (obj is Rect r) && Equals(r);
+
+        public readonly bool Equals(in Rect other) => this == other;
+
+        /// <inheritdoc />
+        public override readonly int GetHashCode() => HashCode.Combine(Left, Top, Size.X, Size.Y);
+
+        public static Rect FromCoordinates(in Point p1, in Point p2)
+        {
+            int x = Math.Min(p1.X, p2.X);
+            int y = Math.Min(p1.Y, p2.Y);
+
+            int w = Math.Max(p1.X, p2.X) - x;
+            int h = Math.Max(p1.Y, p2.Y) - y;
+
+            return new Rect(x, y, w, h);
+        }
 
         public static Rect operator +(in Rect r, in Point p)
         {
@@ -107,17 +128,20 @@ namespace Tokamak.Mathematics
             return rval;
         }
 
-        public override string ToString() => $"<{Left},{Top}>-<{Right},{Bottom}>";
+        #region Casts
 
-        public static Rect FromCoordinates(in Point p1, in Point p2)
-        {
-            int x = Math.Min(p1.X, p2.X);
-            int y = Math.Min(p1.Y, p2.Y);
+        // More specific to less specific, require a cast.
+        public static explicit operator Rect(in RectF r) => new Rect((Point)r.Location, (Point)r.Size);
 
-            int w = Math.Max(p1.X, p2.X) - x;
-            int h = Math.Max(p1.Y, p2.Y) - y;
+        // Less specific to more specific, no cast requried.
+        public static implicit operator RectF(in Rect r) => new RectF(r.Location, r.Size);
 
-            return new Rect(x, y, w, h);
-        }
+        #endregion Casts
+
+        public static bool operator ==(in Rect lhs, in Rect rhs) =>
+            lhs.Left == rhs.Left && lhs.Top == rhs.Top && lhs.Size.X == rhs.Size.X && lhs.Size.Y == rhs.Size.Y;
+
+        public static bool operator !=(in Rect lhs, in Rect rhs) =>
+            lhs.Left != rhs.Left || lhs.Top != rhs.Top || lhs.Size.X != rhs.Size.X || lhs.Size.Y != rhs.Size.Y;
     }
 }
