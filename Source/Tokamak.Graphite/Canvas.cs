@@ -190,27 +190,11 @@ void main()
 
         public void Fill(Path path, Pen pen)
         {
-            
-
             foreach (var stroke in path.m_strokes)
             {
                 var renderer = new FillRenderer(stroke, PATH_RESOLUTION);
 
-                var points = renderer.Render().ToList();
-
-                var list = new List<Vector2>(points.Count * 3);
-
-                // We use a naïve approach simulating a bunch of triangle fans.
-                Vector2 first = points[0];
-                Vector2 prev = points[1];
-
-                for (int i = 2; i < points.Count; ++i)
-                {
-                    list.AddRange([first, prev, points[i]]);
-                    prev = points[i];
-                }
-
-                Draw(PrimitiveType.TriangleList, list, pen.Color);
+                Draw(PrimitiveType.TriangleList, renderer.Render(), pen.Color);
             }
 
 #if false
