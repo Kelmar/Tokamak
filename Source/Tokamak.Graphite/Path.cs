@@ -8,6 +8,9 @@ using Tokamak.Mathematics;
 
 namespace Tokamak.Graphite
 {
+    /// <summary>
+    /// Class for building up a list of drawing calls.
+    /// </summary>
     public class Path
     {
         internal List<Stroke> m_strokes = new();
@@ -61,14 +64,6 @@ namespace Tokamak.Graphite
             else
                 m_current.Points[0] = v;
         }
-
-        /// <summary>
-        /// Moves the drawing cursor to a new location.
-        /// </summary>
-        /// <param name="x">The X coordinate to move to.</param>
-        /// <param name="y">The Y coordinate to move to.</param>
-        public void MoveTo(float x, float y)
-            => MoveTo(new Vector2(x, y));
 
         /// <summary>
         /// Draw a line from the current cursor location to the new one.
@@ -132,45 +127,59 @@ namespace Tokamak.Graphite
             AddArc(center, radius, start, end);
         }
 
-        public void Rectangle(in Vector2 topLeft, in Vector2 bottomRight, float roundEdges = 0)
+        /// <summary>
+        /// Draws a rectangle at the supplied coordinates.
+        /// </summary>
+        /// <param name="rect">Rectangle to draw.</param>
+        public void Rectangle(in RectF rect)
         {
-            if (MathX.AlmostEquals(roundEdges, 0))
-            {
-                MoveTo(topLeft);
+            MoveTo(rect.TopLeft);
 
-                var topRight = new Vector2(bottomRight.X, topLeft.Y);
-                var bottomLeft = new Vector2(topLeft.X, bottomRight.Y);
-
-                m_current.Points.AddRange([topLeft, topRight, bottomRight, bottomLeft]);
-                m_current.Actions.AddRange([PathAction.Line, PathAction.Line, PathAction.Line]);
-            }
-            else
-            {
-                MoveTo(new Vector2(bottomRight.X - roundEdges, topLeft.Y));
-
-                var arcPoint = new Vector2(bottomRight.X - roundEdges, topLeft.Y + roundEdges);
-                AddArc(arcPoint, roundEdges, MathF.Tau * 0.75f, MathF.Tau);
-
-                m_current.Points.Add(new Vector2(bottomRight.X, bottomRight.Y - roundEdges));
-                m_current.Actions.Add(PathAction.Line);
-
-                arcPoint = new Vector2(bottomRight.X - roundEdges, bottomRight.Y - roundEdges);
-                AddArc(arcPoint, roundEdges, 0, MathF.PI / 2);
-
-                m_current.Points.Add(new Vector2(topLeft.X + roundEdges, bottomRight.Y));
-                m_current.Actions.Add(PathAction.Line);
-
-                arcPoint = new Vector2(topLeft.X + roundEdges, bottomRight.Y - roundEdges);
-                AddArc(arcPoint, roundEdges, MathF.PI / 2, MathF.PI);
-
-                m_current.Points.Add(new Vector2(topLeft.X, topLeft.Y + roundEdges));
-                m_current.Actions.Add(PathAction.Line);
-
-                arcPoint = new Vector2(topLeft.X + roundEdges, topLeft.Y + roundEdges);
-                AddArc(arcPoint, roundEdges, MathF.PI, MathF.Tau * 0.75f);
-            }
+            m_current.Points.AddRange([rect.TopLeft, rect.TopRight, rect.BottomRight, rect.BottomLeft]);
+            m_current.Actions.AddRange([PathAction.Line, PathAction.Line, PathAction.Line]);
 
             Close();
+        }
+
+        /// <summary>
+        /// Draws a rounded rectangle.
+        /// </summary>
+        /// <remarks>
+        /// If roundEdges is close enough to zero, then a regular rectangle will be drawn.
+        /// </remarks>
+        /// <param name="rect">Rectable bounds to draw.</param>
+        /// <param name="roundEdges">Amount to round the corners by</param>
+        public void RoundRect(in RectF rect, float roundEdges)
+        {
+            if (MathX.AlmostEquals(roundEdges, 0))
+                Rectangle(rect);
+            else
+            {
+                MoveTo(new Vector2(rect.Right - roundEdges, rect.Top));
+
+                var arcPoint = new Vector2(rect.Right - roundEdges, rect.Top + roundEdges);
+                AddArc(arcPoint, roundEdges, MathF.Tau * 0.75f, MathF.Tau);
+
+                m_current.Points.Add(new Vector2(rect.Right, rect.Bottom - roundEdges));
+                m_current.Actions.Add(PathAction.Line);
+
+                arcPoint = new Vector2(rect.Right - roundEdges, rect.Bottom - roundEdges);
+                AddArc(arcPoint, roundEdges, 0, MathF.PI / 2);
+
+                m_current.Points.Add(new Vector2(rect.Left + roundEdges, rect.Bottom));
+                m_current.Actions.Add(PathAction.Line);
+
+                arcPoint = new Vector2(rect.Left + roundEdges, rect.Bottom - roundEdges);
+                AddArc(arcPoint, roundEdges, MathF.PI / 2, MathF.PI);
+
+                m_current.Points.Add(new Vector2(rect.Left, rect.Top + roundEdges));
+                m_current.Actions.Add(PathAction.Line);
+
+                arcPoint = new Vector2(rect.Left + roundEdges, rect.Top + roundEdges);
+                AddArc(arcPoint, roundEdges, MathF.PI, MathF.Tau * 0.75f);
+
+                Close();
+            }
         }
 
         public void Close()

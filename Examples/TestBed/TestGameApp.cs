@@ -19,6 +19,7 @@ using TestBed.Scenes;
 using Tokamak.Readers.SVG;
 
 using TTF = Tokamak.Quill.Readers.TTF;
+using System.Data;
 
 namespace TestBed
 {
@@ -28,7 +29,7 @@ namespace TestBed
 
         private const float ROT_AMOUNT = 1;//0.5f;
 
-        private Context m_context = null;
+        private Canvas m_context = null;
         //private Font m_font = null;
         private Scene m_scene = null;
 
@@ -65,7 +66,7 @@ namespace TestBed
 
         public void OnLoad()
         {
-            m_context = new Context(m_apiLayer);
+            m_context = new Canvas(m_apiLayer);
 
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
             //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/dnk.ttf");
@@ -122,6 +123,17 @@ namespace TestBed
                 //Color = Color.DarkGreen
                 //, LineJoin = LineJoin.Bevel
             };
+
+            Pen fill = new Pen
+            {
+                Width = 1,
+                Color = Color.DarkBlue
+            };
+
+            var window = new Tokamak.Graphite.Path();
+            // Rectangle Test
+            //path.Rectangle(new Vector2(50, 50), new Vector2(1000, 1000));
+            window.RoundRect(new Vector2(50, 50), new Vector2(1000, 1000), 50);
 
             var path = new Tokamak.Graphite.Path();
 
@@ -189,9 +201,7 @@ namespace TestBed
 
             path.ArcTo(new Vector2(300, 500), 50, 0, MathF.Tau);
 
-            // Rectangle Test
-            //path.Rectangle(new Vector2(50, 50), new Vector2(1000, 1000));
-            path.Rectangle(new Vector2(50, 50), new Vector2(1000, 1000), 50);
+            m_context.Fill(window, fill);
 
             m_context.Stroke(path, pen);
 

@@ -20,7 +20,7 @@ using Tokamak.Tritium.Pipelines.Shaders;
 
 namespace Tokamak.Graphite
 {
-    public class Context : IDisposable//, IRenderable
+    public class Canvas : IDisposable//, IRenderable
     {
         /*
          * For now we hard code for 100 segments, probably should
@@ -92,7 +92,7 @@ void main()
         private readonly ICommandList m_commandList;
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
-        public Context(IAPILayer apiLayer)
+        public Canvas(IAPILayer apiLayer)
         {
             m_apiLayer = apiLayer;
 
@@ -122,6 +122,8 @@ void main()
             m_vertexBuffer.Dispose();
             m_commandList.Dispose();
             m_pipeline.Dispose();
+
+            GC.SuppressFinalize(this);
         }
 
         public void Resize(in Point size)
@@ -152,8 +154,8 @@ void main()
 
         public void DrawImage(ITextureObject texture, in Point p, in Vector2 topLeftUV, in Vector2 bottomRightUV, in Color color)
         {
-            Vector2 topRightUV = new Vector2(bottomRightUV.X, topLeftUV.Y);
-            Vector2 bottomLeftUV = new Vector2(topLeftUV.X, bottomRightUV.Y);
+            Vector2 topRightUV = new(bottomRightUV.X, topLeftUV.Y);
+            Vector2 bottomLeftUV = new(topLeftUV.X, bottomRightUV.Y);
 
             AddCall(
                 PrimitiveType.TriangleStrip,
@@ -188,7 +190,29 @@ void main()
 
         public void Fill(Path path, Pen pen)
         {
-            throw new NotImplementedException();
+            
+
+            foreach (var stroke in path.m_strokes)
+            {
+                var renderer = new FillRenderer(stroke, PATH_RESOLUTION);
+
+                var points = renderer.Render().ToList();
+
+                var list = new List<Vector2>(points.Count * 3);
+
+                // We use a naïve approach simulating a bunch of triangle fans.
+                Vector2 first = points[0];
+                Vector2 prev = points[1];
+
+                for (int i = 2; i < points.Count; ++i)
+                {
+                    list.AddRange([first, prev, points[i]]);
+                    prev = points[i];
+                }
+
+                Draw(PrimitiveType.TriangleList, list, pen.Color);
+            }
+
 #if false
             if (path.Count < 3 || pen.Color.Alpha == 0)
                 return; // Do nothing
@@ -209,7 +233,7 @@ void main()
 #endif
         }
 
-        private VectorFormatPCT BuildPointPCT(in Point p, in Color color, in Vector2 uv)
+        private static VectorFormatPCT BuildPointPCT(in Point p, in Color color, in Vector2 uv)
         {
             return new VectorFormatPCT
             {
@@ -219,7 +243,7 @@ void main()
             };
         }
 
-        private VectorFormatPCT BuildVectorPCT(in Vector2 v, Color color, Vector2 uv)
+        private static VectorFormatPCT BuildVectorPCT(in Vector2 v, Color color, Vector2 uv)
         {
             return new VectorFormatPCT
             {
@@ -237,7 +261,7 @@ void main()
             {
                 Type = type,
                 VertexOffset = m_vectors.Count,
-                VertexCount = vectorList.Count(),
+                VertexCount = vectorList.Count,
                 Texture = texture
             };
 
