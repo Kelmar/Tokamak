@@ -27,19 +27,12 @@ namespace Tokamak.Graphite.PathRendering
 
             // We use a naïve approach simulating a bunch of triangle fans.
             Vector2 first = m_stroke.Segments[0].Start;
-            Vector2 prev = m_stroke.Segments[0].End;
 
             foreach (var segment in m_stroke.Segments.Skip(1))
             {
                 yield return first;
-                yield return prev;
-                yield return segment.Start;
-
-                yield return first;
                 yield return segment.Start;
                 yield return segment.End;
-
-                prev = segment.End;
             }
         }
     }
