@@ -25,7 +25,11 @@ namespace Tokamak.Graphite.PathRendering
 
             m_stroke.BuildSegments(m_curveResolution);
 
-            // We use a naïve approach simulating a bunch of triangle fans.
+            /*
+             * We use a naïve approach simulating a bunch of triangle fans.
+             * 
+             * Note that this system will break if the shape is concaved.
+             */
             Vector2 first = m_stroke.Segments[0].Start;
 
             foreach (var segment in m_stroke.Segments.Skip(1))
