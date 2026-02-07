@@ -13,13 +13,13 @@ namespace Tokamak.Graphite
     /// </summary>
     public class Path
     {
-        internal List<Stroke> m_strokes = new();
+        internal List<Contour> m_contours = new();
 
-        private Stroke m_current = new();
+        private Contour m_current = new();
 
         public Path()
         {
-            m_strokes.Add(m_current);
+            m_contours.Add(m_current);
         }
 
         /// <summary>
@@ -36,11 +36,11 @@ namespace Tokamak.Graphite
 
             if (m_current.Closed)
             {
-                Stroke l = m_current;
+                Contour l = m_current;
 
                 m_current = new();
                 m_current.Points.Add(l.Points.Last());
-                m_strokes.Add(m_current);
+                m_contours.Add(m_current);
             }
             else
                 m_current.Points.Add(Vector2.Zero);
@@ -54,9 +54,9 @@ namespace Tokamak.Graphite
         {
             if (m_current.Points.Count > 1)
             {
-                // Create a new stroke.
+                // Create a new contour.
                 m_current = new();
-                m_strokes.Add(m_current);
+                m_contours.Add(m_current);
             }
 
             if (m_current.Points.Count == 0)

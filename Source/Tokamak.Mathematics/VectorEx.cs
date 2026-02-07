@@ -10,6 +10,15 @@ namespace Tokamak.Mathematics
         extension (in Vector2 vector)
         {
             /// <summary>
+            /// Fuzzy almost equals compare.
+            /// </summary>
+            /// <param name="lhs">Left hand side</param>
+            /// <param name="rhs">Right hand side</param>
+            public static bool AlmostEquals(in Vector2 lhs, in Vector2 rhs, float fuz = MathX.FUZ)
+                => MathX.AlmostEquals(lhs.X, rhs.X, fuz)
+                && MathX.AlmostEquals(lhs.Y, rhs.Y, fuz);
+
+            /// <summary>
             /// Gets the distance from the current vector to the other vector.
             /// </summary>
             public float DistanceTo(in Vector2 other) => (vector - other).Length();
@@ -62,6 +71,16 @@ namespace Tokamak.Mathematics
         extension (in Vector3 vector)
         {
             /// <summary>
+            /// Fuzzy almost equals compare.
+            /// </summary>
+            /// <param name="lhs">Left hand side</param>
+            /// <param name="rhs">Right hand side</param>
+            public static bool AlmostEquals(in Vector3 lhs, in Vector3 rhs, float fuz = MathX.FUZ)
+                => MathX.AlmostEquals(lhs.X, rhs.X, fuz)
+                && MathX.AlmostEquals(lhs.Y, rhs.Y, fuz)
+                && MathX.AlmostEquals(lhs.Z, rhs.Z, fuz);
+
+            /// <summary>
             /// Gets the distance from the current vector to the other vector.
             /// </summary>
             public float DistanceTo(in Vector3 other) => (vector - other).Length();
@@ -93,6 +112,17 @@ namespace Tokamak.Mathematics
 
         extension (in Vector4 vector)
         {
+            /// <summary>
+            /// Fuzzy almost equals compare.
+            /// </summary>
+            /// <param name="lhs">Left hand side</param>
+            /// <param name="rhs">Right hand side</param>
+            public static bool AlmostEquals(in Vector4 lhs, in Vector4 rhs, float fuz = MathX.FUZ)
+                => MathX.AlmostEquals(lhs.X, rhs.X, fuz)
+                && MathX.AlmostEquals(lhs.Y, rhs.Y, fuz)
+                && MathX.AlmostEquals(lhs.Z, rhs.Z, fuz)
+                && MathX.AlmostEquals(lhs.W, rhs.W, fuz);
+
             /// <summary>
             /// Gets the distance from the current vector to the other vector.
             /// </summary>

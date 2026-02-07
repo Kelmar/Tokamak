@@ -44,22 +44,22 @@ namespace Tokamak.Graphite.PathRendering
 
     internal class StrokeRenderer
     {
-        private readonly Stroke m_stroke;
+        private readonly Contour m_contour;
 
         private readonly int m_curveResolution;
         private readonly float m_halfWidth;
 
         /// <summary />
-        /// <param name="stroke">The stroke to render.</param>
+        /// <param name="contour">The contour to render.</param>
         /// <param name="curveResolution">The number of steps to compute for a curve.</param>
         /// <param name="lineWidth">The width of the pen line.</param>
         /// <remarks>
         /// Note that the more steps in a curve resolution we have, the smoother the resulting
         /// apparent curve approximation we'll get, but this comes at a cost to compute time.
         /// </remarks>
-        public StrokeRenderer(Stroke stroke, int curveResolution, float lineWidth)
+        public StrokeRenderer(Contour contour, int curveResolution, float lineWidth)
         {
-            m_stroke = stroke;
+            m_contour = contour;
 
             m_curveResolution = curveResolution;
 
@@ -75,35 +75,35 @@ namespace Tokamak.Graphite.PathRendering
         // Renders as a set of triangle strips.
         private IEnumerable<Vector2> InnerRender()
         {
-            Debug.Assert(m_stroke.Points.Count >= 2, "Need at least two points for a stroke");
+            Debug.Assert(m_contour.Points.Count >= 2, "Need at least two points for a contour");
 
-            m_stroke.BuildSegments(m_curveResolution);
+            m_contour.BuildSegments(m_curveResolution);
 
-            //var points = new Vector2[2];
+            var points = new Vector2[2];
 
             /*
              * Use the last segment's direction for miter computation if closed.
              * 
              * Otherwise use the first segment's direction to effectively get a right angle to the same line.
              */
-            Vector2 lastDirection = m_stroke.Segments[0].Direction;
+            Vector2 lastDirection = m_contour.Segments[0].Direction;
             bool repeatFirst = false;
 
-            if (m_stroke.Closed)
+            if (m_contour.Closed)
             {
-                //repeatFirst = m_stroke.Segments[0].Start != m_stroke.Segments.Last().End;
-                lastDirection = m_stroke.Segments.Last().Direction;
+                //repeatFirst = m_contour.Segments[0].Start != m_contour.Segments.Last().End;
+                lastDirection = m_contour.Segments.Last().Direction;
             }
 
-            Vector2 miter = ComputeMiter(m_stroke.Segments[0].Direction, lastDirection);
+            Vector2 miter = ComputeMiter(m_contour.Segments[0].Direction, lastDirection);
 
-            //points[0] = m_stroke.Segments[0].Start + miter;
-            //points[1] = m_stroke.Segments[0].Start - miter;
+            points[0] = m_contour.Segments[0].Start + miter;
+            points[1] = m_contour.Segments[0].Start - miter;
 
-            //yield return points[0];
-            //yield return points[1];
+            yield return points[0];
+            yield return points[1];
 
-            foreach (var segment in m_stroke.Segments) //.Skip(1))
+            foreach (var segment in m_contour.Segments.Skip(1))
             {
                 miter = ComputeMiter(segment.Direction, lastDirection);
 
@@ -113,15 +113,15 @@ namespace Tokamak.Graphite.PathRendering
                 lastDirection = segment.Direction;
             }
 
-            if (m_stroke.Closed)// && repeatFirst)
+            if (m_contour.Closed)// && repeatFirst)
             {
                 // Repeat first points
-                //yield return points[0];
-                //yield return points[1];
+                yield return points[0];
+                yield return points[1];
             }
             else
             {
-                var segment = m_stroke.Segments.Last();
+                var segment = m_contour.Segments.Last();
 
                 miter = ComputeMiter(segment.Direction, segment.Direction);
 

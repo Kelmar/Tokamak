@@ -8,7 +8,7 @@ namespace Tokamak.Mathematics
     public static class MathX
     {
         /// <summary>
-        /// Fuzzy value for roughly equal tests.
+        /// Fuzzy value for almost equal tests.
         /// </summary>
         public const float FUZ = 0.000001f;
 
@@ -31,10 +31,10 @@ namespace Tokamak.Mathematics
             /// </summary>
             /// <param name="lhs">Left hand side</param>
             /// <param name="rhs">Right hand side</param>
-            public static bool AlmostEquals(double lhs, double rhs)
+            public static bool AlmostEquals(double lhs, double rhs, double fuz = FUZ)
             {
                 double diff = Math.Abs(lhs - rhs);
-                return diff <= FUZ;
+                return diff <= fuz;
             }
 
             /// <summary>
@@ -63,10 +63,10 @@ namespace Tokamak.Mathematics
             /// </summary>
             /// <param name="lhs">Left hand side</param>
             /// <param name="rhs">Right hand side</param>
-            public static bool AlmostEquals(float lhs, float rhs)
+            public static bool AlmostEquals(float lhs, float rhs, float fuz = FUZ)
             {
                 float diff = Math.Abs(lhs - rhs);
-                return diff <= FUZ;
+                return diff <= fuz;
             }
 
             /// <summary>

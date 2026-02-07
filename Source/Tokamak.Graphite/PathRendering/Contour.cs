@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 
 using Tokamak.Mathematics;
@@ -8,12 +9,12 @@ using Tokamak.Mathematics;
 namespace Tokamak.Graphite.PathRendering
 {
     /// <summary>
-    /// Holds details of a single stroke along a path.
+    /// Holds details of a path contour.
     /// </summary>
     /// <remarks>
-    /// Calls to the MoveTo() function begin a new stroke.
+    /// Calls to the MoveTo() function begin a new contour.
     /// </remarks>
-    internal class Stroke
+    internal class Contour
     {
         public List<Vector2> Points { get; } = [];
 
@@ -130,8 +131,10 @@ namespace Tokamak.Graphite.PathRendering
                 }
             }
 
-            if (Closed)
-                Segments.Add(new PathSegment(p1, Points[0]));
+            if (Closed && !Vector2.AlmostEquals(p1, Segments[0].Start, Canvas.TOLERANCE))
+            {
+                Segments.Add(new PathSegment(p1, Segments[0].Start));
+            }
 
             Debug.Assert(points.Count == 0, "Not all points used for generating segments");
         }

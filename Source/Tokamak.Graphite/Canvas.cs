@@ -22,6 +22,11 @@ namespace Tokamak.Graphite
 {
     public class Canvas : IDisposable//, IRenderable
     {
+        /// <summary>
+        /// Tolerance for almost equals tests for pixel hit tests.
+        /// </summary>
+        internal const float TOLERANCE = 0.001f;
+
         /*
          * For now we hard code for 100 segments, probably should
          * dynamically calculate this based on scaling in the future.
@@ -170,9 +175,9 @@ void main()
 
         public void Stroke(Path path, Pen pen)
         {
-            foreach (var stroke in path.m_strokes)
+            foreach (var contour in path.m_contours)
             {
-                var renderer = new StrokeRenderer(stroke, PATH_RESOLUTION, pen.Width);
+                var renderer = new StrokeRenderer(contour, PATH_RESOLUTION, pen.Width);
 
                 var points = renderer.Render().ToList();
 
@@ -182,9 +187,9 @@ void main()
 
         public void Fill(Path path, Pen pen)
         {
-            foreach (var stroke in path.m_strokes)
+            foreach (var contour in path.m_contours)
             {
-                var renderer = new FillRenderer(stroke, PATH_RESOLUTION);
+                var renderer = new FillRenderer(contour, PATH_RESOLUTION);
 
                 renderer.Render(this, pen);
             }
