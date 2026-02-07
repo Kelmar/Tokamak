@@ -27,6 +27,7 @@ namespace Tokamak.Graphite
          * dynamically calculate this based on scaling in the future.
          */
         private const int PATH_RESOLUTION = 100;
+        //private const int PATH_RESOLUTION = 2;
 
 
         // For now we have some fairly basic shaders for testing the canvas out.
@@ -98,15 +99,13 @@ void main()
 
             m_pipeline = m_apiLayer.CreatePipeline(cfg => cfg
                 .UseInputFormat<VectorFormatPCT>()
-                .UsePrimitive(PrimitiveType.TriangleStrip)
+                //.UsePrimitive(PrimitiveType.TriangleStrip)
+                .UsePrimitive(PrimitiveType.TriangleList)
                 .EnableDepthTest(false)
-                .DisableBlending()
-                /*
                 .EnableBlending(
-                    // A good blending function for 2D font antialiasing.
                     sourceFactor: BlendFactor.SourceAlpha,
-                    destinationFactor: BlendFactor.One
-                )*/
+                    destinationFactor: BlendFactor.OneMinusSourceAlpha
+                )
                 .UseCulling(CullMode.None)
                 .AddShaderCode(ShaderType.Vertex, VERTEX)
                 .AddShaderCode(ShaderType.Fragment, FRAGMENT)
@@ -169,22 +168,15 @@ void main()
             );
         }
 
-        public void Draw(PrimitiveType primitiveType, IEnumerable<Vector2> vectors, Color color, ITextureObject? texture = null)
-        {
-            Debug.Assert(vectors.Any(), "No vectors in Draw() call.");
-
-            var vectorList = vectors.Select(v => BuildVectorPCT(v, color, Vector2.Zero));
-
-            AddCall(primitiveType, vectorList, texture);
-        }
-
         public void Stroke(Path path, Pen pen)
         {
             foreach (var stroke in path.m_strokes)
             {
                 var renderer = new StrokeRenderer(stroke, PATH_RESOLUTION, pen.Width);
 
-                Draw(PrimitiveType.TriangleList, renderer.Render(), pen.Color);
+                var points = renderer.Render().ToList();
+
+                Draw(PrimitiveType.TriangleList, points, pen.Color);
             }
         }
 
@@ -194,27 +186,17 @@ void main()
             {
                 var renderer = new FillRenderer(stroke, PATH_RESOLUTION);
 
-                Draw(PrimitiveType.TriangleList, renderer.Render(), pen.Color);
+                renderer.Render(this, pen);
             }
+        }
 
-#if false
-            if (path.Count < 3 || pen.Color.Alpha == 0)
-                return; // Do nothing
+        public void Draw(PrimitiveType primitiveType, IEnumerable<Vector2> vectors, Color color, ITextureObject? texture = null)
+        {
+            Debug.Assert(vectors.Any(), "No vectors in Draw() call.");
 
-            var res = new List<Vector2>();
+            var vectorList = vectors.Select(v => BuildVectorPCT(v, color, Vector2.Zero));
 
-            // Simulating a triangle fan (naïve approach)
-            Vector2 first = path[0];
-            Vector2 prev = path[1];
-
-            for (int i = 2; i < path.Count; ++i)
-            {
-                res.AddRange([first, prev, path[i]]);
-                prev = path[i];
-            }
-
-            Draw(PrimitiveType.TriangleList, res, pen.Color);
-#endif
+            AddCall(primitiveType, vectorList, texture);
         }
 
         private static VectorFormatPCT BuildPointPCT(in Point p, in Color color, in Vector2 uv)

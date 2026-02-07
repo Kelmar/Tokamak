@@ -29,9 +29,13 @@ namespace Tokamak.Tritium.Pipelines
 
         public bool Blending { get; private set; } = false;
 
-        public BlendFactor SourceBlendFactor { get; private set; }
+        public BlendFactor SourceColorBlendFactor { get; private set; }
 
-        public BlendFactor DestinationBlendFactor { get; private set; }
+        public BlendFactor SourceBlendFactorAlpha { get; private set; }
+
+        public BlendFactor DestinationColorBlendFactor { get; private set; }
+
+        public BlendFactor DestinationAlphaBlendFactor { get; private set; }
 
         /// <summary>
         /// Gets/sets if the pipeline should perform depth sorting.
@@ -99,13 +103,20 @@ namespace Tokamak.Tritium.Pipelines
             return this;
         }
 
-        public PipelineConfig EnableBlending(
-            BlendFactor sourceFactor,
-            BlendFactor destinationFactor)
+        public PipelineConfig EnableBlending(BlendFactor sourceFactor, BlendFactor destinationFactor)
+            => EnableSplitBlending(sourceFactor, destinationFactor, sourceFactor, destinationFactor);
+
+        public PipelineConfig EnableSplitBlending(
+            BlendFactor sourceColorFactor, BlendFactor destinationColorFactor,
+            BlendFactor sourceAlphaFactor, BlendFactor destinationAlphaFactor)
         {
             Blending = true;
-            SourceBlendFactor = sourceFactor;
-            DestinationBlendFactor = destinationFactor;
+
+            SourceColorBlendFactor = sourceColorFactor;
+            SourceBlendFactorAlpha = sourceAlphaFactor;
+
+            DestinationColorBlendFactor = destinationColorFactor;
+            DestinationAlphaBlendFactor = destinationAlphaFactor;
 
             return this;
         }

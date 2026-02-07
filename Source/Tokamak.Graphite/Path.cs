@@ -133,8 +133,6 @@ namespace Tokamak.Graphite
         /// <param name="rect">Rectangle to draw.</param>
         public void Rectangle(in RectF rect)
         {
-            MoveTo(rect.TopLeft);
-
             m_current.Points.AddRange([rect.TopLeft, rect.TopRight, rect.BottomRight, rect.BottomLeft]);
             m_current.Actions.AddRange([PathAction.Line, PathAction.Line, PathAction.Line]);
 

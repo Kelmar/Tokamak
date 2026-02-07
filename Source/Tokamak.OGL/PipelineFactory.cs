@@ -76,8 +76,10 @@ namespace Tokamak.OGL
                 Culling = m_config.Culling,
                 Primitive = m_config.Primitive.ToGLPrimitive(),
                 EnableBlend = m_config.Blending,
-                SourceFactor = m_config.SourceBlendFactor.ToGLBlendFact(),
-                DestinationFactor = m_config.DestinationBlendFactor.ToGLBlendFact()
+                SourceColorFactor = m_config.SourceColorBlendFactor.ToGLBlendFact(),
+                DestinationColorFactor = m_config.DestinationColorBlendFactor.ToGLBlendFact(),
+                SourceAlphaFactor = m_config.SourceBlendFactorAlpha.ToGLBlendFact(),
+                DestinationAlphaFactor = m_config.DestinationAlphaBlendFactor.ToGLBlendFact(),
             };
 
             return rval;

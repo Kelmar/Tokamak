@@ -45,9 +45,13 @@ namespace Tokamak.OGL
 
         public bool EnableBlend { get; init; }
 
-        public GLBlendFact SourceFactor { get; init; }
+        public GLBlendFact SourceColorFactor { get; init; }
 
-        public GLBlendFact DestinationFactor { get; init; }
+        public GLBlendFact DestinationColorFactor { get; init; }
+
+        public GLBlendFact SourceAlphaFactor { get; init; }
+
+        public GLBlendFact DestinationAlphaFactor { get; init; }
 
         public bool DepthTest { get; init; }
 
@@ -65,7 +69,9 @@ namespace Tokamak.OGL
             if (EnableBlend)
             {
                 m_apiLayer.GL.Enable(EnableCap.Blend);
-                m_apiLayer.GL.BlendFunc(SourceFactor, DestinationFactor);
+                m_apiLayer.GL.BlendFuncSeparate(
+                    SourceColorFactor, DestinationColorFactor,
+                    SourceAlphaFactor, DestinationAlphaFactor);
             }
             else
             {

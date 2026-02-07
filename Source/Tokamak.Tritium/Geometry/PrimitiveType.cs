@@ -6,6 +6,7 @@
         LineList,
         LineStrip,
         TriangleList,
-        TriangleStrip
+        TriangleStrip,
+        TriangleFan
     }
 }

@@ -12,6 +12,18 @@ namespace Tokamak.Mathematics
         /// </summary>
         public const float FUZ = 0.000001f;
 
+        public static float Rad2Deg(float theta)
+            => (theta / MathF.PI) * 180;
+
+        public static double Rad2Deg(double theta)
+            => (theta / Math.PI) * 180;
+
+        public static float Deg2Rad(float theta)
+            => MathF.PI * (theta / 180f);
+
+        public static double Deg2Rad(double theta)
+            => Math.PI * (theta / 180d);
+
         extension (double d)
         {
             /// <summary>

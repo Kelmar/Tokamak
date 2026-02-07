@@ -1,24 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 
 namespace Tokamak.Graphite.PathRendering
 {
 
     /// <summary>
-    /// Computed line segment along our path.
+    /// Computed line segment along a path.
     /// </summary>
     internal class PathSegment
     {
+        private Vector2 m_start;
+        private Vector2 m_end;
+
         public PathSegment(Vector2 start, Vector2 end)
         {
-            Start = start;
-            End = end;
+            m_start = start;
+            m_end = end;
 
-            Direction = End - Start;
+            ComputeDirection();
+        }
+
+        private void ComputeDirection()
+        {
+            Direction = m_end - m_start;
 
             float length = Direction.Length();
 
@@ -26,10 +29,40 @@ namespace Tokamak.Graphite.PathRendering
                 Direction /= length;
         }
 
-        public Vector2 Start { get; set; }
+        /// <summary>
+        /// The starting coordinate for the segment.
+        /// </summary>
+        public Vector2 Start
+        {
+            get => m_start;
+            set
+            {
+                m_start = value;
+                ComputeDirection();
+            }
+        }
 
-        public Vector2 End { get; set; }
+        /// <summary>
+        /// The ending coordinate for the segment.
+        /// </summary>
+        public Vector2 End
+        {
+            get => m_end;
+            set
+            {
+                m_end = value;
+                ComputeDirection();
+            }
+        }
 
-        public Vector2 Direction { get; set; }
+        /// <summary>
+        /// Gets the direction vector of the segment.
+        /// </summary>
+        /// <remarks>
+        /// Value is already normalized.
+        /// </remarks>
+        public Vector2 Direction { get; private set; }
+
+        public override string ToString() => $"{Start} -> {End}";
     }
 }

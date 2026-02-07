@@ -99,14 +99,7 @@ namespace Tokamak.Vulkan
                 SType = StructureType.PipelineRasterizationStateCreateInfo,
 
                 // Culling
-                CullMode = m_config.Culling switch
-                {
-                    CullMode.None => CullModeFlags.None,
-                    CullMode.Back => CullModeFlags.BackBit,
-                    CullMode.Front => CullModeFlags.FrontBit,
-                    CullMode.FrontAndBack => CullModeFlags.FrontAndBack,
-                    _ => throw new ArgumentException($"Unknown culling mode {m_config.Culling}")
-                },
+                CullMode = m_config.Culling.ToVkCulling(),
                 FrontFace = FrontFace.Clockwise,
 
                 // Only needed if we want a wireframe mode.
@@ -130,19 +123,21 @@ namespace Tokamak.Vulkan
             return new PipelineInputAssemblyStateCreateInfo
             {
                 SType = StructureType.PipelineInputAssemblyStateCreateInfo,
-                Topology = PrimitiveTopology.TriangleList,
+                Topology = m_config.Primitive.ToVkPrimitive(),
                 PrimitiveRestartEnable = false
             };
         }
 
         public PipelineColorBlendAttachmentState GetBlendAttachmentState()
         {
-            // TODO: Pull in blending from the configuration.
-
             return new PipelineColorBlendAttachmentState
             {
                 ColorWriteMask = ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit,
-                BlendEnable = false
+                SrcColorBlendFactor = m_config.SourceColorBlendFactor.ToVkBlend(),
+                DstColorBlendFactor = m_config.DestinationColorBlendFactor.ToVkBlend(),
+                SrcAlphaBlendFactor = m_config.SourceBlendFactorAlpha.ToVkBlend(),
+                DstAlphaBlendFactor = m_config.DestinationAlphaBlendFactor.ToVkBlend(),
+                BlendEnable = m_config.Blending
             };
         }
 

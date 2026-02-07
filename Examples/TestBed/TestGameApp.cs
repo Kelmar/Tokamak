@@ -107,6 +107,7 @@ namespace TestBed
         private void RenderUI()
         {
             PathTest();
+            //PacTest();
 
             //DrawSingleSquare();
 
@@ -118,7 +119,8 @@ namespace TestBed
             Pen pen = new Pen
             {
                 Width = 20,
-                Color = Color.Grey
+                //Color = Color.Grey
+                Color = new Color(192, 192, 192, 192)
                 //Color = Color.White
                 //Color = Color.DarkGreen
                 //, LineJoin = LineJoin.Bevel
@@ -130,10 +132,12 @@ namespace TestBed
                 Color = Color.DarkBlue
             };
 
+            /*
             var window = new Tokamak.Graphite.Path();
             // Rectangle Test
             //path.Rectangle(new Vector2(50, 50), new Vector2(1000, 1000));
             window.RoundRect(new Vector2(50, 50), new Vector2(1000, 1000), 50);
+            */
 
             var path = new Tokamak.Graphite.Path();
 
@@ -195,16 +199,19 @@ namespace TestBed
             //    new Vector2(250, 400)
             //);
 
+            //m_context.Stroke(path, pen);
+
             // Arc Test
             path.ArcTo(new Vector2(300, 500), new Vector2(100, 250), 0, MathF.Tau);
             path.Close();
 
-            path.ArcTo(new Vector2(300, 500), 50, 0, MathF.Tau);
+            //path.ArcTo(new Vector2(300, 500), 50, 0, MathF.Tau);
 
-            m_context.Fill(window, fill);
+            //m_context.Fill(window, fill);
 
             m_context.Stroke(path, pen);
 
+            /*
             var path2 = new Tokamak.Graphite.Path();
             path2.ArcTo(new Vector2(300, 500), 50, 0, MathF.Tau);
 
@@ -215,6 +222,46 @@ namespace TestBed
             };
 
             m_context.Stroke(path2, pen2);
+            */
+        }
+
+        private void PacTest()
+        {
+            Pen fillPen = new Pen
+            {
+                Width = 3,
+                //Color = Color.Yellow
+                Color = new Color(192, 192, 0, 255)
+                //Color = new Color(255, 255, 0, 64)
+            };
+
+            Pen outlinePen = new Pen
+            {
+                Width = 3,
+                Color = Color.Yellow
+            };
+
+            var pac = new Tokamak.Graphite.Path();
+
+            Vector2 center = new Vector2(160, 160);
+            float radius = 50;
+
+            float start = MathX.Deg2Rad(270);
+            float m1 = start + MathX.Deg2Rad(45);
+            float m2 = (m1 + MathX.Deg2Rad(90)) - (MathF.PI * 2);
+
+            // Draw a PacMan like shape
+            pac.MoveTo(110, 110);
+            pac.ArcTo(center, radius, start, m1);
+            pac.LineTo(center);
+
+            Vector2 m2v = new Vector2(MathF.Cos(m2) * radius, MathF.Sin(m2) * radius);
+
+            pac.LineTo(center + m2v);
+            pac.ArcTo(center, radius, m2, start);
+
+            m_context.Fill(pac, fillPen);
+            m_context.Stroke(pac, outlinePen);
         }
 
         //private void DrawSingleSquare()

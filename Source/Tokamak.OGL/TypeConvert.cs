@@ -4,15 +4,15 @@ using Silk.NET.OpenGL;
 
 using Tokamak.Tritium.Buffers;
 
+using GLBlendFact = Silk.NET.OpenGL.BlendingFactor;
 using GLShaderType = Silk.NET.OpenGL.ShaderType;
 using GLPrimType = Silk.NET.OpenGL.PrimitiveType;
-using GLBlendFact = Silk.NET.OpenGL.BlendingFactor;
 
+using TBlendFactor = Tokamak.Tritium.Pipelines.BlendFactor;
+using TShaderType = Tokamak.Tritium.Pipelines.Shaders.ShaderType;
 using TPrimType = Tokamak.Tritium.Geometry.PrimitiveType;
 using FormatType = Tokamak.Tritium.Buffers.Formats.FormatBaseType;
 using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
-using TShaderType = Tokamak.Tritium.Pipelines.Shaders.ShaderType;
-using TBlendFactor = Tokamak.Tritium.Pipelines.BlendFactor;
 
 namespace Tokamak.OGL
 {
@@ -64,6 +64,7 @@ namespace Tokamak.OGL
                 TPrimType.LineStrip => GLPrimType.LineStrip,
                 TPrimType.TriangleList => GLPrimType.Triangles,
                 TPrimType.TriangleStrip => GLPrimType.TriangleStrip,
+                TPrimType.TriangleFan => GLPrimType.TriangleFan,
                 _ => GLPrimType.Points
             };
         }

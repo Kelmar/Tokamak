@@ -72,52 +72,84 @@ namespace Tokamak.Graphite.PathRendering
             return miter * m_halfWidth / Vector2.Dot(miter, lastDirection.LineNormal());
         }
 
-        public IEnumerable<Vector2> Render()
+        // Renders as a set of triangle strips.
+        private IEnumerable<Vector2> InnerRender()
         {
             Debug.Assert(m_stroke.Points.Count >= 2, "Need at least two points for a stroke");
 
             m_stroke.BuildSegments(m_curveResolution);
 
-            var points = new List<Vector2>(m_stroke.Segments.Count * 2);
+            //var points = new Vector2[2];
 
             /*
              * Use the last segment's direction for miter computation if closed.
              * 
              * Otherwise use the first segment's direction to effectively get a right angle to the same line.
              */
-            Vector2 lastDirection = m_stroke.Closed ?
-                m_stroke.Segments.Last().Direction :
-                m_stroke.Segments.First().Direction;
+            Vector2 lastDirection = m_stroke.Segments[0].Direction;
+            bool repeatFirst = false;
 
-            foreach (var segment in m_stroke.Segments)
+            if (m_stroke.Closed)
             {
-                // Figure out the miter for the current point.
+                //repeatFirst = m_stroke.Segments[0].Start != m_stroke.Segments.Last().End;
+                lastDirection = m_stroke.Segments.Last().Direction;
+            }
 
-                Vector2 miter = ComputeMiter(segment.Direction, lastDirection);
+            Vector2 miter = ComputeMiter(m_stroke.Segments[0].Direction, lastDirection);
 
-                points.Add(segment.Start + miter);
-                points.Add(segment.Start - miter);
+            //points[0] = m_stroke.Segments[0].Start + miter;
+            //points[1] = m_stroke.Segments[0].Start - miter;
+
+            //yield return points[0];
+            //yield return points[1];
+
+            foreach (var segment in m_stroke.Segments) //.Skip(1))
+            {
+                miter = ComputeMiter(segment.Direction, lastDirection);
+
+                yield return (segment.Start + miter);
+                yield return (segment.Start - miter);
 
                 lastDirection = segment.Direction;
             }
 
-            if (m_stroke.Closed)
+            if (m_stroke.Closed)// && repeatFirst)
             {
-                // Re-add first points
-                points.Add(points[0]);
-                points.Add(points[1]);
+                // Repeat first points
+                //yield return points[0];
+                //yield return points[1];
             }
             else
             {
                 var segment = m_stroke.Segments.Last();
 
-                Vector2 miter = ComputeMiter(segment.Direction, segment.Direction);
+                miter = ComputeMiter(segment.Direction, segment.Direction);
 
-                points.Add(m_stroke.Segments.Last().End + miter);
-                points.Add(m_stroke.Segments.Last().End - miter);
+                yield return (segment.End + miter);
+                yield return (segment.End - miter);
             }
+        }
 
-            return points;
+        public IEnumerable<Vector2> Render()
+        {
+            var points = new Vector2[2];
+            int cnt = 0;
+
+            // Convert our triangle strip into a triangle list.
+            foreach (var p in InnerRender())
+            {
+                if (cnt < 2)
+                    points[cnt++] = p;
+                else
+                {
+                    yield return points[0];
+                    yield return points[1];
+                    yield return p;
+
+                    points[0] = points[1];
+                    points[1] = p;
+                }
+            }
         }
     }
 }
