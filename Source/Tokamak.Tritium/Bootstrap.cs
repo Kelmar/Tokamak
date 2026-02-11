@@ -14,12 +14,12 @@ namespace Tokamak.Tritium
         {
             container.RegisterSingleton<IHostComponent, TritiumHostComponent>();
 
-            container.Register<APILoader>();
+            container.Register<GraphicsLoader>();
             container.RegisterSingleton<NullAPI>();
 
             container.Register<IGraphicsLayer>(options => options
                 .WithSingletonLifetime()
-                .WithFactory<APILoader>(loader => loader.Build())
+                .WithFactory<GraphicsLoader>(loader => loader.Build())
             );
 
             return container;

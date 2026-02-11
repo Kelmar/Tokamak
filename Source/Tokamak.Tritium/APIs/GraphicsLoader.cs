@@ -9,26 +9,26 @@ using Tokamak.Tritium.APIs.NullRender;
 
 namespace Tokamak.Tritium.APIs
 {
-    [LogName("APILoader")]
-    internal class APILoader
+    [LogName("GraphicsLoader")]
+    internal class GraphicsLoader
     {
         private readonly ILogger m_log;
         private readonly TritiumConfig m_config;
-        private readonly IDictionary<string, IAPIDescriptor> m_descriptors;
+        private readonly IDictionary<string, IGraphicsDescriptor> m_descriptors;
 
-        public APILoader(
-            ILogger<APILoader> log,
+        public GraphicsLoader(
+            ILogger<GraphicsLoader> log,
             IOptions<TritiumConfig> config,
-            IList<IAPIDescriptor> descriptors)
+            IList<IGraphicsDescriptor> descriptors)
         {
             m_log = log;
             m_config = config.Value;
             m_descriptors = descriptors.ToDictionary(a => a.ID, a => a, StringComparer.InvariantCultureIgnoreCase);
         }
 
-        private IAPIDescriptor SelectAPI()
+        private IGraphicsDescriptor SelectAPI()
         {
-            IAPIDescriptor? rval = null;
+            IGraphicsDescriptor? rval = null;
 
             if (m_config.Headless)
             {

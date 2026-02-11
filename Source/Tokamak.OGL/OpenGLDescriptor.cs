@@ -4,7 +4,7 @@ using Tokamak.Tritium.APIs;
 
 namespace Tokamak.OGL
 {
-    internal class OpenGLDescriptor : IAPIDescriptor
+    internal class OpenGLDescriptor : IGraphicsDescriptor
     {
         private readonly IHostEnvironment m_hostEnvironment;
         private readonly IGameLifetime m_gameLifetime;

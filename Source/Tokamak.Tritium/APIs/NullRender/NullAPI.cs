@@ -1,6 +1,6 @@
 ﻿namespace Tokamak.Tritium.APIs.NullRender
 {
-    internal class NullAPI : IAPIDescriptor
+    internal class NullAPI : IGraphicsDescriptor
     {
         public NullAPI()
         {
