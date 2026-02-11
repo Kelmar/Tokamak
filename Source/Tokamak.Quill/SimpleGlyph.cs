@@ -9,6 +9,8 @@ namespace Tokamak.Quill
     {
         private List<Loop> m_loops = new();
 
+        public Vector2 Scale { get; init; }
+
         public RectF Bounds { get; init; }
 
         public int Index { get; init; }
@@ -26,7 +28,7 @@ namespace Tokamak.Quill
         public void Render(IFontRenderer renderer)
         {
             foreach (var loop in Loops)
-                loop.Render(renderer);
+                loop.Render(renderer, Scale);
         }
     }
 }

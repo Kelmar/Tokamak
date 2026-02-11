@@ -23,6 +23,11 @@ namespace Tokamak.Graphite
         }
 
         /// <summary>
+        /// Sets how the winding rules should be applied to this path.
+        /// </summary>
+        public Winding Winding { get; set; } = Winding.Clockwise;
+
+        /// <summary>
         /// Add in first move to point if needed.
         /// </summary>
         /// <remarks>
@@ -38,6 +43,7 @@ namespace Tokamak.Graphite
             {
                 Contour l = m_current;
 
+                m_current.Winding = Winding;
                 m_current = new();
                 m_current.Points.Add(l.Points.Last());
                 m_contours.Add(m_current);
@@ -55,6 +61,7 @@ namespace Tokamak.Graphite
             if (m_current.Points.Count > 1)
             {
                 // Create a new contour.
+                m_current.Winding = Winding;
                 m_current = new();
                 m_contours.Add(m_current);
             }

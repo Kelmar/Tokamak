@@ -23,22 +23,23 @@ namespace Tokamak.Graphite.PathRendering
 
         public void Render(Canvas canvas, Pen pen)
         {
+            /*
+             * We use a naïve approach simulating a bunch of triangle fans.
+             */
+
             Debug.Assert(m_contour.Points.Count > 2, "Need at least three points for a fill.");
 
             m_contour.BuildSegments(m_curveResolution);
 
             var points = new List<Vector2>(m_contour.Segments.Count * 3);
-
-            /*
-             * We use a naïve approach simulating a bunch of triangle fans.
-             */
+            float windingFactor = m_contour.Winding == Winding.Clockwise ? 1 : -1; // Invert for counter clockwise winding.
             PathSegment lastSegment = m_contour.Segments[0];
             Vector2 first = lastSegment.Start;
             float lastCross = 0;
 
             foreach (var segment in m_contour.Segments.Skip(1))
             {
-                float cross = Vector2.Cross(lastSegment.Direction, segment.Direction);
+                float cross = Vector2.Cross(lastSegment.Direction, segment.Direction) * windingFactor;
 
                 if ((cross < 0) && (lastCross > 0))
                 {

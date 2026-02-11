@@ -81,14 +81,14 @@ void main()
         private readonly List<CanvasCall> m_calls = new List<CanvasCall>(128);
         private readonly List<VectorFormatPCT> m_vectors = new List<VectorFormatPCT>(128);
 
-        private readonly IAPILayer m_apiLayer;
+        private readonly IGraphicsLayer m_apiLayer;
 
         private readonly IPipeline m_pipeline;
         private readonly ICommandList m_commandList;
 
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
-        public Canvas(IAPILayer apiLayer)
+        public Canvas(IGraphicsLayer apiLayer)
         {
             m_apiLayer = apiLayer;
 

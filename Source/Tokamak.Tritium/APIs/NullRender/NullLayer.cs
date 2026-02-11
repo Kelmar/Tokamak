@@ -16,7 +16,7 @@ namespace Tokamak.Tritium.APIs.NullRender
     /// <summary>
     /// Dummy layer that doesn't actually do anything.
     /// </summary>
-    internal sealed class NullLayer : ITick, IAPILayer
+    internal sealed class NullLayer : ITick, IGraphicsLayer
     {
         // Warning CS0067: Event declared but never used.
 

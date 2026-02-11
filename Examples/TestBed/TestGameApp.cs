@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.IO;
 
@@ -19,18 +20,17 @@ using TestBed.Scenes;
 using Tokamak.Readers.SVG;
 
 using TTF = Tokamak.Quill.Readers.TTF;
-using System.Data;
 
 namespace TestBed
 {
     public class TestGameApp : IGameApp
     {
-        private readonly IAPILayer m_apiLayer;
+        private readonly IGraphicsLayer m_gfxLayer;
 
         private const float ROT_AMOUNT = 1;//0.5f;
 
         private Canvas m_context = null;
-        //private Font m_font = null;
+        private Font m_font = null;
         private Scene m_scene = null;
 
         //private readonly List<IRenderable> m_renderers = new List<IRenderable>();
@@ -42,9 +42,9 @@ namespace TestBed
         private float m_fps;
         private float m_rot;
 
-        public TestGameApp(IAPILayer layer)
+        public TestGameApp(IGraphicsLayer layer)
         {
-            m_apiLayer = layer;
+            m_gfxLayer = layer;
         }
 
         public void Dispose()
@@ -56,7 +56,6 @@ namespace TestBed
             }
 
             m_scene?.Dispose();
-            //m_font?.Dispose();
             m_context?.Dispose();
         }
 
@@ -66,16 +65,12 @@ namespace TestBed
 
         public void OnLoad()
         {
-            m_context = new Canvas(m_apiLayer);
+            m_context = new Canvas(m_gfxLayer);
 
-            //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
-            //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/dnk.ttf");
-            string path = System.IO.Path.Combine(Environment.SystemDirectory, "../Fonts/segoeui.ttf");
+            m_font = LoadFont();
 
-            //m_font = m_context.GetFont(path, 12);
-
-            m_scene = new Scene(m_apiLayer);
-            m_test = new TestObject(m_apiLayer);
+            m_scene = new Scene(m_gfxLayer);
+            m_test = new TestObject(m_gfxLayer);
 
             m_scene.AddObject(m_test);
 
@@ -89,6 +84,20 @@ namespace TestBed
             var reader = new SVGReader(stream);
 
             reader.Import();
+        }
+
+        Font LoadFont()
+        {
+            //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
+            //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/dnk.ttf");
+            string path = System.IO.Path.Combine(Environment.SystemDirectory, "../Fonts/segoeui.ttf");
+
+            using var s = File.OpenRead(path);
+
+            var monitor = m_gfxLayer.GetMonitors().FirstOrDefault();
+            var dpi = monitor?.DPI ?? new Point(72, 72);
+
+            return TTF.Reader.LoadFrom(s, 120, dpi);
         }
 
         public void OnRender(double timeDelta)
@@ -108,6 +117,8 @@ namespace TestBed
         {
             PathTest();
             PacTest();
+
+            FontTest();
 
             //DrawSingleSquare();
 
@@ -258,6 +269,18 @@ namespace TestBed
 
             m_context.Fill(pac, fillPen);
             m_context.Stroke(pac, outlinePen);
+        }
+
+        private void FontTest()
+        {
+            Pen fillPen = new Pen
+            {
+                Width = 1,
+                Color = Color.White
+            };
+
+            //m_context.DrawText(new Vector2(50, 50), "G", m_font, fillPen);
+            m_context.DrawText(new Vector2(50, 50), "A", m_font, fillPen);
         }
 
         //private void DrawSingleSquare()

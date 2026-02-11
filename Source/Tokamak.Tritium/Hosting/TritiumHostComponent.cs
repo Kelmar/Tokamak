@@ -1,6 +1,5 @@
 ﻿using System;
 
-using Tokamak.Config.Abstractions;
 using Tokamak.Logging.Abstractions;
 using Tokamak.Hosting.Abstractions;
 
@@ -13,20 +12,17 @@ namespace Tokamak.Tritium.Hosting
     internal sealed class TritiumHostComponent : IHostComponent
     {
         private readonly ILogger m_log;
-        private readonly TritiumConfig m_config;
         private readonly IGameHost m_host;
-        private readonly Func<IAPILayer> m_layerFactory;
+        private readonly Func<IGraphicsLayer> m_layerFactory;
 
-        private IAPILayer? m_apiLayer = null;
+        private IGraphicsLayer? m_apiLayer = null;
 
         public TritiumHostComponent(
             ILogger<TritiumHostComponent> log,
-            IOptions<TritiumConfig> config,
             IGameHost host,
-            Func<IAPILayer> layerFactory)
+            Func<IGraphicsLayer> layerFactory)
         {
             m_log = log;
-            m_config = config.Value;
             m_host = host;
             m_layerFactory = layerFactory;
         }

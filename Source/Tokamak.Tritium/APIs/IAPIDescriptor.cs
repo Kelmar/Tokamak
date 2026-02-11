@@ -8,7 +8,7 @@ namespace Tokamak.Tritium.APIs
     /// <remarks>
     /// API descriptors are also factories for the API layers themselves.
     /// </remarks>
-    public interface IAPIDescriptor : IFactory<IAPILayer>
+    public interface IAPIDescriptor : IFactory<IGraphicsLayer>
     {
         /// <summary>
         /// Unique ID of the graphics API

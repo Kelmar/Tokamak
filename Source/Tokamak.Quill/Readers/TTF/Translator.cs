@@ -20,7 +20,7 @@ namespace Tokamak.Quill.Readers.TTF
         // Recursive detection
         private readonly HashSet<int> m_processing = new();
 
-        public Translator(ParseState state, in Point DPI)
+        public Translator(ParseState state)
         {
             m_state = state;
         }
@@ -31,17 +31,19 @@ namespace Tokamak.Quill.Readers.TTF
                 return m_glyphs[glyph.Index];
 
             if (m_processing.Contains(glyph.Index))
-                throw new FontFileException($"Cyclic glyph reference!");
+                throw new FontFileException("Cyclic glyph reference!");
 
             try
             {
                 m_processing.Add(glyph.Index);
 
+                var bounds = RectF.FromCoordinates(glyph.Bounds.TopLeft * m_state.Scale, glyph.Bounds.BottomRight * m_state.Scale);
+
                 IGlyph rval = glyph switch
                 {
-                    TTFSimpleGlyph simple => TranslateSimpleGlyph(simple),
-                    TTFCompoundGlyph compound => TranslateCompoundGlyph(compound),
-                    _ => throw new Exception("BUG: Unknown glyph type encountered!")
+                    TTFSimpleGlyph simple => TranslateSimpleGlyph(simple, bounds),
+                    TTFCompoundGlyph compound => TranslateCompoundGlyph(compound, bounds),
+                    _ => throw new Exception($"BUG: Unknown glyph type {glyph} encountered!")
                 };
 
                 m_glyphs[glyph.Index] = rval;
@@ -132,22 +134,23 @@ namespace Tokamak.Quill.Readers.TTF
             }
         }
 
-        private SimpleGlyph TranslateSimpleGlyph(TTFSimpleGlyph glyph)
+        private SimpleGlyph TranslateSimpleGlyph(TTFSimpleGlyph glyph, in RectF bounds)
         {
             return new SimpleGlyph
             {
+                Scale = m_state.Scale,
                 Index = glyph.Index,
-                Bounds = glyph.Bounds,
+                Bounds = bounds,
                 Loops = BuildLoops(glyph).ToList()
             };
         }
 
-        private CompoundGlyph TranslateCompoundGlyph(TTFCompoundGlyph glyph)
+        private CompoundGlyph TranslateCompoundGlyph(TTFCompoundGlyph glyph, in RectF bounds)
         {
             var rval = new CompoundGlyph
             {
                 Index = glyph.Index,
-                Bounds = glyph.Bounds
+                Bounds = bounds
             };
 
             foreach (var child in glyph.Children)
@@ -168,9 +171,9 @@ namespace Tokamak.Quill.Readers.TTF
 
         public Font Get(float pointSize, in Point DPI)
         {
-            var glyphs = TranslateGlyphs();
+            m_state.Scale = pointSize * DPI / (POINTS_PER_INCH * m_state.UnitsPerEm);
 
-            Vector2 scale = pointSize * DPI / (POINTS_PER_INCH * m_state.UnitsPerEm);
+            var glyphs = TranslateGlyphs();
 
             return new Font(m_state.CharMapper)
             {
@@ -179,7 +182,7 @@ namespace Tokamak.Quill.Readers.TTF
                 Subfamily = m_state.NameSearch(NameId.Subfamily),
                 Glyphs = glyphs.ToList().AsReadOnly(),
                 Points = pointSize,
-                Scale = scale
+                Scale = m_state.Scale
             };
         }
     }

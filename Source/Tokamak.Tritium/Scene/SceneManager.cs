@@ -11,23 +11,23 @@ namespace Tokamak.Tritium.Scene
 {
     public class SceneManager : IDisposable
     {
-        private readonly IAPILayer m_apiLayer;
+        private readonly IGraphicsLayer m_gfxLayer;
 
         private readonly List<IRenderPass> m_renderPasses = new();
         private readonly List<SceneObject> m_objects = new();
 
-        public SceneManager(IAPILayer apiLayer)
+        public SceneManager(IGraphicsLayer gfxLayer)
         {
-            m_apiLayer = apiLayer;
+            m_gfxLayer = gfxLayer;
 
-            m_apiLayer.OnResize += Resize;
+            m_gfxLayer.OnResize += Resize;
 
             // Force an update to our projection matrix.
-            Resize(m_apiLayer.ViewBounds);
+            Resize(m_gfxLayer.ViewBounds);
 
             m_renderPasses.AddRange([
-                new EnvironmentPass(m_apiLayer, this),
-                new DiffusePass(m_apiLayer, this)
+                new EnvironmentPass(m_gfxLayer, this),
+                new DiffusePass(m_gfxLayer, this)
             ]);
         }
 

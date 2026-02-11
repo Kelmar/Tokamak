@@ -17,7 +17,7 @@ namespace Tokamak.Tritium
             container.Register<APILoader>();
             container.RegisterSingleton<NullAPI>();
 
-            container.Register<IAPILayer>(options => options
+            container.Register<IGraphicsLayer>(options => options
                 .WithSingletonLifetime()
                 .WithFactory<APILoader>(loader => loader.Build())
             );

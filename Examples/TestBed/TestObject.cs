@@ -24,11 +24,11 @@ namespace TestBed
         private readonly IVertexBuffer<VectorFormatPNCT> m_vertexBuffer;
         private readonly IElementBuffer m_elementBuffer;
 
-        private readonly IAPILayer m_apiLayer;
+        private readonly IGraphicsLayer m_apiLayer;
 
         private readonly int m_indexCount;
 
-        public TestObject(IAPILayer apiLayer)
+        public TestObject(IGraphicsLayer apiLayer)
         {
             m_apiLayer = apiLayer;
 

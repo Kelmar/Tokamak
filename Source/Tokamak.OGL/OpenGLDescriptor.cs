@@ -24,7 +24,7 @@ namespace Tokamak.OGL
 
         public SupportLevel SupportLevel { get; }
 
-        public IAPILayer Build()
+        public IGraphicsLayer Build()
         {
             return new OpenGLLayer(m_hostEnvironment, m_gameLifetime);
         }

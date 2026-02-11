@@ -14,7 +14,7 @@ namespace Tokamak.Tritium.APIs
                 throw new Exception("InputFormat not specified, call UseInputFormat().");
         }
 
-        public static IPipeline CreatePipeline(this IAPILayer layer, Action<PipelineConfig> configurator)
+        public static IPipeline CreatePipeline(this IGraphicsLayer layer, Action<PipelineConfig> configurator)
         {
             PipelineConfig config = new PipelineConfig();
 

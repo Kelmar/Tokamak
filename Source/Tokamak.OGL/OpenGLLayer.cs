@@ -25,7 +25,7 @@ using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
 namespace Tokamak.OGL
 {
     [LogName("OpenGL")]
-    internal class OpenGLLayer : IAPILayer, ITick
+    internal class OpenGLLayer : IGraphicsLayer, ITick
     {
         public event SimpleEvent<Point> OnResize;
         public event SimpleEvent<double> OnRender;

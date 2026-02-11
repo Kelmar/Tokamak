@@ -16,6 +16,8 @@ namespace Tokamak.Graphite.PathRendering
     /// </remarks>
     internal class Contour
     {
+        public Winding Winding { get; set; }
+
         public List<Vector2> Points { get; } = [];
 
         public List<PathAction> Actions { get; } = [];

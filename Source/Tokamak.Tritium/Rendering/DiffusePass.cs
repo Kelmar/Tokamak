@@ -11,7 +11,7 @@ namespace Tokamak.Tritium.Rendering
 {
     public class DiffusePass : RenderPass
     {
-        public DiffusePass(IAPILayer apiLayer, SceneManager scene)
+        public DiffusePass(IGraphicsLayer apiLayer, SceneManager scene)
             : base(apiLayer, scene)
         {
         }

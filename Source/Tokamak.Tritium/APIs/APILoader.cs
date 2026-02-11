@@ -62,7 +62,7 @@ namespace Tokamak.Tritium.APIs
             return rval;
         }
 
-        public IAPILayer Build()
+        public IGraphicsLayer Build()
         {
             var descriptor = SelectAPI();
             return descriptor.Build();

@@ -11,9 +11,9 @@ namespace Tokamak.Tritium.Rendering
 {
     public abstract class RenderPass : IRenderPass
     {
-        private readonly IAPILayer m_apiLayer;
+        private readonly IGraphicsLayer m_apiLayer;
 
-        protected RenderPass(IAPILayer apiLayer, SceneManager scene)
+        protected RenderPass(IGraphicsLayer apiLayer, SceneManager scene)
         {
             m_apiLayer = apiLayer;
             Scene = scene;

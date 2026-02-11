@@ -12,7 +12,7 @@ namespace Tokamak.Tritium.Rendering
 {
     public class EnvironmentPass : RenderPass
     {
-        public EnvironmentPass(IAPILayer apiLayer, SceneManager scene)
+        public EnvironmentPass(IGraphicsLayer apiLayer, SceneManager scene)
             : base(apiLayer, scene)
         {
         }

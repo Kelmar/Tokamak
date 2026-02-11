@@ -15,7 +15,7 @@ namespace TestBed.Scenes
 {
     public class Scene : IDisposable//, IRenderable
     {
-        private readonly IAPILayer m_apiLayer;
+        private readonly IGraphicsLayer m_apiLayer;
 
         private readonly IPipeline m_pipeline;
         private readonly ICommandList m_commandList;
@@ -24,7 +24,7 @@ namespace TestBed.Scenes
 
         private Camera m_camera = new Camera();
 
-        public Scene(IAPILayer apiLayer)
+        public Scene(IGraphicsLayer apiLayer)
         {
             m_apiLayer = apiLayer;
 

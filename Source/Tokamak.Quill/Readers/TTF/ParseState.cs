@@ -56,6 +56,11 @@ namespace Tokamak.Quill.Readers.TTF
         /// </remarks>
         public int UnitsPerEm { get; set; }
 
+        /// <summary>
+        /// Computed scaling after DPI and all other factors.
+        /// </summary>
+        public Vector2 Scale { get; set; }
+
         public DateTime Created { get; set; }
 
         public DateTime Modified { get; set; }

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 using Tokamak.Graphite.PathRendering;
 using Tokamak.Mathematics;
-
+using Tokamak.Quill;
 using Tokamak.Tritium.APIs;
 
 using Tokamak.Tritium.Buffers;
@@ -92,13 +92,13 @@ void main()
         private readonly List<RenderCall> m_calls = new (128);
         private readonly List<VectorFormatPCT> m_vectors = new (128);
 
-        private readonly IAPILayer m_apiLayer;
+        private readonly IGraphicsLayer m_apiLayer;
 
         private readonly IPipeline m_pipeline;
         private readonly ICommandList m_commandList;
         private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
 
-        public Canvas(IAPILayer apiLayer)
+        public Canvas(IGraphicsLayer apiLayer)
         {
             m_apiLayer = apiLayer;
 
@@ -173,7 +173,25 @@ void main()
             );
         }
 
-        public void Stroke(Path path, Pen pen)
+        public void DrawText(in Vector2 loc, string text, Font font, Pen pen)
+        {
+            Vector2 cursor = loc;
+
+            foreach (var c in text)
+            {
+                var glyph = font.GetGlyphFor(c);
+
+                var renderer = new FontRenderer();
+                glyph.Render(renderer);
+
+                Fill(renderer.Path, pen);
+                //Stroke(renderer.Path, pen);
+
+                cursor.X += glyph.Bounds.Right;
+            }
+        }
+
+        public void Stroke(Path path, Pen pen, Matrix3x2 transform)
         {
             foreach (var contour in path.m_contours)
             {
@@ -185,7 +203,10 @@ void main()
             }
         }
 
-        public void Fill(Path path, Pen pen)
+        public void Stroke(Path path, Pen pen)
+            => Stroke(path, pen, Matrix3x2.Identity);
+
+        public void Fill(Path path, Pen pen, Matrix3x2 transform)
         {
             foreach (var contour in path.m_contours)
             {
@@ -194,6 +215,9 @@ void main()
                 renderer.Render(this, pen);
             }
         }
+
+        public void Fill(Path path, Pen pen)
+            => Fill(path, pen, Matrix3x2.Identity);
 
         public void Draw(PrimitiveType primitiveType, IEnumerable<Vector2> vectors, Color color, ITextureObject? texture = null)
         {

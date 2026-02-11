@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 
 namespace Tokamak.Quill
 {
@@ -15,10 +16,10 @@ namespace Tokamak.Quill
             set => m_segments = value ?? new();
         }
 
-        public void Render(IFontRenderer renderer)
+        public void Render(IFontRenderer renderer, Vector2 scale)
         {
             foreach (var segment in Segments)
-                segment.Render(renderer);
+                segment.Render(renderer, scale);
         }
     }
 }

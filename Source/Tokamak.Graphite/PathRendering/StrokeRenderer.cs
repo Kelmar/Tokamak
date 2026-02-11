@@ -86,14 +86,9 @@ namespace Tokamak.Graphite.PathRendering
              * 
              * Otherwise use the first segment's direction to effectively get a right angle to the same line.
              */
-            Vector2 lastDirection = m_contour.Segments[0].Direction;
-            bool repeatFirst = false;
-
-            if (m_contour.Closed)
-            {
-                //repeatFirst = m_contour.Segments[0].Start != m_contour.Segments.Last().End;
-                lastDirection = m_contour.Segments.Last().Direction;
-            }
+            Vector2 lastDirection = m_contour.Closed ?
+                m_contour.Segments.Last().Direction :
+                m_contour.Segments[0].Direction;
 
             Vector2 miter = ComputeMiter(m_contour.Segments[0].Direction, lastDirection);
 
@@ -113,7 +108,7 @@ namespace Tokamak.Graphite.PathRendering
                 lastDirection = segment.Direction;
             }
 
-            if (m_contour.Closed)// && repeatFirst)
+            if (m_contour.Closed)
             {
                 // Repeat first points
                 yield return points[0];

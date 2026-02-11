@@ -14,7 +14,7 @@ namespace Tokamak.Tritium.APIs
     /// <summary>
     /// Abstraction to graphics API.
     /// </summary>
-    public interface IAPILayer : IDisposable
+    public interface IGraphicsLayer : IDisposable
     {
         /// <summary>
         /// Called when the display area is resized.

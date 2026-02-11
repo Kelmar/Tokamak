@@ -13,10 +13,7 @@ namespace Tokamak.Quill.Readers.TTF
 
         public long Length { get; set; }
 
-        public override string ToString()
-        {
-            return $"{Tag} -> {Offset}";
-        }
+        public override string ToString() => $"{Tag} -> {Offset}";
 
         public static TableEntry LoadFrom(ParseState state)
         {

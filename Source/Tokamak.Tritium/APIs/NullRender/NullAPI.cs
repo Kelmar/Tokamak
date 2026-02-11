@@ -12,6 +12,6 @@
 
         public SupportLevel SupportLevel => SupportLevel - 100; // Should never automatically choose this.
 
-        public IAPILayer Build() => new NullLayer();
+        public IGraphicsLayer Build() => new NullLayer();
     }
 }

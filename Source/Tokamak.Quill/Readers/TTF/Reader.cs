@@ -39,7 +39,7 @@ namespace Tokamak.Quill.Readers.TTF
         {
             ParseState state = ReadStream(input);
 
-            var translator = new Translator(state, DPI);
+            var translator = new Translator(state);
 
             return translator.Get(pointSize, DPI);
         }
