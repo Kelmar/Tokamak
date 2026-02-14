@@ -26,85 +26,85 @@ namespace Tokamak.Mathematics
         /// <summary>
         /// Solves a Quadradic Bézier curve point using the Bernstein method.
         /// </summary>
-        /// <param name="v1"></param>
-        /// <param name="v2"></param>
-        /// <param name="v3"></param>
+        /// <param name="start"></param>
+        /// <param name="control"></param>
+        /// <param name="end"></param>
         /// <param name="delta">Time over curve from 0 to 1></param>
         /// <returns>A point along the Bézier curve.</returns>
-        public static Vector2 QuadSolve(in Vector2 v1, in Vector2 v2, in Vector2 v3, float delta)
+        public static Vector2 QuadSolve(in Vector2 start, in Vector2 control, in Vector2 end, float delta)
         {
             delta = Math.Clamp(delta, 0, 1);
 
             float omd = 1 - delta;
 
             return
-                v1 * omd * omd +
-                v2 * 2 * omd * delta +
-                v3 * delta * delta;
+                start * omd * omd +
+                control * 2 * omd * delta +
+                end * delta * delta;
         }
 
         /// <summary>
         /// Solves a Quadradic Bézier curve point using the Bernstein method in 3D space.
         /// </summary>
-        /// <param name="v1"></param>
-        /// <param name="v2"></param>
-        /// <param name="v3"></param>
+        /// <param name="start"></param>
+        /// <param name="control"></param>
+        /// <param name="end"></param>
         /// <param name="delta">Time over curve from 0 to 1></param>
         /// <returns>A point along the Bézier curve.</returns>
-        public static Vector3 QuadSolve(in Vector3 v1, in Vector3 v2, in Vector3 v3, float delta)
+        public static Vector3 QuadSolve(in Vector3 start, in Vector3 control, in Vector3 end, float delta)
         {
             delta = Math.Clamp(delta, 0, 1);
 
             float omd = 1 - delta;
 
             return
-                v1 * omd * omd +
-                v2 * 2 * omd * delta +
-                v3 * delta * delta;
+                start * omd * omd +
+                control * 2 * omd * delta +
+                end * delta * delta;
         }
 
         /// <summary>
         /// Solves a Cubic Bézier curve point using the Bernstein method.
         /// </summary>
-        /// <param name="v1"></param>
-        /// <param name="v2"></param>
-        /// <param name="v3"></param>
-        /// <param name="v4"></param>
+        /// <param name="start"></param>
+        /// <param name="control1"></param>
+        /// <param name="control2"></param>
+        /// <param name="end"></param>
         /// <param name="delta">Time over curve from 0 to 1</param>
         /// <returns>A point along the Bézier curve.</returns>
-        public static Vector2 CubicSolve(in Vector2 v1, in Vector2 v2, in Vector2 v3, in Vector2 v4, float delta)
+        public static Vector2 CubicSolve(in Vector2 start, in Vector2 control1, in Vector2 control2, in Vector2 end, float delta)
         {
             delta = Math.Clamp(delta, 0, 1);
 
             float omd = 1 - delta;
 
             return
-                v1 * omd * omd * omd +
-                v2 * 3 * omd * omd * delta +
-                v3 * 3 * omd * delta * delta +
-                v4 * delta * delta * delta;
+                start * omd * omd * omd +
+                control1 * 3 * omd * omd * delta +
+                control2 * 3 * omd * delta * delta +
+                end * delta * delta * delta;
         }
 
         /// <summary>
         /// Solves a Cubic Bézier curve point using the Bernstein method in 3D space.
         /// </summary>
-        /// <param name="v1"></param>
-        /// <param name="v2"></param>
-        /// <param name="v3"></param>
-        /// <param name="v4"></param>
+        /// <param name="start"></param>
+        /// <param name="control1"></param>
+        /// <param name="control2"></param>
+        /// <param name="end"></param>
         /// <param name="delta">Time over curve from 0 to 1</param>
         /// <returns>A point along the Bézier curve.</returns>
-        public static Vector3 CubicSolve(in Vector3 v1, in Vector3 v2, in Vector3 v3, in Vector3 v4, float delta)
+        public static Vector3 CubicSolve(in Vector3 start, in Vector3 control1, in Vector3 control2, in Vector3 end, float delta)
         {
             delta = Math.Clamp(delta, 0, 1);
 
             float omd = 1 - delta;
 
             return
-                v1 * omd * omd * omd +
-                v2 * 3 * omd * omd * delta +
-                v3 * 3 * omd * delta * delta +
-                v4 * delta * delta * delta;
+                start * omd * omd * omd +
+                control1 * 3 * omd * omd * delta +
+                control2 * 3 * omd * delta * delta +
+                end * delta * delta * delta;
         }
 
         /// <summary>

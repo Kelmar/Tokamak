@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 
 namespace Tokamak.Mathematics
 {
@@ -7,7 +9,7 @@ namespace Tokamak.Mathematics
     /// </summary>
     public static class VectorEx
     {
-        extension (in Vector2 vector)
+        extension(in Vector2 vector)
         {
             /// <summary>
             /// Fuzzy almost equals compare.
@@ -17,6 +19,31 @@ namespace Tokamak.Mathematics
             public static bool AlmostEquals(in Vector2 lhs, in Vector2 rhs, float fuz = MathX.FUZ)
                 => MathX.AlmostEquals(lhs.X, rhs.X, fuz)
                 && MathX.AlmostEquals(lhs.Y, rhs.Y, fuz);
+
+            /// <summary>
+            /// Computes the area of the supplied polygon.
+            /// </summary>
+            /// <param name="vectors">List of vectors in the polygon.</param>
+            /// <remarks>
+            /// The signedness of the result informs the winding of the polygon.
+            /// < 0 is Counterclockwise
+            /// = 0 is Collinear
+            /// > 0 is Clockwise
+            /// </remarks>
+            /// <returns>The signed area of the polygon.</returns>
+            public static float PolyArea(params IEnumerable<Vector2> vectors)
+            {
+                float area = 0;
+
+                var points = vectors.ToList();
+
+                int last = points.Count - 1;
+
+                for (int i = 0; i < points.Count; last = i, ++i)
+                    area += points[last].X * points[i].Y - points[i].X * points[last].Y;
+
+                return area / 2f;
+            }
 
             /// <summary>
             /// Gets the distance from the current vector to the other vector.
@@ -29,19 +56,6 @@ namespace Tokamak.Mathematics
             /// <param name="v">The starting vector.</param>
             /// <returns>A vector that is perpendicular to the supplied vector.</returns>
             public Vector2 LineNormal() => new Vector2(-vector.Y, vector.X);
-
-            /// <summary>
-            /// Returns the cross product of two 2D vectors.
-            /// </summary>
-            /// <remarks>
-            /// Technically there is no cross product for 2D vectors.  We get
-            /// around this by treating them as 3D vectors with a zero Z part.
-            /// 
-            /// This ultimately reduces down to a Vector3D who's X and Y will 
-            /// always be zero as a result, with the Z component being the only
-            /// interesting result.
-            /// </remarks>
-            public static float Cross(in Vector2 v1, in Vector2 v2) => v1.X * v2.Y - v2.X * v1.Y;
 
             /// <summary>
             /// Attempts to create a <seealso cref="Vector2"/> from a given array of floats.
@@ -68,7 +82,7 @@ namespace Tokamak.Mathematics
             public float[] ToArray() => [vector.X, vector.Y];
         }
 
-        extension (in Vector3 vector)
+        extension(in Vector3 vector)
         {
             /// <summary>
             /// Fuzzy almost equals compare.
@@ -110,7 +124,7 @@ namespace Tokamak.Mathematics
             public float[] ToArray() => [vector.X, vector.Y, vector.Z];
         }
 
-        extension (in Vector4 vector)
+        extension(in Vector4 vector)
         {
             /// <summary>
             /// Fuzzy almost equals compare.
