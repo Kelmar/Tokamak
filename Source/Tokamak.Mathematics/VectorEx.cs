@@ -21,14 +21,14 @@ namespace Tokamak.Mathematics
                 && MathX.AlmostEquals(lhs.Y, rhs.Y, fuz);
 
             /// <summary>
-            /// Computes the area of the supplied polygon.
+            /// Computes the signed area of the supplied polygon.
             /// </summary>
             /// <param name="vectors">List of vectors in the polygon.</param>
             /// <remarks>
-            /// The signedness of the result informs the winding of the polygon.
-            /// < 0 is Counterclockwise
-            /// = 0 is Collinear
-            /// > 0 is Clockwise
+            /// The signedness of the result informs the winding of the polygon.<br/>
+            /// &lt; 0 is Counterclockwise<br/>
+            /// = 0 is Collinear<br/>
+            /// &gt; 0 is Clockwise<br/>
             /// </remarks>
             /// <returns>The signed area of the polygon.</returns>
             public static float PolyArea(params IEnumerable<Vector2> vectors)
@@ -44,6 +44,93 @@ namespace Tokamak.Mathematics
 
                 return area / 2f;
             }
+
+            /// <summary>
+            /// Compute the slope for a line that passes through the given vectors.
+            /// </summary>
+            /// <remarks>
+            /// Given the formula of a line: y = mx + b
+            /// 
+            /// This function will compute the slope (m) of the line that passes through the supplied vectors.
+            /// </remarks>
+            /// <param name="v1">The first vector in the line.</param>
+            /// <param name="v2">The second vector int he line.</param>
+            /// <returns>The slope of the line.<br />
+            /// 0 for horizontal lines (no slope).<br />
+            /// Infinity in the event the line is vertical.
+            /// </returns>
+            public static float Slope(in Vector2 v1, in Vector2 v2)
+            {
+                Vector2 v = v2 - v1;
+                return v.Y / v.X;
+            }
+
+            /// <summary>
+            /// Compute the slope for a line that passes through the current and given vectors.
+            /// </summary>
+            /// <remarks>
+            /// Given the formula of a line: <c>y = mx + b</c><br />
+            /// <br />
+            /// This function will compute the slope (m) of the line that passes through the supplied vectors.
+            /// </remarks>
+            /// <param name="v">The second vector in the line.</param>
+            /// <returns>The slope of the line.<br />
+            /// 0 for horizontal lines (no slope).<br />
+            /// Infinity in the event the line is vertical.
+            /// </returns>
+            public float SlopeTo(in Vector2 v) => Vector2.Slope(vector, v);
+
+            /// <summary>
+            /// Compute the reciprocal of the slope for a line that passes through the given vectors.
+            /// </summary>
+            /// <remarks>
+            /// Given the formula of a line: y = mx + b
+            /// 
+            /// This function will compute the inverse slope (1/m) of the line that passes through the supplied vectors.
+            /// </remarks>
+            /// <param name="v1">The first vector in the line.</param>
+            /// <param name="v2">The second vector int he line.</param>
+            /// <returns>The inverse slope of the line.<br />
+            /// 0 for vertical lines.<br />
+            /// Infinity in the event the line is horizontal (no slope)
+            /// </returns>
+            public static float InverseSlope(in Vector2 v1, in Vector2 v2)
+            {
+                Vector2 v = v2 - v1;
+                return v.X / v.Y;
+            }
+
+            /// <summary>
+            /// Compute the reciprocal of the slope for a line that passes through the given vectors.
+            /// </summary>
+            /// <remarks>
+            /// Given the formula of a line: y = mx + b
+            /// 
+            /// This function will compute the inverse slope (1/m) of the line that passes through the supplied vectors.
+            /// </remarks>
+            /// <param name="v">The second vector in the line.</param>
+            /// <returns>The inverse slope of the line.<br />
+            /// 0 for vertical lines.<br />
+            /// Infinity in the event the line is horizontal (no slope)
+            /// </returns>
+            public float InverseSlopeTo(in Vector2 v) => Vector2.InverseSlope(vector, v);
+
+            /// <summary>
+            /// Returns the intercept for the line that passes through the vector of the supplied slope.
+            /// </summary>
+            /// <remarks>
+            /// Given the formula of a line: <c>y = mx + b</c><br />
+            /// <br/>
+            /// This function will return the intercept (b) of the line which passes through the vector with the given slope (m).
+            /// </remarks>
+            /// <param name="m">The slope of the line that passes through the vector.</param>
+            /// <returns>
+            /// The the intercept portion of a line.<br />
+            /// <br />
+            /// Note that in the case of a Infinity for a vertical line, this will still return Infinity as
+            /// there is no intercept for vertical lines.
+            /// </returns>
+            public float Intercept(float m) => vector.Y - (vector.X * m);
 
             /// <summary>
             /// Gets the distance from the current vector to the other vector.

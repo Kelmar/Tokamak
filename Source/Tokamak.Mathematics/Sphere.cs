@@ -60,21 +60,20 @@ namespace Tokamak.Mathematics
         /// <param name="other"></param>
         /// <returns>True if the two spheres overlap with each other.</returns>
         public bool Overlaps(in Sphere other)
-        {
-            return Location.DistanceTo(other.Location) < (Radius + other.Radius);
-        }
+            => Location.DistanceTo(other.Location) < (Radius + other.Radius);
 
         /// <summary>
         /// Check to see if a point is inside the sphere or not.
         /// </summary>
         /// <param name="point">Point to check</param>
+        /// <param name="fuz">Fuzzing distance for surface detection.</param>
         /// <returns>Relation of the point to the sphere's surface.</returns>
-        public Boundary Contains(in Vector3 point)
+        public Boundary Contains(in Vector3 point, float fuz = MathX.FUZ)
         {
             return Location.DistanceTo(point) switch
             {
-                float f when f < (Radius - MathX.FUZ) => Boundary.Inside,
-                float f when f > (Radius + MathX.FUZ) => Boundary.Outside,
+                float f when f < (Radius - fuz) => Boundary.Inside,
+                float f when f > (Radius + fuz) => Boundary.Outside,
                 _ => Boundary.On
             };
         }
