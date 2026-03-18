@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Stashbox" Version="5.17.1" />
-    <PackageReference Include="System.IO.Packaging" Version="10.0.2" />
+    <PackageReference Include="System.IO.Packaging" Version="10.0.5" />
   </ItemGroup>
 
   <ItemGroup>
