@@ -49,14 +49,14 @@ namespace Tokamak.Tritium.Scene
         /// </remarks>
         public Point ViewBounds { get; set; }
 
-        public Matrix4x4 GetViewMatrix() =>
-            Matrix4x4.CreatePerspectiveFieldOfView(float.DegreesToRadians(FieldOfView), ViewBounds.X / ViewBounds.Y, 0.1f, 100f);
+        public Matrix4x4 GetViewMatrix()
+            => Matrix4x4.CreatePerspectiveFieldOfView(float.DegreesToRadians(FieldOfView), ViewBounds.X / ViewBounds.Y, 0.1f, 100f);
 
         /// <summary>
         /// Gets the projection matrix for the camera a it's current world location.
         /// </summary>
-        public Matrix4x4 GetProjectionMatrix() =>
-            Matrix4x4.CreateLookTo(Location, Forward, Up);
+        public Matrix4x4 GetProjectionMatrix()
+            => Matrix4x4.CreateLookTo(Location, Forward, Up);
 
         /// <summary>
         /// Gets the projection matrix for the camera at the world origin.
@@ -64,8 +64,8 @@ namespace Tokamak.Tritium.Scene
         /// <remarks>
         /// This is used for computing the projection for environmental objects such as the sky sphere.
         /// </remarks>
-        public Matrix4x4 GetFixedProjectionMatrix() =>
-            Matrix4x4.CreateLookTo(Vector3.Zero, Forward, Up);
+        public Matrix4x4 GetFixedProjectionMatrix()
+            => Matrix4x4.CreateLookTo(Vector3.Zero, Forward, Up);
     }
 
 }

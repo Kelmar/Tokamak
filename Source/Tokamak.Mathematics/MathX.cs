@@ -161,8 +161,8 @@ namespace Tokamak.Mathematics
             /// int i = MathX.NextPow2(640); // Returns 1024
             /// int n = MathX.NextPow2(1024); // Returns 2048
             /// </example>
-            public static UInt32 NextPow2(UInt32 value) =>
-                value == 0 ? 1 : MSB(value) << 1;
+            public static UInt32 NextPow2(UInt32 value)
+                => value == 0 ? 1 : MSB(value) << 1;
         }
 
         extension (Int32 i)
@@ -190,8 +190,8 @@ namespace Tokamak.Mathematics
             /// Compute the factorial of the given positive integer <c>n</c>
             /// </summary>
             /// <param name="n">Positive integer to get the factorial of.</param>
-            public static int Factorial(int n) =>
-                n <= 1 ? 1 : (n * Factorial(n - 1));
+            public static int Factorial(int n)
+                => n <= 1 ? 1 : (n * Factorial(n - 1));
 
             /// <summary>
             /// Gets the next power of 2 for the given value.
@@ -204,8 +204,8 @@ namespace Tokamak.Mathematics
             /// int i = MathX.NextPow2(640); // Returns 1024
             /// int n = MathX.NextPow2(1024); // Returns 2048
             /// </example>
-            public static int NextPow2(int value) =>
-                value == 0 ? 1 : MSB(value) << 1;
+            public static int NextPow2(int value)
+                => value == 0 ? 1 : MSB(value) << 1;
         }
     }
 }

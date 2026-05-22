@@ -23,8 +23,8 @@ namespace Tokamak.Utilities
             GC.SuppressFinalize(this);
         }
 
-        private DisposeAction Unlocker() =>
-            new DisposeAction(() => m_base.Release());
+        private DisposeAction Unlocker()
+            => new DisposeAction(() => m_base.Release());
 
         public IDisposable Lock(CancellationToken cancellationToken = default)
         {

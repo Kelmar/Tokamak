@@ -14,8 +14,8 @@ namespace Tokamak.Mathematics
             /// </summary>
             /// <param name="plane">The plane to check.</param>
             /// <param name="location">The location we need the distance to.</param>
-            public float DistanceTo(in Vector3 location) =>
-                (plane.Normal.X * location.X) + (plane.Normal.Y * location.Y) + (plane.Normal.Z * location.Z) - plane.D;
+            public float DistanceTo(in Vector3 location)
+                => (plane.Normal.X * location.X) + (plane.Normal.Y * location.Y) + (plane.Normal.Z * location.Z) - plane.D;
 
             /// <summary>
             /// Find out which side of a <seealso cref="Plane"/> the given point falls on.
@@ -74,8 +74,8 @@ namespace Tokamak.Mathematics
             /// </item>
             /// </list>
             /// </returns>
-            public Boundary WhichSide(in Sphere sphere) =>
-                WhichSide(plane, sphere.Location, sphere.Radius);
+            public Boundary WhichSide(in Sphere sphere)
+                => WhichSide(plane, sphere.Location, sphere.Radius);
 
             /// <summary>
             /// Test to see if a ray segment intersects a <seealso cref="Plane"/>.

@@ -136,8 +136,8 @@ void main()
             m_pipeline.Uniforms.projection = mat;
         }
 
-        public void DrawImage(ITextureObject texture, in Point p) =>
-            DrawImage(texture, p, Color.White);
+        public void DrawImage(ITextureObject texture, in Point p)
+            => DrawImage(texture, p, Color.White);
 
         public void DrawImage(ITextureObject texture, in Point p, in Color color)
         {
@@ -153,8 +153,8 @@ void main()
             );
         }
 
-        public void DrawImage(ITextureObject texture, in Point p, in Vector2 topLeftUV, in Vector2 bottomRightUV) =>
-            DrawImage(texture, p, topLeftUV, bottomRightUV, Color.White);
+        public void DrawImage(ITextureObject texture, in Point p, in Vector2 topLeftUV, in Vector2 bottomRightUV)
+            => DrawImage(texture, p, topLeftUV, bottomRightUV, Color.White);
 
         public void DrawImage(ITextureObject texture, in Point p, in Vector2 topLeftUV, in Vector2 bottomRightUV, in Color color)
         {

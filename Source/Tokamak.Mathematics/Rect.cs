@@ -138,10 +138,10 @@ namespace Tokamak.Mathematics
 
         #endregion Casts
 
-        public static bool operator ==(in Rect lhs, in Rect rhs) =>
-            lhs.Left == rhs.Left && lhs.Top == rhs.Top && lhs.Size.X == rhs.Size.X && lhs.Size.Y == rhs.Size.Y;
+        public static bool operator ==(in Rect lhs, in Rect rhs)
+            => lhs.Left == rhs.Left && lhs.Top == rhs.Top && lhs.Size.X == rhs.Size.X && lhs.Size.Y == rhs.Size.Y;
 
-        public static bool operator !=(in Rect lhs, in Rect rhs) =>
-            lhs.Left != rhs.Left || lhs.Top != rhs.Top || lhs.Size.X != rhs.Size.X || lhs.Size.Y != rhs.Size.Y;
+        public static bool operator !=(in Rect lhs, in Rect rhs)
+            => lhs.Left != rhs.Left || lhs.Top != rhs.Top || lhs.Size.X != rhs.Size.X || lhs.Size.Y != rhs.Size.Y;
     }
 }
