@@ -177,6 +177,8 @@ namespace Tokamak.Mathematics
         public readonly bool Equals(Sphere other)
             => Location.Equals(other.Location) && Radius.Equals(other.Radius);
 
+        public override int GetHashCode() => HashCode.Combine(Location, Radius);
+
         public static bool operator ==(in Sphere v1, in Sphere v2)
             => v1.Location == v2.Location && v1.Radius == v2.Radius;
 
