@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Stashbox" Version="5.17.1" />
+    <PackageReference Include="Stashbox" Version="5.20.0" />
   </ItemGroup>
 
   <ItemGroup>
