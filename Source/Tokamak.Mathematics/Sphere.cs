@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
 namespace Tokamak.Mathematics
@@ -9,7 +10,7 @@ namespace Tokamak.Mathematics
     /// <remarks>
     /// A sphere has an origin point and a radius.
     /// </remarks>
-    public struct Sphere
+    public struct Sphere : IEquatable<Sphere>
     {
         #region Pseudo Constant Spheres
 
@@ -55,12 +56,37 @@ namespace Tokamak.Mathematics
         public readonly bool IsEmpty => Radius <= 0f || float.IsNaN(Radius);
 
         /// <summary>
+        /// Returns the distinace from the given point to the surface of the sphere.
+        /// </summary>
+        /// <remarks>
+        /// If the value is roughly equal to zero then the point lies on the surface of the sphere.
+        /// If the value is less than zero then the point is inside of the sphere.
+        /// </remarks>
+        /// <param name="point">The point to get the distance to.</param>
+        /// <returns>The distance of the point to the surface of the sphere.</returns>
+        public float DistanceTo(in Vector3 point)
+            => Location.DistanceTo(point) - Radius;
+
+        /// <summary>
+        /// Returns the distance between the two spheres.
+        /// </summary>
+        /// <remarks>
+        /// If the value are roughly zero then the spheres are touching at their surface.
+        /// If it is less than zero then the spheres are overlapping each other.
+        /// </remarks>
+        /// <param name="other">The other sphere to get the distance to.</param>
+        /// <returns>The distance between the two spheres.</returns>
+        public float DistanceTo(in Sphere other)
+            => Location.DistanceTo(other.Location) - (Radius + other.Radius);
+
+        /// <summary>
         /// Check to see if other sphere overlaps with this sphere.
         /// </summary>
         /// <param name="other"></param>
+        /// <param name="fuz">Fuzzing distance for surface detection.</param>
         /// <returns>True if the two spheres overlap with each other.</returns>
-        public bool Overlaps(in Sphere other)
-            => Location.DistanceTo(other.Location) < (Radius + other.Radius);
+        public bool Overlaps(in Sphere other, float fuz = MathX.FUZ)
+            => DistanceTo(other) <= fuz;
 
         /// <summary>
         /// Check to see if a point is inside the sphere or not.
@@ -70,10 +96,10 @@ namespace Tokamak.Mathematics
         /// <returns>Relation of the point to the sphere's surface.</returns>
         public Boundary Contains(in Vector3 point, float fuz = MathX.FUZ)
         {
-            return Location.DistanceTo(point) switch
+            return DistanceTo(point) switch
             {
-                float f when f < (Radius - fuz) => Boundary.Inside,
-                float f when f > (Radius + fuz) => Boundary.Outside,
+                float f when f < -fuz => Boundary.Inside,
+                float f when f > fuz => Boundary.Outside,
                 _ => Boundary.On
             };
         }
@@ -139,5 +165,22 @@ namespace Tokamak.Mathematics
 
             return true;
         }
+
+        public override readonly bool Equals([NotNullWhen(true)] object? obj)
+        {
+            if (obj is Sphere other)
+                return Equals(other);
+
+            return false;
+        }
+
+        public readonly bool Equals(Sphere other)
+            => Location.Equals(other.Location) && Radius.Equals(other.Radius);
+
+        public static bool operator ==(in Sphere v1, in Sphere v2)
+            => v1.Location == v2.Location && v1.Radius == v2.Radius;
+
+        public static bool operator !=(in Sphere v1, in Sphere v2)
+            => !(v1 == v2);
     }
 }

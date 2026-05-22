@@ -12,15 +12,35 @@ namespace Tokamak.Mathematics
         /// </summary>
         public const float FUZ = 0.000001f;
 
+        /// <summary>
+        /// Convert some angle theta from radians to degrees.
+        /// </summary>
+        /// <param name="theta">The angle in radians to convert to degrees.</param>
+        /// <returns>The angle in degrees.</returns>
         public static float Rad2Deg(float theta)
             => (theta / MathF.PI) * 180;
 
+        /// <summary>
+        /// Convert some angle theta from radians to degrees.
+        /// </summary>
+        /// <param name="theta">The angle in radians to convert to degrees.</param>
+        /// <returns>The angle in degrees.</returns>
         public static double Rad2Deg(double theta)
             => (theta / Math.PI) * 180;
 
+        /// <summary>
+        /// Convert some angle theta from degrees to radians.
+        /// </summary>
+        /// <param name="theta">The angle in degrees to convert to radians.</param>
+        /// <returns>The angle in radians.</returns>
         public static float Deg2Rad(float theta)
             => MathF.PI * (theta / 180f);
 
+        /// <summary>
+        /// Convert some angle theta from degrees to radians.
+        /// </summary>
+        /// <param name="theta">The angle in degrees to convert to radians.</param>
+        /// <returns>The angle in radians.</returns>
         public static double Deg2Rad(double theta)
             => Math.PI * (theta / 180d);
 
@@ -48,6 +68,19 @@ namespace Tokamak.Mathematics
                     v -= max;
 
                 return v;
+            }
+
+            /// <summary>
+            /// Performs Hermite interpolation between two values based on the given weighting.
+            /// </summary>
+            /// <param name="value1">The first value</param>
+            /// <param name="value2">The second value</param>
+            /// <param name="amount">A value between 0 and 1 that indicates the weight of value2.</param>
+            /// <returns>The interpolated value.</returns>
+            public static double SmoothStep(double value1, double value2, double amount)
+            {
+                amount = Math.Clamp((amount - value1) / (value2 - value1), 0, 1);
+                return amount * amount * (3 - (2 * amount));
             }
 
             /// <summary>
@@ -80,6 +113,19 @@ namespace Tokamak.Mathematics
                     v -= max;
 
                 return v;
+            }
+
+            /// <summary>
+            /// Performs Hermite interpolation between two values based on the given weighting.
+            /// </summary>
+            /// <param name="value1">The first value</param>
+            /// <param name="value2">The second value</param>
+            /// <param name="amount">A value between 0 and 1 that indicates the weight of value2.</param>
+            /// <returns>The interpolated value.</returns>
+            public static float SmoothStep(float value1, float value2, float amount)
+            {
+                amount = Math.Clamp((amount - value1) / (value2 - value1), 0, 1);
+                return amount * amount * (3 - (2 * amount));
             }
 
             /// <summary>

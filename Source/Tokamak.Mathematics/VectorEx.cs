@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
@@ -145,6 +146,31 @@ namespace Tokamak.Mathematics
             public Vector2 LineNormal() => new Vector2(-vector.Y, vector.X);
 
             /// <summary>
+            /// Performs Hermite interpolation between two vectors based on the given weighting.
+            /// </summary>
+            /// <param name="value1">The first vector</param>
+            /// <param name="value2">The second vector</param>
+            /// <param name="amount">A value between 0 and 1 that indicates the weight of value2.</param>
+            /// <returns>The interpolated vector.</returns>
+            public static Vector2 SmoothStep(Vector2 value1, Vector2 value2, float amount)
+                => SmoothStep(value1, value2, Vector2.Create(amount));
+
+            /// <summary>
+            /// Performs Hermite interpolation between two vectors based on the given weighting.
+            /// </summary>
+            /// <param name="value1">The first vector</param>
+            /// <param name="value2">The second vector</param>
+            /// <param name="amount">A vector between 0 and 1 that indicates the weight of value2.</param>
+            /// <returns>The interpolated vector.</returns>
+            public static Vector2 SmoothStep(Vector2 value1, Vector2 value2, Vector2 amount)
+            {
+                return new Vector2(
+                    float.SmoothStep(value1.X, value2.X, amount.X),
+                    float.SmoothStep(value1.Y, value2.Y, amount.Y)
+                );
+            }
+
+            /// <summary>
             /// Attempts to create a <seealso cref="Vector2"/> from a given array of floats.
             /// </summary>
             /// <param name="array">The values to try and generate a Vector2 from.</param>
@@ -185,6 +211,43 @@ namespace Tokamak.Mathematics
             /// Gets the distance from the current vector to the other vector.
             /// </summary>
             public float DistanceTo(in Vector3 other) => (vector - other).Length();
+
+            /// <summary>
+            /// Returns the distinace from the point to the surface of the given sphere.
+            /// </summary>
+            /// <remarks>
+            /// If the value is roughly equal to zero then the point lies on the surface of the sphere.
+            /// If the value is less than zero then the point is inside of the sphere.
+            /// </remarks>
+            /// <param name="sphere">The sphere to get the distance to.</param>
+            /// <returns>The distance of the point to the surface of the sphere.</returns>
+            public float DistanceTo(in Sphere sphere) => sphere.DistanceTo(vector);
+
+            /// <summary>
+            /// Performs Hermite interpolation between two vectors based on the given weighting.
+            /// </summary>
+            /// <param name="value1">The first vector</param>
+            /// <param name="value2">The second vector</param>
+            /// <param name="amount">A value between 0 and 1 that indicates the weight of value2.</param>
+            /// <returns>The interpolated vector.</returns>
+            public static Vector3 SmoothStep(Vector3 value1, Vector3 value2, float amount)
+                => SmoothStep(value1, value2, Vector3.Create(amount));
+
+            /// <summary>
+            /// Performs Hermite interpolation between two vectors based on the given weighting.
+            /// </summary>
+            /// <param name="value1">The first vector</param>
+            /// <param name="value2">The second vector</param>
+            /// <param name="amount">A vector between 0 and 1 that indicates the weight of value2.</param>
+            /// <returns>The interpolated vector.</returns>
+            public static Vector3 SmoothStep(Vector3 value1, Vector3 value2, Vector3 amount)
+            {
+                return new Vector3(
+                    float.SmoothStep(value1.X, value2.X, amount.X),
+                    float.SmoothStep(value1.Y, value2.Y, amount.Y),
+                    float.SmoothStep(value1.Z, value2.Z, amount.Z)
+                );
+            }
 
             /// <summary>
             /// Attempts to create a <seealso cref="Vector3"/> from a given array of floats.
@@ -228,6 +291,33 @@ namespace Tokamak.Mathematics
             /// Gets the distance from the current vector to the other vector.
             /// </summary>
             public float DistanceTo(in Vector4 other) => (vector - other).Length();
+
+            /// <summary>
+            /// Performs Hermite interpolation between two vectors based on the given weighting.
+            /// </summary>
+            /// <param name="value1">The first vector</param>
+            /// <param name="value2">The second vector</param>
+            /// <param name="amount">A value between 0 and 1 that indicates the weight of value2.</param>
+            /// <returns>The interpolated vector.</returns>
+            public static Vector4 SmoothStep(Vector4 value1, Vector4 value2, float amount)
+                => SmoothStep(value1, value2, Vector4.Create(amount));
+
+            /// <summary>
+            /// Performs Hermite interpolation between two vectors based on the given weighting.
+            /// </summary>
+            /// <param name="value1">The first vector</param>
+            /// <param name="value2">The second vector</param>
+            /// <param name="amount">A vector between 0 and 1 that indicates the weight of value2.</param>
+            /// <returns>The interpolated vector.</returns>
+            public static Vector4 SmoothStep(Vector4 value1, Vector4 value2, Vector4 amount)
+            {
+                return new Vector4(
+                    float.SmoothStep(value1.X, value2.X, amount.X),
+                    float.SmoothStep(value1.Y, value2.Y, amount.Y),
+                    float.SmoothStep(value1.Z, value2.Z, amount.Z),
+                    float.SmoothStep(value1.W, value2.W, amount.W)
+                );
+            }
 
             /// <summary>
             /// Attempts to create a <seealso cref="Vector4"/> from a given array of floats.
