@@ -215,6 +215,7 @@ namespace TestBed
             path.Close();
 
             path.ArcTo(new Vector2(300, 500), 50, 0, MathF.Tau);
+            path.Close();
 
             m_context.Fill(window, fill);
 
@@ -222,6 +223,7 @@ namespace TestBed
 
             var path2 = new Tokamak.Graphite.Path();
             path2.ArcTo(new Vector2(300, 500), 50, 0, MathF.Tau);
+            path2.Close();
 
             var pen2 = new Pen
             {
@@ -258,7 +260,7 @@ namespace TestBed
             float m2 = (m1 + MathX.Deg2Rad(90)) - (MathF.PI * 2);
 
             // Draw a PacMan like shape
-            pac.MoveTo(110, 110);
+            //pac.MoveTo(110, 110);
             pac.ArcTo(center, radius, start, m1);
             pac.LineTo(center);
 
@@ -266,6 +268,7 @@ namespace TestBed
 
             pac.LineTo(center + m2v);
             pac.ArcTo(center, radius, m2, start);
+            pac.Close();
 
             m_context.Fill(pac, fillPen);
             m_context.Stroke(pac, outlinePen);
@@ -280,7 +283,8 @@ namespace TestBed
             };
 
             //m_context.DrawText(new Vector2(50, 50), "G", m_font, fillPen);
-            m_context.DrawText(new Vector2(50, 50), "A", m_font, fillPen);
+            //m_context.DrawText(new Vector2(50, 50), "A", m_font, fillPen);
+            m_context.DrawText(new Vector2(50, 50), "C", m_font, fillPen);
         }
 
         //private void DrawSingleSquare()

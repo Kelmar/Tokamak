@@ -6,6 +6,7 @@ namespace Tokamak.Graphite
 {
     public enum Winding
     {
+        NonZero,
         Clockwise,
         CounterClockwise
     }

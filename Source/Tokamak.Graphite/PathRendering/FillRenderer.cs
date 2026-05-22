@@ -4,25 +4,61 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Threading;
 
 using Tokamak.Tritium.Geometry;
+using Tokamak.Mathematics;
 
 namespace Tokamak.Graphite.PathRendering
 {
     internal class FillRenderer
     {
-        private readonly Contour m_contour;
+        private readonly List<Contour> m_contours;
 
-        private readonly int m_curveResolution;
-
-        public FillRenderer(Contour contour, int curveResolution)
+        public FillRenderer(List<Contour> contours)
         {
-            m_contour = contour;
-            m_curveResolution = curveResolution;
+            m_contours = contours;
         }
 
-        public void Render(Canvas canvas, Pen pen)
+        public void Render(Winding winding, Canvas canvas, Pen pen)
         {
+            Contour? largest = null;
+            double largestArea = 0;
+
+            var outside = new List<Contour>(m_contours.Count);
+            var holes = new List<Contour>(m_contours.Count);
+
+            foreach (var c in m_contours)
+            {
+                var area = Vector2.PolyArea(c.Points);
+
+                if ((area > 0) && (winding != Winding.Clockwise))
+                {
+                    outside.Add(c);
+                }
+                else if ((area < 0) && (winding != Winding.CounterClockwise))
+                {
+                    if (-area > largestArea)
+                    {
+                        largestArea = -area;
+                        largest = c;
+                    }
+
+                    holes.Add(c);
+                }
+            }
+
+            if (outside.Count == 0 && (largest != null))
+            {
+                // Could not find an outside poly, use largest hole instead.
+                holes.Remove(largest);
+                outside.Add(largest);
+
+                // Reverse the point order.
+                largest.Points.Reverse();
+            }
+
+#if false
             /*
              * We use a naïve approach simulating a bunch of triangle fans.
              */
@@ -65,6 +101,7 @@ namespace Tokamak.Graphite.PathRendering
 
             if (points.Count > 0)
                 canvas.Draw(PrimitiveType.TriangleList, points, pen.Color);
+#endif
         }
     }
 }

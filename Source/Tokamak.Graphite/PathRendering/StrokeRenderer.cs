@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
@@ -8,45 +7,10 @@ using Tokamak.Mathematics;
 
 namespace Tokamak.Graphite.PathRendering
 {
-    /*
-     * To help understand what the math is doing here it, is best to think
-     * of the line as being more like a vector with a start and a direction
-     * pointing to the end.  When we consider this, the line then has a left
-     * side and a right side which is based on it's direction:
-     * 
-     *         left
-     * start --------> end
-     *         right
-     * 
-     * It is important to note that this notion of left and right physically
-     * changes on screen, depending on the relation of start to end.
-     * 
-     * For example:
-     * 
-     *        right
-     * end <--------- start
-     *        left
-     * 
-     * This can help us determine a few things.  For lines with a thickness,
-     * we can consider the left side the "outside" of our path, and the right
-     * the "inside" of our path, provided our path is drawn with a clockwise
-     * winding.
-     * 
-     * This also helps us figure out which way a line is turning when we hit
-     * a new point and it goes off into a new direction.
-     * 
-     * We do this by taking the cross product of the two vectors, or rather
-     * we compute the Z component of a cross product of our 2D vectors as
-     * if they are 3D vectors with their Z component set to zero, which
-     * effectively will always return zero for the X and Y in the resulting
-     * cross product.
-     */
-
     internal class StrokeRenderer
     {
-        private readonly Contour m_contour;
+        private Contour m_contour;
 
-        private readonly int m_curveResolution;
         private readonly float m_halfWidth;
 
         /// <summary />
@@ -57,11 +21,9 @@ namespace Tokamak.Graphite.PathRendering
         /// Note that the more steps in a curve resolution we have, the smoother the resulting
         /// apparent curve approximation we'll get, but this comes at a cost to compute time.
         /// </remarks>
-        public StrokeRenderer(Contour contour, int curveResolution, float lineWidth)
+        public StrokeRenderer(Contour contour, float lineWidth)
         {
             m_contour = contour;
-
-            m_curveResolution = curveResolution;
 
             m_halfWidth = lineWidth / 2f;
         }
@@ -72,56 +34,74 @@ namespace Tokamak.Graphite.PathRendering
             return miter * m_halfWidth / Vector2.Dot(miter, lastDirection.LineNormal());
         }
 
+        private static Vector2 Direction(Vector2 current, Vector2 previous)
+        {
+            Vector2 r = current - previous;
+
+            float len = r.Length();
+
+            if (len > 0)
+                r /= len;
+
+            return r;
+        }
+
         // Renders as a set of triangle strips.
         private IEnumerable<Vector2> InnerRender()
         {
             Debug.Assert(m_contour.Points.Count >= 2, "Need at least two points for a contour");
 
-            m_contour.BuildSegments(m_curveResolution);
-
             var points = new Vector2[2];
 
-            /*
-             * Use the last segment's direction for miter computation if closed.
-             * 
-             * Otherwise use the first segment's direction to effectively get a right angle to the same line.
-             */
-            Vector2 lastDirection = m_contour.Closed ?
-                m_contour.Segments.Last().Direction :
-                m_contour.Segments[0].Direction;
+            Vector2 lastDirection, direction;
+            Vector2 miter;
 
-            Vector2 miter = ComputeMiter(m_contour.Segments[0].Direction, lastDirection);
+            if (m_contour.Closed)
+            {
+                // Use last point for direction
+                lastDirection = Direction(m_contour.Points.Last(), m_contour.Points[0]);
+            }
+            else
+            {
+                // Use same direction as the first point.
+                lastDirection = Direction(m_contour.Points[0], m_contour.Points[1]);
+            }
 
-            points[0] = m_contour.Segments[0].Start + miter;
-            points[1] = m_contour.Segments[0].Start - miter;
+            direction = Direction(m_contour.Points[0], m_contour.Points[1]);
+            miter = ComputeMiter(direction, lastDirection);
+
+            points[0] = m_contour.Points[0] + miter;
+            points[1] = m_contour.Points[1] - miter;
 
             yield return points[0];
             yield return points[1];
 
-            foreach (var segment in m_contour.Segments.Skip(1))
+            for (int i = 1; i < m_contour.Points.Count; ++i)
             {
-                miter = ComputeMiter(segment.Direction, lastDirection);
+                int next = i + 1;
 
-                yield return (segment.Start + miter);
-                yield return (segment.Start - miter);
+                if (next >= m_contour.Points.Count)
+                {
+                    direction = m_contour.Closed ?
+                        Direction(m_contour.Points[i], m_contour.Points[0]) :
+                        lastDirection;
+                }
+                else
+                    direction = Direction(m_contour.Points[i], m_contour.Points[next]);
 
-                lastDirection = segment.Direction;
+                miter = ComputeMiter(direction, lastDirection);
+
+                yield return m_contour.Points[i] + miter;
+                yield return m_contour.Points[i] - miter;
+
+                lastDirection = direction;
             }
 
             if (m_contour.Closed)
             {
-                // Repeat first points
+                // Repeat first points.
                 yield return points[0];
                 yield return points[1];
-            }
-            else
-            {
-                var segment = m_contour.Segments.Last();
-
-                miter = ComputeMiter(segment.Direction, segment.Direction);
-
-                yield return (segment.End + miter);
-                yield return (segment.End - miter);
             }
         }
 

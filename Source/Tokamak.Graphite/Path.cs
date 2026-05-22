@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-using Tokamak.Graphite.PathRendering;
 using Tokamak.Mathematics;
+
+using Tokamak.Graphite.PathRendering;
+using System.Runtime.InteropServices;
 
 namespace Tokamak.Graphite
 {
@@ -13,44 +15,35 @@ namespace Tokamak.Graphite
     /// </summary>
     public class Path
     {
-        internal List<Contour> m_contours = new();
-
-        private Contour m_current = new();
+        private List<PathCommand> m_commands = [];
 
         public Path()
         {
-            m_contours.Add(m_current);
+            Winding = Winding.Clockwise;
         }
 
         /// <summary>
         /// Sets how the winding rules should be applied to this path.
         /// </summary>
-        public Winding Winding { get; set; } = Winding.Clockwise;
+        public Winding Winding
+        {
+            get => field;
+            set
+            {
+                if (field == value)
+                    return;
+
+                field = value;
+                m_commands.Add(new WindingCommand(value));
+            }
+        }
 
         /// <summary>
-        /// Add in first move to point if needed.
+        /// Moves the drawing cursor to a new location.
         /// </summary>
-        /// <remarks>
-        /// Add a staring point at the zero vector if there
-        /// are no other points yet added to the Points list.
-        /// </remarks>
-        private void AddFirstMove()
-        {
-            if (m_current.Points.Count > 0 && !m_current.Closed)
-                return;
-
-            if (m_current.Closed)
-            {
-                Contour l = m_current;
-
-                m_current.Winding = Winding;
-                m_current = new();
-                m_current.Points.Add(l.Points.Last());
-                m_contours.Add(m_current);
-            }
-            else
-                m_current.Points.Add(Vector2.Zero);
-        }
+        /// <param name="x">The X coordinate to move to.</param>
+        /// <param name="y">The Y coordinate to move to.</param>
+        public void MoveTo(float x, float y) => MoveTo(new Vector2(x, y));
 
         /// <summary>
         /// Moves the drawing cursor to a new location.
@@ -58,18 +51,11 @@ namespace Tokamak.Graphite
         /// <param name="v">The new location of the drawing cursor.</param>
         public void MoveTo(in Vector2 v)
         {
-            if (m_current.Points.Count > 1)
-            {
-                // Create a new contour.
-                m_current.Winding = Winding;
-                m_current = new();
-                m_contours.Add(m_current);
-            }
+            //if (m_commands.Last() is MoveToCommand m)
+            //    m.Point = v;
+            //else
 
-            if (m_current.Points.Count == 0)
-                m_current.Points.Add(v);
-            else
-                m_current.Points[0] = v;
+                m_commands.Add(new MoveToCommand(v));
         }
 
         /// <summary>
@@ -78,11 +64,15 @@ namespace Tokamak.Graphite
         /// <param name="v">The location to draw to.</param>
         public void LineTo(in Vector2 v)
         {
-            AddFirstMove();
-
-            m_current.Points.Add(v);
-            m_current.Actions.Add(PathAction.Line);
+            m_commands.Add(new LineToCommand(v));
         }
+
+        /// <summary>
+        /// Draw a line from the current cursor location to the new one.
+        /// </summary>
+        /// <param name="x">X coordinate to draw to.</param>
+        /// <param name="y">Y coordinate to draw to.</param>
+        public void LineTo(float x, float y) => LineTo(new Vector2(x, y));
 
         /// <summary>
         /// Draw a quadradic Bézier curve starting from the current cursor location.
@@ -91,10 +81,7 @@ namespace Tokamak.Graphite
         /// <param name="end">The ending point of the curve.</param>
         public void BezierQuadradicCurveTo(in Vector2 control, in Vector2 end)
         {
-            AddFirstMove();
-
-            m_current.Points.AddRange([control, end]);
-            m_current.Actions.Add(PathAction.BezierQuadradic);
+            m_commands.Add(new QuadToCommand(control, end));
         }
 
         /// <summary>
@@ -105,20 +92,21 @@ namespace Tokamak.Graphite
         /// <param name="end">The ending point of the curve.</param>
         public void BezierCubicCurveTo(in Vector2 control1, in Vector2 control2, in Vector2 end)
         {
-            AddFirstMove();
-
-            m_current.Points.AddRange([control1, control2, end]);
-            m_current.Actions.Add(PathAction.BezierCubic);
-        }
-
-        private void AddArc(in Vector2 center, in Vector2 radius, float start, float end)
-        {
-            m_current.Points.AddRange([center, radius, new Vector2(start, end)]);
-            m_current.Actions.Add(PathAction.Arc);
+            m_commands.Add(new CubicToCommand(control1, control2, end));
         }
 
         private void AddArc(in Vector2 center, float radius, float start, float end)
             => AddArc(center, new Vector2(radius, radius), start, end);
+
+        /// <summary>
+        /// Add a circular arc to the the path.
+        /// </summary>
+        /// <param name="center">The center of the circle to arc through.</param>
+        /// <param name="radius">The radius of the circle to draw.</param>
+        /// <param name="start">The starting angle to draw at.</param>
+        /// <param name="end">The angle to end drawing at.</param>
+        public void ArcTo(in Vector2 center, float radius, float start, float end)
+            => ArcTo(center, new Vector2(radius, radius), start, end);
 
         /// <summary>
         /// Add an elliptical arc to the the path.
@@ -128,11 +116,20 @@ namespace Tokamak.Graphite
         /// <param name="start">The starting angle to draw at.</param>
         /// <param name="end">The angle to end drawing at.</param>
         public void ArcTo(in Vector2 center, in Vector2 radius, float start, float end)
-        {
-            AddFirstMove();
+            => AddArc(center, radius, start, end);
 
-            AddArc(center, radius, start, end);
+        private void AddArc(in Vector2 center, in Vector2 radius, float start, float end)
+        {
+            m_commands.Add(new ArcToCommand(center, radius, start, end));
         }
+
+        /// <summary>
+        /// Draws a rectangle at the supplied coordinates.
+        /// </summary>
+        /// <param name="topLeft">The top/left point of the rectangle.</param>
+        /// <param name="bottomRight">The bottom/right point of the rectangle.</param>
+        public void Rectangle(in Vector2 topLeft, in Vector2 bottomRight)
+            => Rectangle(RectF.FromCoordinates(topLeft, bottomRight));
 
         /// <summary>
         /// Draws a rectangle at the supplied coordinates.
@@ -140,11 +137,28 @@ namespace Tokamak.Graphite
         /// <param name="rect">Rectangle to draw.</param>
         public void Rectangle(in RectF rect)
         {
-            m_current.Points.AddRange([rect.TopLeft, rect.TopRight, rect.BottomRight, rect.BottomLeft]);
-            m_current.Actions.AddRange([PathAction.Line, PathAction.Line, PathAction.Line]);
+            m_commands.AddRange(
+                new MoveToCommand(rect.TopLeft),
+                new LineToCommand(rect.TopRight),
+                new LineToCommand(rect.BottomRight),
+                new LineToCommand(rect.BottomLeft),
+                new CloseCommand()
+            );
 
             Close();
         }
+
+        /// <summary>
+        /// Draws a rounded rectangle.
+        /// </summary>
+        /// <remarks>
+        /// If roundEdges is close enough to zero, then a regular rectangle will be drawn.
+        /// </remarks>
+        /// <param name="topLeft">Top left corner of the rectangle.</param>
+        /// <param name="bottomRight">Bottom right corner for the rectangle.</param>
+        /// <param name="roundEdges">Amount to round the corners by</param>
+        public void RoundRect(in Vector2 topLeft, in Vector2 bottomRight, float roundEdges)
+            => RoundRect(RectF.FromCoordinates(topLeft, bottomRight), roundEdges);
 
         /// <summary>
         /// Draws a rounded rectangle.
@@ -165,20 +179,17 @@ namespace Tokamak.Graphite
                 var arcPoint = new Vector2(rect.Right - roundEdges, rect.Top + roundEdges);
                 AddArc(arcPoint, roundEdges, MathF.Tau * 0.75f, MathF.Tau);
 
-                m_current.Points.Add(new Vector2(rect.Right, rect.Bottom - roundEdges));
-                m_current.Actions.Add(PathAction.Line);
+                LineTo(rect.Right, rect.Bottom - roundEdges);
 
                 arcPoint = new Vector2(rect.Right - roundEdges, rect.Bottom - roundEdges);
                 AddArc(arcPoint, roundEdges, 0, MathF.PI / 2);
 
-                m_current.Points.Add(new Vector2(rect.Left + roundEdges, rect.Bottom));
-                m_current.Actions.Add(PathAction.Line);
+                LineTo(rect.Left + roundEdges, rect.Bottom);
 
                 arcPoint = new Vector2(rect.Left + roundEdges, rect.Bottom - roundEdges);
                 AddArc(arcPoint, roundEdges, MathF.PI / 2, MathF.PI);
 
-                m_current.Points.Add(new Vector2(rect.Left, rect.Top + roundEdges));
-                m_current.Actions.Add(PathAction.Line);
+                LineTo(rect.Left, rect.Top + roundEdges);
 
                 arcPoint = new Vector2(rect.Left + roundEdges, rect.Top + roundEdges);
                 AddArc(arcPoint, roundEdges, MathF.PI, MathF.Tau * 0.75f);
@@ -187,13 +198,135 @@ namespace Tokamak.Graphite
             }
         }
 
-        public void Close()
-        {
-            // Only close if we have enough points to make a meaningful loop.
-            if (m_current.Points.Count < 3)
-                return;
+        public void Close() => m_commands.Add(new CloseCommand());
 
-            m_current.Closed = true;
+        private void ComputeStepped(
+            int resolution,
+            float stepping,
+            Contour current,
+            Func<float, Vector2> callback)
+        {
+            current.Points.EnsureCapacity(current.Points.Count + resolution + 1);
+
+            // Get first point and see if we need to skip it or not.
+            Vector2 v = callback(0);
+
+            if ((current.Points.Count == 0) || !Vector2.AlmostEquals(current.Points.Last(), v, Canvas.TOLERANCE))
+                current.Points.Add(v); // Not already in list, add it.
+
+            // Less-than or equal is deliberate, we want to include "1"
+            for (int i = 1; i <= resolution; ++i)
+                current.Points.Add(callback(i * stepping));
+        }
+
+        /// <summary>
+        /// Flatten the path into a series of countours.
+        /// </summary>
+        /// <param name="resolution">Curve subdivision resoltuion.</param>
+        /// <returns>An enumerable list of countours.</returns>
+        internal IEnumerable<Contour> Flatten(int resolution)
+        {
+            float stepping = 1f / resolution;
+
+            Contour current = new();
+            current.Winding = Winding;
+
+            foreach (var command in m_commands)
+            {
+                var foo = command;
+
+                switch (command)
+                {
+                case CloseCommand:
+                    if (current.Points.Count > 2)
+                    {
+                        current.Closed = true;
+                        current.CleanUp();
+                    }
+
+                    if (current.Points.Count > 1)
+                    {
+                        yield return current;
+                        current = new();
+                        current.Winding = Winding;
+                    }
+                    break;
+
+                case MoveToCommand move:
+                    if (current.Points.Count > 1)
+                    {
+                        current.CleanUp();
+                        yield return current;
+                        current = new();
+                        current.Winding = Winding;
+                    }
+
+                    current.Points.Add(move.Point);
+                    break;
+
+                case LineToCommand line:
+                    if (current.Points.Count == 0)
+                        current.Points.Add(Vector2.Zero);
+
+                    current.Points.Add(line.Point);
+                    break;
+
+                case QuadToCommand quad:
+                    {
+                        if (current.Points.Count == 0)
+                            current.Points.Add(Vector2.Zero);
+
+                        Vector2 p1 = current.Points.Last();
+
+                        ComputeStepped(
+                            resolution, stepping,
+                            current,
+                            d => Bezier.QuadSolve(p1, quad.Control, quad.End, d));
+                    }
+                    break;
+
+                case CubicToCommand cubic:
+                    {
+                        if (current.Points.Count == 0)
+                            current.Points.Add(Vector2.Zero);
+
+                        Vector2 p1 = current.Points.Last();
+
+                        ComputeStepped(
+                            resolution, stepping,
+                            current,
+                            d => Bezier.CubicSolve(p1, cubic.Control1, cubic.Control2, cubic.End, d));
+                    }
+                    break;
+
+                case ArcToCommand arc:
+                    ComputeStepped(
+                        resolution, stepping,
+                        current,
+                        d =>
+                        {
+                            float angle = float.Lerp(arc.StartAngle, arc.EndAngle, d);
+                            var comp = new Vector2(MathF.Cos(angle), MathF.Sin(angle));
+                            return arc.Center + (comp * arc.Radius);
+                        }
+                    );
+                    break;
+
+                case WindingCommand winding:
+                    current.Winding = winding.Winding;
+                    break;
+
+                default:
+                    // Shouldn't happen.
+                    throw new NotImplementedException($"BUG: Unknown path action {command}");
+                }
+            }
+
+            if (current.Points.Count > 1)
+            {
+                current.CleanUp();
+                yield return current;
+            }
         }
     }
 }

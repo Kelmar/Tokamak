@@ -184,8 +184,8 @@ void main()
                 var renderer = new FontRenderer();
                 glyph.Render(renderer);
 
-                Fill(renderer.Path, pen);
-                //Stroke(renderer.Path, pen);
+                //Fill(renderer.Path, pen);
+                Stroke(renderer.Path, pen);
 
                 cursor.X += glyph.Bounds.Right;
             }
@@ -193,9 +193,11 @@ void main()
 
         public void Stroke(Path path, Pen pen, Matrix3x2 transform)
         {
-            foreach (var contour in path.m_contours)
+            var contours = path.Flatten(PATH_RESOLUTION).ToList();
+
+            foreach (var contour in contours)
             {
-                var renderer = new StrokeRenderer(contour, PATH_RESOLUTION, pen.Width);
+                var renderer = new StrokeRenderer(contour, pen.Width);
 
                 var points = renderer.Render().ToList();
 
@@ -208,12 +210,10 @@ void main()
 
         public void Fill(Path path, Pen pen, Matrix3x2 transform)
         {
-            foreach (var contour in path.m_contours)
-            {
-                var renderer = new FillRenderer(contour, PATH_RESOLUTION);
+            var contours = path.Flatten(PATH_RESOLUTION).ToList();
+            var renderer = new FillRenderer(contours);
 
-                renderer.Render(this, pen);
-            }
+            renderer.Render(Winding.NonZero, this, pen);
         }
 
         public void Fill(Path path, Pen pen)
