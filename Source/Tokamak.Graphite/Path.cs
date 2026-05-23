@@ -241,7 +241,7 @@ namespace Tokamak.Graphite
                     if (current.Points.Count > 2)
                     {
                         current.Closed = true;
-                        current.CleanUp();
+                        current.CleanUp(Canvas.TOLERANCE);
                     }
 
                     if (current.Points.Count > 1)
@@ -255,7 +255,7 @@ namespace Tokamak.Graphite
                 case MoveToCommand move:
                     if (current.Points.Count > 1)
                     {
-                        current.CleanUp();
+                        current.CleanUp(Canvas.TOLERANCE);
                         yield return current;
                         current = new();
                         current.Winding = Winding;
@@ -324,7 +324,7 @@ namespace Tokamak.Graphite
 
             if (current.Points.Count > 1)
             {
-                current.CleanUp();
+                current.CleanUp(Canvas.TOLERANCE);
                 yield return current;
             }
         }
