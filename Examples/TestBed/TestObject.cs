@@ -20,6 +20,7 @@ namespace TestBed
         //public const string FILE = "resources/blox.fbx";
         public const string FILE = "resources/susan.fbx";
         //public const string FILE = "resources/plane.fbx";
+        //public const string FILE = "resources/chest.fbx";
 
         /*
          * This is the X Bot model from Maxima.

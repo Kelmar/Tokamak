@@ -4,58 +4,30 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
-using Tokamak.Mathematics;
 using Tokamak.Tritium.Geometry;
 
 namespace Tokamak.Readers.FBX.ObjectWrappers
 {
     internal class NormalMapper
     {
-        private enum MappingType
-        {
-            None,
-            Vertex,
-            Polygon,
-            PolyVertex,
-            Edge
-        }
-
         private readonly Node? m_node;
-        private readonly MappingType m_mapType;
+        private readonly GlobalSettings m_settings;
+        private readonly IndexMapper m_indexMapper;
         private readonly List<Vector3> m_data = [];
 
-        public NormalMapper(Node? node)
+        public NormalMapper(GlobalSettings settings, Node? node)
         {
             m_node = node;
+            m_settings = settings;
 
-            m_mapType = ReadMappingType();
+            m_indexMapper = new IndexMapper(m_node, "NormalsIndex");
+
             LoadNormalData();
-        }
-
-        private MappingType ReadMappingType()
-        {
-            Node? mappingTypeNode = m_node?
-                .GetChildren("MappingInformationType")
-                .FirstOrDefault();
-
-            string mappingTypeStr = mappingTypeNode?.Properties.FirstOrDefault()?.ToString() ?? String.Empty;
-
-            return mappingTypeStr.ToLower() switch
-            {
-                "byvertice" => MappingType.Vertex, // Blender weirdness
-                "byvertex" => MappingType.Vertex,
-                "bypolygon" => MappingType.Polygon,
-                "bypolygonvertex" => MappingType.PolyVertex,
-                "byedge" => MappingType.Edge,
-
-                "allsame" => MappingType.None, // We aren't goign to support this, we'll treat like we didn't get the info.
-                _ => MappingType.None
-            };
         }
 
         private void LoadNormalData()
         {
-            if (m_mapType == MappingType.None)
+            if (m_indexMapper.MappingType == VertexMappingType.None)
                 return; // If the type comes back as none, we don't read any normal data, we'll calculate it.
 
             // Shouldn't be possible to get anything but "None" if we didn't get a node.
@@ -66,7 +38,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
                 .SelectMany(n => n.Properties[0].AsEnumerable<float>())
                 .ToList()
                 .Chunk(3)
-                .Select(VectorEx.ToVector3)
+                .Select(m_settings.MapToVector)
             );
         }
 
@@ -78,24 +50,10 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         /// <param name="index">The vertex index to add the normal for.</param>
         public void AddNormal(Polygon polygon, int indexNo, int index)
         {
-            switch (m_mapType)
-            {
-            case MappingType.Polygon:
-            case MappingType.None:
-            default:
-                return; // We calculate the normals in FinalizeNormals()
+            int i = m_indexMapper.MapIndex(indexNo, index);
 
-            case MappingType.Edge:
-                return; // We calculate the normals in FinalizeNoramls()
-
-            case MappingType.Vertex:
-                polygon.Normals.Add(m_data[index]);
-                break;
-
-            case MappingType.PolyVertex:
-                polygon.Normals.Add(m_data[indexNo]);
-                break;
-            }
+            if (i != -1)
+                polygon.Normals.Add(m_data[i]);
         }
 
         public void FinalizeNormals(Polygon polygon)

@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Numerics;
 
-using Tokamak.Mathematics;
-
 using Tokamak.Tritium.Geometry;
 
 namespace Tokamak.Readers.FBX.ObjectWrappers
@@ -13,13 +11,14 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
     /// </summary>
     internal class MeshWrapper : IFBXObject
     {
-        public MeshWrapper(Node node)
+        public MeshWrapper(GlobalSettings settings, Node node)
         {
             Node = node;
             ID = Node.Properties[0].AsInt();
             Name = Node.Properties[1].AsString();
 
             Mesh = new Mesh();
+            Settings = settings;
 
             ReadMeshDetails();
         }
@@ -44,6 +43,8 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         /// </summary>
         public Mesh Mesh { get; }
 
+        public GlobalSettings Settings { get; }
+
         private void ReadMeshDetails()
         {
             // Pull raw data from FBX structure
@@ -52,10 +53,10 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
                 .SelectMany(v => v.Properties[0].AsEnumerable<float>())
                 .ToList() // Chunk needs the list to be realized first.
                 .Chunk(3) // Group into threes
-                .Select(VectorEx.ToVector3) // Convert to vertex
+                .Select(Settings.MapToVector) // Convert to vertex
                 .ToList();
 
-            var normalMapper = new NormalMapper(Node.GetChildren("LayerElementNormal")?.FirstOrDefault());
+            var normalMapper = new NormalMapper(Settings, Node.GetChildren("LayerElementNormal")?.FirstOrDefault());
 
             var indices = Node
                 .GetChildren("PolygonVertexIndex")
@@ -90,7 +91,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
             // Note that the negative number is a bitwise negation of the last index
             // In this way zero is represented as -1
 
-            var lastPoly = new Polygon();
+            var current = new Polygon();
             int indexNo = 0; // Index of the index.... >_<
 
             foreach (var index in indices)
@@ -99,26 +100,30 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
                 {
                     int i = ~index;
 
-                    normalMapper.AddNormal(lastPoly, indexNo, i);
-                    lastPoly.Vectors.Add(vectors[i]);
-                    lastPoly.TexCoord.Add(Vector2.Zero); // texCoords[i]);
+                    normalMapper.AddNormal(current, indexNo, i);
+                    current.Vectors.Add(vectors[i]);
+                    current.TexCoord.Add(Vector2.Zero); // texCoords[i]);
 
-                    yield return lastPoly;
+                    normalMapper.FinalizeNormals(current);
+                    yield return current;
 
-                    lastPoly = new Polygon();
+                    current = new Polygon();
                 }
                 else
                 {
-                    normalMapper.AddNormal(lastPoly, indexNo, index);
-                    lastPoly.Vectors.Add(vectors[index]);
-                    lastPoly.TexCoord.Add(Vector2.Zero); //texCoords[index]);
+                    normalMapper.AddNormal(current, indexNo, index);
+                    current.Vectors.Add(vectors[index]);
+                    current.TexCoord.Add(Vector2.Zero); //texCoords[index]);
                 }
 
                 ++indexNo;
             }
 
-            if (lastPoly.Vectors.Count > 2)
-                yield return lastPoly;
+            if (current.Vectors.Count > 2)
+            {
+                normalMapper.FinalizeNormals(current);
+                yield return current;
+            }
         }
     }
 }

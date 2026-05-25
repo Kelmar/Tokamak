@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 
 using Tokamak.Tritium.Geometry;
@@ -96,6 +96,8 @@ namespace Tokamak.Readers.FBX
         {
             Node dataRoot = GetNodes();
 
+            var settings = new GlobalSettings(dataRoot);
+
             // At this point we should have a valid node structure, but we still need to recreate the object hierarchy.
 
             var dataObjects = dataRoot.GetChildren("Objects");
@@ -109,7 +111,7 @@ namespace Tokamak.Readers.FBX
 
             var geos = dataObjects
                 .SelectMany(o => o.GetChildren("Geometry"))
-                .Select(n => new MeshWrapper(n))
+                .Select(n => new MeshWrapper(settings, n))
                 .ToList();
 
             var mats = dataObjects

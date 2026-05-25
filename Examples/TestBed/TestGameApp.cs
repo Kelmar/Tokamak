@@ -347,9 +347,9 @@ namespace TestBed
                 m_frameCount = 0;
                 m_lastCheck = DateTime.UtcNow;
 
-                int secs = (int)diff.TotalSeconds;
-                if ((secs % 10) == 0)
-                    Debug.WriteLine("FPS: {0}", m_fps);
+                //int secs = (int)diff.TotalSeconds;
+                //if ((secs % 10) == 0)
+                //    Debug.WriteLine("FPS: {0}", m_fps);
             }
         }
     }
