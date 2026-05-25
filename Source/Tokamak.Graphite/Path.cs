@@ -6,7 +6,6 @@ using System.Numerics;
 using Tokamak.Mathematics;
 
 using Tokamak.Graphite.PathRendering;
-using System.Runtime.InteropServices;
 
 namespace Tokamak.Graphite
 {
@@ -15,7 +14,7 @@ namespace Tokamak.Graphite
     /// </summary>
     public class Path
     {
-        private List<PathCommand> m_commands = [];
+        private readonly List<PathCommand> m_commands = [];
 
         public Path()
         {
@@ -27,7 +26,7 @@ namespace Tokamak.Graphite
         /// </summary>
         public Winding Winding
         {
-            get => field;
+            get;
             set
             {
                 if (field == value)
@@ -80,9 +79,7 @@ namespace Tokamak.Graphite
         /// <param name="control">The control point of the curve.</param>
         /// <param name="end">The ending point of the curve.</param>
         public void BezierQuadradicCurveTo(in Vector2 control, in Vector2 end)
-        {
-            m_commands.Add(new QuadToCommand(control, end));
-        }
+            => m_commands.Add(new QuadToCommand(control, end));
 
         /// <summary>
         /// Draw a cubic Bézier curve starting from the current cursor location.
@@ -91,9 +88,7 @@ namespace Tokamak.Graphite
         /// <param name="control2">The second control point of the curve.</param>
         /// <param name="end">The ending point of the curve.</param>
         public void BezierCubicCurveTo(in Vector2 control1, in Vector2 control2, in Vector2 end)
-        {
-            m_commands.Add(new CubicToCommand(control1, control2, end));
-        }
+            => m_commands.Add(new CubicToCommand(control1, control2, end));
 
         private void AddArc(in Vector2 center, float radius, float start, float end)
             => AddArc(center, new Vector2(radius, radius), start, end);
@@ -119,9 +114,7 @@ namespace Tokamak.Graphite
             => AddArc(center, radius, start, end);
 
         private void AddArc(in Vector2 center, in Vector2 radius, float start, float end)
-        {
-            m_commands.Add(new ArcToCommand(center, radius, start, end));
-        }
+            => m_commands.Add(new ArcToCommand(center, radius, start, end));
 
         /// <summary>
         /// Draws a rectangle at the supplied coordinates.
@@ -200,7 +193,7 @@ namespace Tokamak.Graphite
 
         public void Close() => m_commands.Add(new CloseCommand());
 
-        private void ComputeStepped(
+        private static void ComputeStepped(
             int resolution,
             float stepping,
             Contour current,
@@ -228,8 +221,10 @@ namespace Tokamak.Graphite
         {
             float stepping = 1f / resolution;
 
-            Contour current = new();
-            current.Winding = Winding;
+            Contour current = new()
+            {
+                Winding = Winding
+            };
 
             foreach (var command in m_commands)
             {
@@ -247,8 +242,11 @@ namespace Tokamak.Graphite
                     if (current.Points.Count > 1)
                     {
                         yield return current;
-                        current = new();
-                        current.Winding = Winding;
+
+                        current = new()
+                        {
+                            Winding = Winding
+                        };
                     }
                     break;
 
@@ -257,8 +255,11 @@ namespace Tokamak.Graphite
                     {
                         current.CleanUp(Canvas.TOLERANCE);
                         yield return current;
-                        current = new();
-                        current.Winding = Winding;
+
+                        current = new()
+                        {
+                            Winding = Winding
+                        };
                     }
 
                     current.Points.Add(move.Point);

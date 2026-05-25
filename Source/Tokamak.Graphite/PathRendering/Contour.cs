@@ -16,6 +16,8 @@ namespace Tokamak.Graphite.PathRendering
 
         public List<Vector2> Points { get; private set; } = [];
 
+        public float Area => Vector2.PolyArea(Points);
+
         public bool Closed { get; set; }
 
         public void CleanUp(float tolerance)
@@ -47,17 +49,6 @@ namespace Tokamak.Graphite.PathRendering
 
                 yield return Points[i];
             }
-        }
-
-        /// <summary>
-        /// Split a contour where it has intersections.
-        /// </summary>
-        /// <remarks>
-        /// The resulting contours will have no intersections.
-        /// </remarks>
-        public IEnumerable<Contour> Split()
-        {
-            yield return this;
         }
     }
 }
