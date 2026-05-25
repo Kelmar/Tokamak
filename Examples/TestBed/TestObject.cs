@@ -21,6 +21,12 @@ namespace TestBed
         public const string FILE = "resources/susan.fbx";
         //public const string FILE = "resources/plane.fbx";
 
+        /*
+         * This is the X Bot model from Maxima.
+         * I'm not sure what the license is for that, so I'm not adding it to the repo.
+         */
+        //public const string FILE = "resources/xbot.fbx";
+
         private readonly IVertexBuffer<VectorFormatPNCT> m_vertexBuffer;
         private readonly IElementBuffer m_elementBuffer;
 
@@ -33,7 +39,8 @@ namespace TestBed
             m_apiLayer = apiLayer;
 
             using var reader = new FBXReader(File.OpenRead(FILE));
-            var mesh = reader.Import().FirstOrDefault();
+            //var mesh = reader.Import().FirstOrDefault();
+            var mesh = reader.Import().LastOrDefault();
 
             if (mesh == null)
                 throw new Exception("Unable to load mesh.");

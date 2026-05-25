@@ -55,18 +55,12 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
                 .Select(VectorEx.ToVector3) // Convert to vertex
                 .ToList();
 
-            var normals = Node
-                .GetChildren("LayerElementNormal")
-                .SelectMany(n => n.GetChildren("Normals"))
-                .SelectMany(n => n.Properties[0].AsEnumerable<float>())
-                .ToList()
-                .Chunk(3)
-                .Select(VectorEx.ToVector3)
-                .ToList();
+            var normalMapper = new NormalMapper(Node.GetChildren("LayerElementNormal")?.FirstOrDefault());
 
             var indices = Node
                 .GetChildren("PolygonVertexIndex")
-                .SelectMany(n => n.Properties[0].AsEnumerable<int>());
+                .SelectMany(n => n.Properties[0].AsEnumerable<int>())
+                .ToList();
 
             //var texCoords = Node
             //    .GetChildren("LayerElementUV")
@@ -80,7 +74,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
             //var mats = Node.GetChildren("LayerElementMaterial");
 
             // Generate a list of polygons with flat data.
-            Mesh.Polygons = ToPolys(indices, vectors, normals).ToList();
+            Mesh.Polygons = ToPolys(indices, vectors, normalMapper).ToList();
         }
 
         /// <summary>
@@ -90,10 +84,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         /// <param name="vectors"></param>
         /// <param name="normals"></param>
         /// <returns></returns>
-        private IEnumerable<Polygon> ToPolys(
-            IEnumerable<int> indices,
-            List<Vector3> vectors,
-            List<Vector3> normals)
+        private IEnumerable<Polygon> ToPolys(IEnumerable<int> indices, List<Vector3> vectors, NormalMapper normalMapper)
         {
             // FBX uses a negative number to indicate the end of a polygon.
             // Note that the negative number is a bitwise negation of the last index
@@ -104,12 +95,11 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
 
             foreach (var index in indices)
             {
-                lastPoly.Normals.Add(normals[indexNo]);
-
                 if (index < 0)
                 {
                     int i = ~index;
 
+                    normalMapper.AddNormal(lastPoly, indexNo, i);
                     lastPoly.Vectors.Add(vectors[i]);
                     lastPoly.TexCoord.Add(Vector2.Zero); // texCoords[i]);
 
@@ -119,6 +109,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
                 }
                 else
                 {
+                    normalMapper.AddNormal(lastPoly, indexNo, index);
                     lastPoly.Vectors.Add(vectors[index]);
                     lastPoly.TexCoord.Add(Vector2.Zero); //texCoords[index]);
                 }

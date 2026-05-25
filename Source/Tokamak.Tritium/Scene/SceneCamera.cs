@@ -19,6 +19,16 @@ namespace Tokamak.Tritium.Scene
         public float FieldOfView { get; set; } = 45;
 
         /// <summary>
+        /// Sets the near clipping plane distance.
+        /// </summary>
+        public float NearClipping { get; set; } = 0.1f;
+
+        /// <summary>
+        /// Sets the far clipping plane distance.
+        /// </summary>
+        public float FarClipping { get; set; } = 1000f;
+
+        /// <summary>
         /// Camera's location in world space.
         /// </summary>
         public Vector3 Location { get; set; }
@@ -47,10 +57,10 @@ namespace Tokamak.Tritium.Scene
         /// <remarks>
         /// Used for computing the view matrix.
         /// </remarks>
-        public Point ViewBounds { get; set; }
+        public Vector2 ViewBounds { get; set; }
 
         public Matrix4x4 GetViewMatrix()
-            => Matrix4x4.CreatePerspectiveFieldOfView(float.DegreesToRadians(FieldOfView), ViewBounds.X / ViewBounds.Y, 0.1f, 100f);
+            => Matrix4x4.CreatePerspectiveFieldOfView(float.DegreesToRadians(FieldOfView), ViewBounds.X / ViewBounds.Y, NearClipping, FarClipping);
 
         /// <summary>
         /// Gets the projection matrix for the camera a it's current world location.

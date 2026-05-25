@@ -10,6 +10,7 @@ using Tokamak.Tritium.Buffers.Formats;
 using Tokamak.Tritium.Geometry;
 using Tokamak.Tritium.Pipelines;
 using Tokamak.Tritium.Pipelines.Shaders;
+using Tokamak.Tritium.Scene;
 
 namespace TestBed.Scenes
 {
@@ -22,7 +23,7 @@ namespace TestBed.Scenes
 
         private readonly List<SceneObject> m_objects = new List<SceneObject>();
 
-        private Camera m_camera = new Camera();
+        private SceneCamera m_camera = new SceneCamera();
 
         public Scene(IGraphicsLayer apiLayer)
         {
@@ -72,10 +73,10 @@ namespace TestBed.Scenes
 
         public Matrix4x4 Projection { get; private set; }
 
-        public Camera Camera
+        public SceneCamera Camera
         {
             get => m_camera;
-            set => m_camera = value ?? new Camera();
+            set => m_camera = value ?? new SceneCamera();
         }
 
         public void AddObject(SceneObject obj)
@@ -90,10 +91,8 @@ namespace TestBed.Scenes
 
         public void Resize(Point size)
         {
-            float w = size.X;
-            float h = size.Y;
-
-            Projection = Matrix4x4.CreatePerspectiveFieldOfView(float.DegreesToRadians(45), w / h, 0.1f, 100f);
+            Camera.ViewBounds = new Vector2(size.X, size.Y);
+            Projection = Camera.GetViewMatrix();
         }
 
         public void Render()
@@ -104,7 +103,7 @@ namespace TestBed.Scenes
             m_commandList.ClearBuffers(GlobalBuffer.ColorBuffer | GlobalBuffer.DepthBuffer | GlobalBuffer.StencilBuffer);
 
             m_pipeline.Uniforms.projection = Projection;
-            m_pipeline.Uniforms.view = m_camera.View;
+            m_pipeline.Uniforms.view = m_camera.GetProjectionMatrix();
             m_pipeline.Uniforms.gamma = (float)Color.InverseGamma;
             m_pipeline.Uniforms.camera = m_camera.Location;
 

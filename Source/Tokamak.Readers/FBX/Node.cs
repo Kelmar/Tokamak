@@ -42,5 +42,7 @@ namespace Tokamak.Readers.FBX
         }
 
         public List<Property> Properties { get; } = new();
+
+        public override string ToString() => $"{Name}: C:{m_children.Count} P:{Properties.Count}";
     }
 }

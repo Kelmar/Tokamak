@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.IO;
@@ -74,8 +74,10 @@ namespace TestBed
 
             m_scene.AddObject(m_test);
 
+            //m_scene.Camera.Location = new Vector3(0, 0, 100);
             m_scene.Camera.Location = new Vector3(0, 0, 3);
-            m_scene.Camera.LookAt = Vector3.Zero;
+            //m_scene.Camera.LookAt = Vector3.Zero;
+            m_scene.Camera.Forward = new Vector3(0, 0, -1);
 
             //m_renderers.Add(m_scene);
             //m_renderers.Add(m_canvas);
@@ -115,10 +117,10 @@ namespace TestBed
 
         private void RenderUI()
         {
-            PathTest();
-            PacTest();
+            //PathTest();
+            //PacTest();
 
-            FontTest();
+            //FontTest();
 
             //DrawSingleSquare();
 
@@ -344,6 +346,10 @@ namespace TestBed
                 m_fps = (float)(m_frameCount / diff.TotalSeconds);
                 m_frameCount = 0;
                 m_lastCheck = DateTime.UtcNow;
+
+                int secs = (int)diff.TotalSeconds;
+                if ((secs % 10) == 0)
+                    Debug.WriteLine("FPS: {0}", m_fps);
             }
         }
     }
