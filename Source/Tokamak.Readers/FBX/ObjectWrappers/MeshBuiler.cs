@@ -9,9 +9,9 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
     /// <summary>
     /// Wrapper around a mesh object for loading FBX files.
     /// </summary>
-    internal class MeshWrapper : IFBXObject
+    internal class MeshBuilder : IFBXObject
     {
-        public MeshWrapper(GlobalSettings settings, Node node)
+        public MeshBuilder(GlobalSettings settings, Node node)
         {
             Node = node;
             ID = Node.Properties[0].AsInt();

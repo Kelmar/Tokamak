@@ -1,8 +1,8 @@
 ﻿namespace Tokamak.Readers.FBX.ObjectWrappers
 {
-    internal class MaterialWrapper : IFBXObject
+    internal class MaterialBuilder : IFBXObject
     {
-        public MaterialWrapper(Node node)
+        public MaterialBuilder(Node node)
         {
             Node = node;
             ID = Node.Properties[0].AsInt();
