@@ -1,23 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.IO;
-
-using Tokamak.Hosting.Abstractions;
-
-using Tokamak.Mathematics;
-
-//using Tokamak.Scenes;
-
-using Tokamak.Tritium.APIs;
-
-using Tokamak.Graphite;
-using Tokamak.Quill;
 
 using TestBed.Scenes;
 
+using Tokamak.Graphite;
+using Tokamak.Hosting.Abstractions;
+using Tokamak.Logging.Abstractions;
+using Tokamak.Mathematics;
+using Tokamak.Quill;
+using Tokamak.Readers.FBX;
 using Tokamak.Readers.SVG;
+
+using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Scene;
 
 using TTF = Tokamak.Quill.Readers.TTF;
 
@@ -29,30 +28,44 @@ namespace TestBed
 
         private const float ROT_AMOUNT = 1;//0.5f;
 
+        private ILogger m_log;
         private Canvas m_context = null;
         private Font m_font = null;
-        private Scene m_scene = null;
+        private SceneManager m_scene = null;
 
         //private readonly List<IRenderable> m_renderers = new List<IRenderable>();
 
-        private TestObject m_test;
+        private readonly List<StaticMesh> m_meshes = [];
 
         private int m_frameCount;
         private DateTime m_lastCheck = DateTime.UtcNow;
         private float m_fps;
         private float m_rot;
 
-        public TestGameApp(IGraphicsLayer layer)
+        //public const string FILE = "resources/cube.fbx";
+        //public const string FILE = "resources/blox.fbx";
+        public const string FILE = "resources/susan.fbx";
+        //public const string FILE = "resources/plane.fbx";
+        //public const string FILE = "resources/chest.fbx";
+
+        /*
+         * This is the X Bot model from Maxima.
+         * I'm not sure what the license is for that, so I'm not adding it to the repo.
+         */
+        //public const string FILE = "resources/xbot.fbx";
+
+        public TestGameApp(ILogger log, IGraphicsLayer layer)
         {
+            m_log = log;
             m_gfxLayer = layer;
         }
 
         public void Dispose()
         {
-            if (m_test != null)
+            foreach (var m in m_meshes)
             {
-                m_scene.RemoveObject(m_test);
-                m_test.Dispose();
+                m_scene.RemoveObject(m);
+                m.Dispose();
             }
 
             m_scene?.Dispose();
@@ -67,12 +80,16 @@ namespace TestBed
         {
             m_context = new Canvas(m_gfxLayer);
 
-            m_font = LoadFont();
+            //m_font = LoadFont();
 
-            m_scene = new Scene(m_gfxLayer);
-            m_test = new TestObject(m_gfxLayer);
+            var initializer = new SceneInitializer(m_gfxLayer);
 
-            m_scene.AddObject(m_test);
+            m_scene = new SceneManager(m_gfxLayer, initializer);
+
+            LoadObject();
+
+            foreach (var m in m_meshes)
+                m_scene.AddObject(m);
 
             //m_scene.Camera.Location = new Vector3(0, 0, 100);
             m_scene.Camera.Location = new Vector3(0, 0, 3);
@@ -86,6 +103,14 @@ namespace TestBed
             var reader = new SVGReader(stream);
 
             reader.Import();
+        }
+
+        void LoadObject()
+        {
+            using var reader = new FBXReader(File.OpenRead(FILE));
+            var meshes = reader.Import().Select(m => new StaticMesh(m_gfxLayer, m));
+
+            m_meshes.AddRange(meshes);
         }
 
         Font LoadFont()
@@ -106,7 +131,7 @@ namespace TestBed
         {
             RenderUI();
 
-            m_scene.Render();
+            m_scene.RenderAll();
             m_context.Render();
 
             /*
@@ -333,7 +358,8 @@ namespace TestBed
             while (m_rot >= 360)
                 m_rot -= 360;
 
-            m_test.Rotation = new Vector3(0, m_rot, 0);
+            foreach (var m in m_meshes)
+                m.Rotation = new Vector3(0, m_rot, 0);
         }
 
         private void ComputeFPS()
@@ -349,7 +375,7 @@ namespace TestBed
 
                 //int secs = (int)diff.TotalSeconds;
                 //if ((secs % 10) == 0)
-                //    Debug.WriteLine("FPS: {0}", m_fps);
+                //    m_log.Debug("FPS: {0}", m_fps);
             }
         }
     }

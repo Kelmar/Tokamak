@@ -1,40 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Pipelines;
 using Tokamak.Tritium.Scene;
 
 namespace Tokamak.Tritium.Rendering
 {
     public abstract class RenderPass : IRenderPass
     {
-        private readonly IGraphicsLayer m_apiLayer;
+        private readonly IGraphicsLayer m_gfxLayer;
 
-        protected RenderPass(IGraphicsLayer apiLayer, SceneManager scene)
+        protected RenderPass(IGraphicsLayer gfxLayer, SceneManager scene)
         {
-            m_apiLayer = apiLayer;
+            m_gfxLayer = gfxLayer;
             Scene = scene;
         }
 
         public SceneManager Scene { get; }
 
-        abstract protected void PreparePass(ICommandList cmdList);
+        abstract protected void PreparePass(IPipeline pipeline, ICommandList cmdList);
 
         virtual protected bool ObjectFilter(SceneObject obj) => true;
 
-        virtual public void Render(IEnumerable<SceneObject> objects)
+        virtual public void Render(IPipeline pipeline, ICommandList commandList, IEnumerable<SceneObject> objects)
         {
-            ICommandList cmdList = m_apiLayer.CreateCommandList();
-
-            PreparePass(cmdList);
+            PreparePass(pipeline, commandList);
 
             foreach (var obj in objects.Where(ObjectFilter))
             {
-                //pipeline.Uniforms.model = obj.Model;
-                obj.Render(cmdList);
+                pipeline.Uniforms.model = obj.Model;
+                obj.Render(commandList);
             }
         }
     }

@@ -73,12 +73,6 @@ namespace Tokamak.Readers.FBX
             return rdr?.Select(i => (TTo)Convert.ChangeType(i, t)) ?? Enumerable.Empty<TTo>();
         }
 
-        private IEnumerable<T> GetReader<T>()
-            where T : unmanaged
-        {
-            return (IEnumerable<T>?)Data ?? Enumerable.Empty<T>();
-        }
-
         /// <summary>
         /// Used for dumping array data to a string.
         /// </summary>

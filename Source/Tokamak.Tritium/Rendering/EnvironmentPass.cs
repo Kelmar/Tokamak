@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Tokamak.Tritium.APIs;
+﻿using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Pipelines;
 using Tokamak.Tritium.Scene;
 
@@ -12,17 +6,17 @@ namespace Tokamak.Tritium.Rendering
 {
     public class EnvironmentPass : RenderPass
     {
-        public EnvironmentPass(IGraphicsLayer apiLayer, SceneManager scene)
-            : base(apiLayer, scene)
+        public EnvironmentPass(IGraphicsLayer gfxLayer, SceneManager scene)
+            : base(gfxLayer, scene)
         {
         }
 
-        protected override void PreparePass(ICommandList cmdList)
+        protected override void PreparePass(IPipeline pipeline, ICommandList commandList)
         {
-            //cmdList.DisableLighting();
+            //commandList.DisableLighting();
 
-            //pipeline.Uniforms.projection = Scene.Camera.GetFixedProjectionMatrix();
-            //pipeline.Uniforms.view = Scene.Camera.GetViewMatrix();
+            pipeline.Uniforms.projection = Scene.Camera.GetFixedProjectionMatrix();
+            pipeline.Uniforms.view = Scene.Camera.GetViewMatrix();
         }
 
         protected override bool ObjectFilter(SceneObject obj) => obj.Flags.HasFlag(SceneObjectFlag.Environmental);
