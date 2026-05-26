@@ -44,7 +44,7 @@ namespace TestBed
 
         //public const string FILE = "resources/cube.fbx";
         //public const string FILE = "resources/blox.fbx";
-        public const string FILE = "resources/susan.fbx";
+        //public const string FILE = "resources/susan.fbx";
         //public const string FILE = "resources/plane.fbx";
         //public const string FILE = "resources/chest.fbx";
 
@@ -52,7 +52,7 @@ namespace TestBed
          * This is the X Bot model from Maxima.
          * I'm not sure what the license is for that, so I'm not adding it to the repo.
          */
-        //public const string FILE = "resources/xbot.fbx";
+        public const string FILE = "resources/xbot.fbx";
 
         public TestGameApp(ILogger log, IGraphicsLayer layer)
         {
@@ -91,8 +91,8 @@ namespace TestBed
             foreach (var m in m_meshes)
                 m_scene.AddObject(m);
 
-            //m_scene.Camera.Location = new Vector3(0, 0, 100);
-            m_scene.Camera.Location = new Vector3(0, 0, 3);
+            //m_scene.Camera.Location = new Vector3(0, 125, 175);
+            m_scene.Camera.Location = new Vector3(0, 0, 5);
             //m_scene.Camera.LookAt = Vector3.Zero;
             m_scene.Camera.Forward = new Vector3(0, 0, -1);
 

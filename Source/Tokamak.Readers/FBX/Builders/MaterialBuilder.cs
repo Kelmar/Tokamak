@@ -1,5 +1,8 @@
 ﻿namespace Tokamak.Readers.FBX.ObjectWrappers
 {
+    /// <summary>
+    /// Class for building material from FBX node.
+    /// </summary>
     internal class MaterialBuilder : IFBXObject
     {
         public MaterialBuilder(Node node)

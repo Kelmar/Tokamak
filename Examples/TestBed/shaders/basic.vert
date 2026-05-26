@@ -22,8 +22,8 @@ layout(location = 5) out vec3 fsin_CameraPosition;
 
 void main()
 {
-    //gl_Position = projection * view * model * vec4(Point, 1.0);
-    gl_Position = vec4(Point, 1.0) * model * view * projection;
+    //gl_Position = view * projection * model * vec4(Point, 1.0);
+    gl_Position = vec4(Point, 1.0) * model * projection * view;
 
     // Get the position in world space.
     fsin_Position = vec3(model * vec4(Point, 1.0));

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Numerics;
 
 namespace Tokamak.Readers.FBX.ObjectWrappers
@@ -19,57 +20,34 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
             if (node == null)
                 return;
 
-            var properties = node
-                .GetChildren("Properties70")
-                .SelectMany(p => p.GetChildren("P"));
+            var compoundProperties = CompoundProperty.BuildAllFor(node).ToList();
 
-            foreach (var prop in properties)
+            foreach (var prop in compoundProperties)
             {
-                if (prop.Properties.Count < 5)
-                    continue;
-
-                string realName = prop.Properties[0].ToString();
-                var propVal = prop.Properties[4];
-
-                switch (propVal.Type)
-                {
-                case PropertyType.String:
-                case PropertyType.Boolean:
-                case PropertyType.FloatArray:
-                case PropertyType.IntArray:
-                case PropertyType.LongArray:
-                case PropertyType.BoolArray:
-                case PropertyType.RawBinary:
-                case PropertyType.SignedLong:
-                    continue;
-                }
-
-                int i = propVal.AsInt();
-
-                switch (realName)
+                switch (prop.Name)
                 {
                 case "UpAxis":
-                    UpAxis = i;
+                    UpAxis = Convert.ToInt32(prop.Data);
                     break;
 
                 case "UpAxisSign":
-                    UpAxisSign = i;
+                    UpAxisSign = Convert.ToInt32(prop.Data);
                     break;
 
                 case "FrontAxis":
-                    ForwardAxis = i;
+                    ForwardAxis = Convert.ToInt32(prop.Data);
                     break;
 
                 case "FrontAxisSign":
-                    ForwardAxisSign = i;
+                    ForwardAxisSign = Convert.ToInt32(prop.Data);
                     break;
 
                 case "CoordAxis":
-                    RightAxis = i;
+                    RightAxis = Convert.ToInt32(prop.Data);
                     break;
 
                 case "CoordAxisSign":
-                    RightAxisSign = i;
+                    RightAxisSign = Convert.ToInt32(prop.Data);
                     break;
                 }
             }
