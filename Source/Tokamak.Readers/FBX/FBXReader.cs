@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
-using Tokamak.Tritium.Geometry;
-
 using Tokamak.Readers.FBX.ObjectWrappers;
+using Tokamak.Tritium.Geometry;
 
 namespace Tokamak.Readers.FBX
 {
@@ -92,11 +93,58 @@ namespace Tokamak.Readers.FBX
             return root;
         }
 
+        internal static T MapCompoundTo<T>(Node rootNode)
+           where T : class, new()
+        {
+            Type type = typeof(T);
+            var typeProps = type.GetProperties().Where(p => p.CanWrite && p.CanRead);
+
+            T result = new();
+
+            var tableAttr = type.GetCustomAttribute<TableAttribute>();
+
+            string subNode = tableAttr?.Name ?? type.Name;
+
+            var node = rootNode.GetChildren(subNode).First();
+
+            var fbxProps = CompoundProperty.BuildAllFor(node);
+
+            foreach (var typeProp in typeProps)
+            {
+                var notMapped = typeProp.GetCustomAttribute<NotMappedAttribute>();
+
+                if (notMapped != null)
+                    continue;
+
+                var colAttr = typeProp.GetCustomAttribute<ColumnAttribute>();
+
+                string name = colAttr?.Name ?? typeProp.Name;
+
+                var fbxProp = fbxProps.FirstOrDefault(p => p.Name == name);
+
+                if (fbxProp == null)
+                    continue;
+
+                try
+                {
+                    object data = Convert.ChangeType(fbxProp.Data, typeProp.PropertyType);
+                    typeProp.SetValue(result, data);
+                }
+                catch
+                {
+                    // TODO: Might be worth while logging that we can't set the value.
+                    continue;
+                }
+            }
+
+            return result;
+        }
+
         public IEnumerable<Mesh> Import()
         {
             Node dataRoot = GetNodes();
 
-            var settings = new GlobalSettings(dataRoot);
+            var settings = MapCompoundTo<GlobalSettings>(dataRoot);
 
             // At this point we should have a valid node structure, but we still need to recreate the object hierarchy.
 
