@@ -48,9 +48,9 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         /// <param name="polygon">The polygon to add the normal to.</param>
         /// <param name="indexNo">The index of the index to use if needed.</param>
         /// <param name="index">The vertex index to add the normal for.</param>
-        public void AddNormal(Polygon polygon, int indexNo, int index)
+        public void AddNormal(Polygon polygon, int polyIdx, int indexNo, int index)
         {
-            int i = m_indexMapper.MapIndex(indexNo, index);
+            int i = m_indexMapper.MapIndex(polyIdx, indexNo, index);
 
             if (i != -1)
                 polygon.Normals.Add(m_data[i]);

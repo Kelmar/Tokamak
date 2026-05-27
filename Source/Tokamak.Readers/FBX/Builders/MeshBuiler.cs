@@ -12,14 +12,17 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
     /// </summary>
     internal class MeshBuilder : IFBXObject
     {
-        public MeshBuilder(GlobalSettings settings, Node node)
+        public MeshBuilder(GlobalSettings settings, MaterialBuilder[] mats, Node node)
         {
+            Settings = settings;
+            Materials = mats;
+
             Node = node;
+
             ID = Node.Properties[0].AsInt();
             Name = Node.Properties[1].AsString();
 
             Mesh = new Mesh();
-            Settings = settings;
 
             ReadMeshDetails();
         }
@@ -44,7 +47,15 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         /// </summary>
         public Mesh Mesh { get; }
 
+        /// <summary>
+        /// FBX global settings.
+        /// </summary>
         public GlobalSettings Settings { get; }
+
+        /// <summary>
+        /// List of parsed materials.
+        /// </summary>
+        public MaterialBuilder[] Materials { get; }
 
         private List<int> ReadIndexData()
         {
@@ -75,11 +86,10 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
 
             var uvMapper = new UVMapper(Node.GetChildren("LayerElementUV")?.FirstOrDefault());
             var normalMapper = new NormalMapper(Settings, Node.GetChildren("LayerElementNormal")?.FirstOrDefault());
-
-            //var mats = Node.GetChildren("LayerElementMaterial");
+            var materialMapper = new MaterialMapper(Node.GetChildren("LayerElementMaterial")?.FirstOrDefault());
 
             // Generate a list of polygons with flat data.
-            Mesh.Polygons = ToPolys(indices, vectors, uvMapper, normalMapper).ToList();
+            Mesh.Polygons = ToPolys(indices, vectors, uvMapper, materialMapper, normalMapper).ToList();
         }
 
         /// <summary>
@@ -89,7 +99,12 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         /// <param name="vectors"></param>
         /// <param name="normals"></param>
         /// <returns></returns>
-        private IEnumerable<Polygon> ToPolys(IEnumerable<int> indices, List<Vector3> vectors, UVMapper uvMapper, NormalMapper normalMapper)
+        private IEnumerable<Polygon> ToPolys(
+            IEnumerable<int> indices,
+            List<Vector3> vectors,
+            UVMapper uvMapper, 
+            MaterialMapper materialMapper,
+            NormalMapper normalMapper)
         {
             // FBX uses a negative number to indicate the end of a polygon.
             // Note that the negative number is a bitwise negation of the last index
@@ -97,22 +112,35 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
 
             var current = new Polygon();
             int indexNo = 0; // Index of the index.... >_<
+            int polyIdx = 0;
 
             foreach (var index in indices)
             {
                 bool boundary = index < 0;
                 int i = boundary ? ~index : index;
 
-                current.Vectors.Add(vectors[i]);
-                current.TexCoord.Add(uvMapper.GetUV(indexNo, i));
+                Vector4 color = Vector4.One;
 
-                normalMapper.AddNormal(current, indexNo, i);
+                var materialIdx = materialMapper.GetMaterial(polyIdx, indexNo, i);
+
+                if (materialIdx < Materials.Length)
+                {
+                    var material = Materials[materialIdx];
+                    color = material.Parameters.DiffuseColor;
+                }
+
+                current.Vectors.Add(vectors[i]);
+                current.Colors.Add(color);
+                current.TexCoord.Add(uvMapper.GetUV(polyIdx, indexNo, i));
+
+                normalMapper.AddNormal(current, polyIdx, indexNo, i);
 
                 if (boundary)
                 {
                     normalMapper.FinalizeNormals(current);
                     yield return current;
 
+                    ++polyIdx;
                     current = new Polygon();
                 }
 

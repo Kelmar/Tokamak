@@ -43,7 +43,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
                 "bypolygonvertex" => VertexMappingType.PolyVertex,
                 "byedge" => VertexMappingType.Edge,
 
-                "allsame" => VertexMappingType.None, // We aren't going to support this, we'll treat like we didn't get the info.
+                "allsame" => VertexMappingType.AllSame,
                 _ => VertexMappingType.None
             };
         }
@@ -63,7 +63,10 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         private void LoadIndices(string indexName)
         {
             if (ReferenceType == VertexReferenceType.Direct)
-                return; // If the type comes back as none, we don't read any normal data, we'll calculate it.
+                return; // No data for direct.
+
+            if (MappingType == VertexMappingType.AllSame)
+                return; // No data for all same.
 
             // Shouldn't be possible to get anything but "None" if we didn't get a node.
             Debug.Assert(m_node != null);
@@ -74,20 +77,24 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
             );
         }
 
-        public int MapIndex(int indexNo, int index)
+        public int MapIndex(int polyIdx, int indexNo, int index)
         {
+            if (MappingType == VertexMappingType.AllSame)
+                return 0; // Hard coded to first element.
+
             int i = MappingType switch
             {
                 VertexMappingType.Vertex => index,
                 VertexMappingType.PolyVertex => indexNo,
+                VertexMappingType.Polygon => polyIdx,
 
-                VertexMappingType.Polygon => -1,
+                VertexMappingType.AllSame => -1, // Not possible
                 VertexMappingType.None => -1,
                 VertexMappingType.Edge => -1,
                 _ => -1
             };
 
-            if (i != -1 && ReferenceType == VertexReferenceType.Index)
+            if (i != -1 && ReferenceType == VertexReferenceType.Index && m_indices.Count > 0)
                 return m_indices[i];
 
             return i;

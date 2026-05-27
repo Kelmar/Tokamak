@@ -165,14 +165,14 @@ namespace Tokamak.Readers.FBX
                 .Select(n => new ObjectBuilder(n))
                 .ToList();
 
-            var geos = dataObjects
-                .SelectMany(o => o.GetChildren("Geometry"))
-                .Select(n => new MeshBuilder(settings, n))
-                .ToList();
-
             var mats = dataObjects
                 .SelectMany(o => o.GetChildren("Material"))
                 .Select(n => new MaterialBuilder(n))
+                .ToArray();
+
+            var geos = dataObjects
+                .SelectMany(o => o.GetChildren("Geometry"))
+                .Select(n => new MeshBuilder(settings, mats, n))
                 .ToList();
 
             // Get all of our connections as a flat list.

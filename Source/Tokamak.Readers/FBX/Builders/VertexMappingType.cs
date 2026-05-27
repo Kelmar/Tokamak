@@ -6,6 +6,7 @@
         Vertex,
         Polygon,
         PolyVertex,
-        Edge
+        Edge,
+        AllSame
     }
 }

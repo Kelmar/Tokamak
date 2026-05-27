@@ -27,7 +27,7 @@ namespace Tokamak.Readers.FBX.Builders
         private void LoadUVData()
         {
             if (m_indexMapper.MappingType == VertexMappingType.None)
-                return; // If the type comes back as none, we don't read any normal data, we'll calculate it.
+                return; // If the type comes back as none, we don't read any UV data.
 
             // Shouldn't be possible to get anything but "None" if we didn't get a node.
             Debug.Assert(m_node != null);
@@ -41,9 +41,9 @@ namespace Tokamak.Readers.FBX.Builders
             );
         }
 
-        public Vector2 GetUV(int indexNo, int index)
+        public Vector2 GetUV(int polyIdx, int indexNo, int index)
         {
-            int i = m_indexMapper.MapIndex(indexNo, index);
+            int i = m_indexMapper.MapIndex(polyIdx, indexNo, index);
 
             if (i != -1)
                 return m_data[i];
