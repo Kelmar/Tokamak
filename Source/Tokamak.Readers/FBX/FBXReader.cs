@@ -187,7 +187,7 @@ namespace Tokamak.Readers.FBX
             // Start with the root models
             var rootModels = objectNodes
                 .Where(kvp => rootIds.Contains(kvp.Key) && kvp.Value.Name.ToLower() == "model")
-                .Select(kvp => new ModelBuilder(kvp.Value))
+                .Select(kvp => new ModelBuilder(objectGraph, kvp.Value))
                 .ToList();
 
             // Split out our objects into models, geometry and materials as flat lists.
