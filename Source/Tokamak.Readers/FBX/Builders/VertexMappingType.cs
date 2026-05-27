@@ -1,4 +1,4 @@
-﻿namespace Tokamak.Readers.FBX.ObjectWrappers
+﻿namespace Tokamak.Readers.FBX.Builders
 {
     internal enum VertexMappingType
     {

@@ -9,9 +9,9 @@ using System.Text;
 
 using Tokamak.Utilities;
 
-using Tokamak.Readers.FBX.ObjectWrappers;
-
 using Tokamak.Tritium.Geometry;
+
+using Tokamak.Readers.FBX.Builders;
 
 namespace Tokamak.Readers.FBX
 {

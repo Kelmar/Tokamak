@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Tokamak.Readers.FBX.ObjectWrappers
+﻿namespace Tokamak.Readers.FBX.Builders
 {
     internal enum VertexReferenceType
     {

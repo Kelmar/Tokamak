@@ -1,21 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Tokamak.Readers.FBX.ObjectWrappers
+namespace Tokamak.Readers.FBX.Builders
 {
     /// <summary>
     /// Class for building material from FBX node.
     /// </summary>
-    internal class MaterialBuilder : IFBXObject
+    internal class MaterialBuilder : FBXObject
     {
         private const string DEFAULT_SHADING_MODEL = "Phong";
 
-        public MaterialBuilder(Node node)
+        public MaterialBuilder(ModelBuilder parent, Node node)
+            : base(parent, node)
         {
-            Node = node;
-            ID = Node.Properties[0].AsLong();
-            Name = Node.Properties[1].AsString();
-
             ShadingModel = GetShadingProperty()?.AsString() ?? DEFAULT_SHADING_MODEL;
 
             Properties = CompoundProperty.BuildAllFor(node).ToList();
@@ -26,13 +23,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         private Property? GetShadingProperty()
             => Node.Children["ShadingModel"].FirstOrDefault()?.Properties[0];
 
-        public long ID { get; }
-
-        public string Name { get; }
-
         public string ShadingModel { get; }
-
-        public Node Node { get; }
 
         public List<CompoundProperty> Properties { get; }
 

@@ -1,41 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Tokamak.Readers.FBX.ObjectWrappers
+namespace Tokamak.Readers.FBX.Builders
 {
-    internal class ModelBuilder : IFBXObject
+    internal class ModelBuilder : FBXObject
     {
         public ModelBuilder(GlobalSettings settings, ObjectGraph objectGraph, Node node)
+            : base(settings, objectGraph, node)
         {
-            Settings = settings;
-
-            Node = node;
-
-            ID = Node.Properties[0].AsLong();
-            Name = Node.Properties[1].AsString();
-
             Properties = CompoundProperty
                 .BuildAllFor(node)
                 .ToList();
-
-            Children = objectGraph.GetChildObjects(ID).ToList();
 
             Materials = BuildMaterials().ToList();
 
             Meshes = BuildMeshes().ToList();
         }
 
-        public GlobalSettings Settings { get; }
-
-        public long ID { get; }
-
-        public string Name { get; }
-
-        public Node Node { get; }
-
         public List<CompoundProperty> Properties { get; }
-
-        public List<Node> Children { get; }
 
         public IReadOnlyList<MaterialBuilder> Materials { get; }
 
@@ -43,16 +25,16 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
 
         private IEnumerable<MaterialBuilder> BuildMaterials()
         {
-            return Children
+            return ChildNodes
                 .Where(n => n.Name.ToLower() == "material")
-                .Select(node => new MaterialBuilder(node));
+                .Select(node => new MaterialBuilder(this, node));
         }
 
         private IEnumerable<MeshBuilder> BuildMeshes()
         {
-            return Children
+            return ChildNodes
                 .Where(n => n.Name.ToLower() == "geometry")
-                .Select(node => new MeshBuilder(Settings, Materials.ToArray(), node));
+                .Select(node => new MeshBuilder(this, node));
         }
     }
 }

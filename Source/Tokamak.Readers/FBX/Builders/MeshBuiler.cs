@@ -2,25 +2,21 @@
 using System.Linq;
 using System.Numerics;
 
-using Tokamak.Readers.FBX.Builders;
 using Tokamak.Tritium.Geometry;
 
-namespace Tokamak.Readers.FBX.ObjectWrappers
+namespace Tokamak.Readers.FBX.Builders
 {
     /// <summary>
     /// Class for building mesh objects from FBX node.
     /// </summary>
-    internal class MeshBuilder : IFBXObject
+    internal class MeshBuilder : FBXObject
     {
-        public MeshBuilder(GlobalSettings settings, MaterialBuilder[] mats, Node node)
+        private readonly ModelBuilder m_parent;
+
+        public MeshBuilder(ModelBuilder parent, Node node)
+            : base(parent, node)
         {
-            Settings = settings;
-            Materials = mats;
-
-            Node = node;
-
-            ID = Node.Properties[0].AsLong();
-            Name = Node.Properties[1].AsString();
+            m_parent = parent;
 
             Mesh = new Mesh();
 
@@ -28,34 +24,9 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         }
 
         /// <summary>
-        /// The unique ID of this object in the file.
-        /// </summary>
-        public long ID { get; }
-
-        /// <summary>
-        /// The name of this mesh in the file.
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        /// The FBX node we read from.
-        /// </summary>
-        public Node Node { get; }
-
-        /// <summary>
         /// Engine mesh object that was built up from this node's data.
         /// </summary>
         public Mesh Mesh { get; }
-
-        /// <summary>
-        /// FBX global settings.
-        /// </summary>
-        public GlobalSettings Settings { get; }
-
-        /// <summary>
-        /// List of parsed materials.
-        /// </summary>
-        public MaterialBuilder[] Materials { get; }
 
         private List<int> ReadIndexData()
         {
@@ -123,9 +94,9 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
 
                 var materialIdx = materialMapper.GetMaterial(polyIdx, indexNo, i);
 
-                if (materialIdx < Materials.Length)
+                if (materialIdx < m_parent.Materials.Count)
                 {
-                    var material = Materials[materialIdx];
+                    var material = m_parent.Materials[materialIdx];
                     color = material.Parameters.DiffuseColor;
                 }
 

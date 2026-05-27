@@ -22,7 +22,7 @@ namespace Tokamak.Readers.FBX
 
         private readonly ILookup<long, long> m_propertyProperties;
 
-        private readonly IDictionary<long, Node> m_objects;
+        private readonly Dictionary<long, Node> m_objects;
 
         public ObjectGraph(Node rootNode)
         {
@@ -73,7 +73,7 @@ namespace Tokamak.Readers.FBX
             return (Convert.ToInt64(node.Properties[0].Data), node);
         }
 
-        private IDictionary<long, Node> GetObjects()
+        private Dictionary<long, Node> GetObjects()
         {
             var objectsNodes = m_rootNode.Children["Objects"];
 

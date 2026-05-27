@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
-using System.Text;
-
-using Tokamak.Mathematics;
-using Tokamak.Readers.FBX.ObjectWrappers;
 
 namespace Tokamak.Readers.FBX.Builders
 {

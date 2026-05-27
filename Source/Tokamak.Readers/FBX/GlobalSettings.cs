@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Tokamak.Readers.FBX.ObjectWrappers
+namespace Tokamak.Readers.FBX
 {
     internal class GlobalSettings
     {

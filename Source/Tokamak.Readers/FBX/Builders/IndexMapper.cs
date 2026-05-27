@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Tokamak.Readers.FBX.ObjectWrappers
+namespace Tokamak.Readers.FBX.Builders
 {
     internal class IndexMapper
     {

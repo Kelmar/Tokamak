@@ -6,7 +6,7 @@ using System.Numerics;
 
 using Tokamak.Tritium.Geometry;
 
-namespace Tokamak.Readers.FBX.ObjectWrappers
+namespace Tokamak.Readers.FBX.Builders
 {
     internal class NormalMapper
     {
