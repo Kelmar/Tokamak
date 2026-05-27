@@ -15,9 +15,9 @@ namespace Tokamak.Readers.FBX
     /// </remarks>
     internal class Property
     {
-        public PropertyType Type { get; internal set; }
+        public required PropertyType Type { get; internal set; }
 
-        public object? Data { get; internal set; }
+        public required object Data { get; internal set; }
 
         public int AsInt() => Convert.ToInt32(Data);
 
@@ -46,7 +46,7 @@ namespace Tokamak.Readers.FBX
                 return DumpArray<bool>();
             }
 
-            return Data?.ToString() ?? "[NULL]";
+            return Data.ToString() ?? "[NULL]";
         }
 
         public IEnumerable<T> AsEnumerable<T>()
@@ -110,5 +110,33 @@ namespace Tokamak.Readers.FBX
         BoolArray   = (byte)'b',
         String      = (byte)'S',
         RawBinary   = (byte)'R',
+    }
+
+    public static class PropertyTypeEx
+    {
+        private static HashSet<PropertyType> s_numericTypes =
+        [
+            PropertyType.Float,
+            PropertyType.Double,
+            PropertyType.SignedShort,
+            PropertyType.SignedInt,
+            PropertyType.SignedLong,
+        ];
+
+        private static HashSet<PropertyType> s_arrayTypes =
+        [
+            PropertyType.FloatArray,
+            PropertyType.DoubleArray,
+            PropertyType.IntArray,
+            PropertyType.BoolArray,
+            PropertyType.LongArray
+        ];
+
+        extension (PropertyType type)
+        {
+            public bool IsNumeric => s_numericTypes.Contains(type);
+
+            public bool IsArray => s_arrayTypes.Contains(type);
+        }
     }
 }

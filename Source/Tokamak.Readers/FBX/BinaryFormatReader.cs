@@ -59,43 +59,42 @@ namespace Tokamak.Readers.FBX
             if (endOffset == 0 && nameLen == 0)
                 return null;
 
-            var rval = new Node();
-            rval.Name = ReadString(nameLen);
+            var result = new Node();
+            result.Name = ReadString(nameLen);
 
             for (int i = 0; i < numProps; ++i)
             {
                 var prop = ReadProperty();
-                rval.Properties.Add(prop);
+                result.Properties.Add(prop);
             }
 
             if (m_input.Position < endOffset)
             {
                 // Start reading nested nodes until "null"
-                for (; ; )
+                for (;;)
                 {
                     var nested = ReadNode();
 
                     if (nested == null)
                         break;
 
-                    rval.AddChild(nested);
+                    result.AddChild(nested);
                 }
             }
 
             //long resPos = m_input.Position;
             //long len = resPos - startPos;
 
-            return rval;
+            return result;
         }
 
         private Property ReadProperty()
         {
             char c = (char)m_reader.ReadByte();
 
-            var rval = new Property();
-            rval.Type = (PropertyType)c;
+            PropertyType type = (PropertyType)c;
 
-            rval.Data = rval.Type switch
+            object data = type switch
             {
                 PropertyType.SignedShort => m_reader.ReadInt16(),
                 PropertyType.Boolean => m_reader.ReadByte(),
@@ -119,7 +118,11 @@ namespace Tokamak.Readers.FBX
                 _ => throw new Exception($"Unknown property type '{c}'")
             };
 
-            return rval;
+            return new Property
+            {
+                Type = type,
+                Data = data
+            };
         }
 
         private byte[] Decompress(byte[] data)

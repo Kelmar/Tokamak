@@ -73,23 +73,28 @@ namespace Tokamak.Readers.FBX
         private static object ReadNumber(Node node)
         {
             int idx = node.Properties.Count - 1;
-            return node.Properties[idx].Data!;
+            return node.Properties[idx].Data;
         }
 
         private static object ReadString(Node node)
         {
             int idx = node.Properties.Count - 1;
-            return node.Properties[idx].Data!.ToString() ?? String.Empty;
+            return node.Properties[idx].Data.ToString() ?? String.Empty;
         }
 
         private static IEnumerable<float> ReadValues(Node node, int idx, int count)
         {
             for (int i = 0; i < count; ++i)
             {
-                if (node.Properties.Count >= (i + idx))
+                if ((i + idx) >= node.Properties.Count)
                     yield return 0;
 
-                yield return Convert.ToSingle(node.Properties[i + idx].Data!);
+                Property prop = node.Properties[i + idx];
+
+                if (!prop.Type.IsNumeric)
+                    continue;
+
+                yield return Convert.ToSingle(prop.Data);
             }
         }
 

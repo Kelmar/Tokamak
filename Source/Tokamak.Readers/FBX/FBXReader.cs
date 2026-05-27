@@ -93,21 +93,13 @@ namespace Tokamak.Readers.FBX
             return root;
         }
 
-        internal static T MapCompoundTo<T>(Node rootNode)
-           where T : class, new()
+        internal static T MapCompoundTo<T>(IEnumerable<CompoundProperty> fbxProps)
+            where T : class, new()
         {
             Type type = typeof(T);
             var typeProps = type.GetProperties().Where(p => p.CanWrite && p.CanRead);
 
             T result = new();
-
-            var tableAttr = type.GetCustomAttribute<TableAttribute>();
-
-            string subNode = tableAttr?.Name ?? type.Name;
-
-            var node = rootNode.GetChildren(subNode).First();
-
-            var fbxProps = CompoundProperty.BuildAllFor(node);
 
             foreach (var typeProp in typeProps)
             {
@@ -138,6 +130,22 @@ namespace Tokamak.Readers.FBX
             }
 
             return result;
+        }
+
+        internal static T MapCompoundTo<T>(Node rootNode)
+           where T : class, new()
+        {
+            Type type = typeof(T);
+
+            var tableAttr = type.GetCustomAttribute<TableAttribute>();
+
+            string subNode = tableAttr?.Name ?? type.Name;
+
+            var node = rootNode.GetChildren(subNode).First();
+
+            var fbxProps = CompoundProperty.BuildAllFor(node);
+
+            return MapCompoundTo<T>(fbxProps);
         }
 
         public IEnumerable<Mesh> Import()
