@@ -34,7 +34,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
             Debug.Assert(m_node != null);
 
             m_data.AddRange(m_node
-                .GetChildren("Normals")
+                .Children["Normals"]
                 .SelectMany(n => n.Properties[0].AsEnumerable<float>())
                 .ToList()
                 .Chunk(3)

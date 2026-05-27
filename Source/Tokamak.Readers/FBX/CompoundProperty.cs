@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 
 using Tokamak.Mathematics;
+using Tokamak.Utilities;
 
 namespace Tokamak.Readers.FBX
 {
@@ -42,23 +43,28 @@ namespace Tokamak.Readers.FBX
 
         public static IEnumerable<CompoundProperty> BuildAllFor(Node node)
         {
-            var props = node
-                .GetChildren("Properties70")
-                .SelectMany(p => p.GetChildren("P"))
-                .Select(Build);
-
-            foreach (var p in props)
-            {
-                if (p != null)
-                    yield return p;
-            }
+            return node.Children["Properties70"]
+                .SelectMany(p => p.Children["P"])
+                .Select(Build)
+                .NotNull();
         }
 
         private static object? ReadData(Node node, string type)
         {
+            /*
+             * I suspect these could be just about anything.  As such, I'm
+             * wondering if there's a better more generic way to handle this.
+             * 
+             *          -- B.Simonds (May 27, 2026)
+             */
+
             return type.ToLower() switch
             {
+                "bool" => !ReadNumber(node).Equals(0),
+                "enum" => ReadNumber(node),
                 "int" => ReadNumber(node),
+                "short" => ReadNumber(node),
+                "long" => ReadNumber(node),
                 "float" => ReadNumber(node),
                 "double" => ReadNumber(node),
                 "number" => ReadNumber(node),
@@ -66,6 +72,9 @@ namespace Tokamak.Readers.FBX
                 "kstring" => ReadString(node),
                 "colorrgb" => ReadVector3(node),
                 "color" => ReadVector4(node),
+                "vector2d" => ReadVector2(node),
+                "vector3d" => ReadVector3(node),
+                "vector4d" => ReadVector4(node),
                 _ => null
             };
         }

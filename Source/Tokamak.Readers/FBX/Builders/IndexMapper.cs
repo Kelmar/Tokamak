@@ -26,7 +26,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
 
         private string ReadNodeAsString(string nodeName)
         {
-            Node? node = m_node?.GetChildren(nodeName).FirstOrDefault();
+            Node? node = m_node?.Children[nodeName].FirstOrDefault();
 
             return node?.Properties.FirstOrDefault()?.ToString() ?? String.Empty;
         }
@@ -72,7 +72,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
             Debug.Assert(m_node != null);
 
             m_indices.AddRange(m_node
-                .GetChildren(indexName)
+                .Children[indexName]
                 .SelectMany(n => n.Properties[0].AsEnumerable<int>())
             );
         }

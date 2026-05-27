@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO.Compression;
 using System.IO;
 using System.Linq;
@@ -59,31 +60,34 @@ namespace Tokamak.Readers.FBX
             if (endOffset == 0 && nameLen == 0)
                 return null;
 
-            var result = new Node();
-            result.Name = ReadString(nameLen);
+            string name = ReadString(nameLen);
+
+            var properties = new List<Property>((int)numProps);
+            var children = new List<Node>();
 
             for (int i = 0; i < numProps; ++i)
+                properties.Add(ReadProperty());
+
+            // Start reading nested nodes until "null"
+            while (m_input.Position < endOffset)
             {
-                var prop = ReadProperty();
-                result.Properties.Add(prop);
-            }
+                var nested = ReadNode();
 
-            if (m_input.Position < endOffset)
-            {
-                // Start reading nested nodes until "null"
-                for (;;)
-                {
-                    var nested = ReadNode();
+                if (nested == null)
+                    break;
 
-                    if (nested == null)
-                        break;
-
-                    result.AddChild(nested);
-                }
+                children.Add(nested);
             }
 
             //long resPos = m_input.Position;
             //long len = resPos - startPos;
+
+            var result = new Node
+            {
+                Name = name,
+                Children = children.ToLookup(n => n.Name, n => n),
+                Properties = properties
+            };
 
             return result;
         }

@@ -33,7 +33,7 @@ namespace Tokamak.Readers.FBX.Builders
             Debug.Assert(m_node != null);
 
             m_data.AddRange(m_node
-                .GetChildren("UV")
+                .Children["UV"]
                 .SelectMany(n => n.Properties[0].AsEnumerable<float>())
                 .ToList()
                 .Chunk(2)

@@ -24,7 +24,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         }
 
         private Property? GetShadingProperty()
-            => Node.GetChildren("ShadingModel").FirstOrDefault()?.Properties[0];
+            => Node.Children["ShadingModel"].FirstOrDefault()?.Properties[0];
 
         public int ID { get; }
 

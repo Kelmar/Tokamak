@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Tokamak.Readers.FBX
 {
@@ -17,32 +17,12 @@ namespace Tokamak.Readers.FBX
     /// </remarks>
     internal class Node
     {
-        private readonly IDictionary<string, List<Node>> m_children =
-            new Dictionary<string, List<Node>>(StringComparer.CurrentCultureIgnoreCase);
+        public required string Name { get; init; }
 
-        public string Name { get; set; } = String.Empty;
+        public required List<Property> Properties { get; init; }
 
-        public void AddChild(Node child)
-        {
-            if (!m_children.TryGetValue(child.Name, out List<Node>? children))
-            {
-                children = new List<Node>();
-                m_children[child.Name] = children;
-            }
+        public required ILookup<string, Node> Children { get; init; }
 
-            children.Add(child);
-        }
-
-        public IEnumerable<Node> GetChildren(string name)
-        {
-            if (!m_children.TryGetValue(name, out List<Node>? children))
-                return new List<Node>();
-
-            return children;
-        }
-
-        public List<Property> Properties { get; } = new();
-
-        public override string ToString() => $"{Name}: C:{m_children.Count} P:{Properties.Count}";
+        public override string ToString() => $"{Name}: C:{Children.Count} P:{Properties.Count}";
     }
 }

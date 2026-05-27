@@ -7,7 +7,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
+using Tokamak.Utilities;
+
 using Tokamak.Readers.FBX.ObjectWrappers;
+
 using Tokamak.Tritium.Geometry;
 
 namespace Tokamak.Readers.FBX
@@ -76,9 +79,9 @@ namespace Tokamak.Readers.FBX
             return m_encoding.GetString(buffer).TrimEnd('\0');
         }
 
-        internal Node GetNodes()
+        private Node GetNodes()
         {
-            var root = new Node();
+            List<Node> children = [];
 
             for (;;)
             {
@@ -87,10 +90,15 @@ namespace Tokamak.Readers.FBX
                 if (node == null)
                     break;
 
-                root.AddChild(node);
+                children.Add(node);
             }
 
-            return root;
+            return new Node
+            {
+                Name = String.Empty,
+                Properties = [],
+                Children = children.ToLookup(c => c.Name, c => c),
+            };
         }
 
         internal static T MapCompoundTo<T>(IEnumerable<CompoundProperty> fbxProps)
@@ -141,11 +149,19 @@ namespace Tokamak.Readers.FBX
 
             string subNode = tableAttr?.Name ?? type.Name;
 
-            var node = rootNode.GetChildren(subNode).First();
+            var node = rootNode.Children[subNode].First();
 
             var fbxProps = CompoundProperty.BuildAllFor(node);
 
             return MapCompoundTo<T>(fbxProps);
+        }
+
+        private (long Id, Node Node) WithIndex(Node node)
+        {
+            if ((node.Properties.Count < 1) || !node.Properties[0].Type.IsNumeric)
+                return (-1, node);
+
+            return (Convert.ToInt64(node.Properties[0].Data), node);
         }
 
         public IEnumerable<Mesh> Import()
@@ -154,31 +170,41 @@ namespace Tokamak.Readers.FBX
 
             var settings = MapCompoundTo<GlobalSettings>(dataRoot);
 
+            var objectGraph = new ObjectGraph(dataRoot);
+
+            var objectsNodes = dataRoot.Children["Objects"];
+
+            var objectNodes = objectsNodes
+                .SelectMany(n => n.Children.Flatten())
+                .Select(WithIndex)
+                .Where(x => x.Id != -1)
+                .ToDictionary(x => x.Id, x => x.Node);
+
+            var rootIds = objectGraph.GetChildObjectIds(0);
+
             // At this point we should have a valid node structure, but we still need to recreate the object hierarchy.
 
-            var dataObjects = dataRoot.GetChildren("Objects");
+            // Start with the root models
+            var rootModels = objectNodes
+                .Where(kvp => rootIds.Contains(kvp.Key) && kvp.Value.Name.ToLower() == "model")
+                .Select(kvp => new ModelBuilder(kvp.Value))
+                .ToList();
 
             // Split out our objects into models, geometry and materials as flat lists.
 
-            var models = dataObjects
-                .SelectMany(o => o.GetChildren("Model"))
-                .Select(n => new ObjectBuilder(n))
-                .ToList();
+            //var models = objectsNodes
+            //    .SelectMany(o => o.Children["Model"])
+            //    .Select(n => new ModelBuilder(n))
+            //    .ToDictionary(o => o.ID, o => o);
 
-            var mats = dataObjects
-                .SelectMany(o => o.GetChildren("Material"))
+            var mats = objectsNodes
+                .SelectMany(o => o.Children["Material"])
                 .Select(n => new MaterialBuilder(n))
                 .ToArray();
 
-            var geos = dataObjects
-                .SelectMany(o => o.GetChildren("Geometry"))
+            var geos = objectsNodes
+                .SelectMany(o => o.Children["Geometry"])
                 .Select(n => new MeshBuilder(settings, mats, n))
-                .ToList();
-
-            // Get all of our connections as a flat list.
-            var connects = dataRoot
-                .GetChildren("Connections")
-                .SelectMany(c => c.GetChildren("C"))
                 .ToList();
 
             return geos.Select(g => g.Mesh);

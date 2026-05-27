@@ -60,7 +60,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         private List<int> ReadIndexData()
         {
             return Node
-                .GetChildren("PolygonVertexIndex")
+                .Children["PolygonVertexIndex"]
                 .SelectMany(n => n.Properties[0].AsEnumerable<int>())
                 .ToList();
         }
@@ -68,7 +68,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         private List<Vector3> ReadVertexData()
         {
             return Node
-                .GetChildren("Vertices")
+                .Children["Vertices"]
                 .SelectMany(v => v.Properties[0].AsEnumerable<float>())
                 .ToList() // Chunk needs the list to be realized first.
                 .Chunk(3) // Group into threes
@@ -84,9 +84,9 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
 
             var maxVert = vectors.Max(v => v.Z);
 
-            var uvMapper = new UVMapper(Node.GetChildren("LayerElementUV")?.FirstOrDefault());
-            var normalMapper = new NormalMapper(Settings, Node.GetChildren("LayerElementNormal")?.FirstOrDefault());
-            var materialMapper = new MaterialMapper(Node.GetChildren("LayerElementMaterial")?.FirstOrDefault());
+            var uvMapper = new UVMapper(Node.Children["LayerElementUV"].FirstOrDefault());
+            var normalMapper = new NormalMapper(Settings, Node.Children["LayerElementNormal"].FirstOrDefault());
+            var materialMapper = new MaterialMapper(Node.Children["LayerElementMaterial"].FirstOrDefault());
 
             // Generate a list of polygons with flat data.
             Mesh.Polygons = ToPolys(indices, vectors, uvMapper, materialMapper, normalMapper).ToList();
@@ -125,6 +125,10 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
 
                 if (materialIdx < Materials.Length)
                 {
+                    /*
+                     * This isn't really correct; we should probably be using the
+                     * connections map in the file to find the right material.
+                     */
                     var material = Materials[materialIdx];
                     color = material.Parameters.DiffuseColor;
                 }

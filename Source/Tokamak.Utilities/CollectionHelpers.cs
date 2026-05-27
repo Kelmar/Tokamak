@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Tokamak.Utilities
 {
@@ -28,6 +29,30 @@ namespace Tokamak.Utilities
         {
             foreach (var kvp in source)
                 target[kvp.Key] = kvp.Value;
+        }
+
+        /// <summary>
+        /// Filter null values out of a collection, returning a collection of non-null values.
+        /// </summary>
+        /// <typeparam name="TValue">The value type to filter on.</typeparam>
+        /// <param name="values">The collection of possibly null values to filter.</param>
+        public static IEnumerable<TValue> NotNull<TValue>(this IEnumerable<TValue?> values)
+            => values.Where(v => v != null).Select(v => v!);
+
+        /// <summary>
+        /// Flatten a lookup into a single enumerable collection.
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="lookup"></param>
+        /// <returns></returns>
+        public static IEnumerable<TValue> Flatten<TKey, TValue>(this ILookup<TKey, TValue> lookup)
+        {
+            foreach (var grp in lookup)
+            {
+                foreach (var item in lookup[grp.Key])
+                    yield return item;
+            }
         }
     }
 }
