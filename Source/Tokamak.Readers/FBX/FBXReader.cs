@@ -156,14 +156,6 @@ namespace Tokamak.Readers.FBX
             return MapCompoundTo<T>(fbxProps);
         }
 
-        private (long Id, Node Node) WithIndex(Node node)
-        {
-            if ((node.Properties.Count < 1) || !node.Properties[0].Type.IsNumeric)
-                return (-1, node);
-
-            return (Convert.ToInt64(node.Properties[0].Data), node);
-        }
-
         public IEnumerable<Mesh> Import()
         {
             Node dataRoot = GetNodes();
@@ -172,42 +164,13 @@ namespace Tokamak.Readers.FBX
 
             var objectGraph = new ObjectGraph(dataRoot);
 
-            var objectsNodes = dataRoot.Children["Objects"];
-
-            var objectNodes = objectsNodes
-                .SelectMany(n => n.Children.Flatten())
-                .Select(WithIndex)
-                .Where(x => x.Id != -1)
-                .ToDictionary(x => x.Id, x => x.Node);
-
-            var rootIds = objectGraph.GetChildObjectIds(0);
-
-            // At this point we should have a valid node structure, but we still need to recreate the object hierarchy.
-
-            // Start with the root models
-            var rootModels = objectNodes
-                .Where(kvp => rootIds.Contains(kvp.Key) && kvp.Value.Name.ToLower() == "model")
-                .Select(kvp => new ModelBuilder(objectGraph, kvp.Value))
+            // Build the root models
+            var rootObjects = objectGraph.GetChildObjects(0)
+                .Where(o => o.Name.ToLower() == "model")
+                .Select(node => new ModelBuilder(settings, objectGraph, node))
                 .ToList();
 
-            // Split out our objects into models, geometry and materials as flat lists.
-
-            //var models = objectsNodes
-            //    .SelectMany(o => o.Children["Model"])
-            //    .Select(n => new ModelBuilder(n))
-            //    .ToDictionary(o => o.ID, o => o);
-
-            var mats = objectsNodes
-                .SelectMany(o => o.Children["Material"])
-                .Select(n => new MaterialBuilder(n))
-                .ToArray();
-
-            var geos = objectsNodes
-                .SelectMany(o => o.Children["Geometry"])
-                .Select(n => new MeshBuilder(settings, mats, n))
-                .ToList();
-
-            return geos.Select(g => g.Mesh);
+            return rootObjects.SelectMany(o => o.Meshes.Select(m => m.Mesh));
         }
     }
 }

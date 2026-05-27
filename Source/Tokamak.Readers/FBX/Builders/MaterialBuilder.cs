@@ -13,7 +13,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         public MaterialBuilder(Node node)
         {
             Node = node;
-            ID = Node.Properties[0].AsInt();
+            ID = Node.Properties[0].AsLong();
             Name = Node.Properties[1].AsString();
 
             ShadingModel = GetShadingProperty()?.AsString() ?? DEFAULT_SHADING_MODEL;
@@ -26,7 +26,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         private Property? GetShadingProperty()
             => Node.Children["ShadingModel"].FirstOrDefault()?.Properties[0];
 
-        public int ID { get; }
+        public long ID { get; }
 
         public string Name { get; }
 

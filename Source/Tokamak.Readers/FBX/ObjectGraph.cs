@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+
+using Tokamak.Utilities;
 
 namespace Tokamak.Readers.FBX
 {
@@ -8,6 +12,8 @@ namespace Tokamak.Readers.FBX
     /// </summary>
     internal class ObjectGraph
     {
+        private readonly Node m_rootNode;
+
         private readonly ILookup<long, long> m_objectGraph;
 
         private readonly ILookup<long, long> m_objectProperties;
@@ -16,9 +22,13 @@ namespace Tokamak.Readers.FBX
 
         private readonly ILookup<long, long> m_propertyProperties;
 
+        private readonly IDictionary<long, Node> m_objects;
+
         public ObjectGraph(Node rootNode)
         {
-            var connections = GetConnections(rootNode).ToList();
+            m_rootNode = rootNode;
+
+            var connections = GetConnections().ToList();
 
             m_objectGraph = connections
                .Where(c => c.Type == "OO")
@@ -35,11 +45,13 @@ namespace Tokamak.Readers.FBX
             m_propertyProperties = connections
                 .Where(c => c.Type == "PP")
                 .ToLookup(c => c.To, c => c.From);
+
+            m_objects = GetObjects();
         }
 
-        private IEnumerable<Connection> GetConnections(Node rootNode)
+        private IEnumerable<Connection> GetConnections()
         {
-            var connectionNode = rootNode.Children["Connections"].FirstOrDefault();
+            var connectionNode = m_rootNode.Children["Connections"].FirstOrDefault();
 
             if (connectionNode == null)
                 yield break;
@@ -53,7 +65,35 @@ namespace Tokamak.Readers.FBX
             }
         }
 
-        public IEnumerable<long> GetChildObjectIds(long objectId) => m_objectGraph[objectId];
+        private (long Id, Node Node) WithIndex(Node node)
+        {
+            if ((node.Properties.Count < 1) || !node.Properties[0].Type.IsNumeric)
+                return (-1, node);
+
+            return (Convert.ToInt64(node.Properties[0].Data), node);
+        }
+
+        private IDictionary<long, Node> GetObjects()
+        {
+            var objectsNodes = m_rootNode.Children["Objects"];
+
+            return objectsNodes
+                .SelectMany(n => n.Children.Flatten())
+                .Select(WithIndex)
+                .Where(x => x.Id != -1)
+                .ToDictionary(x => x.Id, x => x.Node);
+        }
+
+        public IEnumerable<long> GetChildObjectIds(long parentId) => m_objectGraph[parentId];
+
+        public IEnumerable<Node> GetChildObjects(long parentId)
+        {
+            foreach (var id in GetChildObjectIds(parentId))
+            {
+                if (m_objects.TryGetValue(id, out var node))
+                    yield return node;
+            }
+        }
 
         public IEnumerable<long> GetObjectPropertyIds(long objectId) => m_objectProperties[objectId];
 

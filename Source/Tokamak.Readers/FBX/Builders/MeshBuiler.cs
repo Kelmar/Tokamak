@@ -19,7 +19,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
 
             Node = node;
 
-            ID = Node.Properties[0].AsInt();
+            ID = Node.Properties[0].AsLong();
             Name = Node.Properties[1].AsString();
 
             Mesh = new Mesh();
@@ -30,7 +30,7 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
         /// <summary>
         /// The unique ID of this object in the file.
         /// </summary>
-        public int ID { get; }
+        public long ID { get; }
 
         /// <summary>
         /// The name of this mesh in the file.
@@ -125,10 +125,6 @@ namespace Tokamak.Readers.FBX.ObjectWrappers
 
                 if (materialIdx < Materials.Length)
                 {
-                    /*
-                     * This isn't really correct; we should probably be using the
-                     * connections map in the file to find the right material.
-                     */
                     var material = Materials[materialIdx];
                     color = material.Parameters.DiffuseColor;
                 }

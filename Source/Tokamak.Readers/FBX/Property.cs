@@ -21,6 +21,8 @@ namespace Tokamak.Readers.FBX
 
         public int AsInt() => Convert.ToInt32(Data);
 
+        public long AsLong() => Convert.ToInt64(Data);
+
         public string AsString() => Convert.ToString(Data) ?? String.Empty;
 
         public override string ToString()

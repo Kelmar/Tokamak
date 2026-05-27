@@ -2,7 +2,7 @@
 {
     internal interface IFBXObject
     {
-        int ID { get; }
+        long ID { get; }
 
         string Name { get; }
 
