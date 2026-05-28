@@ -35,7 +35,7 @@ replaced, updated, and extended however the user wishes to fill their desired ne
 ## Building
 Should be a mater of opening the solution in Visual Studio and hitting build.
 
-Not yet tested it under Linux or Mac OS X, but if you have the .NET 8.0 tools installed you should be able to run:
+Not yet tested it under Linux or Mac OS X, but if you have the .NET 10.0 tools installed you should be able to run:
 ```
 dotnet build Tokamak.sln
 ```
@@ -52,6 +52,7 @@ The current executable is the TestBed project where all the experimentation is g
   - [ ] OS level GUI objects (e.g. the main window/screen)
   - [ ] Direct hardware input (e.g. DirectInput)
   - [ ] Sound
+  - [ ] Asset Manager
 - [ ] Graphite (2D Graphics)
   - [X] Basic line drawing
   - [ ] Complex shape drawing (in progress, several functions working)
