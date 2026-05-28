@@ -15,5 +15,7 @@ namespace Tokamak.Readers.FBX.Builders
         Node Node { get; }
 
         IEnumerable<Node> ChildNodes { get; }
+
+        IEnumerable<CompoundProperty> Properties { get; }
     }
 }

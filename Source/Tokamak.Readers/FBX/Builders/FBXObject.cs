@@ -18,6 +18,10 @@ namespace Tokamak.Readers.FBX.Builders
             ChildNodes = ObjectGraph
                 .GetChildObjects(ID)
                 .ToList();
+
+            Properties = CompoundProperty
+                .BuildAllFor(node)
+                .ToList();
         }
 
         protected FBXObject(GlobalSettings settings, ObjectGraph objectGraph, Node node)
@@ -64,5 +68,10 @@ namespace Tokamak.Readers.FBX.Builders
         /// List of child nodes that are owned by this object.
         /// </summary>
         public IEnumerable<Node> ChildNodes { get; }
+
+        /// <summary>
+        /// List of compound properties detected for this node.
+        /// </summary>
+        public IEnumerable<CompoundProperty> Properties { get; }
     }
 }

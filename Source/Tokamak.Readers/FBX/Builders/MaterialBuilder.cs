@@ -15,8 +15,6 @@ namespace Tokamak.Readers.FBX.Builders
         {
             ShadingModel = GetShadingProperty()?.AsString() ?? DEFAULT_SHADING_MODEL;
 
-            Properties = CompoundProperty.BuildAllFor(node).ToList();
-
             Parameters = FBXReader.MapCompoundTo<MaterialParameters>(Properties);
         }
 
@@ -24,8 +22,6 @@ namespace Tokamak.Readers.FBX.Builders
             => Node.Children["ShadingModel"].FirstOrDefault()?.Properties[0];
 
         public string ShadingModel { get; }
-
-        public List<CompoundProperty> Properties { get; }
 
         public MaterialParameters Parameters { get; }
 

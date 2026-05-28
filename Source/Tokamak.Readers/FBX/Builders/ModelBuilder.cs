@@ -8,16 +8,10 @@ namespace Tokamak.Readers.FBX.Builders
         public ModelBuilder(GlobalSettings settings, ObjectGraph objectGraph, Node node)
             : base(settings, objectGraph, node)
         {
-            Properties = CompoundProperty
-                .BuildAllFor(node)
-                .ToList();
-
             Materials = BuildMaterials().ToList();
 
             Meshes = BuildMeshes().ToList();
         }
-
-        public List<CompoundProperty> Properties { get; }
 
         public IReadOnlyList<MaterialBuilder> Materials { get; }
 
