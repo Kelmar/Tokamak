@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.6.11819.183 stable
+VisualStudioVersion = 18.6.11819.183
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D8EE3E93-D017-494B-8E12-76C3C685C209}"
 EndProject
@@ -61,6 +61,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Utilities", "Source\Tokamak.Utilities\Tokamak.Utilities.csproj", "{11966C12-5F97-9941-EAEE-D1C761498477}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokamak.Assets", "Source\Tokamak.Assets\Tokamak.Assets.csproj", "{3B51ED06-5464-4399-A318-D64EBA438476}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -132,6 +134,10 @@ Global
 		{11966C12-5F97-9941-EAEE-D1C761498477}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11966C12-5F97-9941-EAEE-D1C761498477}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11966C12-5F97-9941-EAEE-D1C761498477}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B51ED06-5464-4399-A318-D64EBA438476}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B51ED06-5464-4399-A318-D64EBA438476}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B51ED06-5464-4399-A318-D64EBA438476}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B51ED06-5464-4399-A318-D64EBA438476}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
