@@ -20,6 +20,8 @@ namespace Tokamak.OGL
             m_usageHint = usage.ToGLUsage();
 
             m_ebo = m_apiLayer.GL.GenBuffer();
+
+            IsEmpty = true;
         }
 
         public void Dispose()
@@ -27,6 +29,8 @@ namespace Tokamak.OGL
             if (m_ebo != 0)
                 m_apiLayer.GL.DeleteBuffer(m_ebo);
         }
+
+        public bool IsEmpty { get; private set; }
 
         public void Activate()
         {
@@ -41,6 +45,8 @@ namespace Tokamak.OGL
             Activate();
 
             m_apiLayer.GL.BufferData(BufferTargetARB.ElementArrayBuffer, data, m_usageHint);
+
+            IsEmpty = false;
         }
     }
 }

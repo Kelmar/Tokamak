@@ -27,6 +27,8 @@ namespace Tokamak.OGL
 
             m_vbo = m_apiLayer.GL.GenBuffer();
             m_apiLayer.GL.BindBuffer(BufferTargetARB.ArrayBuffer, m_vbo);
+
+            IsEmpty = true;
         }
 
         public void Dispose()
@@ -34,6 +36,8 @@ namespace Tokamak.OGL
             if (m_vbo != 0)
                 m_apiLayer.GL.DeleteBuffer(m_vbo);
         }
+
+        public bool IsEmpty { get; private set; }
 
         public unsafe void Activate()
         {
@@ -54,6 +58,8 @@ namespace Tokamak.OGL
             Activate();
 
             m_apiLayer.GL.BufferData(BufferTargetARB.ArrayBuffer, data, m_usageHint);
+
+            IsEmpty = false;
         }
     }
 }

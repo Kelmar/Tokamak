@@ -12,6 +12,14 @@ namespace Tokamak.Tritium.Buffers
     {
         void Activate();
 
+        /// <summary>
+        /// Returns if the element buffer object has data in it or not.
+        /// </summary>
+        /// <remarks>
+        /// If true, then this element buffer has no data in it.
+        /// </remarks>
+        bool IsEmpty { get; }
+
         void Set(in ReadOnlySpan<uint> values);
     }
 }
