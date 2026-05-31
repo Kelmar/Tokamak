@@ -8,6 +8,7 @@ using Tokamak.Logging;
 using Tokamak.Tritium;
 
 using Tokamak.OGL;
+using Tokamak.Assets;
 
 namespace TestBed
 {
@@ -31,6 +32,7 @@ namespace TestBed
             .ConfigureServices(services =>
             {
                 services.UseConsoleLogger();
+                services.UseAssetManager();
                 services.UseTritium();
                 services.AllowOpenGL();
             })

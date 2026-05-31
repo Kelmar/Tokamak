@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
+using Tokamak.Assets;
 using Tokamak.Mathematics;
 
 using Tokamak.Tritium.Buffers;
@@ -10,7 +9,7 @@ using Tokamak.Tritium.Buffers.Formats;
 
 namespace Tokamak.Tritium.Geometry
 {
-    public class Mesh
+    public class Mesh : Asset
     {
         private List<Polygon> m_polygons = new();
 

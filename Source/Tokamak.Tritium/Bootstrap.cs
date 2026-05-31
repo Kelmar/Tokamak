@@ -1,9 +1,11 @@
 ﻿using Stashbox;
 
+using Tokamak.Assets;
 using Tokamak.Hosting.Abstractions;
 
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.APIs.NullRender;
+using Tokamak.Tritium.Geometry;
 using Tokamak.Tritium.Hosting;
 
 namespace Tokamak.Tritium
@@ -16,6 +18,8 @@ namespace Tokamak.Tritium
 
             container.Register<GraphicsLoader>();
             container.RegisterSingleton<NullAPI>();
+
+            container.Register<IAssetFactory, MeshFactory>();
 
             container.Register<IGraphicsLayer>(options => options
                 .WithSingletonLifetime()

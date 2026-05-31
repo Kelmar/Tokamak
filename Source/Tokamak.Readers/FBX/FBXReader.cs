@@ -7,10 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-using Tokamak.Utilities;
-
-using Tokamak.Tritium.Geometry;
-
 using Tokamak.Readers.FBX.Builders;
 
 namespace Tokamak.Readers.FBX
@@ -97,7 +93,7 @@ namespace Tokamak.Readers.FBX
             {
                 Name = String.Empty,
                 Properties = [],
-                Children = children.ToLookup(c => c.Name, c => c),
+                Children = children.ToLookup(c => c.Name, c => c)
             };
         }
 
@@ -132,7 +128,7 @@ namespace Tokamak.Readers.FBX
                 }
                 catch
                 {
-                    // TODO: Might be worth while logging that we can't set the value.
+                    // TODO: Might be worthwhile logging that we can't set the value.
                     continue;
                 }
             }
@@ -156,7 +152,7 @@ namespace Tokamak.Readers.FBX
             return MapCompoundTo<T>(fbxProps);
         }
 
-        public IEnumerable<Mesh> Import()
+        public IEnumerable<object> Import()
         {
             Node dataRoot = GetNodes();
 

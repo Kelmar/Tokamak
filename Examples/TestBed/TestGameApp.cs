@@ -16,6 +16,7 @@ using Tokamak.Readers.FBX;
 using Tokamak.Readers.SVG;
 
 using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Geometry;
 using Tokamak.Tritium.Scene;
 
 using TTF = Tokamak.Quill.Readers.TTF;
@@ -35,7 +36,7 @@ namespace TestBed
 
         //private readonly List<IRenderable> m_renderers = new List<IRenderable>();
 
-        private readonly List<StaticMesh> m_meshes = [];
+        private readonly List<SceneMeshObject> m_meshes = [];
 
         private int m_frameCount;
         private DateTime m_lastCheck = DateTime.UtcNow;
@@ -46,13 +47,13 @@ namespace TestBed
         //public const string FILE = "resources/blox.fbx";
         //public const string FILE = "resources/susan.fbx";
         //public const string FILE = "resources/plane.fbx";
-        public const string FILE = "resources/chest.fbx";
+        //public const string FILE = "resources/chest.fbx";
 
         /*
          * This is the X Bot model from Maxima.
          * I'm not sure what the license is for that, so I'm not adding it to the repo.
          */
-        //public const string FILE = "resources/xbot.fbx";
+        public const string FILE = "resources/xbot.fbx";
 
         public TestGameApp(ILogger log, IGraphicsLayer layer)
         {
@@ -91,24 +92,31 @@ namespace TestBed
             foreach (var m in m_meshes)
                 m_scene.AddObject(m);
 
-            //m_scene.Camera.Location = new Vector3(0, 125, 175);
-            m_scene.Camera.Location = new Vector3(0, 0, 5);
+            m_scene.Camera.Location = new Vector3(0, 125, 175);
+            //m_scene.Camera.Location = new Vector3(0, 0, 5);
             //m_scene.Camera.LookAt = Vector3.Zero;
             m_scene.Camera.Forward = new Vector3(0, 0, -1);
 
             //m_renderers.Add(m_scene);
             //m_renderers.Add(m_canvas);
 
-            var stream = File.Open("resources/test.svg", FileMode.Open, FileAccess.Read);
-            var reader = new SVGReader(stream);
+            //var stream = File.Open("resources/test.svg", FileMode.Open, FileAccess.Read);
+            //var reader = new SVGReader(stream);
 
-            reader.Import();
+            //reader.Import();
         }
 
         void LoadObject()
         {
             using var reader = new FBXReader(File.OpenRead(FILE));
-            var meshes = reader.Import().Select(m => new StaticMesh(m_gfxLayer, m));
+
+            var objects = reader.Import().ToList();
+
+            var meshes = objects.OfType<Mesh>().Select(m => {
+                var obj = new SceneMeshObject(m_gfxLayer);
+                obj.SetMesh(m);
+                return obj;
+            });
 
             m_meshes.AddRange(meshes);
         }

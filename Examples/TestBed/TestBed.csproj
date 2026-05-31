@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Source\Tokamak.Abstractions\Tokamak.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Source\Tokamak.Assets\Tokamak.Assets.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Graphite\Tokamak.Graphite.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Hosting\Tokamak.Hosting.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Logging\Tokamak.Logging.csproj" />
