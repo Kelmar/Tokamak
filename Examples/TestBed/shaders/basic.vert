@@ -2,23 +2,24 @@
 
 // Basic lit vertex shader
 
+// Scene parameters
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
-uniform float gamma;
-uniform vec3 camera;
 
+// Mesh input parameters
 layout(location = 0) in vec3 Point;
 layout(location = 1) in vec3 Normal;
 layout(location = 2) in vec4 Color;
 layout(location = 3) in vec2 TexCoord;
 
+// Material parameters (pass through)
 layout(location = 0) out vec4 fsin_Color;
+
+// Mesh parameters to fragment (transformed output)
 layout(location = 1) out vec2 fsin_TexCoord;
 layout(location = 2) out vec3 fsin_Normal;
 layout(location = 3) out vec3 fsin_Position;
-layout(location = 4) out float fsin_Gamma;
-layout(location = 5) out vec3 fsin_CameraPosition;
 
 void main()
 {
@@ -32,7 +33,4 @@ void main()
 
     fsin_Color = Color;
     fsin_TexCoord = TexCoord;
-
-    fsin_Gamma = gamma;
-    fsin_CameraPosition = camera;
 }

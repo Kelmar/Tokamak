@@ -2,19 +2,25 @@
 
 // Basic lit fragment shader.
 
+uniform int is8Bit;
+uniform sampler2D texture0;
+
+// Scene parameters
+uniform vec3 lightColor;
+uniform vec3 lightPosition;
+uniform float gamma;
+uniform vec3 camera;
+
+// Material parameters
 layout(location = 0) in vec4 fsin_Color;
+
+// Mesh parameters
 layout(location = 1) in vec2 fsin_TexCoord;
 layout(location = 2) in vec3 fsin_Normal;
 layout(location = 3) in vec3 fsin_Position;
-layout(location = 4) in float fsin_Gamma;
-layout(location = 5) in vec3 fsin_CameraPosition;
 
+// Fragment output
 layout(location = 0) out vec4 fsout_Color;
-
-uniform int is8Bit;
-uniform vec3 lightColor;
-uniform vec3 lightPosition;
-uniform sampler2D texture0;
 
 void main()
 {
@@ -29,7 +35,7 @@ void main()
     vec3 normal = normalize(fsin_Normal);
     vec3 lightDirection = normalize(lightPosition - fsin_Position);
 
-    vec3 viewDirection = normalize(fsin_CameraPosition - fsin_Position);
+    vec3 viewDirection = normalize(camera - fsin_Position);
     vec3 reflectDirection = reflect(-lightDirection, normal);
 
     float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), 32);
@@ -40,9 +46,9 @@ void main()
 
     vec4 result = (ambient + diffuse + specular) * clr;
 
-    result.r = pow(result.r, fsin_Gamma);
-    result.g = pow(result.g, fsin_Gamma);
-    result.b = pow(result.b, fsin_Gamma);
+    result.r = pow(result.r, gamma);
+    result.g = pow(result.g, gamma);
+    result.b = pow(result.b, gamma);
 
     fsout_Color = result;
 }
