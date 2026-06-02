@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tokamak.Readers.FBX.DOM
+namespace Tokamak.Readers.FBX
 {
     /// <summary>
     /// Represents a generic object from the /Objects node in an FBX file.

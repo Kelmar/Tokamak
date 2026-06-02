@@ -6,7 +6,7 @@ using System.Reflection;
 
 using Tokamak.Readers.FBX.DOM;
 
-namespace Tokamak.Readers.FBX
+namespace Tokamak.Readers.FBX.Mappers
 {
     internal static class ObjectMapper
     {

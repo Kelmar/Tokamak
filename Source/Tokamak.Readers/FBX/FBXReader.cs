@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 
 using Tokamak.Assets;
+
 using Tokamak.Readers.FBX.Builders;
-using Tokamak.Readers.FBX.DOM;
-using Tokamak.Tritium.Geometry;
-using Tokamak.Tritium.Scene;
+using Tokamak.Readers.FBX.Mappers;
 
 namespace Tokamak.Readers.FBX
 {

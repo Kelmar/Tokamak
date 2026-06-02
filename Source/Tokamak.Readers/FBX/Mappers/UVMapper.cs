@@ -5,7 +5,7 @@ using System.Numerics;
 
 using Tokamak.Mathematics;
 
-namespace Tokamak.Readers.FBX.Builders
+namespace Tokamak.Readers.FBX.Mappers
 {
     internal class UVMapper
     {

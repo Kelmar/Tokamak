@@ -6,7 +6,7 @@ using System.Numerics;
 
 using Tokamak.Readers.FBX.DOM;
 
-namespace Tokamak.Readers.FBX.Builders
+namespace Tokamak.Readers.FBX.Mappers
 {
     internal class NormalMapper
     {

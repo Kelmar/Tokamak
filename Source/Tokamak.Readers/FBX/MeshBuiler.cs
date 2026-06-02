@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Numerics;
 
+using Tokamak.Readers.FBX.Mappers;
 using Tokamak.Readers.FBX.DOM;
 
 namespace Tokamak.Readers.FBX.Builders
@@ -19,23 +20,6 @@ namespace Tokamak.Readers.FBX.Builders
         public ReadState State { get; }
 
         public GlobalSettings Settings => State.Settings;
-
-        public ObjectGraph ObjectGraph => State.ObjectGraph;
-
-        private IEnumerable<FBXMesh> ReadMeshes()
-        {
-            var meshNodes = State.RootNode.Children["geometry"].ToList();
-
-            foreach (var node in meshNodes)
-            {
-                var mesh = new FBXMesh(State, node);
-                ReadMeshDetails(mesh);
-
-                yield return mesh;
-            }
-        }
-
-        public List<FBXMesh> Meshes { get; }
 
         private List<int> ReadIndexData(FBXObject mesh)
         {
@@ -70,22 +54,6 @@ namespace Tokamak.Readers.FBX.Builders
 
             // Generate a list of polygons with flat data.
             var polygons = ToPolys(indices, vectors, uvMapper, materialMapper, normalMapper).ToList();
-        }
-
-        private void ReadMeshDetails(FBXMesh mesh)
-        {
-            // Pull raw data from FBX structure
-            var indices = ReadIndexData(mesh);
-            var vectors = ReadVertexData(mesh);
-
-            var maxVert = vectors.Max(v => v.Z);
-
-            var uvMapper = new UVMapper(mesh.Node.Children["LayerElementUV"].FirstOrDefault());
-            var normalMapper = new NormalMapper(Settings, mesh.Node.Children["LayerElementNormal"].FirstOrDefault());
-            var materialMapper = new MaterialMapper(mesh.Node.Children["LayerElementMaterial"].FirstOrDefault());
-
-            // Generate a list of polygons with flat data.
-            mesh.Polygons = ToPolys(indices, vectors, uvMapper, materialMapper, normalMapper).ToList();
         }
 
         /// <summary>
