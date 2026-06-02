@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Tokamak.Readers.FBX.DOM
 {
+    /// <summary>
+    /// Represents a generic object from the /Objects node in an FBX file.
+    /// </summary>
     internal class FBXObject
     {
         public FBXObject(ReadState state, Node node)
@@ -16,7 +19,7 @@ namespace Tokamak.Readers.FBX.DOM
             (Name, SubClass) = ParseName();
 
             ChildNodes = ObjectGraph
-                .GetChildObjects(Id)
+                .GetChildNodes(Id)
                 .ToList();
 
             Properties = ObjectProperty
@@ -74,6 +77,11 @@ namespace Tokamak.Readers.FBX.DOM
         /// The FBX node we read from.
         /// </summary>
         public Node Node { get; }
+
+        /// <summary>
+        /// List of child FBXObjects that are owned by this object.
+        /// </summary>
+        public IEnumerable<FBXObject> Children => ObjectGraph.GetChildObjects(Id);
 
         /// <summary>
         /// List of child nodes that are owned by this object.

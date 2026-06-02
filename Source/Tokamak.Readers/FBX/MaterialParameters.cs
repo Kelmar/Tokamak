@@ -4,13 +4,12 @@ using System.Numerics;
 
 namespace Tokamak.Readers.FBX
 {
-    internal class MaterialParameters
+    internal class MaterialParameters : ResultRecord
     {
-        [NotMapped]
-        public long Id { get; set; } = 0;
-
-        [NotMapped]
-        public string Name { get; set; } = String.Empty;
+        public MaterialParameters()
+            : base(ImportType.Material)
+        {
+        }
 
         [NotMapped]
         public string ShadingModel { get; set; } = "Phong";

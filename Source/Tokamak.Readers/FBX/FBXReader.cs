@@ -20,18 +20,6 @@ namespace Tokamak.Readers.FBX
         private readonly IAssetBuilder m_builder = builder;
 
 #if false
-        private List<FBXModel> GetModels(ReadState state)
-        {
-            var reader = new ModelBuilder(state);
-            return reader.Models;
-        }
-
-        private List<FBXMaterial> GetMaterials(ReadState state)
-        {
-            var reader = new MaterialBuilder(this);
-            return reader.Materials;
-        }
-
         private List<FBXMesh> GetMeshes(ReadState state)
         {
             var reader = new MeshBuilder(this);
@@ -138,10 +126,27 @@ namespace Tokamak.Readers.FBX
 
             var state = new ReadState(ParseStream(input));
 
-            BuildTextures(state);
-            BuildMaterials(state);
-            BuildModels(state);
-            BuildMeshes(state);
+            /*
+             * First pass:
+             * 
+             * Simplify FBXObjects into C# objects for second pass, this will flatten
+             * out some of the FBX indirect references into (mostly) concrete or at
+             * least easy to resolve references for our second pass.
+             */
+            ReadTextures(state);
+            ReadMaterials(state);
+            ReadModels(state);
+            ReadMeshes(state);
+
+            /*
+             * Second pass:
+             * In some cases (e.g. mesh index of model) we need details of the first
+             * pass to do a final lookup for import.
+             * 
+             * Here we'll make calls to the IAssetBuilder to actually start constructing
+             * the imports.  Note that for textures that refer to external files; then
+             * they will get deferred to those files.
+             */
         }
 
         private string ReadString(Stream input, Encoding encoding, int length)
@@ -191,19 +196,25 @@ namespace Tokamak.Readers.FBX
             };
         }
 
-        private IEnumerable<T> ParseType<T>(ReadState state, string type, Func<FBXObject, T> reader)
+        private void ReadTypes<T>(ReadState state, string type, Func<FBXObject, T> reader)
+            where T : ResultRecord
         {
             var items = state.ObjectGraph
                 .GetObjectsOfType(type)
                 .ToList();
 
             foreach (var item in items)
-                yield return reader(item);
-        }
+            {
+                var record = reader(item);
 
-        private void BuildTextures(ReadState state)
-        {
-            //ParseType(state, "texture", o => {});
+                state.Results.Add(new ImportResult
+                {
+                    InternalId = record.Id,
+                    Name = record.Name,
+                    ResourceType = record.Type,
+                    Result = record
+                });
+            }
         }
 
         private MaterialParameters ReadMaterial(FBXObject obj)
@@ -221,27 +232,40 @@ namespace Tokamak.Readers.FBX
             return result;
         }
 
-        private void BuildMaterials(ReadState state)
+        private ResultModel ReadModel(FBXObject obj)
         {
-            var materials = ParseType(state, "material", ReadMaterial).ToList();
+            var materialIds = obj.Children
+                .WithFBXType("material")
+                .Select(o => o.Id)
+                .ToList();
 
-            state.Results.AddRange(materials.Select(m => new ImportResult
+            var meshIds = obj.Children
+                .WithFBXType("mesh")
+                .Select(o => o.Id)
+                .ToList();
+
+            return new ResultModel
             {
-                InternalId = m.Id,
-                Name = m.Name,
-                ResourceType = ImportType.Material,
-                Result = m
-            }));
+                Id = obj.Id,
+                Name = obj.Name,
+                MaterialIds = materialIds,
+                MeshIds = meshIds
+            };
         }
 
-        private void BuildModels(ReadState state)
+        private void ReadTextures(ReadState state)
         {
-            //ParseType(state, "model", o => {});
+            //ReadTypes(state, "texture", o => {});
         }
 
-        private void BuildMeshes(ReadState state)
+        private void ReadMaterials(ReadState state) => ReadTypes(state, "material", ReadMaterial);
+
+        private void ReadModels(ReadState state) => ReadTypes(state, "model", ReadModel);
+
+        private void ReadMeshes(ReadState state)
         {
-            //ParseType(state, "geometry", o => {});
+            var meshBuilder = new MeshBuilder(state);
+            //ReadTypes(state, "geometry", meshBuilder.ReadMesh);
         }
     }
 }

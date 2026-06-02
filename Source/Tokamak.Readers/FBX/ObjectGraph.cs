@@ -114,7 +114,18 @@ namespace Tokamak.Readers.FBX
 
         public IEnumerable<long> GetChildObjectIds(long parentId) => m_objectGraph[parentId];
 
-        public IEnumerable<Node> GetChildObjects(long parentId)
+        public IEnumerable<FBXObject> GetChildObjects(long parentId)
+        {
+            var childIds = GetChildObjectIds(parentId);
+
+            foreach (long id in childIds)
+            {
+                if (Objects.TryGetValue(id, out var obj))
+                    yield return obj;
+            }
+        }
+
+        public IEnumerable<Node> GetChildNodes(long parentId)
         {
             foreach (var id in GetChildObjectIds(parentId))
             {
