@@ -13,7 +13,7 @@ namespace Tokamak.Readers.FBX
     /// This class contains some data conversion functions to
     /// help with translating the format into something useful.
     /// </remarks>
-    internal class Property
+    internal class NodeProperty
     {
         public required PropertyType Type { get; internal set; }
 

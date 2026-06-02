@@ -1,9 +1,20 @@
-﻿using System.Numerics;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Numerics;
 
 namespace Tokamak.Readers.FBX
 {
     internal class MaterialParameters
     {
+        [NotMapped]
+        public long Id { get; set; } = 0;
+
+        [NotMapped]
+        public string Name { get; set; } = String.Empty;
+
+        [NotMapped]
+        public string ShadingModel { get; set; } = "Phong";
+
         public Vector4 DiffuseColor { get; set; } = Vector4.One;
 
         public Vector4 AmbientColor { get; set; } = Vector4.One;

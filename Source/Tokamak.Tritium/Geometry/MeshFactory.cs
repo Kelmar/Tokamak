@@ -1,23 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 using Tokamak.Assets;
+using Tokamak.Tritium.APIs;
 
 namespace Tokamak.Tritium.Geometry
 {
     internal class MeshFactory : IAssetFactory
     {
-        public MeshFactory()
-        {
+        private readonly IGraphicsLayer m_gfxLayer;
 
+        public MeshFactory(IGraphicsLayer gfxLayer)
+        {
+            m_gfxLayer = gfxLayer;
         }
 
         public Type ForType => typeof(Mesh);
 
-        public Asset Build(string path)
+        public Asset Build()
         {
-            return new Mesh();
+            return new Mesh(m_gfxLayer);
         }
     }
 }

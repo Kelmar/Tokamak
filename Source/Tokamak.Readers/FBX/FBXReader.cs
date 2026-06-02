@@ -1,87 +1,181 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Numerics;
 using System.Text;
 
+using Tokamak.Assets;
 using Tokamak.Readers.FBX.Builders;
+using Tokamak.Readers.FBX.DOM;
+using Tokamak.Tritium.Geometry;
+using Tokamak.Tritium.Scene;
 
 namespace Tokamak.Readers.FBX
 {
-    public sealed class FBXReader : IDisposable
+    public sealed class FBXReader(IAssetBuilder builder)
     {
         internal const string BINARY_MAGIC = "Kaydara FBX Binary  ";
 
-        private readonly Stream m_input;
-        private readonly IParser m_parser;
-        private readonly bool m_closeStream;
+        private readonly IAssetBuilder m_builder = builder;
 
-        private readonly Encoding m_encoding;
+#if false
+        private List<FBXModel> GetModels(ReadState state)
+        {
+            var reader = new ModelBuilder(state);
+            return reader.Models;
+        }
 
-        public FBXReader(Stream input, Encoding? encoding = null, bool closeStream = true)
+        private List<FBXMaterial> GetMaterials(ReadState state)
+        {
+            var reader = new MaterialBuilder(this);
+            return reader.Materials;
+        }
+
+        private List<FBXMesh> GetMeshes(ReadState state)
+        {
+            var reader = new MeshBuilder(this);
+            return reader.Meshes;
+        }
+
+        public SceneMeshObject? ImportModel(string name)
+        {
+            var model = Models.WithName(name);
+
+            if (model == null)
+                return null;
+
+            SceneMeshObject? result = new SceneMeshObject();
+
+            try
+            {
+                foreach (var mesh in model.Meshes)
+                {
+                    var outMesh = new Mesh();
+
+                    if (!ImportMesh(outMesh, model, mesh))
+                        return null;
+
+                    result.AddMesh(outMesh);
+                }
+
+                var r = result;
+                result = null;
+
+                return r;
+            }
+            finally
+            {
+                // Only gets disposed if we don't return a success.
+                result?.Dispose();
+            }
+        }
+
+        private bool ImportMesh(Mesh outMesh, FBXModel? parent, FBXMesh mesh)
+        {
+            // Fall back to global materials if no parent.
+            List<FBXMaterial> materialObjects = parent == null ? Materials : parent.Materials;
+            List<MaterialParameters> materials;
+
+            if (materialObjects == null || materialObjects.Count == 0)
+                materials = [new MaterialParameters()]; // Add a basic default material at least.
+            else
+                materials = materialObjects.Select(m => m.Parameters).ToList();
+
+            var outPolys = new List<Polygon>(mesh.Polygons.Count);
+            int lastMaterialID = 0;
+
+            foreach (var p in mesh.Polygons)
+            {
+                var poly = new Polygon();
+
+                poly.Vectors.AddRange(p.Vectors);
+                poly.Normals.AddRange(p.Normals);
+                poly.TexCoord.AddRange(p.TexCoord);
+
+                poly.Colors.AddRange(p.Material.Select(mid =>
+                {
+                    if (mid >= materials.Count)
+                        mid = lastMaterialID;
+
+                    lastMaterialID = mid;
+
+                    return materials[mid].DiffuseColor;
+                }));
+
+                outPolys.AddRange(poly.SplitIntoTriangles());
+            }
+
+            outMesh.SetData(outPolys);
+
+            return true;
+        }
+
+        public bool ImportMesh(Mesh outMesh, string name)
+        {
+            var mesh = Meshes.WithName(name);
+
+            if (mesh == null)
+                return false;
+
+            var model = Models.FirstOrDefault(m => m.MeshIds.Contains(mesh.ID));
+
+            return ImportMesh(outMesh, model, mesh);
+        }
+#endif
+
+        public void Import(string filename)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(filename, nameof(filename));
+
+            using var input = File.OpenRead(filename);
+            Import(input);
+        }
+
+        public void Import(Stream input)
         {
             ArgumentNullException.ThrowIfNull(input, nameof(input));
 
-            if (!input.CanRead)
-                throw new ArgumentException("Stream not open for reading", nameof(input));
+            var state = new ReadState(ParseStream(input));
 
-            m_input = input;
-            m_closeStream = closeStream;
-
-            // Use ASCII by default?
-            m_encoding = encoding ?? Encoding.UTF8;
-
-            m_input.Seek(0, SeekOrigin.Begin);
-
-            string magic = ReadString(21);
-
-            if (magic == BINARY_MAGIC)
-                m_parser = new BinaryFormatReader(m_input, m_encoding);
-            else
-            {
-                // TODO: Create a text parser
-                throw new NotImplementedException("Text based parser for FBX not written yet.");
-            }
+            BuildTextures(state);
+            BuildMaterials(state);
+            BuildModels(state);
+            BuildMeshes(state);
         }
 
-        public FBXReader(string filename)
-            : this(File.OpenRead(filename))
-        {
-        }
-
-        public void Dispose()
-        {
-            if (m_closeStream)
-            {
-                m_input.Close();
-                m_input.Dispose();
-            }
-
-            GC.SuppressFinalize(this);
-        }
-
-        private string ReadString(int length)
+        private string ReadString(Stream input, Encoding encoding, int length)
         {
             byte[] buffer = new byte[length];
 
-            int rd = m_input.Read(buffer);
+            int rd = input.Read(buffer);
 
             if (rd != buffer.Length)
                 throw new Exception($"Unable to read string of length {length}");
 
-            return m_encoding.GetString(buffer).TrimEnd('\0');
+            return encoding.GetString(buffer).TrimEnd('\0');
         }
 
-        private Node GetNodes()
+        private Node ParseStream(Stream input)
         {
             List<Node> children = [];
 
+            if (!input.CanRead)
+                throw new ArgumentException("Stream not open for reading", nameof(input));
+
+            input.Seek(0, SeekOrigin.Begin);
+
+            Encoding encoding = Encoding.UTF8; // Use ASCII by default?
+
+            string magic = ReadString(input, encoding, 21);
+
+            IParser parser = (magic == BINARY_MAGIC) ?
+                new BinaryFormatReader(input, encoding) :
+                throw new NotImplementedException("Text based parser for FBX not written yet."); // TODO: Create a text parser
+
             for (;;)
             {
-                Node? node = m_parser.ReadNode();
+                Node? node = parser.ReadNode();
 
                 if (node == null)
                     break;
@@ -97,76 +191,57 @@ namespace Tokamak.Readers.FBX
             };
         }
 
-        internal static T MapCompoundTo<T>(IEnumerable<CompoundProperty> fbxProps)
-            where T : class, new()
+        private IEnumerable<T> ParseType<T>(ReadState state, string type, Func<FBXObject, T> reader)
         {
-            Type type = typeof(T);
-            var typeProps = type.GetProperties().Where(p => p.CanWrite && p.CanRead);
+            var items = state.ObjectGraph
+                .GetObjectsOfType(type)
+                .ToList();
 
-            T result = new();
+            foreach (var item in items)
+                yield return reader(item);
+        }
 
-            foreach (var typeProp in typeProps)
-            {
-                var notMapped = typeProp.GetCustomAttribute<NotMappedAttribute>();
+        private void BuildTextures(ReadState state)
+        {
+            //ParseType(state, "texture", o => {});
+        }
 
-                if (notMapped != null)
-                    continue;
+        private MaterialParameters ReadMaterial(FBXObject obj)
+        {
+            var result = obj.MapTo<MaterialParameters>();
 
-                var colAttr = typeProp.GetCustomAttribute<ColumnAttribute>();
+            result.Id = obj.Id;
+            result.Name = obj.Name;
 
-                string name = colAttr?.Name ?? typeProp.Name;
+            string? shading = obj.Node.Children["ShadingModel"].FirstOrDefault()?.Properties[0].AsString();
 
-                var fbxProp = fbxProps.FirstOrDefault(p => p.Name == name);
-
-                if (fbxProp == null)
-                    continue;
-
-                try
-                {
-                    object data = Convert.ChangeType(fbxProp.Data, typeProp.PropertyType);
-                    typeProp.SetValue(result, data);
-                }
-                catch
-                {
-                    // TODO: Might be worthwhile logging that we can't set the value.
-                    continue;
-                }
-            }
+            if (!String.IsNullOrWhiteSpace(shading))
+                result.ShadingModel = shading.ToLower();
 
             return result;
         }
 
-        internal static T MapCompoundTo<T>(Node rootNode)
-           where T : class, new()
+        private void BuildMaterials(ReadState state)
         {
-            Type type = typeof(T);
+            var materials = ParseType(state, "material", ReadMaterial).ToList();
 
-            var tableAttr = type.GetCustomAttribute<TableAttribute>();
-
-            string subNode = tableAttr?.Name ?? type.Name;
-
-            var node = rootNode.Children[subNode].First();
-
-            var fbxProps = CompoundProperty.BuildAllFor(node);
-
-            return MapCompoundTo<T>(fbxProps);
+            state.Results.AddRange(materials.Select(m => new ImportResult
+            {
+                InternalId = m.Id,
+                Name = m.Name,
+                ResourceType = ImportType.Material,
+                Result = m
+            }));
         }
 
-        public IEnumerable<object> Import()
+        private void BuildModels(ReadState state)
         {
-            Node dataRoot = GetNodes();
+            //ParseType(state, "model", o => {});
+        }
 
-            var settings = MapCompoundTo<GlobalSettings>(dataRoot);
-
-            var objectGraph = new ObjectGraph(dataRoot);
-
-            // Build the root models
-            var rootObjects = objectGraph.GetChildObjects(0)
-                .Where(o => o.Name.ToLower() == "model")
-                .Select(node => new ModelBuilder(settings, objectGraph, node))
-                .ToList();
-
-            return rootObjects.SelectMany(o => o.Meshes.Select(m => m.Mesh));
+        private void BuildMeshes(ReadState state)
+        {
+            //ParseType(state, "geometry", o => {});
         }
     }
 }

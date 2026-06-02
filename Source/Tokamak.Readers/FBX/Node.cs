@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Tokamak.Readers.FBX
@@ -19,7 +20,7 @@ namespace Tokamak.Readers.FBX
     {
         public required string Name { get; init; }
 
-        public required List<Property> Properties { get; init; }
+        public required List<NodeProperty> Properties { get; init; }
 
         public required ILookup<string, Node> Children { get; init; }
 

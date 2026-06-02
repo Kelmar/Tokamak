@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
-using Tokamak.Tritium.Geometry;
+using Tokamak.Readers.FBX.DOM;
 
 namespace Tokamak.Readers.FBX.Builders
 {
@@ -48,7 +48,7 @@ namespace Tokamak.Readers.FBX.Builders
         /// <param name="polygon">The polygon to add the normal to.</param>
         /// <param name="indexNo">The index of the index to use if needed.</param>
         /// <param name="index">The vertex index to add the normal for.</param>
-        public void AddNormal(Polygon polygon, int polyIdx, int indexNo, int index)
+        public void AddNormal(FBXPolygon polygon, int polyIdx, int indexNo, int index)
         {
             int i = m_indexMapper.MapIndex(polyIdx, indexNo, index);
 
@@ -56,7 +56,7 @@ namespace Tokamak.Readers.FBX.Builders
                 polygon.Normals.Add(m_data[i]);
         }
 
-        public void FinalizeNormals(Polygon polygon)
+        public void FinalizeNormals(FBXPolygon polygon)
         {
 
         }

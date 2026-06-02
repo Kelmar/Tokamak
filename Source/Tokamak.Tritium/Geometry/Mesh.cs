@@ -4,6 +4,7 @@ using System.Linq;
 using Tokamak.Assets;
 using Tokamak.Mathematics;
 
+using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Buffers;
 using Tokamak.Tritium.Buffers.Formats;
 
@@ -11,23 +12,34 @@ namespace Tokamak.Tritium.Geometry
 {
     public class Mesh : Asset
     {
-        private List<Polygon> m_polygons = new();
+        private readonly IVertexBuffer<VectorFormatPNCT> m_vertexBuffer;
+        private readonly IElementBuffer m_elementBuffer;
 
-        public List<Polygon> Polygons
+        public Mesh(IGraphicsLayer graphicsLayer)
         {
-            get => m_polygons;
-            set => m_polygons = value?.SelectMany(p => p.SplitIntoTriangles()).ToList() ?? new();
+            m_vertexBuffer = graphicsLayer.GetVertexBuffer<VectorFormatPNCT>(BufferUsage.Static);
+            m_elementBuffer = graphicsLayer.GetElementBuffer(BufferUsage.Static);
+
+            IndexCount = 0;
         }
 
-        public int ToBuffer(IVertexBuffer<VectorFormatPNCT> vertexBuffer, IElementBuffer elementBuffer)
+        public bool IsEmpty => IndexCount == 0;
+
+        public int IndexCount { get; private set; }
+
+        public void SetData(IEnumerable<Polygon> polygons)
         {
+            var polyData = polygons
+                .SelectMany(p => p.SplitIntoTriangles())
+                .ToList();
+
             // Dictionary is used to filter out duplicate vectors.
-            int preAllocate = m_polygons.Select(p => p.Vectors.Count).Sum();
+            int preAllocate = polyData.Sum(p => p.Vectors.Count);
             var vectorFilter = new Dictionary<VectorFormatPNCT, uint>(preAllocate);
 
             var indexList = new List<uint>(preAllocate);
 
-            foreach (var poly in m_polygons)
+            foreach (var poly in polygons)
             {
                 var items = ToVectorFormat(poly).ToList();
 
@@ -44,10 +56,10 @@ namespace Tokamak.Tritium.Geometry
                 }
             }
 
-            vertexBuffer.Set(vectorFilter.Keys.ToArray());
-            elementBuffer.Set(indexList.ToArray());
+            m_vertexBuffer.Set(vectorFilter.Keys.ToArray());
+            m_elementBuffer.Set(indexList.ToArray());
 
-            return indexList.Count;
+            IndexCount = indexList.Count;
         }
 
         private IEnumerable<VectorFormatPNCT> ToVectorFormat(Polygon poly)
@@ -62,6 +74,14 @@ namespace Tokamak.Tritium.Geometry
                     TexCoord = poly.TexCoord[i]
                 };
             }
+        }
+
+        public void Draw(ICommandList commandList)
+        {
+            m_elementBuffer.Activate();
+            m_vertexBuffer.Activate();
+
+            commandList.DrawElements(IndexCount);
         }
     }
 }

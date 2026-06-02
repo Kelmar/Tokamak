@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
+using Tokamak.Readers.FBX.Builders;
+using Tokamak.Readers.FBX.DOM;
 using Tokamak.Utilities;
 
 namespace Tokamak.Readers.FBX
@@ -14,6 +16,14 @@ namespace Tokamak.Readers.FBX
     {
         private readonly Node m_rootNode;
 
+        /// <summary>
+        /// Lookup from child to parents.
+        /// </summary>
+        private readonly ILookup<long, long> m_parentGraph;
+
+        /// <summary>
+        /// Lookup from parent down to children.
+        /// </summary>
         private readonly ILookup<long, long> m_objectGraph;
 
         private readonly ILookup<long, long> m_objectProperties;
@@ -22,17 +32,17 @@ namespace Tokamak.Readers.FBX
 
         private readonly ILookup<long, long> m_propertyProperties;
 
-        private readonly Dictionary<long, Node> m_objects;
-
-        public ObjectGraph(Node rootNode)
+        public ObjectGraph(ReadState state, Node rootNode)
         {
             m_rootNode = rootNode;
 
             var connections = GetConnections().ToList();
 
-            m_objectGraph = connections
-               .Where(c => c.Type == "OO")
-               .ToLookup(c => c.To, c => c.From);
+            var objectToObject = connections
+               .Where(c => c.Type == "OO");
+
+            m_parentGraph = objectToObject.ToLookup(c => c.From, c => c.To);
+            m_objectGraph = objectToObject.ToLookup(c => c.To, c => c.From);
 
             m_objectProperties = connections
                 .Where(c => c.Type == "OP")
@@ -46,8 +56,10 @@ namespace Tokamak.Readers.FBX
                 .Where(c => c.Type == "PP")
                 .ToLookup(c => c.To, c => c.From);
 
-            m_objects = GetObjects();
+            Objects = GetObjects(state);
         }
+
+        public Dictionary<long, FBXObject> Objects { get; }
 
         private IEnumerable<Connection> GetConnections()
         {
@@ -73,15 +85,31 @@ namespace Tokamak.Readers.FBX
             return (Convert.ToInt64(node.Properties[0].Data), node);
         }
 
-        private Dictionary<long, Node> GetObjects()
+        /// <summary>
+        /// Get all nodes as a dictionary where they can be looked up by ID.
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<long, FBXObject> GetObjects(ReadState state)
         {
-            var objectsNodes = m_rootNode.Children["Objects"];
+            var objectNodes = m_rootNode.Children["objects"];
 
-            return objectsNodes
-                .SelectMany(n => n.Children.Flatten())
-                .Select(WithIndex)
-                .Where(x => x.Id != -1)
-                .ToDictionary(x => x.Id, x => x.Node);
+            return objectNodes
+                .Select(n => new FBXObject(state, n))
+                .ToDictionary(x => x.Id, x => x);
+        }
+
+        public IEnumerable<FBXObject> GetObjectsOfType(string type)
+            => Objects.Values.WithFBXType(type);
+
+        public IEnumerable<long> GetParentIds(long childId) => m_parentGraph[childId];
+
+        public IEnumerable<Node> GetParentObjects(long childId)
+        {
+            foreach (var id in GetParentIds(childId))
+            {
+                if (Objects.TryGetValue(id, out var obj))
+                    yield return obj.Node;
+            }
         }
 
         public IEnumerable<long> GetChildObjectIds(long parentId) => m_objectGraph[parentId];
@@ -90,8 +118,8 @@ namespace Tokamak.Readers.FBX
         {
             foreach (var id in GetChildObjectIds(parentId))
             {
-                if (m_objects.TryGetValue(id, out var node))
-                    yield return node;
+                if (Objects.TryGetValue(id, out var obj))
+                    yield return obj.Node;
             }
         }
 

@@ -2,43 +2,47 @@
 using System.Linq;
 using System.Numerics;
 
-using Tokamak.Tritium.Geometry;
+using Tokamak.Readers.FBX.DOM;
 
 namespace Tokamak.Readers.FBX.Builders
 {
     /// <summary>
     /// Class for building mesh objects from FBX node.
     /// </summary>
-    internal class MeshBuilder : FBXObject
+    internal class MeshBuilder : Builder
     {
-        private readonly ModelBuilder m_parent;
-
-        public MeshBuilder(ModelBuilder parent, Node node)
-            : base(parent, node)
+        public MeshBuilder(ReadState state)
+            : base(state)
         {
-            m_parent = parent;
-
-            Mesh = new Mesh();
-
-            ReadMeshDetails();
+            Meshes = ReadMeshes().ToList();
         }
 
-        /// <summary>
-        /// Engine mesh object that was built up from this node's data.
-        /// </summary>
-        public Mesh Mesh { get; }
-
-        private List<int> ReadIndexData()
+        private IEnumerable<FBXMesh> ReadMeshes()
         {
-            return Node
+            var meshNodes = State.RootNode.Children["geometry"].ToList();
+
+            foreach (var node in meshNodes)
+            {
+                var mesh = new FBXMesh(State, node);
+                ReadMeshDetails(mesh);
+
+                yield return mesh;
+            }
+        }
+
+        public List<FBXMesh> Meshes { get; }
+
+        private List<int> ReadIndexData(FBXMesh mesh)
+        {
+            return mesh.Node
                 .Children["PolygonVertexIndex"]
                 .SelectMany(n => n.Properties[0].AsEnumerable<int>())
                 .ToList();
         }
 
-        private List<Vector3> ReadVertexData()
+        private List<Vector3> ReadVertexData(FBXMesh mesh)
         {
-            return Node
+            return mesh.Node
                 .Children["Vertices"]
                 .SelectMany(v => v.Properties[0].AsEnumerable<float>())
                 .ToList() // Chunk needs the list to be realized first.
@@ -47,20 +51,20 @@ namespace Tokamak.Readers.FBX.Builders
                 .ToList();
         }
 
-        private void ReadMeshDetails()
+        private void ReadMeshDetails(FBXMesh mesh)
         {
             // Pull raw data from FBX structure
-            var indices = ReadIndexData();
-            var vectors = ReadVertexData();
+            var indices = ReadIndexData(mesh);
+            var vectors = ReadVertexData(mesh);
 
             var maxVert = vectors.Max(v => v.Z);
 
-            var uvMapper = new UVMapper(Node.Children["LayerElementUV"].FirstOrDefault());
-            var normalMapper = new NormalMapper(Settings, Node.Children["LayerElementNormal"].FirstOrDefault());
-            var materialMapper = new MaterialMapper(Node.Children["LayerElementMaterial"].FirstOrDefault());
+            var uvMapper = new UVMapper(mesh.Node.Children["LayerElementUV"].FirstOrDefault());
+            var normalMapper = new NormalMapper(Settings, mesh.Node.Children["LayerElementNormal"].FirstOrDefault());
+            var materialMapper = new MaterialMapper(mesh.Node.Children["LayerElementMaterial"].FirstOrDefault());
 
             // Generate a list of polygons with flat data.
-            Mesh.Polygons = ToPolys(indices, vectors, uvMapper, materialMapper, normalMapper).ToList();
+            mesh.Polygons = ToPolys(indices, vectors, uvMapper, materialMapper, normalMapper).ToList();
         }
 
         /// <summary>
@@ -70,7 +74,7 @@ namespace Tokamak.Readers.FBX.Builders
         /// <param name="vectors"></param>
         /// <param name="normals"></param>
         /// <returns></returns>
-        private IEnumerable<Polygon> ToPolys(
+        private IEnumerable<FBXPolygon> ToPolys(
             IEnumerable<int> indices,
             List<Vector3> vectors,
             UVMapper uvMapper, 
@@ -81,7 +85,7 @@ namespace Tokamak.Readers.FBX.Builders
             // Note that the negative number is a bitwise negation of the last index
             // In this way zero is represented as -1
 
-            var current = new Polygon();
+            var current = new FBXPolygon();
             int indexNo = 0; // Index of the index.... >_<
             int polyIdx = 0;
 
@@ -90,21 +94,19 @@ namespace Tokamak.Readers.FBX.Builders
                 bool boundary = index < 0;
                 int i = boundary ? ~index : index;
 
-                Vector4 color = Vector4.One;
-
                 var materialIdx = materialMapper.GetMaterial(polyIdx, indexNo, i);
 
-                if (materialIdx < m_parent.Materials.Count)
-                {
-                    var material = m_parent.Materials[materialIdx];
-                    color = material.Parameters.DiffuseColor;
-                }
+                //if (materialIdx < m_parent.Materials.Count)
+                //{
+                //    var material = m_parent.Materials[materialIdx];
+                //    color = material.Parameters.DiffuseColor;
+                //}
 
                 current.Vectors.Add(vectors[i]);
-                current.Colors.Add(color);
+                normalMapper.AddNormal(current, polyIdx, indexNo, i);
                 current.TexCoord.Add(uvMapper.GetUV(polyIdx, indexNo, i));
 
-                normalMapper.AddNormal(current, polyIdx, indexNo, i);
+                current.Material.Add(materialIdx);
 
                 if (boundary)
                 {
@@ -112,7 +114,7 @@ namespace Tokamak.Readers.FBX.Builders
                     yield return current;
 
                     ++polyIdx;
-                    current = new Polygon();
+                    current = new FBXPolygon();
                 }
 
                 ++indexNo;

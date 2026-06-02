@@ -1,63 +1,74 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
-namespace Tokamak.Readers.FBX.Builders
+namespace Tokamak.Readers.FBX.DOM
 {
-    internal abstract class FBXObject : IFBXObject
+    internal class FBXObject
     {
-        private FBXObject(IFBXObject? parent, GlobalSettings settings, ObjectGraph objectGraph, Node node)
+        public FBXObject(ReadState state, Node node)
         {
-            Parent = parent;
-            Settings = settings;
-            ObjectGraph = objectGraph;
+            State = state;
             Node = node;
 
-            ID = Node.Properties[0].AsLong();
-            Name = Node.Properties[1].AsString();
+            Id = Node.Properties[0].AsLong();
+
+            (Name, SubClass) = ParseName();
 
             ChildNodes = ObjectGraph
-                .GetChildObjects(ID)
+                .GetChildObjects(Id)
                 .ToList();
 
-            Properties = CompoundProperty
+            Properties = ObjectProperty
                 .BuildAllFor(node)
                 .ToList();
+
+            ParentIds = ObjectGraph.GetParentIds(Id).ToList();
+            ParentNodes = ObjectGraph.GetParentObjects(Id).ToList();
         }
 
-        protected FBXObject(GlobalSettings settings, ObjectGraph objectGraph, Node node)
-            : this(null, settings, objectGraph, node)
+        private (string, string) ParseName()
         {
+            string name = Node.Properties[1].AsString();
+
+            int idx = name.IndexOf("::");
+
+            return (idx != -1) ?
+                (name.Substring(0, idx), name.Substring(idx + 2)) :
+                (name, String.Empty);
         }
 
-        protected FBXObject(IFBXObject parent, Node node)
-            : this(parent, parent.Settings, parent.ObjectGraph, node)
-        {
-        }
+        public ReadState State { get; }
 
-        public GlobalSettings Settings { get; }
+        public GlobalSettings Settings => State.Settings;
 
         /// <summary>
         /// The object graph for finding child objects.
         /// </summary>
-        public ObjectGraph ObjectGraph { get; }
-
-        /// <summary>
-        /// The object which owns this child.
-        /// </summary>
-        /// <remarks>
-        /// This value is NULL for root objects.
-        /// </remarks>
-        public IFBXObject? Parent { get; }
+        public ObjectGraph ObjectGraph => State.ObjectGraph;
 
         /// <summary>
         /// The unique ID of this object in the file.
         /// </summary>
-        public long ID { get; }
+        public long Id { get; }
 
         /// <summary>
         /// The name of this mesh in the file.
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// The type of object this is.
+        /// </summary>
+        /// <remarks>
+        /// This is the node's name.
+        /// </remarks>
+        public string Type => Node.Name;
+
+        /// <summary>
+        /// The parsed subclass (if any)
+        /// </summary>
+        public string SubClass { get; }
 
         /// <summary>
         /// The FBX node we read from.
@@ -70,8 +81,18 @@ namespace Tokamak.Readers.FBX.Builders
         public IEnumerable<Node> ChildNodes { get; }
 
         /// <summary>
+        /// List of parent node IDs that own this object.
+        /// </summary>
+        public List<long> ParentIds { get; }
+
+        /// <summary>
+        /// List of parent nodes that own this object.
+        /// </summary>
+        public List<Node> ParentNodes { get; }
+
+        /// <summary>
         /// List of compound properties detected for this node.
         /// </summary>
-        public IEnumerable<CompoundProperty> Properties { get; }
+        public List<ObjectProperty> Properties { get; }
     }
 }

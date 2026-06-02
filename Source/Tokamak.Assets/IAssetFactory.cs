@@ -6,6 +6,6 @@ namespace Tokamak.Assets
     {
         Type ForType { get; }
 
-        Asset Build(string path);
+        Asset Build();
     }
 }

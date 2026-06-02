@@ -8,9 +8,12 @@ using Tokamak.Utilities;
 
 namespace Tokamak.Readers.FBX
 {
-    internal class CompoundProperty
+    /// <summary>
+    /// Parsed Properties70 of an object node.
+    /// </summary>
+    internal class ObjectProperty
     {
-        private CompoundProperty(Node node, string name, string type, object data)
+        private ObjectProperty(Node node, string name, string type, object data)
         {
             Node = node;
             Name = name;
@@ -28,7 +31,7 @@ namespace Tokamak.Readers.FBX
 
         public override string ToString() => $"{Name}: {Data}";
 
-        public static CompoundProperty? Build(Node node)
+        public static ObjectProperty? Build(Node node)
         {
             string name = node.Properties[0].ToString();
             string type = node.Properties[1].ToString();
@@ -38,10 +41,10 @@ namespace Tokamak.Readers.FBX
             if (data == null)
                 return null;
 
-            return new CompoundProperty(node, name, type, data);
+            return new ObjectProperty(node, name, type, data);
         }
 
-        public static IEnumerable<CompoundProperty> BuildAllFor(Node node)
+        public static IEnumerable<ObjectProperty> BuildAllFor(Node node)
         {
             return node.Children["Properties70"]
                 .SelectMany(p => p.Children["P"])
@@ -75,6 +78,9 @@ namespace Tokamak.Readers.FBX
                 "vector2d" => ReadVector2(node),
                 "vector3d" => ReadVector3(node),
                 "vector4d" => ReadVector4(node),
+                "lcl translation" => ReadVector3(node),
+                "lcl rotation" => ReadVector3(node),
+                "lcl scaling" => ReadVector3(node),
                 _ => null
             };
         }
@@ -98,7 +104,7 @@ namespace Tokamak.Readers.FBX
                 if ((i + idx) >= node.Properties.Count)
                     yield return 0;
 
-                Property prop = node.Properties[i + idx];
+                NodeProperty prop = node.Properties[i + idx];
 
                 if (!prop.Type.IsNumeric)
                     continue;

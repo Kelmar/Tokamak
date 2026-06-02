@@ -80,7 +80,7 @@ namespace Tokamak.Assets
             }
 
             m_log.Debug("Loading {assetType} asset: {assetPath}", assetType, path);
-            var result = (TAsset)factory.Build(path);
+            var result = (TAsset)factory.Build();
 
             if (result == null)
             {

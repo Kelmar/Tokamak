@@ -14,6 +14,8 @@ namespace Tokamak.Readers.FBX
         private readonly BinaryReader m_reader;
         private readonly Encoding m_encoding;
 
+        private readonly Func<UInt64> m_readSize;
+
         public BinaryFormatReader(Stream input, Encoding encoding)
         {
             m_input = input;
@@ -25,7 +27,17 @@ namespace Tokamak.Readers.FBX
 
             m_input.Seek(2, SeekOrigin.Current); // Ignore 0x1A 0x00 (validate these bytes?)
 
+            /*
+             * A document suggests that byte 22 might be an endian flag:
+             * 0x00 = Little endian
+             * 0x01 = Big endian
+             */
+            
             uint version = m_reader.ReadUInt32();
+
+            m_readSize = version < 7500 ?
+                () => m_reader.ReadUInt32() :
+                () => m_reader.ReadUInt64(); // Version 7.5 and later uses 64-bit lengths for nodes.
         }
 
         private string ReadString(int length)
@@ -39,6 +51,22 @@ namespace Tokamak.Readers.FBX
              * Trim staring at null character.
              */
 
+            /*
+             * Turns out this is not garbage, like I thought it might have been.
+             * 
+             * Apparently the FBX standard uses this to denote some sort of class/sub-class
+             * pair.  In the text file version this would be denoted with "::", but in the binary
+             * file for some reason this is denoted with 0x00, 0x01....
+             * 
+             * For now we'll just replace this sequence with "::" to match that of the text
+             * file version and to make parsing easier elsewhere when we start sorting
+             * through the read in nodes.
+             */
+
+            s = s.Replace("\0\x01", "::");
+
+            // If we still have what looks like a null character, we'll continue to trim.
+
             int idx = s.IndexOf('\0');
 
             if (idx > -1)
@@ -51,9 +79,9 @@ namespace Tokamak.Readers.FBX
         {
             long startPos = m_input.Position;
 
-            uint endOffset = m_reader.ReadUInt32();   // Offset to end of file?
-            uint numProps = m_reader.ReadUInt32();    // Count of properties
-            uint propListLen = m_reader.ReadUInt32(); // Length of properties in bytes
+            ulong endOffset = m_readSize();   // Expected stream position after read
+            ulong numProps = m_readSize();    // Count of properties
+            ulong propListLen = m_readSize(); // Length of properties in bytes
 
             byte nameLen = m_reader.ReadByte();
 
@@ -62,14 +90,14 @@ namespace Tokamak.Readers.FBX
 
             string name = ReadString(nameLen);
 
-            var properties = new List<Property>((int)numProps);
+            var properties = new List<NodeProperty>((int)numProps);
             var children = new List<Node>();
 
-            for (int i = 0; i < numProps; ++i)
+            for (ulong i = 0; i < numProps; ++i)
                 properties.Add(ReadProperty());
 
             // Start reading nested nodes until "null"
-            while (m_input.Position < endOffset)
+            while ((ulong)m_input.Position < endOffset)
             {
                 var nested = ReadNode();
 
@@ -79,9 +107,6 @@ namespace Tokamak.Readers.FBX
                 children.Add(nested);
             }
 
-            //long resPos = m_input.Position;
-            //long len = resPos - startPos;
-
             var result = new Node
             {
                 Name = name,
@@ -89,10 +114,19 @@ namespace Tokamak.Readers.FBX
                 Properties = properties
             };
 
+            /*
+             * While this might be handy for some sanity checks, we area effectively relying
+             * on whatever that wrote the FBX file got it right to begin with.  Or that it
+             * didn't get corrupted on disk somehow.
+             */
+            //Debug.Assert(
+            //    endOffset == (ulong)m_input.Position,
+            //    "FBX read desync issue, stream position is not the expected value");
+
             return result;
         }
 
-        private Property ReadProperty()
+        private NodeProperty ReadProperty()
         {
             char c = (char)m_reader.ReadByte();
 
@@ -122,14 +156,14 @@ namespace Tokamak.Readers.FBX
                 _ => throw new Exception($"Unknown property type '{c}'")
             };
 
-            return new Property
+            return new NodeProperty
             {
                 Type = type,
                 Data = data
             };
         }
 
-        private byte[] Decompress(byte[] data)
+        private static byte[] Decompress(byte[] data)
         {
             using var inStream = new MemoryStream(data);
             using var zipStream = new ZLibStream(inStream, CompressionMode.Decompress);

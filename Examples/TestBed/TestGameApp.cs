@@ -36,7 +36,7 @@ namespace TestBed
 
         //private readonly List<IRenderable> m_renderers = new List<IRenderable>();
 
-        private readonly List<SceneMeshObject> m_meshes = [];
+        private readonly SceneMeshObject m_mesh = new();
 
         private int m_frameCount;
         private DateTime m_lastCheck = DateTime.UtcNow;
@@ -53,7 +53,8 @@ namespace TestBed
          * This is the X Bot model from Maxima.
          * I'm not sure what the license is for that, so I'm not adding it to the repo.
          */
-        public const string FILE = "resources/xbot.fbx";
+        //public const string FILE = "resources/xbot.fbx";
+        public const string FILE = "resources/amy.fbx";
 
         public TestGameApp(ILogger log, IGraphicsLayer layer)
         {
@@ -63,11 +64,8 @@ namespace TestBed
 
         public void Dispose()
         {
-            foreach (var m in m_meshes)
-            {
-                m_scene.RemoveObject(m);
-                m.Dispose();
-            }
+            m_scene.RemoveObject(m_mesh);
+            m_mesh.Dispose();
 
             m_scene?.Dispose();
             m_context?.Dispose();
@@ -89,9 +87,6 @@ namespace TestBed
 
             LoadObject();
 
-            foreach (var m in m_meshes)
-                m_scene.AddObject(m);
-
             m_scene.Camera.Location = new Vector3(0, 125, 175);
             //m_scene.Camera.Location = new Vector3(0, 0, 5);
             //m_scene.Camera.LookAt = Vector3.Zero;
@@ -108,17 +103,14 @@ namespace TestBed
 
         void LoadObject()
         {
-            using var reader = new FBXReader(File.OpenRead(FILE));
+            //using var reader = new FBXReader(File.OpenRead(FILE));
 
-            var objects = reader.Import().ToList();
+            //var objects = reader.Import().ToList();
 
-            var meshes = objects.OfType<Mesh>().Select(m => {
-                var obj = new SceneMeshObject(m_gfxLayer);
-                obj.SetMesh(m);
-                return obj;
-            });
+            //foreach (var item in objects.OfType<Mesh>())
+            //    m_mesh.AddMesh(item);
 
-            m_meshes.AddRange(meshes);
+            //m_scene.AddObject(m_mesh);
         }
 
         Font LoadFont()
@@ -366,8 +358,7 @@ namespace TestBed
             while (m_rot >= 360)
                 m_rot -= 360;
 
-            foreach (var m in m_meshes)
-                m.Rotation = new Vector3(0, m_rot, 0);
+            m_mesh.Rotation = new Vector3(0, m_rot, 0);
         }
 
         private void ComputeFPS()
