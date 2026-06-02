@@ -39,6 +39,13 @@ namespace Tokamak.Readers.FBX
              * Trim staring at null character.
              */
 
+            /*
+             * Turns out this is not "garbage", like I thought it might have been.
+             * Apparently the FBX "standard" uses this to denote some sort of class/sub-class
+             * pair.  In the text file version this would be denoted with "::", but in the binary
+             * file for some reason this is denoted with 0x00, 0x01....
+             */
+
             int idx = s.IndexOf('\0');
 
             if (idx > -1)

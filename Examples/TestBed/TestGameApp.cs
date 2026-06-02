@@ -47,13 +47,13 @@ namespace TestBed
         //public const string FILE = "resources/blox.fbx";
         //public const string FILE = "resources/susan.fbx";
         //public const string FILE = "resources/plane.fbx";
-        //public const string FILE = "resources/chest.fbx";
+        public const string FILE = "resources/chest.fbx";
 
         /*
          * This is the X Bot model from Maxima.
          * I'm not sure what the license is for that, so I'm not adding it to the repo.
          */
-        public const string FILE = "resources/xbot.fbx";
+        //public const string FILE = "resources/xbot.fbx";
 
         public TestGameApp(ILogger log, IGraphicsLayer layer)
         {
