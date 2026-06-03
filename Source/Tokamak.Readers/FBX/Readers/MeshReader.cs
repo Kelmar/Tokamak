@@ -1,19 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
 using Tokamak.Readers.FBX.Mappers;
 using Tokamak.Readers.FBX.DOM;
-using System;
 
-namespace Tokamak.Readers.FBX.Builders
+namespace Tokamak.Readers.FBX.Readers
 {
     /// <summary>
     /// Class for building mesh objects from FBX node.
     /// </summary>
-    internal class MeshBuilder
+    internal class MeshReader
     {
-        public MeshBuilder(ReadState state)
+        public MeshReader(ReadState state)
         {
             State = state;
         }

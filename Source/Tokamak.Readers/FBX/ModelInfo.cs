@@ -8,11 +8,6 @@ namespace Tokamak.Readers.FBX
 {
     internal class ModelInfo : ResultRecord
     {
-        public ModelInfo()
-            : base(ImportType.Model)
-        {
-        }
-
         public long ParentId { get; set; } = 0;
 
         [NotMapped]

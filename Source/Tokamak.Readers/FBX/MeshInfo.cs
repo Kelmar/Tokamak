@@ -9,11 +9,6 @@ namespace Tokamak.Readers.FBX
 {
     internal class MeshInfo : ResultRecord
     {
-        public MeshInfo()
-            : base(ImportType.Mesh)
-        {
-        }
-
         [NotMapped]
         public long ModelId { get; set; }
 

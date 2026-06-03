@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-using Tokamak.Readers.FBX.Builders;
+using Tokamak.Readers.FBX.Readers;
 using Tokamak.Readers.FBX.Mappers;
 
 namespace Tokamak.Readers.FBX

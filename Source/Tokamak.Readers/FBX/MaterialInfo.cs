@@ -6,11 +6,6 @@ namespace Tokamak.Readers.FBX
 {
     internal class MaterialInfo : ResultRecord
     {
-        public MaterialInfo()
-            : base(ImportType.Material)
-        {
-        }
-
         [NotMapped]
         public string ShadingModel { get; set; } = "Phong";
 

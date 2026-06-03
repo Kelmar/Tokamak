@@ -6,7 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Tokamak.Readers.FBX
+namespace Tokamak.Readers.FBX.Readers
 {
     internal class BinaryFormatReader : IParser
     {

@@ -16,7 +16,7 @@ namespace Tokamak.Hosting.Config
 
         internal Configuration(IEnumerable<KeyValuePair<string, string>> items)
         {
-            m_items = new(items, StringComparer.InvariantCultureIgnoreCase);
+            m_items = new(items, StringComparer.OrdinalIgnoreCase);
 
             Root = this;
             Path = String.Empty;

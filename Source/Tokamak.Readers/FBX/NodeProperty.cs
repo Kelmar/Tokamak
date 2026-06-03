@@ -30,25 +30,15 @@ namespace Tokamak.Readers.FBX
             if (Type == PropertyType.RawBinary)
                 return "[RAW BINARY]";
 
-            switch (Type)
+            return Type switch
             {
-            case PropertyType.FloatArray:
-                return DumpArray<float>();
-
-            case PropertyType.DoubleArray:
-                return DumpArray<double>();
-
-            case PropertyType.LongArray:
-                return DumpArray<long>();
-
-            case PropertyType.IntArray:
-                return DumpArray<int>();
-
-            case PropertyType.BoolArray:
-                return DumpArray<bool>();
-            }
-
-            return Data.ToString() ?? "[NULL]";
+                PropertyType.FloatArray => DumpArray<float>(),
+                PropertyType.DoubleArray => DumpArray<double>(),
+                PropertyType.LongArray => DumpArray<long>(),
+                PropertyType.IntArray => DumpArray<int>(),
+                PropertyType.BoolArray => DumpArray<bool>(),
+                _ => Data.ToString() ?? "[NULL]",
+            };
         }
 
         public IEnumerable<T> AsEnumerable<T>()
@@ -72,7 +62,7 @@ namespace Tokamak.Readers.FBX
             Type t = typeof(TTo);
 
             var rdr = (IEnumerable<TFrom>?)Data;
-            return rdr?.Select(i => (TTo)Convert.ChangeType(i, t)) ?? Enumerable.Empty<TTo>();
+            return rdr?.Select(i => (TTo)Convert.ChangeType(i, t)) ?? [];
         }
 
         /// <summary>
@@ -85,7 +75,7 @@ namespace Tokamak.Readers.FBX
         private string DumpArray<T>()
             where T : struct
         {
-            IEnumerable<T> items = (Data as IEnumerable<T>) ?? new List<T>();
+            IEnumerable<T> items = (Data as IEnumerable<T>) ?? [];
 
             int count = items.Count();
             string itemStr = String.Join(", ", items.Take(Math.Min(count, 10)));
@@ -116,7 +106,7 @@ namespace Tokamak.Readers.FBX
 
     public static class PropertyTypeEx
     {
-        private static HashSet<PropertyType> s_numericTypes =
+        private static readonly HashSet<PropertyType> s_numericTypes =
         [
             PropertyType.Float,
             PropertyType.Double,
@@ -125,7 +115,7 @@ namespace Tokamak.Readers.FBX
             PropertyType.SignedLong,
         ];
 
-        private static HashSet<PropertyType> s_arrayTypes =
+        private static readonly HashSet<PropertyType> s_arrayTypes =
         [
             PropertyType.FloatArray,
             PropertyType.DoubleArray,

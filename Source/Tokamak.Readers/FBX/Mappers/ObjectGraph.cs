@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-using Tokamak.Readers.FBX.Builders;
+using Tokamak.Readers.FBX.Readers;
 using Tokamak.Readers.FBX.DOM;
 using Tokamak.Utilities;
 

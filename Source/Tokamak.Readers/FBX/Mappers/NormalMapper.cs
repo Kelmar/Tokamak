@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
-using Tokamak.Readers.FBX.Builders;
+using Tokamak.Readers.FBX.Readers;
 using Tokamak.Readers.FBX.DOM;
 
 namespace Tokamak.Readers.FBX.Mappers

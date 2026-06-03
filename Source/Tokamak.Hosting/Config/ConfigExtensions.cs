@@ -107,7 +107,7 @@ namespace Tokamak.Hosting.Config
             [StringSyntax("Regex")] string pattern)
         {
             var regex = new Regex(pattern, RegexOptions.IgnoreCase);
-            var result = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var item in Environment.GetEnvironmentVariables())
             {

@@ -8,7 +8,7 @@ using Tokamak.Assets;
 
 using Tokamak.Utilities;
 
-using Tokamak.Readers.FBX.Builders;
+using Tokamak.Readers.FBX.Readers;
 using Tokamak.Readers.FBX.Mappers;
 
 namespace Tokamak.Readers.FBX
@@ -151,7 +151,7 @@ namespace Tokamak.Readers.FBX
              */
         }
 
-        private string ReadString(Stream input, Encoding encoding, int length)
+        private static string ReadString(Stream input, Encoding encoding, int length)
         {
             byte[] buffer = new byte[length];
 
@@ -163,7 +163,7 @@ namespace Tokamak.Readers.FBX
             return encoding.GetString(buffer).TrimEnd('\0');
         }
 
-        private Node ParseStream(Stream input)
+        private static Node ParseStream(Stream input)
         {
             List<Node> children = [];
 
@@ -198,7 +198,7 @@ namespace Tokamak.Readers.FBX
             };
         }
 
-        private List<T> ReadTypes<T>(ReadState state, string type, Func<FBXObject, T?> reader)
+        private static List<T> ReadTypes<T>(ReadState state, string type, Func<FBXObject, T?> reader)
             where T : ResultRecord
         {
             return state.ObjectGraph
@@ -226,30 +226,6 @@ namespace Tokamak.Readers.FBX
             return result;
         }
 
-        private ModelInfo? ReadModel(FBXObject obj)
-        {
-            if (obj.Parents.Count() > 0)
-                return null; // Only import root items.
-
-            var materialIds = obj.Children
-                .WithFBXType("Material")
-                .Select(o => o.Id)
-                .ToList();
-
-            var meshIds = obj.Children
-                .WithFBXType("Geometry")
-                .Select(o => o.Id)
-                .ToList();
-
-            return new ModelInfo
-            {
-                Id = obj.Id,
-                Name = obj.Name,
-                MaterialIds = materialIds,
-                MeshIds = meshIds
-            };
-        }
-
         private List<object> ReadTextures(ReadState state)
         {
             //ReadTypes(state, "texture", o => {});
@@ -260,11 +236,14 @@ namespace Tokamak.Readers.FBX
             => ReadTypes(state, "material", ReadMaterial);
 
         private List<ModelInfo> ReadModels(ReadState state)
-            => ReadTypes(state, "model", ReadModel);
+        {
+            var modelReader = new ModelReader(state);
+            return ReadTypes(state, "model", modelReader.ReadModel);
+        }
 
         private List<MeshInfo> ReadMeshes(ReadState state)
         {
-            var meshBuilder = new MeshBuilder(state);
+            var meshBuilder = new MeshReader(state);
             return ReadTypes(state, "geometry", meshBuilder.ReadMesh);
         }
     }

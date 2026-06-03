@@ -23,7 +23,7 @@ namespace Tokamak.Tritium.APIs
         {
             m_log = log;
             m_config = config.Value;
-            m_descriptors = descriptors.ToDictionary(a => a.ID, a => a, StringComparer.InvariantCultureIgnoreCase);
+            m_descriptors = descriptors.ToDictionary(a => a.ID, a => a, StringComparer.OrdinalIgnoreCase);
         }
 
         private IGraphicsDescriptor SelectAPI()
