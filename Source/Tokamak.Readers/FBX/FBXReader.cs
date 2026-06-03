@@ -6,6 +6,8 @@ using System.Text;
 
 using Tokamak.Assets;
 
+using Tokamak.Utilities;
+
 using Tokamak.Readers.FBX.Builders;
 using Tokamak.Readers.FBX.Mappers;
 
@@ -196,12 +198,13 @@ namespace Tokamak.Readers.FBX
             };
         }
 
-        private List<T> ReadTypes<T>(ReadState state, string type, Func<FBXObject, T> reader)
+        private List<T> ReadTypes<T>(ReadState state, string type, Func<FBXObject, T?> reader)
             where T : ResultRecord
         {
             return state.ObjectGraph
                 .GetObjectsOfType(type)
                 .Select(reader)
+                .NotNull()
                 .ToList();
         }
 
@@ -223,8 +226,11 @@ namespace Tokamak.Readers.FBX
             return result;
         }
 
-        private ModelInfo ReadModel(FBXObject obj)
+        private ModelInfo? ReadModel(FBXObject obj)
         {
+            if (obj.Parents.Count() > 0)
+                return null; // Only import root items.
+
             var materialIds = obj.Children
                 .WithFBXType("Material")
                 .Select(o => o.Id)

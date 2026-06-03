@@ -4,6 +4,7 @@ using System.Numerics;
 
 using Tokamak.Readers.FBX.Mappers;
 using Tokamak.Readers.FBX.DOM;
+using System;
 
 namespace Tokamak.Readers.FBX.Builders
 {
@@ -42,7 +43,12 @@ namespace Tokamak.Readers.FBX.Builders
 
         public MeshInfo ReadMesh(FBXObject obj)
         {
-            var modelObj = State.Models.Where(m => obj.ParentIds.Contains(m.Id)).FirstOrDefault();
+            var modelObj = State.Models.FirstOrDefault(m => 
+                StringComparer.CurrentCultureIgnoreCase.Equals(obj.SubClass, "Mesh") &&
+                obj.ParentIds.Contains(m.Id)
+            );
+
+            // Use all available materials by default.
             var materials = State.Materials;
 
             if (modelObj != null)

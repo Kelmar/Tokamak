@@ -14,17 +14,23 @@ namespace Tokamak.Readers.FBX
             ObjectGraph = objectGraph;
             Node = node;
 
-            Id = Node.Properties[0].AsLong();
-
-            (Name, SubClass) = ParseName();
+            Id = ParseId();
+            (Name, Class) = ParseNameClass();
+            SubClass = ParseSubClass();
 
             Properties = ObjectProperty
                 .BuildAllFor(node)
                 .ToList();
         }
 
-        private (string, string) ParseName()
+        private long ParseId()
+            => Node.Properties.Count < 1 ? -1 : Node.Properties[0].AsLong();
+
+        private (string, string) ParseNameClass()
         {
+            if (Node.Properties.Count < 2)
+                return (String.Empty, String.Empty);
+
             string name = Node.Properties[1].AsString();
 
             int idx = name.IndexOf("::");
@@ -33,6 +39,9 @@ namespace Tokamak.Readers.FBX
                 (name.Substring(0, idx), name.Substring(idx + 2)) :
                 (name, String.Empty);
         }
+
+        private string ParseSubClass()
+            => Node.Properties.Count < 3 ? String.Empty : Node.Properties[2].AsString();
 
         /// <summary>
         /// The object graph for finding child objects.
@@ -56,6 +65,11 @@ namespace Tokamak.Readers.FBX
         /// This is the node's name.
         /// </remarks>
         public string Type => Node.Name;
+
+        /// <summary>
+        /// The parsed class (if any)
+        /// </summary>
+        public string Class { get; }
 
         /// <summary>
         /// The parsed subclass (if any)
@@ -96,5 +110,7 @@ namespace Tokamak.Readers.FBX
         /// List of compound properties detected for this node.
         /// </summary>
         public List<ObjectProperty> Properties { get; }
+
+        public override string ToString() => $"{Type}: {Id} {Name}";
     }
 }
