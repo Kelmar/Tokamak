@@ -136,17 +136,22 @@ namespace Tokamak.Readers.FBX.Readers
 
             object data = type switch
             {
+                // Scalars
                 PropertyType.SignedShort => m_reader.ReadInt16(),
                 PropertyType.Boolean => m_reader.ReadByte(),
                 PropertyType.SignedInt => m_reader.ReadInt32(),
                 PropertyType.Float => m_reader.ReadSingle(),
                 PropertyType.Double => m_reader.ReadDouble(),
                 PropertyType.SignedLong => m_reader.ReadInt64(),
+
+                // Arrays
                 PropertyType.FloatArray => ReadFloatArray(),
                 PropertyType.DoubleArray => ReadDoubleArray(),
                 PropertyType.LongArray => ReadLongArray(),
                 PropertyType.IntArray => ReadIntArray(),
                 PropertyType.BoolArray => ReadBoolArray(),
+
+                // Array like....
                 PropertyType.String => ReadPropertyString(),
                 PropertyType.RawBinary => ReadPropertyRaw(),
 
@@ -176,7 +181,8 @@ namespace Tokamak.Readers.FBX.Readers
             return outStream.ToArray();
         }
 
-        private (byte[] data, int length) RawReadArray<T>()
+        private T[] ReadArray<T>()
+            where T : struct
         {
             int length = (int)m_reader.ReadUInt32();
             bool compressed = m_reader.ReadUInt32() == 1;
@@ -199,56 +205,22 @@ namespace Tokamak.Readers.FBX.Readers
                 }
             }
 
-            return (data, length);
+            var span = MemoryMarshal.Cast<byte, T>(data);
+
+            return span.ToArray();
         }
 
-        private byte[] ReadByteArray() => RawReadArray<byte>().data;
+        private byte[] ReadByteArray() => ReadArray<byte>();
 
-        private bool[] ReadBoolArray() => ReadByteArray().Select(b => b == 1).ToArray();
+        private bool[] ReadBoolArray() => ReadByteArray().Select(b => b != 0).ToArray();
 
-        private int[] ReadIntArray()
-        {
-            (byte[] data, int length) = RawReadArray<int>();
-            int[] rval = new int[length];
+        private int[] ReadIntArray() => ReadArray<int>();
 
-            for (int i = 0; i < length; ++i)
-                rval[i] = BitConverter.ToInt32(data, i * 4);
+        private long[] ReadLongArray() => ReadArray<long>();
 
-            return rval;
-        }
+        private float[] ReadFloatArray() => ReadArray<float>();
 
-        private long[] ReadLongArray()
-        {
-            (byte[] data, int length) = RawReadArray<long>();
-            long[] rval = new long[length];
-
-            for (int i = 0; i < length; ++i)
-                rval[i] = BitConverter.ToInt64(data, i * 8);
-
-            return rval;
-        }
-
-        private float[] ReadFloatArray()
-        {
-            (byte[] data, int length) = RawReadArray<float>();
-            float[] rval = new float[length];
-
-            for (int i = 0; i < length; ++i)
-                rval[i] = BitConverter.ToSingle(data, i * 4);
-
-            return rval;
-        }
-
-        private double[] ReadDoubleArray()
-        {
-            (byte[] data, int length) = RawReadArray<double>();
-            double[] rval = new double[length];
-
-            for (int i = 0; i < length; ++i)
-                rval[i] = BitConverter.ToDouble(data, i * 8);
-
-            return rval;
-        }
+        private double[] ReadDoubleArray() => ReadArray<double>();
 
         private string ReadPropertyString()
         {
