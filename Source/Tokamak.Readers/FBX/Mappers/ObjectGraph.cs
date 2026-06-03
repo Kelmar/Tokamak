@@ -87,8 +87,15 @@ namespace Tokamak.Readers.FBX.Mappers
                 .SelectMany(o => o.Children)
                 .ToList();
 
+            /*
+             * Thowing out duplicate IDs for now, but do we need to account for object types as well?
+             * 
+             * Something to review if the FBX format allows for this or not.
+             */
+
             return objectNodes
                 .Select(n => new FBXObject(this, n))
+                .DistinctBy(o => o.Id)
                 .ToDictionary(x => x.Id, x => x);
         }
 

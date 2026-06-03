@@ -17,7 +17,7 @@ namespace Tokamak.Readers.FBX.Readers
             if (!StringComparer.OrdinalIgnoreCase.Equals(obj.SubClass, "Mesh"))
                 return null; // For now we only support reading "Mesh" models.
 
-            if (obj.Parents.Count() > 0)
+            if (obj.Parents.Any())
                 return null; // Only import root items.
 
             var materialIds = obj.Children

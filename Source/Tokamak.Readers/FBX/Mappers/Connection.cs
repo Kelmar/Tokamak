@@ -20,8 +20,8 @@
             return new Connection
             {
                 Type = node.Properties[0].AsString().ToUpper(),
-                From = (long)node.Properties[1].Data,
-                To = (long)node.Properties[2].Data
+                From = node.Properties[1].AsLong(),
+                To = node.Properties[2].AsLong()
             };
         }
     }

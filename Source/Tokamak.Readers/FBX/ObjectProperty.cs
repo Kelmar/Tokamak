@@ -67,7 +67,7 @@ namespace Tokamak.Readers.FBX
 
             return type.ToLower() switch
             {
-                "bool" => !ReadNumber(node).Equals(0),
+                "bool" => ReadBool(node),
                 "enum" => ReadNumber(node),
                 "int" => ReadNumber(node),
                 "short" => ReadNumber(node),
@@ -89,6 +89,12 @@ namespace Tokamak.Readers.FBX
             };
         }
 
+        private static bool ReadBool(Node node)
+        {
+            int idx = node.Properties.Count - 1;
+            return node.Properties[idx].AsBool();
+        }
+
         private static object ReadNumber(Node node)
         {
             int idx = node.Properties.Count - 1;
@@ -106,7 +112,10 @@ namespace Tokamak.Readers.FBX
             for (int i = 0; i < count; ++i)
             {
                 if ((i + idx) >= node.Properties.Count)
+                {
                     yield return 0;
+                    continue;
+                }
 
                 NodeProperty prop = node.Properties[i + idx];
 

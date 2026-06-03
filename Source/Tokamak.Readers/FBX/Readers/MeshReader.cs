@@ -42,10 +42,7 @@ namespace Tokamak.Readers.FBX.Readers
 
         public MeshInfo ReadMesh(FBXObject obj)
         {
-            var modelObj = State.Models.FirstOrDefault(m => 
-                StringComparer.CurrentCultureIgnoreCase.Equals(obj.SubClass, "Mesh") &&
-                obj.ParentIds.Contains(m.Id)
-            );
+            var modelObj = State.Models.FirstOrDefault(m => obj.ParentIds.Contains(m.Id));
 
             // Use all available materials by default.
             var materials = State.Materials;

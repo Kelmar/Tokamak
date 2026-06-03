@@ -19,6 +19,8 @@ namespace Tokamak.Readers.FBX
 
         public required object Data { get; internal set; }
 
+        public bool AsBool() => Convert.ToBoolean(Data);
+
         public int AsInt() => Convert.ToInt32(Data);
 
         public long AsLong() => Convert.ToInt64(Data);
