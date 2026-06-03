@@ -20,6 +20,9 @@ namespace Tokamak.Readers.FBX.Readers
         public static IEnumerable<Node> WithName(this IEnumerable<Node> nodes, string name)
             => nodes.Where(n => StringComparer.OrdinalIgnoreCase.Equals(n.Name, name));
 
+        public static Node? FirstWithName(this IEnumerable<Node> nodes, string name)
+            => nodes.FirstOrDefault(n => StringComparer.OrdinalIgnoreCase.Equals(n.Name, name));
+
         public static T? FirstWithName<T>(this IEnumerable<T> objects, string name)
             where T : FBXObject
             => objects.FirstOrDefault(o => StringComparer.OrdinalIgnoreCase.Equals(o.Name, name));

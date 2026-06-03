@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
+using Tokamak.Mathematics;
+
 using Tokamak.Readers.FBX.Mappers;
 
 namespace Tokamak.Readers.FBX.Readers
@@ -79,13 +81,29 @@ namespace Tokamak.Readers.FBX.Readers
             var indices = ReadIndexData(obj);
             var vectors = ReadVertexData(obj);
 
-            var uvNodes = obj.Node.Children.WithName("LayerElementUV");
             var normalNodes = obj.Node.Children.WithName("LayerElementNormal");
             var materialNodes = obj.Node.Children.WithName("LayerElementMaterial");
 
-            var uvMapper = new UVMapper(uvNodes.FirstOrDefault());
-            var normalMapper = new NormalMapper(Settings, normalNodes.FirstOrDefault());
-            var materialMapper = new MaterialMapper(materialNodes.FirstOrDefault());
+            var uvMapper = new LayerMapper<Vector2>(
+                obj.Node.Children.FirstWithName("LayerElementUV"),
+                "UV",
+                "UVIndex",
+                p => p.SelectMany(p => p.AsEnumerable<float>()).ToList().Chunk(2).Select(VectorEx.ToVector2)
+            );
+
+            var normalMapper = new LayerMapper<Vector3>(
+                obj.Node.Children.FirstWithName("LayerElementNormal"),
+                "Normals",
+                "NormalsIndex",
+                p => p.SelectMany(p => p.AsEnumerable<float>()).ToList().Chunk(3).Select(Settings.MapToVector)
+            );
+
+            var materialMapper = new LayerMapper<int>(
+                obj.Node.Children.FirstWithName("LayerElementMaterial"),
+                "Materials",
+                "MaterialIndex",
+                p => p.SelectMany(p => p.AsEnumerable<int>())
+            );
 
             // Generate a list of polygons with flat data.
             var polygons = ToPolys(indices, vectors, materials, uvMapper, materialMapper, normalMapper).ToList();
@@ -103,9 +121,9 @@ namespace Tokamak.Readers.FBX.Readers
             IEnumerable<int> indices,
             List<Vector3> vectors,
             List<MaterialInfo> materials,
-            UVMapper uvMapper, 
-            MaterialMapper materialMapper,
-            NormalMapper normalMapper)
+            LayerMapper<Vector2> uvMapper, 
+            LayerMapper<int> materialMapper,
+            LayerMapper<Vector3> normalMapper)
         {
             // FBX uses a negative number to indicate the end of a polygon.
             // Note that the negative number is a bitwise negation of the last index
@@ -121,7 +139,7 @@ namespace Tokamak.Readers.FBX.Readers
                 bool boundary = index < 0;
                 int i = boundary ? ~index : index;
 
-                int materialIdx = materialMapper.GetMaterial(polyIdx, indexNo, i);
+                int materialIdx = materialMapper.GetItem(polyIdx, indexNo, i);
 
                 if (materialIdx < 0 || materialIdx >= materials.Count)
                     materialIdx = lastMaterialIdx; // Sanity, use last known good material index.
@@ -130,8 +148,8 @@ namespace Tokamak.Readers.FBX.Readers
                 var material = materials[materialIdx];
 
                 current.Vectors.Add(vectors[i]);
-                current.Normals.Add(normalMapper.GetNormal(polyIdx, indexNo, i));
-                current.TexCoord.Add(uvMapper.GetUV(polyIdx, indexNo, i));
+                current.Normals.Add(normalMapper.GetItem(polyIdx, indexNo, i));
+                current.TexCoord.Add(uvMapper.GetItem(polyIdx, indexNo, i));
 
                 current.Material.Add(material.DiffuseColor);
 
