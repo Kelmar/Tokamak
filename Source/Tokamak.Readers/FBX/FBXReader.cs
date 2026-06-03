@@ -88,12 +88,7 @@ namespace Tokamak.Readers.FBX
         private static string ReadString(Stream input, Encoding encoding, int length)
         {
             byte[] buffer = new byte[length];
-
-            int rd = input.Read(buffer);
-
-            if (rd != buffer.Length)
-                throw new Exception($"Unable to read string of length {length}");
-
+            input.ReadExactly(buffer);
             return encoding.GetString(buffer).TrimEnd('\0');
         }
 

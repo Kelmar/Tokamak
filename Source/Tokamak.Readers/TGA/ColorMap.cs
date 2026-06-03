@@ -39,7 +39,8 @@ namespace Tokamak.Readers.TGA
             if (Length == 0)
                 return; // No color map to load.
 
-            m_data = m_reader.ReadExactly(Length * BytesPerPixel);
+            m_data = new byte[Length * BytesPerPixel];
+            m_reader.ReadExactly(m_data);
         }
 
         /// <summary>

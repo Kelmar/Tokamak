@@ -42,7 +42,9 @@ namespace Tokamak.Readers.FBX.Readers
 
         private string ReadString(int length)
         {
-            byte[] data = m_reader.ReadExactly(length);
+            byte[] data = new byte[length];
+            m_reader.ReadExactly(data);
+
             string s = m_encoding.GetString(data);
 
             /*
@@ -183,7 +185,8 @@ namespace Tokamak.Readers.FBX.Readers
             int itemSize = Marshal.SizeOf<T>();
             int recordSize = compressed ? physicalLength : (length * itemSize);
 
-            byte[] data = m_reader.ReadExactly(recordSize);
+            byte[] data = new byte[recordSize];
+            m_reader.ReadExactly(data);
 
             if (compressed)
             {
@@ -256,7 +259,9 @@ namespace Tokamak.Readers.FBX.Readers
         private byte[] ReadPropertyRaw()
         {
             int length = (int)m_reader.ReadUInt32();
-            return m_reader.ReadExactly(length);
+            byte[] data = new byte[length];
+            m_reader.ReadExactly(data);
+            return data;
         }
     }
 }

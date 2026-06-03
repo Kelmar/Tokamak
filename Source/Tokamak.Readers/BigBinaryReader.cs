@@ -13,7 +13,8 @@ namespace Tokamak.Readers
 
         private byte[] EndianReadBytes(int length)
         {
-            byte[] bytes = BinaryReadEx.ReadExactly(this, length);
+            byte[] bytes = new byte[length];
+            ReadExactly(bytes);
 
             if (BitConverter.IsLittleEndian)
                 Array.Reverse(bytes);

@@ -179,7 +179,8 @@ namespace Tokamak.Readers.TGA
             }
             else
             {
-                data = m_reader.ReadExactly(m_bytesPerPixel);
+                data = new byte[m_bytesPerPixel];
+                m_reader.ReadExactly(data);
             }
 
             SwizzleBits(data);
