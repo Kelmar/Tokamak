@@ -76,6 +76,9 @@ namespace Tokamak.Readers.FBX.Readers
                 materials = tmpList;
             }
 
+            if (materials.Count == 0)
+                materials = [new MaterialInfo()]; // Add at least some sort of basic material.
+
             // Pull raw data from FBX structure
             var indices = ReadIndexData(obj);
             var vectors = ReadVertexData(obj);
@@ -113,6 +116,7 @@ namespace Tokamak.Readers.FBX.Readers
             // In this way zero is represented as -1
 
             var current = new FBXPolygon();
+            int lastMaterialIdx = 0;
             int indexNo = 0; // Index of the index.... >_<
             int polyIdx = 0;
 
@@ -121,14 +125,13 @@ namespace Tokamak.Readers.FBX.Readers
                 bool boundary = index < 0;
                 int i = boundary ? ~index : index;
 
-                var materialIdx = materialMapper.GetMaterial(polyIdx, indexNo, i);
-                var material = materials[materialIdx];
+                int materialIdx = materialMapper.GetMaterial(polyIdx, indexNo, i);
 
-                //if (materialIdx < m_parent.Materials.Count)
-                //{
-                //    var material = m_parent.Materials[materialIdx];
-                //    color = material.Parameters.DiffuseColor;
-                //}
+                if (materialIdx < 0 || materialIdx >= materials.Count)
+                    materialIdx = lastMaterialIdx; // Sanity, use last known good material index.
+
+                lastMaterialIdx = materialIdx;
+                var material = materials[materialIdx];
 
                 current.Vectors.Add(vectors[i]);
                 normalMapper.AddNormal(current, polyIdx, indexNo, i);

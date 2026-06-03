@@ -1,12 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Tokamak.Assets
 {
     public interface IAssetBuilder
     {
-        void AddModel(Action<IModelBuilder> configure);
+        void NewModel(Action<ISceneObjectBuilder> configure);
 
+        void NewMesh(Action<IMeshBuilder> configure);
+
+        void NewMaterial(Action<IMaterialBuilder> configure);
+
+        void BuildAll();
     }
 }

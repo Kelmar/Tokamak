@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Tokamak.Assets
 {
-    public interface IModelBuilder
+    public interface IMaterialBuilder
     {
-        public IModelBuilder WithName(string name);
+        IMaterialBuilder WithName(string name);
     }
 }

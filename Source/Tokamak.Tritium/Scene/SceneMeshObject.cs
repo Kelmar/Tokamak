@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using Tokamak.Assets;
+
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Geometry;
 
@@ -7,7 +9,7 @@ namespace Tokamak.Tritium.Scene
 {
     public class SceneMeshObject : SceneObject
     {
-        private readonly List<Mesh> m_meshes = [];
+        private readonly List<AssetReference<Mesh>> m_meshes = [];
 
         public SceneMeshObject()
         {
@@ -24,7 +26,7 @@ namespace Tokamak.Tritium.Scene
             base.Dispose(disposing);
         }
 
-        public void AddMesh(Mesh mesh)
+        public void AddMesh(AssetReference<Mesh> mesh)
         {
             m_meshes.Add(mesh);
         }
@@ -33,8 +35,8 @@ namespace Tokamak.Tritium.Scene
         {
             foreach (var mesh in m_meshes)
             {
-                if (!mesh.IsEmpty)
-                    mesh.Draw(commandList);
+                if (!mesh.Asset.IsEmpty)
+                    mesh.Asset.Draw(commandList);
             }
         }
     }

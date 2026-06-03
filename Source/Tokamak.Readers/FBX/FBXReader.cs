@@ -19,99 +19,6 @@ namespace Tokamak.Readers.FBX
 
         private readonly IAssetBuilder m_builder = builder;
 
-#if false
-        private List<FBXMesh> GetMeshes(ReadState state)
-        {
-            var reader = new MeshBuilder(this);
-            return reader.Meshes;
-        }
-
-        public SceneMeshObject? ImportModel(string name)
-        {
-            var model = Models.WithName(name);
-
-            if (model == null)
-                return null;
-
-            SceneMeshObject? result = new SceneMeshObject();
-
-            try
-            {
-                foreach (var mesh in model.Meshes)
-                {
-                    var outMesh = new Mesh();
-
-                    if (!ImportMesh(outMesh, model, mesh))
-                        return null;
-
-                    result.AddMesh(outMesh);
-                }
-
-                var r = result;
-                result = null;
-
-                return r;
-            }
-            finally
-            {
-                // Only gets disposed if we don't return a success.
-                result?.Dispose();
-            }
-        }
-
-        private bool ImportMesh(Mesh outMesh, FBXModel? parent, FBXMesh mesh)
-        {
-            // Fall back to global materials if no parent.
-            List<FBXMaterial> materialObjects = parent == null ? Materials : parent.Materials;
-            List<MaterialParameters> materials;
-
-            if (materialObjects == null || materialObjects.Count == 0)
-                materials = [new MaterialParameters()]; // Add a basic default material at least.
-            else
-                materials = materialObjects.Select(m => m.Parameters).ToList();
-
-            var outPolys = new List<Polygon>(mesh.Polygons.Count);
-            int lastMaterialID = 0;
-
-            foreach (var p in mesh.Polygons)
-            {
-                var poly = new Polygon();
-
-                poly.Vectors.AddRange(p.Vectors);
-                poly.Normals.AddRange(p.Normals);
-                poly.TexCoord.AddRange(p.TexCoord);
-
-                poly.Colors.AddRange(p.Material.Select(mid =>
-                {
-                    if (mid >= materials.Count)
-                        mid = lastMaterialID;
-
-                    lastMaterialID = mid;
-
-                    return materials[mid].DiffuseColor;
-                }));
-
-                outPolys.AddRange(poly.SplitIntoTriangles());
-            }
-
-            outMesh.SetData(outPolys);
-
-            return true;
-        }
-
-        public bool ImportMesh(Mesh outMesh, string name)
-        {
-            var mesh = Meshes.WithName(name);
-
-            if (mesh == null)
-                return false;
-
-            var model = Models.FirstOrDefault(m => m.MeshIds.Contains(mesh.ID));
-
-            return ImportMesh(outMesh, model, mesh);
-        }
-#endif
-
         public void Import(string filename)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(filename, nameof(filename));
@@ -149,6 +56,32 @@ namespace Tokamak.Readers.FBX
              * the imports.  Note that for textures that refer to external files; then
              * they will get deferred to those files.
              */
+
+            foreach (var material in state.Materials)
+            {
+                m_builder.NewMaterial(cfg => cfg
+                    .WithName(material.Name)
+                );
+            }
+
+            foreach (var mesh in state.Meshes)
+            {
+                m_builder.NewMesh(cfg => cfg
+                    .WithName(mesh.Name)
+                );
+            }
+
+            foreach (var model in state.Models)
+            {
+                var meshNames = state.Meshes
+                    .Where(m => model.MeshIds.Contains(m.Id))
+                    .Select(m => m.Name);
+
+                m_builder.NewModel(cfg => cfg
+                    .WithName(model.Name)
+                    .AddMeshes(meshNames)
+                );
+            }
         }
 
         private static string ReadString(Stream input, Encoding encoding, int length)

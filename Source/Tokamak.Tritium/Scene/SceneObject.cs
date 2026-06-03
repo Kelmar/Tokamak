@@ -1,28 +1,14 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 
+using Tokamak.Assets;
 using Tokamak.Tritium.APIs;
 
 namespace Tokamak.Tritium.Scene
 {
-    public abstract class SceneObject : IDisposable
+    public abstract class SceneObject : Asset
     {
         protected SceneObject()
         {
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                SceneManager?.RemoveObject(this);
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
