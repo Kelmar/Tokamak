@@ -7,5 +7,7 @@ namespace Tokamak.Assets
     public interface IMeshBuilder
     {
         IMeshBuilder WithName(string name);
+
+        //IMeshBuilder WithPolygons(IEnumerable<Polygon> polys);
     }
 }

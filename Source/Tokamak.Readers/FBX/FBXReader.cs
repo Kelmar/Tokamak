@@ -62,6 +62,7 @@ namespace Tokamak.Readers.FBX
             {
                 m_builder.NewMaterial(cfg => cfg
                     .WithName(material.Name)
+                    // TODO: Add material details here when we figure out a good interface for that.
                 );
             }
 
@@ -69,6 +70,7 @@ namespace Tokamak.Readers.FBX
             {
                 m_builder.NewMesh(cfg => cfg
                     .WithName(mesh.Name)
+                    // TODO: Add polys here when we figure out a good abstract way to do that.
                 );
             }
 

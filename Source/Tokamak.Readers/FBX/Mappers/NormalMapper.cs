@@ -58,9 +58,9 @@ namespace Tokamak.Readers.FBX.Mappers
             return Vector3.Zero;
         }
 
-        public void FinalizeNormals(FBXPolygon polygon)
-        {
-
-        }
+        //public void FinalizeNormals(FBXPolygon polygon)
+        //{
+            // TODO: Per poly normals or compute.
+        //}
     }
 }

@@ -1,13 +1,14 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Numerics;
 
 namespace Tokamak.Readers.FBX
 {
     internal class MaterialInfo : ResultRecord
     {
+        private const string DEFAULT_SHADING_MODEL = "phong";
+
         [NotMapped]
-        public string ShadingModel { get; set; } = "Phong";
+        public string ShadingModel { get; set; } = DEFAULT_SHADING_MODEL;
 
         public Vector4 DiffuseColor { get; set; } = Vector4.One;
 

@@ -137,7 +137,7 @@ namespace Tokamak.Readers.FBX.Readers
 
                 if (boundary)
                 {
-                    normalMapper.FinalizeNormals(current);
+                    //normalMapper.FinalizeNormals(current);
                     yield return current;
 
                     ++polyIdx;
@@ -149,7 +149,7 @@ namespace Tokamak.Readers.FBX.Readers
 
             if (current.Vectors.Count > 2)
             {
-                normalMapper.FinalizeNormals(current);
+                //normalMapper.FinalizeNormals(current);
                 yield return current;
             }
         }
