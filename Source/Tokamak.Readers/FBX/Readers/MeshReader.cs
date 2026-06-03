@@ -4,7 +4,6 @@ using System.Linq;
 using System.Numerics;
 
 using Tokamak.Readers.FBX.Mappers;
-using Tokamak.Readers.FBX.DOM;
 
 namespace Tokamak.Readers.FBX.Readers
 {
@@ -134,7 +133,7 @@ namespace Tokamak.Readers.FBX.Readers
                 var material = materials[materialIdx];
 
                 current.Vectors.Add(vectors[i]);
-                normalMapper.AddNormal(current, polyIdx, indexNo, i);
+                current.Normals.Add(normalMapper.GetNormal(polyIdx, indexNo, i));
                 current.TexCoord.Add(uvMapper.GetUV(polyIdx, indexNo, i));
 
                 current.Material.Add(material.DiffuseColor);

@@ -4,8 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 
-using Tokamak.Readers.FBX.DOM;
-
 namespace Tokamak.Readers.FBX.Mappers
 {
     internal static class ObjectMapper

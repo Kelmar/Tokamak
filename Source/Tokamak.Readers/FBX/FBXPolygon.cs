@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 
-namespace Tokamak.Readers.FBX.DOM
+namespace Tokamak.Readers.FBX
 {
     /// <summary>
     /// A single polygon inside of a FBXMesh.

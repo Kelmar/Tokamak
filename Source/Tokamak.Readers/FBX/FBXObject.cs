@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Tokamak.Readers.FBX.Mappers;
+
 namespace Tokamak.Readers.FBX
 {
     /// <summary>

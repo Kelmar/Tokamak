@@ -1,4 +1,4 @@
-﻿namespace Tokamak.Readers.FBX
+﻿namespace Tokamak.Readers.FBX.Mappers
 {
     internal class Connection
     {

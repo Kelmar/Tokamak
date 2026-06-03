@@ -5,7 +5,6 @@ using System.Linq;
 using System.Numerics;
 
 using Tokamak.Readers.FBX.Readers;
-using Tokamak.Readers.FBX.DOM;
 
 namespace Tokamak.Readers.FBX.Mappers
 {
@@ -49,12 +48,14 @@ namespace Tokamak.Readers.FBX.Mappers
         /// <param name="polygon">The polygon to add the normal to.</param>
         /// <param name="indexNo">The index of the index to use if needed.</param>
         /// <param name="index">The vertex index to add the normal for.</param>
-        public void AddNormal(FBXPolygon polygon, int polyIdx, int indexNo, int index)
+        public Vector3 GetNormal(int polyIdx, int indexNo, int index)
         {
             int i = m_indexMapper.MapIndex(polyIdx, indexNo, index);
 
             if (i != -1)
-                polygon.Normals.Add(m_data[i]);
+                return m_data[i];
+
+            return Vector3.Zero;
         }
 
         public void FinalizeNormals(FBXPolygon polygon)

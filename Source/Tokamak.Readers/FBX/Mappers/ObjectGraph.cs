@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
 using Tokamak.Readers.FBX.Readers;
-using Tokamak.Readers.FBX.DOM;
-using Tokamak.Utilities;
 
-namespace Tokamak.Readers.FBX
+namespace Tokamak.Readers.FBX.Mappers
 {
     /// <summary>
     /// Holds the mapping from the Connection/C nodes for the FBX object hierarchy.
@@ -56,7 +53,7 @@ namespace Tokamak.Readers.FBX
                 .Where(c => c.Type == "PP")
                 .ToLookup(c => c.To, c => c.From);
 
-            Objects = GetObjects(state);
+            Objects = GetObjects();
         }
 
         public Dictionary<long, FBXObject> Objects { get; }
@@ -83,7 +80,7 @@ namespace Tokamak.Readers.FBX
         /// Get all nodes as a dictionary where they can be looked up by ID.
         /// </summary>
         /// <returns></returns>
-        private Dictionary<long, FBXObject> GetObjects(ReadState state)
+        private Dictionary<long, FBXObject> GetObjects()
         {
             var objectNodes = m_rootNode.Children
                 .WithName("Objects")

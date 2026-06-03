@@ -42,7 +42,8 @@ namespace Tokamak.Readers.FBX
              * least easy to resolve references for our second pass.
              */
 
-            var textures = ReadTextures(state);
+            //var textures = ReadTextures(state);
+
             state.Materials = ReadMaterials(state);
             state.Models = ReadModels(state);
             state.Meshes = ReadMeshes(state);
