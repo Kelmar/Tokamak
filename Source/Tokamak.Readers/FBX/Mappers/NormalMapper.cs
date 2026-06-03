@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
+using Tokamak.Readers.FBX.Builders;
 using Tokamak.Readers.FBX.DOM;
 
 namespace Tokamak.Readers.FBX.Mappers
@@ -33,8 +34,8 @@ namespace Tokamak.Readers.FBX.Mappers
             // Shouldn't be possible to get anything but "None" if we didn't get a node.
             Debug.Assert(m_node != null);
 
-            m_data.AddRange(m_node
-                .Children["Normals"]
+            m_data.AddRange(m_node.Children
+                .WithName("Normals")
                 .SelectMany(n => n.Properties[0].AsEnumerable<float>())
                 .ToList()
                 .Chunk(3)

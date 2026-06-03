@@ -23,16 +23,16 @@ namespace Tokamak.Readers.FBX.Builders
 
         private List<int> ReadIndexData(FBXObject mesh)
         {
-            return mesh.Node
-                .Children["PolygonVertexIndex"]
+            return mesh.Node.Children
+                .WithName("PolygonVertexIndex")
                 .SelectMany(n => n.Properties[0].AsEnumerable<int>())
                 .ToList();
         }
 
         private List<Vector3> ReadVertexData(FBXObject mesh)
         {
-            return mesh.Node
-                .Children["Vertices"]
+            return mesh.Node.Children
+                .WithName("Vertices")
                 .SelectMany(v => v.Properties[0].AsEnumerable<float>())
                 .ToList() // Chunk needs the list to be realized first.
                 .Chunk(3) // Group into threes
@@ -40,32 +40,64 @@ namespace Tokamak.Readers.FBX.Builders
                 .ToList();
         }
 
-        public void ReadMesh(FBXObject obj)
+        public MeshInfo ReadMesh(FBXObject obj)
         {
+            var modelObj = State.Models.Where(m => obj.ParentIds.Contains(m.Id)).FirstOrDefault();
+            var materials = State.Materials;
+
+            if (modelObj != null)
+            {
+                var tmpList = new List<MaterialInfo>();
+
+                // We need to make sure we preserve the order that we see in the model's defintion.
+                foreach (var id in modelObj.MaterialIds)
+                {
+                    var material = materials.FirstOrDefault(m => m.Id == id);
+
+                    if (material == null)
+                    {
+                        // Replace with a default material.
+                        material = new MaterialInfo
+                        {
+                            Id = -1,
+                            Name = "Default",
+                        };
+                    }
+
+                    tmpList.Add(material);
+                }
+
+                materials = tmpList;
+            }
+
             // Pull raw data from FBX structure
             var indices = ReadIndexData(obj);
             var vectors = ReadVertexData(obj);
 
-            var maxVert = vectors.Max(v => v.Z);
+            var uvNodes = obj.Node.Children.WithName("LayerElementUV");
+            var normalNodes = obj.Node.Children.WithName("LayerElementNormal");
+            var materialNodes = obj.Node.Children.WithName("LayerElementMaterial");
 
-            var uvMapper = new UVMapper(obj.Node.Children["LayerElementUV"].FirstOrDefault());
-            var normalMapper = new NormalMapper(Settings, obj.Node.Children["LayerElementNormal"].FirstOrDefault());
-            var materialMapper = new MaterialMapper(obj.Node.Children["LayerElementMaterial"].FirstOrDefault());
+            var uvMapper = new UVMapper(uvNodes.FirstOrDefault());
+            var normalMapper = new NormalMapper(Settings, normalNodes.FirstOrDefault());
+            var materialMapper = new MaterialMapper(materialNodes.FirstOrDefault());
 
             // Generate a list of polygons with flat data.
-            var polygons = ToPolys(indices, vectors, uvMapper, materialMapper, normalMapper).ToList();
+            var polygons = ToPolys(indices, vectors, materials, uvMapper, materialMapper, normalMapper).ToList();
+
+            return new MeshInfo
+            {
+                Id = obj.Id,
+                Name = obj.Name,
+                ModelId = modelObj?.Id ?? 0,
+                Polygons = polygons
+            };
         }
 
-        /// <summary>
-        /// Convert data from lists into a list of polygons.
-        /// </summary>
-        /// <param name="indices"></param>
-        /// <param name="vectors"></param>
-        /// <param name="normals"></param>
-        /// <returns></returns>
         private IEnumerable<FBXPolygon> ToPolys(
             IEnumerable<int> indices,
             List<Vector3> vectors,
+            List<MaterialInfo> materials,
             UVMapper uvMapper, 
             MaterialMapper materialMapper,
             NormalMapper normalMapper)
@@ -84,6 +116,7 @@ namespace Tokamak.Readers.FBX.Builders
                 int i = boundary ? ~index : index;
 
                 var materialIdx = materialMapper.GetMaterial(polyIdx, indexNo, i);
+                var material = materials[materialIdx];
 
                 //if (materialIdx < m_parent.Materials.Count)
                 //{
@@ -95,7 +128,7 @@ namespace Tokamak.Readers.FBX.Builders
                 normalMapper.AddNormal(current, polyIdx, indexNo, i);
                 current.TexCoord.Add(uvMapper.GetUV(polyIdx, indexNo, i));
 
-                current.Material.Add(materialIdx);
+                current.Material.Add(material.DiffuseColor);
 
                 if (boundary)
                 {

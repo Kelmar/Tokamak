@@ -19,6 +19,9 @@ namespace Tokamak.Readers.FBX.Builders
         public static IEnumerable<FBXObject> WithFBXType(this IEnumerable<FBXObject> objects, string type)
             => objects.Where(o => StringComparer.InvariantCultureIgnoreCase.Equals(o.Type, type));
 
+        public static IEnumerable<Node> WithName(this IEnumerable<Node> nodes, string name)
+            => nodes.Where(n => StringComparer.InvariantCultureIgnoreCase.Equals(n.Name, name));
+
         public static T? WithName<T>(this IEnumerable<T> objects, string name)
             where T : FBXObject
             => objects.FirstOrDefault(o => StringComparer.InvariantCultureIgnoreCase.Equals(o.Name, name));

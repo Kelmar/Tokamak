@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 
 using Tokamak.Mathematics;
+using Tokamak.Readers.FBX.Builders;
 using Tokamak.Utilities;
 
 namespace Tokamak.Readers.FBX
@@ -46,8 +47,9 @@ namespace Tokamak.Readers.FBX
 
         public static IEnumerable<ObjectProperty> BuildAllFor(Node node)
         {
-            return node.Children["Properties70"]
-                .SelectMany(p => p.Children["P"])
+            return node.Children
+                .WithName("Properties70")
+                .SelectMany(p => p.Children.WithName("P"))
                 .Select(Build)
                 .NotNull();
         }

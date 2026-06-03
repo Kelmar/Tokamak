@@ -122,7 +122,8 @@ namespace Tokamak.Readers.FBX
         {
             ArgumentNullException.ThrowIfNull(input, nameof(input));
 
-            var state = new ReadState(ParseStream(input));
+            var rootNode = ParseStream(input);
+            var state = new ReadState(rootNode);
 
             /*
              * First pass:
@@ -131,10 +132,11 @@ namespace Tokamak.Readers.FBX
              * out some of the FBX indirect references into (mostly) concrete or at
              * least easy to resolve references for our second pass.
              */
-            ReadTextures(state);
-            ReadMaterials(state);
-            ReadModels(state);
-            ReadMeshes(state);
+
+            var textures = ReadTextures(state);
+            state.Materials = ReadMaterials(state);
+            state.Models = ReadModels(state);
+            state.Meshes = ReadMeshes(state);
 
             /*
              * Second pass:
@@ -190,39 +192,30 @@ namespace Tokamak.Readers.FBX
             {
                 Name = String.Empty,
                 Properties = [],
-                Children = children.ToLookup(c => c.Name, c => c)
+                Children = children
             };
         }
 
-        private void ReadTypes<T>(ReadState state, string type, Func<FBXObject, T> reader)
+        private List<T> ReadTypes<T>(ReadState state, string type, Func<FBXObject, T> reader)
             where T : ResultRecord
         {
-            var items = state.ObjectGraph
+            return state.ObjectGraph
                 .GetObjectsOfType(type)
+                .Select(reader)
                 .ToList();
-
-            foreach (var item in items)
-            {
-                var record = reader(item);
-
-                state.Results.Add(new ImportResult
-                {
-                    InternalId = record.Id,
-                    Name = record.Name,
-                    ResourceType = record.Type,
-                    Result = record
-                });
-            }
         }
 
-        private MaterialParameters ReadMaterial(FBXObject obj)
+        private MaterialInfo ReadMaterial(FBXObject obj)
         {
-            var result = obj.MapTo<MaterialParameters>();
+            var result = obj.MapTo<MaterialInfo>();
 
             result.Id = obj.Id;
             result.Name = obj.Name;
 
-            string? shading = obj.Node.Children["ShadingModel"].FirstOrDefault()?.Properties[0].AsString();
+            string? shading = obj.Node.Children
+                .WithName("ShadingModel")
+                .FirstOrDefault()
+                ?.Properties[0].AsString();
 
             if (!String.IsNullOrWhiteSpace(shading))
                 result.ShadingModel = shading.ToLower();
@@ -230,19 +223,19 @@ namespace Tokamak.Readers.FBX
             return result;
         }
 
-        private ResultModel ReadModel(FBXObject obj)
+        private ModelInfo ReadModel(FBXObject obj)
         {
             var materialIds = obj.Children
-                .WithFBXType("material")
+                .WithFBXType("Material")
                 .Select(o => o.Id)
                 .ToList();
 
             var meshIds = obj.Children
-                .WithFBXType("mesh")
+                .WithFBXType("Geometry")
                 .Select(o => o.Id)
                 .ToList();
 
-            return new ResultModel
+            return new ModelInfo
             {
                 Id = obj.Id,
                 Name = obj.Name,
@@ -251,19 +244,22 @@ namespace Tokamak.Readers.FBX
             };
         }
 
-        private void ReadTextures(ReadState state)
+        private List<object> ReadTextures(ReadState state)
         {
             //ReadTypes(state, "texture", o => {});
+            return [];
         }
 
-        private void ReadMaterials(ReadState state) => ReadTypes(state, "material", ReadMaterial);
+        private List<MaterialInfo> ReadMaterials(ReadState state) 
+            => ReadTypes(state, "material", ReadMaterial);
 
-        private void ReadModels(ReadState state) => ReadTypes(state, "model", ReadModel);
+        private List<ModelInfo> ReadModels(ReadState state)
+            => ReadTypes(state, "model", ReadModel);
 
-        private void ReadMeshes(ReadState state)
+        private List<MeshInfo> ReadMeshes(ReadState state)
         {
             var meshBuilder = new MeshBuilder(state);
-            //ReadTypes(state, "geometry", meshBuilder.ReadMesh);
+            return ReadTypes(state, "geometry", meshBuilder.ReadMesh);
         }
     }
 }

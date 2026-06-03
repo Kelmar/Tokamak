@@ -47,14 +47,14 @@ namespace TestBed
         //public const string FILE = "resources/blox.fbx";
         //public const string FILE = "resources/susan.fbx";
         //public const string FILE = "resources/plane.fbx";
-        //public const string FILE = "resources/chest.fbx";
+        public const string FILE = "resources/chest.fbx";
 
         /*
          * This is the X Bot model from Maxima.
          * I'm not sure what the license is for that, so I'm not adding it to the repo.
          */
         //public const string FILE = "resources/xbot.fbx";
-        public const string FILE = "resources/amy.fbx";
+        //public const string FILE = "resources/amy.fbx";
 
         public TestGameApp(ILogger log, IGraphicsLayer layer)
         {
@@ -64,8 +64,8 @@ namespace TestBed
 
         public void Dispose()
         {
-            m_scene.RemoveObject(m_mesh);
-            m_mesh.Dispose();
+            //m_scene.RemoveObject(m_mesh);
+            //m_mesh.Dispose();
 
             m_scene?.Dispose();
             m_context?.Dispose();
@@ -111,6 +111,9 @@ namespace TestBed
             //    m_mesh.AddMesh(item);
 
             //m_scene.AddObject(m_mesh);
+
+            var reader = new FBXReader(null);
+            reader.Import(FILE);
         }
 
         Font LoadFont()

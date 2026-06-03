@@ -110,7 +110,7 @@ namespace Tokamak.Readers.FBX
             var result = new Node
             {
                 Name = name,
-                Children = children.ToLookup(n => n.Name, n => n),
+                Children = children,
                 Properties = properties
             };
 

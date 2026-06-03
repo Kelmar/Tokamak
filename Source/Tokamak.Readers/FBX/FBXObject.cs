@@ -9,25 +9,18 @@ namespace Tokamak.Readers.FBX
     /// </summary>
     internal class FBXObject
     {
-        public FBXObject(ReadState state, Node node)
+        public FBXObject(ObjectGraph objectGraph, Node node)
         {
-            State = state;
+            ObjectGraph = objectGraph;
             Node = node;
 
             Id = Node.Properties[0].AsLong();
 
             (Name, SubClass) = ParseName();
 
-            ChildNodes = ObjectGraph
-                .GetChildNodes(Id)
-                .ToList();
-
             Properties = ObjectProperty
                 .BuildAllFor(node)
                 .ToList();
-
-            ParentIds = ObjectGraph.GetParentIds(Id).ToList();
-            ParentNodes = ObjectGraph.GetParentObjects(Id).ToList();
         }
 
         private (string, string) ParseName()
@@ -41,14 +34,10 @@ namespace Tokamak.Readers.FBX
                 (name, String.Empty);
         }
 
-        public ReadState State { get; }
-
-        public GlobalSettings Settings => State.Settings;
-
         /// <summary>
         /// The object graph for finding child objects.
         /// </summary>
-        public ObjectGraph ObjectGraph => State.ObjectGraph;
+        public ObjectGraph ObjectGraph { get; }
 
         /// <summary>
         /// The unique ID of this object in the file.
@@ -86,17 +75,22 @@ namespace Tokamak.Readers.FBX
         /// <summary>
         /// List of child nodes that are owned by this object.
         /// </summary>
-        public IEnumerable<Node> ChildNodes { get; }
+        public IEnumerable<Node> ChildNodes => ObjectGraph.GetChildNodes(Id).ToList();
 
         /// <summary>
         /// List of parent node IDs that own this object.
         /// </summary>
-        public List<long> ParentIds { get; }
+        public List<long> ParentIds => ObjectGraph.GetParentIds(Id).ToList();
 
         /// <summary>
         /// List of parent nodes that own this object.
         /// </summary>
-        public List<Node> ParentNodes { get; }
+        public List<Node> ParentNodes => ObjectGraph.GetParentNodes(Id).ToList();
+
+        /// <summary>
+        /// List of parent objects that own this object.
+        /// </summary>
+        public IEnumerable<FBXObject> Parents => ObjectGraph.GetParentObjects(Id);
 
         /// <summary>
         /// List of compound properties detected for this node.

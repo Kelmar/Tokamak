@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
+using Tokamak.Readers.FBX.Builders;
+
 namespace Tokamak.Readers.FBX.Mappers
 {
     internal class IndexMapper
@@ -26,7 +28,9 @@ namespace Tokamak.Readers.FBX.Mappers
 
         private string ReadNodeAsString(string nodeName)
         {
-            Node? node = m_node?.Children[nodeName].FirstOrDefault();
+            Node? node = m_node?.Children
+                .WithName(nodeName)
+                .FirstOrDefault();
 
             return node?.Properties.FirstOrDefault()?.ToString() ?? String.Empty;
         }
@@ -71,8 +75,8 @@ namespace Tokamak.Readers.FBX.Mappers
             // Shouldn't be possible to get anything but "None" if we didn't get a node.
             Debug.Assert(m_node != null);
 
-            m_indices.AddRange(m_node
-                .Children[indexName]
+            m_indices.AddRange(m_node.Children
+                .WithName(indexName)
                 .SelectMany(n => n.Properties[0].AsEnumerable<int>())
             );
         }

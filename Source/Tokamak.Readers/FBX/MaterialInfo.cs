@@ -4,9 +4,9 @@ using System.Numerics;
 
 namespace Tokamak.Readers.FBX
 {
-    internal class MaterialParameters : ResultRecord
+    internal class MaterialInfo : ResultRecord
     {
-        public MaterialParameters()
+        public MaterialInfo()
             : base(ImportType.Material)
         {
         }

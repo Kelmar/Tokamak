@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
+using Tokamak.Readers.FBX.Builders;
+
 namespace Tokamak.Readers.FBX.Mappers
 {
     internal class MaterialMapper
@@ -28,8 +30,8 @@ namespace Tokamak.Readers.FBX.Mappers
             // Shouldn't be possible to get anything but "None" if we didn't get a node.
             Debug.Assert(m_node != null);
 
-            m_data.AddRange(m_node
-                .Children["Materials"]
+            m_data.AddRange(m_node.Children
+                .WithName("Materials")
                 .SelectMany(n => n.Properties[0].AsEnumerable<int>())
                 .ToList()                
             );

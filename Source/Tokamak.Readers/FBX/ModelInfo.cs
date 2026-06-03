@@ -6,12 +6,14 @@ using Tokamak.Tritium.Rendering;
 
 namespace Tokamak.Readers.FBX
 {
-    internal class ResultModel : ResultRecord
+    internal class ModelInfo : ResultRecord
     {
-        public ResultModel()
+        public ModelInfo()
             : base(ImportType.Model)
         {
         }
+
+        public long ParentId { get; set; } = 0;
 
         [NotMapped]
         public List<long> MaterialIds

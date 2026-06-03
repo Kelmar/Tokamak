@@ -23,6 +23,6 @@ namespace Tokamak.Readers.FBX.DOM
         /// Materials might not be loaded yet, so we just store the index
         /// until we're ready to convert to a proper reference.
         /// </summary>
-        public List<int> Material { get; } = [];
+        public List<Vector4> Material { get; } = [];
     }
 }

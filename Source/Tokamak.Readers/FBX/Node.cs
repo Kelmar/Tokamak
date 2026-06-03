@@ -22,7 +22,7 @@ namespace Tokamak.Readers.FBX
 
         public required List<NodeProperty> Properties { get; init; }
 
-        public required ILookup<string, Node> Children { get; init; }
+        public required List<Node> Children { get; init; }
 
         public override string ToString() => $"{Name}: C:{Children.Count} P:{Properties.Count}";
     }

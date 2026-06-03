@@ -63,12 +63,14 @@ namespace Tokamak.Readers.FBX
 
         private IEnumerable<Connection> GetConnections()
         {
-            var connectionNode = m_rootNode.Children["Connections"].FirstOrDefault();
+            var connectionNode = m_rootNode.Children
+                .WithName("Connections")
+                .FirstOrDefault();
 
             if (connectionNode == null)
                 yield break;
 
-            foreach (var n in connectionNode.Children["C"])
+            foreach (var n in connectionNode.Children.WithName("C"))
             {
                 Connection? c = Connection.Build(n);
 
@@ -77,39 +79,45 @@ namespace Tokamak.Readers.FBX
             }
         }
 
-        private (long Id, Node Node) WithIndex(Node node)
-        {
-            if ((node.Properties.Count < 1) || !node.Properties[0].Type.IsNumeric)
-                return (-1, node);
-
-            return (Convert.ToInt64(node.Properties[0].Data), node);
-        }
-
         /// <summary>
         /// Get all nodes as a dictionary where they can be looked up by ID.
         /// </summary>
         /// <returns></returns>
         private Dictionary<long, FBXObject> GetObjects(ReadState state)
         {
-            var objectNodes = m_rootNode.Children["objects"];
+            var objectNodes = m_rootNode.Children
+                .WithName("Objects")
+                .SelectMany(o => o.Children)
+                .ToList();
 
             return objectNodes
-                .Select(n => new FBXObject(state, n))
+                .Select(n => new FBXObject(this, n))
                 .ToDictionary(x => x.Id, x => x);
         }
 
         public IEnumerable<FBXObject> GetObjectsOfType(string type)
             => Objects.Values.WithFBXType(type);
 
-        public IEnumerable<long> GetParentIds(long childId) => m_parentGraph[childId];
+        public IEnumerable<long> GetParentIds(long childId) => m_parentGraph[childId].Where(id => id != 0);
 
-        public IEnumerable<Node> GetParentObjects(long childId)
+        public IEnumerable<Node> GetParentNodes(long childId)
         {
             foreach (var id in GetParentIds(childId))
             {
                 if (Objects.TryGetValue(id, out var obj))
                     yield return obj.Node;
             }
+        }
+
+        public IEnumerable<FBXObject> GetParentObjects(long childId)
+        {
+            var parentIds = GetParentIds(childId);
+
+            foreach (long id in parentIds)
+            {
+                if (Objects.TryGetValue(id, out var obj))
+                    yield return obj;
+            }    
         }
 
         public IEnumerable<long> GetChildObjectIds(long parentId) => m_objectGraph[parentId];

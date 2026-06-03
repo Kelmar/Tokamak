@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Tokamak.Readers.FBX.Builders;
 using Tokamak.Readers.FBX.Mappers;
 
 namespace Tokamak.Readers.FBX
@@ -18,7 +19,9 @@ namespace Tokamak.Readers.FBX
 
         private GlobalSettings ReadSettings()
         {
-            var node = RootNode.Children["GlobalSettings"].FirstOrDefault();
+            var node = RootNode.Children
+                .WithName("GlobalSettings")
+                .FirstOrDefault();
 
             if (node == null)
                 return new GlobalSettings(); // Use default settings.
@@ -33,6 +36,22 @@ namespace Tokamak.Readers.FBX
 
         public ObjectGraph ObjectGraph { get; }
 
-        public List<ImportResult> Results { get; } = [];
+        public List<MaterialInfo> Materials
+        {
+            get;
+            set => field = value ?? [];
+        } = [];
+
+        public List<ModelInfo> Models
+        {
+            get;
+            set => field = value ?? [];
+        } = [];
+
+        public List<MeshInfo> Meshes
+        {
+            get;
+            set => field = value ?? [];
+        } = [];
     }
 }
