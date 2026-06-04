@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Linq;
+using System.Numerics;
 
 using Tokamak.Mathematics;
 
@@ -46,7 +48,21 @@ namespace Tokamak.Readers.FBX.DOM
             if (id >= 0 && id < 3)
                 return;
 
-            throw new System.Exception($"Invalid global {name} axis index in FBX file.");
+            throw new Exception($"Invalid global {name} axis index in FBX file.");
+        }
+
+        private void ValidateUniqueAxes()
+        {
+            /*
+             * Sanity check: Make sure all axes are different.
+             * 
+             * Technically this there is no reason this can't be done,
+             * but it probably isn't a likely case for a valid FBX file.
+             */
+            int[] axes = [UpAxis, FrontAxis, CoordAxis];
+
+            if (axes.Distinct().Count() != 3)
+                throw new Exception("One axis maps to same as another axis in FBX file.");
         }
 
         public void Validate()
@@ -54,6 +70,8 @@ namespace Tokamak.Readers.FBX.DOM
             ValidateAxis(UpAxis, "up");
             ValidateAxis(FrontAxis, "front");
             ValidateAxis(CoordAxis, "coord");
+
+            ValidateUniqueAxes();
 
             BuildSwizzleMatrix();
         }

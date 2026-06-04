@@ -29,6 +29,25 @@ namespace ReadersTests
             Assert.That(() => settings.Validate(), Throws.TypeOf<Exception>());
         }
 
+        public void Validate_UniqueAxes_DoesNotThrow()
+        {
+            var settings = new GlobalSettings();
+
+            Assert.That(() => settings.Validate(), Throws.Nothing);
+        }
+
+        public void Validate_NonuniqueAxes_Throws()
+        {
+            var settings = new GlobalSettings
+            {
+                UpAxis = 1,
+                CoordAxis = 1,
+                FrontAxis = 1
+            };
+
+            Assert.That(() => settings.Validate(), Throws.TypeOf<Exception>());
+        }
+
         [Test]
         public void SwizzleAxes_WithDefaultAxes_IsIdentity()
         {
