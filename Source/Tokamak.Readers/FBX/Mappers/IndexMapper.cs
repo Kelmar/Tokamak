@@ -77,7 +77,7 @@ namespace Tokamak.Readers.FBX.Mappers
 
             m_indices.AddRange(m_node.Children
                 .WithName(indexName)
-                .SelectMany(n => n.Properties[0].AsArrayOf<int>())
+                .SelectMany(n => n.Properties[0].AsEnumerable<int>())
             );
         }
 
