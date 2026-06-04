@@ -22,6 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="ReadersTests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\..\docs\tokamak_logo_outlined_128x128.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
