@@ -30,8 +30,6 @@ namespace Tokamak.Readers.FBX.DOM
 
         public void BuildSwizzleMatrix()
         {
-            var v4 = new Vector4(0, 0, 0, 1);
-
             AxisSwizzleMatrix = Matrix4x4.Create(
                 GetAxisVector(CoordAxis) * CoordAxisSign,
                 GetAxisVector(UpAxis) * UpAxisSign,
@@ -45,7 +43,7 @@ namespace Tokamak.Readers.FBX.DOM
 
         private void ValidateAxis(int id, string name)
         {
-            if (id >= 0 || id < 3)
+            if (id >= 0 && id < 3)
                 return;
 
             throw new System.Exception($"Invalid global {name} axis index in FBX file.");
