@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Tokamak.Readers.FBX.DOM;
+
 namespace Tokamak.Readers.FBX.Mappers
 {
     internal class Connection

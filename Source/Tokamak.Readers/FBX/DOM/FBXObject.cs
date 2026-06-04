@@ -4,7 +4,7 @@ using System.Linq;
 
 using Tokamak.Readers.FBX.Mappers;
 
-namespace Tokamak.Readers.FBX
+namespace Tokamak.Readers.FBX.DOM
 {
     /// <summary>
     /// Represents a generic object from the /Objects node in an FBX file.

@@ -2,7 +2,7 @@
 using System.Data;
 using System.Linq;
 
-using Tokamak.Readers.FBX.Readers;
+using Tokamak.Readers.FBX.DOM;
 
 namespace Tokamak.Readers.FBX.Mappers
 {

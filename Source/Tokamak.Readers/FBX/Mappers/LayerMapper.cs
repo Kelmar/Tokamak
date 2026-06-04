@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-using Tokamak.Readers.FBX.Readers;
+using Tokamak.Readers.FBX.DOM;
 
 namespace Tokamak.Readers.FBX.Mappers
 {

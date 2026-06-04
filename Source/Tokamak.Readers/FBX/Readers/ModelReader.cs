@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 
+using Tokamak.Readers.FBX.DOM;
+
 namespace Tokamak.Readers.FBX.Readers
 {
     internal class ModelReader

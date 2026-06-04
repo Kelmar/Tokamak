@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 using Tokamak.Tritium.Rendering;
 
-namespace Tokamak.Readers.FBX
+namespace Tokamak.Readers.FBX.DOM
 {
     internal class ModelInfo : ResultRecord
     {

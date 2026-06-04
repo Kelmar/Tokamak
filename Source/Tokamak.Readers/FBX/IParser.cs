@@ -1,4 +1,6 @@
-﻿namespace Tokamak.Readers.FBX
+﻿using Tokamak.Readers.FBX.DOM;
+
+namespace Tokamak.Readers.FBX
 {
     internal interface IParser
     {

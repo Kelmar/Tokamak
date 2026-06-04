@@ -9,7 +9,7 @@ using Tokamak.Utilities;
 
 using Tokamak.Readers.FBX.Readers;
 
-namespace Tokamak.Readers.FBX
+namespace Tokamak.Readers.FBX.DOM
 {
     /// <summary>
     /// Parsed Properties70 of an object node.

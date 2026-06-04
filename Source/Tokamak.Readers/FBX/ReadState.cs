@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+using Tokamak.Readers.FBX.DOM;
 using Tokamak.Readers.FBX.Readers;
 using Tokamak.Readers.FBX.Mappers;
 

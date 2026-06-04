@@ -4,6 +4,7 @@ using System.Numerics;
 
 using Tokamak.Mathematics;
 
+using Tokamak.Readers.FBX.DOM;
 using Tokamak.Readers.FBX.Mappers;
 
 namespace Tokamak.Readers.FBX.Readers

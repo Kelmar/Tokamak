@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tokamak.Readers.FBX
+namespace Tokamak.Readers.FBX.DOM
 {
     /// <summary>
     /// A data node inside of an FBX file.

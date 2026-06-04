@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tokamak.Readers.FBX.Readers
+using Tokamak.Readers.FBX.DOM;
+
+namespace Tokamak.Readers.FBX
 {
     internal static class FBXCollectionHelper
     {
