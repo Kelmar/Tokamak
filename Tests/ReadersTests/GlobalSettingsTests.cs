@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 
 using NUnit.Framework;
@@ -9,6 +10,25 @@ namespace ReadersTests
     [TestFixture]
     public class GlobalSettingsTests
     {
+        [Test]
+        public void Validate_WithDefaultAxes_DoesNotThrow()
+        {
+            var settings = new GlobalSettings();
+
+            Assert.That(() => settings.Validate(), Throws.Nothing);
+        }
+
+        // Valid axis indices are 0..2 (X, Y, Z); anything else must be rejected.
+        [TestCase(3)]   // one past the end - would otherwise mis-write the W lane
+        [TestCase(4)]
+        [TestCase(-1)]
+        public void Validate_WithOutOfRangeAxis_Throws(int badAxis)
+        {
+            var settings = new GlobalSettings { UpAxis = badAxis };
+
+            Assert.That(() => settings.Validate(), Throws.TypeOf<Exception>());
+        }
+
         [Test]
         public void SwizzleAxes_WithDefaultAxes_IsIdentity()
         {
