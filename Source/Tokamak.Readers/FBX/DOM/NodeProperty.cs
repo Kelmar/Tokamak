@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Tokamak.Readers.FBX.DOM
 {
@@ -13,19 +14,28 @@ namespace Tokamak.Readers.FBX.DOM
     /// This class contains some data conversion functions to
     /// help with translating the format into something useful.
     /// </remarks>
-    internal class NodeProperty
+    internal abstract class NodeProperty
     {
-        public required PropertyType Type { get; internal set; }
+        protected NodeProperty(PropertyType type)
+        {
+            Type = type;
+        }
 
-        public required object Data { get; internal set; }
+        public PropertyType Type { get; }
 
-        public bool AsBool() => Convert.ToBoolean(Data);
+        public abstract bool AsBool();
 
-        public int AsInt() => Convert.ToInt32(Data);
+        public abstract short AsShort();
 
-        public long AsLong() => Convert.ToInt64(Data);
+        public abstract int AsInt();
 
-        public string AsString() => Convert.ToString(Data) ?? String.Empty;
+        public abstract long AsLong();
+
+        public abstract float AsFloat();
+
+        public abstract double AsDouble();
+
+        public abstract string AsString(Encoding? encoding = null);
 
         public override string ToString()
         {
@@ -34,38 +44,31 @@ namespace Tokamak.Readers.FBX.DOM
 
             return Type switch
             {
+                // Scalars
+                PropertyType.Boolean => AsBool().ToString(),
+                PropertyType.SignedShort => AsShort().ToString(),
+                PropertyType.SignedInt => AsInt().ToString(),
+                PropertyType.SignedLong => AsLong().ToString(),
+                PropertyType.Float => AsFloat().ToString(),
+                PropertyType.Double => AsDouble().ToString(),
+
+                // Arrays
+                PropertyType.BoolArray => DumpArray<bool>(),
+                PropertyType.IntArray => DumpArray<int>(),
+                PropertyType.LongArray => DumpArray<long>(),
                 PropertyType.FloatArray => DumpArray<float>(),
                 PropertyType.DoubleArray => DumpArray<double>(),
-                PropertyType.LongArray => DumpArray<long>(),
-                PropertyType.IntArray => DumpArray<int>(),
-                PropertyType.BoolArray => DumpArray<bool>(),
-                _ => Data.ToString() ?? "[NULL]",
+
+                // Pseudo Arrays
+                PropertyType.String => AsString(),
+                PropertyType.RawBinary => "[RAW BINARY]",
+
+                _ => "[UNKNOWN DATA TYPE]",
             };
         }
 
-        public IEnumerable<T> AsEnumerable<T>()
-            where T : unmanaged
-        {
-            return Type switch
-            {
-                PropertyType.FloatArray => ConvertTo<float, T>(),
-                PropertyType.DoubleArray => ConvertTo<double, T>(),
-                PropertyType.LongArray => ConvertTo<long, T>(),
-                PropertyType.IntArray => ConvertTo<int, T>(),
-                PropertyType.BoolArray => ConvertTo<bool, T>(),
-                _ => throw new Exception($"Not an array type {Type}")
-            };
-        }
-
-        private IEnumerable<TTo> ConvertTo<TFrom, TTo>()
-            where TFrom : unmanaged
-            where TTo : unmanaged
-        {
-            Type t = typeof(TTo);
-
-            var rdr = (IEnumerable<TFrom>?)Data;
-            return rdr?.Select(i => (TTo)Convert.ChangeType(i, t)) ?? [];
-        }
+        public abstract T[] AsArrayOf<T>()
+            where T : unmanaged;
 
         /// <summary>
         /// Used for dumping array data to a string.
@@ -75,9 +78,9 @@ namespace Tokamak.Readers.FBX.DOM
         /// </remarks>
         /// <typeparam name="T">The array data type.</typeparam>
         private string DumpArray<T>()
-            where T : struct
+            where T : unmanaged
         {
-            IEnumerable<T> items = (Data as IEnumerable<T>) ?? [];
+            T[] items = AsArrayOf<T>();
 
             int count = items.Count();
             string itemStr = String.Join(", ", items.Take(Math.Min(count, 10)));

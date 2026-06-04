@@ -68,13 +68,13 @@ namespace Tokamak.Readers.FBX.DOM
             return type.ToLower() switch
             {
                 "bool" => ReadBool(node),
-                "enum" => ReadNumber(node),
-                "int" => ReadNumber(node),
-                "short" => ReadNumber(node),
-                "long" => ReadNumber(node),
-                "float" => ReadNumber(node),
-                "double" => ReadNumber(node),
-                "number" => ReadNumber(node),
+                "enum" => ReadInteger(node),
+                "short" => ReadInteger(node),
+                "int" => ReadInteger(node),
+                "long" => ReadInteger(node),
+                "float" => ReadReal(node),
+                "double" => ReadReal(node),
+                "number" => ReadReal(node),
                 "string" => ReadString(node),
                 "kstring" => ReadString(node),
                 "colorrgb" => ReadVector3(node),
@@ -95,16 +95,22 @@ namespace Tokamak.Readers.FBX.DOM
             return node.Properties[idx].AsBool();
         }
 
-        private static object ReadNumber(Node node)
+        private static object ReadInteger(Node node)
         {
             int idx = node.Properties.Count - 1;
-            return node.Properties[idx].Data;
+            return node.Properties[idx].AsLong();
+        }
+
+        private static object ReadReal(Node node)
+        {
+            int idx = node.Properties.Count - 1;
+            return node.Properties[idx].AsDouble();
         }
 
         private static object ReadString(Node node)
         {
             int idx = node.Properties.Count - 1;
-            return node.Properties[idx].Data.ToString() ?? String.Empty;
+            return node.Properties[idx].AsString();
         }
 
         private static IEnumerable<float> ReadValues(Node node, int idx, int count)
@@ -122,7 +128,7 @@ namespace Tokamak.Readers.FBX.DOM
                 if (!prop.Type.IsNumeric)
                     continue;
 
-                yield return Convert.ToSingle(prop.Data);
+                yield return prop.AsFloat();
             }
         }
 

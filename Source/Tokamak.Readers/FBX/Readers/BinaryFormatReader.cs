@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 
 using Tokamak.Readers.FBX.DOM;
@@ -133,28 +131,27 @@ namespace Tokamak.Readers.FBX.Readers
         private NodeProperty ReadProperty()
         {
             char c = (char)m_reader.ReadByte();
-
             PropertyType type = (PropertyType)c;
 
-            object data = type switch
+            byte[] data = type switch
             {
                 // Scalars
-                PropertyType.SignedShort => m_reader.ReadInt16(),
-                PropertyType.Boolean => m_reader.ReadByte(),
-                PropertyType.SignedInt => m_reader.ReadInt32(),
-                PropertyType.Float => m_reader.ReadSingle(),
-                PropertyType.Double => m_reader.ReadDouble(),
-                PropertyType.SignedLong => m_reader.ReadInt64(),
+                PropertyType.Boolean => [m_reader.ReadByte()],
+                PropertyType.SignedShort => ReadScalar(sizeof(Int16)),
+                PropertyType.SignedInt => ReadScalar(sizeof(Int32)),
+                PropertyType.SignedLong => ReadScalar(sizeof(Int64)),
+                PropertyType.Float => ReadScalar(sizeof(Single)),
+                PropertyType.Double => ReadScalar(sizeof(Double)),
 
                 // Arrays
-                PropertyType.FloatArray => ReadFloatArray(),
-                PropertyType.DoubleArray => ReadDoubleArray(),
-                PropertyType.LongArray => ReadLongArray(),
-                PropertyType.IntArray => ReadIntArray(),
-                PropertyType.BoolArray => ReadBoolArray(),
+                PropertyType.BoolArray => ReadArrayData(1),
+                PropertyType.IntArray => ReadArrayData(sizeof(Int32)),
+                PropertyType.LongArray => ReadArrayData(sizeof(Int64)),
+                PropertyType.FloatArray => ReadArrayData(sizeof(Single)),
+                PropertyType.DoubleArray => ReadArrayData(sizeof(Double)),
 
                 // Array like....
-                PropertyType.String => ReadPropertyString(),
+                PropertyType.String => ReadPropertyRaw(),
                 PropertyType.RawBinary => ReadPropertyRaw(),
 
                 /*
@@ -165,11 +162,14 @@ namespace Tokamak.Readers.FBX.Readers
                 _ => throw new Exception($"Unknown property type '{c}'")
             };
 
-            return new NodeProperty
-            {
-                Type = type,
-                Data = data
-            };
+            return new BinaryNodeProperty(type, data);
+        }
+
+        private byte[] ReadScalar(int itemSize)
+        {
+            byte[] data = new byte[itemSize];
+            m_reader.ReadExactly(data);
+            return data;
         }
 
         private static byte[] Decompress(byte[] data)
@@ -183,14 +183,12 @@ namespace Tokamak.Readers.FBX.Readers
             return outStream.ToArray();
         }
 
-        private T[] ReadArray<T>()
-            where T : struct
+        private byte[] ReadArrayData(int itemSize)
         {
             int length = (int)m_reader.ReadUInt32();
             bool compressed = m_reader.ReadUInt32() == 1;
             int physicalLength = (int)m_reader.ReadUInt32();
 
-            int itemSize = Marshal.SizeOf<T>();
             int recordSize = compressed ? physicalLength : (length * itemSize);
 
             byte[] data = new byte[recordSize];
@@ -207,27 +205,7 @@ namespace Tokamak.Readers.FBX.Readers
                 }
             }
 
-            var span = MemoryMarshal.Cast<byte, T>(data);
-
-            return span.ToArray();
-        }
-
-        private byte[] ReadByteArray() => ReadArray<byte>();
-
-        private bool[] ReadBoolArray() => ReadByteArray().Select(b => b != 0).ToArray();
-
-        private int[] ReadIntArray() => ReadArray<int>();
-
-        private long[] ReadLongArray() => ReadArray<long>();
-
-        private float[] ReadFloatArray() => ReadArray<float>();
-
-        private double[] ReadDoubleArray() => ReadArray<double>();
-
-        private string ReadPropertyString()
-        {
-            int length = (int)m_reader.ReadUInt32();
-            return ReadString(length);
+            return data;
         }
 
         private byte[] ReadPropertyRaw()

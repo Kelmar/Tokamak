@@ -27,7 +27,7 @@ namespace Tokamak.Readers.FBX.Readers
         {
             return mesh.Node.Children
                 .WithName("PolygonVertexIndex")
-                .SelectMany(n => n.Properties[0].AsEnumerable<int>())
+                .SelectMany(n => n.Properties[0].AsArrayOf<int>())
                 .ToList();
         }
 
@@ -35,7 +35,7 @@ namespace Tokamak.Readers.FBX.Readers
         {
             return mesh.Node.Children
                 .WithName("Vertices")
-                .SelectMany(v => v.Properties[0].AsEnumerable<float>())
+                .SelectMany(v => v.Properties[0].AsArrayOf<float>())
                 .ToList() // Chunk needs the list to be realized first.
                 .Chunk(3) // Group into threes
                 .Select(Settings.MapToVector) // Convert to vertex
@@ -85,21 +85,21 @@ namespace Tokamak.Readers.FBX.Readers
                 obj.Node.Children.FirstWithName("LayerElementUV"),
                 "UV",
                 "UVIndex",
-                p => p.SelectMany(p => p.AsEnumerable<float>()).ToList().Chunk(2).Select(VectorEx.ToVector2)
+                p => p.SelectMany(p => p.AsArrayOf<float>()).ToList().Chunk(2).Select(VectorEx.ToVector2)
             );
 
             var normalMapper = new LayerMapper<Vector3>(
                 obj.Node.Children.FirstWithName("LayerElementNormal"),
                 "Normals",
                 "NormalsIndex",
-                p => p.SelectMany(p => p.AsEnumerable<float>()).ToList().Chunk(3).Select(Settings.MapToVector)
+                p => p.SelectMany(p => p.AsArrayOf<float>()).ToList().Chunk(3).Select(Settings.MapToVector)
             );
 
             var materialMapper = new LayerMapper<int>(
                 obj.Node.Children.FirstWithName("LayerElementMaterial"),
                 "Materials",
                 "MaterialIndex",
-                p => p.SelectMany(p => p.AsEnumerable<int>())
+                p => p.SelectMany(p => p.AsArrayOf<int>())
             );
 
             // Generate a list of polygons with flat data.
