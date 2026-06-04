@@ -2,7 +2,6 @@
 using System.Linq;
 
 using Tokamak.Readers.FBX.DOM;
-using Tokamak.Readers.FBX.Readers;
 using Tokamak.Readers.FBX.Mappers;
 
 namespace Tokamak.Readers.FBX
@@ -26,7 +25,11 @@ namespace Tokamak.Readers.FBX
                 return new GlobalSettings(); // Use default settings.
 
             var properties = ObjectProperty.BuildAllFor(node);
-            return properties.MapTo<GlobalSettings>();
+            var result = properties.MapTo<GlobalSettings>();
+
+            result.Validate();
+
+            return result;
         }
 
         public GlobalSettings Settings { get; }

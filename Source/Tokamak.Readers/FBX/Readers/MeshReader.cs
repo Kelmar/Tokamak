@@ -38,7 +38,8 @@ namespace Tokamak.Readers.FBX.Readers
                 .SelectMany(v => v.Properties[0].AsEnumerable<float>())
                 .ToList() // Chunk needs the list to be realized first.
                 .Chunk(3) // Group into threes
-                .Select(Settings.MapToVector) // Convert to vertex
+                .Select(VectorEx.ToVector3) // Convert to vertex
+                .Select(Settings.SwizzleAxes) // Swizzle axes
                 .ToList();
         }
 
@@ -92,7 +93,12 @@ namespace Tokamak.Readers.FBX.Readers
                 obj.Node.Children.FirstWithName("LayerElementNormal"),
                 "Normals",
                 "NormalsIndex",
-                p => p.SelectMany(p => p.AsEnumerable<float>()).ToList().Chunk(3).Select(Settings.MapToVector)
+                p => p
+                    .SelectMany(p => p.AsEnumerable<float>())
+                    .ToList()
+                    .Chunk(3)
+                    .Select(VectorEx.ToVector3) // To vector
+                    .Select(Settings.SwizzleAxes) // Swizzle axes
             );
 
             var materialMapper = new LayerMapper<int>(
