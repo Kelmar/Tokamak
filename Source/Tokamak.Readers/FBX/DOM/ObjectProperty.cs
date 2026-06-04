@@ -89,6 +89,19 @@ namespace Tokamak.Readers.FBX.DOM
             };
         }
 
+        /*
+         * TODO: Want to rework how we handle these properties entirely.
+         *
+         * The current system is somewhat fragile and apparently has some boxing/unboxing
+         * issues that could stand to be resolved.
+         * 
+         * Our current method of trying to start from the end of the property list and
+         * read from there to get values also suffers from the potential problem of 
+         * possibly trying to start out with negative indies.  While the ReadValues()
+         * method sort of guards against this, it still probably isn't terribly
+         * great that this happens.
+         */
+
         private static bool ReadBool(Node node)
         {
             int idx = node.Properties.Count - 1;
@@ -109,19 +122,24 @@ namespace Tokamak.Readers.FBX.DOM
 
         private static IEnumerable<float> ReadValues(Node node, int idx, int count)
         {
-            for (int i = 0; i < count; ++i)
+            idx = Math.Max(idx, 0);
+
+            for (int produced = 0; produced < count; ++idx)
             {
-                if ((i + idx) >= node.Properties.Count)
+                if (idx >= node.Properties.Count)
                 {
+                    // Pad with zeros after reaching end...
+                    ++produced;
                     yield return 0;
                     continue;
                 }
 
-                NodeProperty prop = node.Properties[i + idx];
+                NodeProperty prop = node.Properties[idx];
 
                 if (!prop.Type.IsNumeric)
-                    continue;
+                    continue; // Skip non-numeric value.
 
+                ++produced;
                 yield return Convert.ToSingle(prop.Data);
             }
         }

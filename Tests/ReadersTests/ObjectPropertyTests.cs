@@ -65,5 +65,42 @@ namespace ReadersTests
         {
             Assert.That(ObjectProperty.Build(P("Mystery", "someWeirdType", Int(1))), Is.Null);
         }
+
+        // The following exercise ReadValues against malformed/short vector properties.
+        // They must terminate (a regressed loop here would hang) and zero-fill the
+        // missing components rather than throwing or mis-aligning.
+
+        [Test]
+        public void Build_VectorProperty_WithNoValues_ReturnsZeroVector()
+        {
+            // [name, type, label, flags] only - no numeric components.
+            var op = ObjectProperty.Build(P("DiffuseColor", "Color"));
+
+            Assert.That(op, Is.Not.Null);
+            Assert.That((Vector4)op.Data, Is.EqualTo(Vector4.Zero));
+        }
+
+        [Test]
+        public void Build_VectorProperty_WithTooFewProperties_ReturnsZeroVector()
+        {
+            // Truncated P node: only name + type, so the "count from the end" start
+            // index goes negative and must be clamped instead of crashing or hanging.
+            var node = Make("P", new[] { Str("DiffuseColor"), Str("Color") });
+
+            var op = ObjectProperty.Build(node);
+
+            Assert.That(op, Is.Not.Null);
+            Assert.That((Vector4)op.Data, Is.EqualTo(Vector4.Zero));
+        }
+
+        [Test]
+        public void Build_VectorProperty_WithPartialValues_PadsRemainderWithZero()
+        {
+            // Vector3D with only two numeric components present; the third pads to 0.
+            var op = ObjectProperty.Build(P("Pos", "Vector3D", Dbl(1.0), Dbl(2.0)));
+
+            Assert.That(op, Is.Not.Null);
+            Assert.That((Vector3)op.Data, Is.EqualTo(new Vector3(1, 2, 0)));
+        }
     }
 }

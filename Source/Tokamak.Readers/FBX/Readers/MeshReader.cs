@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
@@ -82,6 +83,9 @@ namespace Tokamak.Readers.FBX.Readers
             var indices = ReadIndexData(obj);
             var vectors = ReadVertexData(obj);
 
+            if (indices.Count == 0 || vectors.Count == 0)
+                throw new Exception("Mesh with no indicies or vectors in FBX file.");
+
             var uvMapper = new LayerMapper<Vector2>(
                 obj.Node.Children.FirstWithName("LayerElementUV"),
                 "UV",
@@ -121,7 +125,7 @@ namespace Tokamak.Readers.FBX.Readers
         }
 
         private IEnumerable<FBXPolygon> ToPolys(
-            IEnumerable<int> indices,
+            List<int> indices,
             List<Vector3> vectors,
             List<MaterialInfo> materials,
             LayerMapper<Vector2> uvMapper, 

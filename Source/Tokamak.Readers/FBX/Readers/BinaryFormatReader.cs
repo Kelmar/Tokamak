@@ -193,9 +193,6 @@ namespace Tokamak.Readers.FBX.Readers
             bool compressed = m_reader.ReadUInt32() == 1;
             int physicalLength = (int)m_reader.ReadUInt32();
 
-            if (length < 0)
-                throw new Exception("Invalid FBX format."); // TODO: Swap with more specific exception later.
-
             int itemSize = Marshal.SizeOf<T>();
             long recordSize = compressed ? physicalLength : (length * itemSize);
 

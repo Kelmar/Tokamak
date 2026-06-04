@@ -29,13 +29,21 @@ namespace ReadersTests
             Assert.That(() => settings.Validate(), Throws.TypeOf<Exception>());
         }
 
+        [Test]
         public void Validate_UniqueAxes_DoesNotThrow()
         {
-            var settings = new GlobalSettings();
+            // A non-default but still-unique axis permutation must pass.
+            var settings = new GlobalSettings
+            {
+                UpAxis = 0,
+                FrontAxis = 1,
+                CoordAxis = 2,
+            };
 
             Assert.That(() => settings.Validate(), Throws.Nothing);
         }
 
+        [Test]
         public void Validate_NonuniqueAxes_Throws()
         {
             var settings = new GlobalSettings
