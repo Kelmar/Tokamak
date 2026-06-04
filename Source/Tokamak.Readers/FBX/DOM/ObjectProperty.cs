@@ -32,12 +32,12 @@ namespace Tokamak.Readers.FBX.DOM
 
         public object Data { get; }
 
-        public override string ToString() => $"{Name}: {Data}";
+        public override string ToString() => $"{Name}: {Type}";
 
         public static ObjectProperty? Build(Node node)
         {
-            string name = node.Properties[0].ToString();
-            string type = node.Properties[1].ToString();
+            string name = node.StringProperty(0);
+            string type = node.StringProperty(1);
 
             object? data = ReadData(node, type);
 

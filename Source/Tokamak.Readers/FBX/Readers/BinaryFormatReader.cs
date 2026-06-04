@@ -12,6 +12,9 @@ namespace Tokamak.Readers.FBX.Readers
 {
     internal class BinaryFormatReader : IParser
     {
+        // TODO: This would allow a 2GB record... probably shouldn't.....
+        private const long MAX_ALLOWED_RECORD_SIZE = Int32.MaxValue;
+
         private readonly Stream m_input;
         private readonly BinaryReader m_reader;
         private readonly Encoding m_encoding;
@@ -139,19 +142,19 @@ namespace Tokamak.Readers.FBX.Readers
             object data = type switch
             {
                 // Scalars
-                PropertyType.SignedShort => m_reader.ReadInt16(),
                 PropertyType.Boolean => m_reader.ReadByte(),
+                PropertyType.SignedShort => m_reader.ReadInt16(),
                 PropertyType.SignedInt => m_reader.ReadInt32(),
+                PropertyType.SignedLong => m_reader.ReadInt64(),
                 PropertyType.Float => m_reader.ReadSingle(),
                 PropertyType.Double => m_reader.ReadDouble(),
-                PropertyType.SignedLong => m_reader.ReadInt64(),
 
                 // Arrays
+                PropertyType.BoolArray => ReadBoolArray(),
+                PropertyType.IntArray => ReadIntArray(),
+                PropertyType.LongArray => ReadLongArray(),
                 PropertyType.FloatArray => ReadFloatArray(),
                 PropertyType.DoubleArray => ReadDoubleArray(),
-                PropertyType.LongArray => ReadLongArray(),
-                PropertyType.IntArray => ReadIntArray(),
-                PropertyType.BoolArray => ReadBoolArray(),
 
                 // Array like....
                 PropertyType.String => ReadPropertyString(),
@@ -186,12 +189,18 @@ namespace Tokamak.Readers.FBX.Readers
         private T[] ReadArray<T>()
             where T : struct
         {
-            int length = (int)m_reader.ReadUInt32();
+            long length = m_reader.ReadUInt32();
             bool compressed = m_reader.ReadUInt32() == 1;
             int physicalLength = (int)m_reader.ReadUInt32();
 
+            if (length < 0)
+                throw new Exception("Invalid FBX format."); // TODO: Swap with more specific exception later.
+
             int itemSize = Marshal.SizeOf<T>();
-            int recordSize = compressed ? physicalLength : (length * itemSize);
+            long recordSize = compressed ? physicalLength : (length * itemSize);
+
+            if (recordSize > MAX_ALLOWED_RECORD_SIZE)
+                throw new Exception("Invalid FBX format."); // TODO: Swap with more specific exception later.
 
             byte[] data = new byte[recordSize];
             m_reader.ReadExactly(data);
@@ -214,7 +223,11 @@ namespace Tokamak.Readers.FBX.Readers
 
         private byte[] ReadByteArray() => ReadArray<byte>();
 
-        private bool[] ReadBoolArray() => ReadByteArray().Select(b => b != 0).ToArray();
+        private bool[] ReadBoolArray()
+        {
+            // No garantee of size of C# bool, but FBX is always byte.
+            return ReadByteArray().Select(b => b != 0).ToArray();
+        }
 
         private int[] ReadIntArray() => ReadArray<int>();
 

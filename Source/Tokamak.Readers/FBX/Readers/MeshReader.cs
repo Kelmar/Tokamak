@@ -127,26 +127,34 @@ namespace Tokamak.Readers.FBX.Readers
             // In this way zero is represented as -1
 
             var current = new FBXPolygon();
-            int lastMaterialIdx = 0;
-            int indexNo = 0; // Index of the index.... >_<
-            int polyIdx = 0;
+
+            int lastMaterialIndex = 0;
+            int lastVectorIndex = 0;
+
+            int indexNumber = 0; // Index of the index.... >_<
+            int polyIndex = 0;
 
             foreach (var index in indices)
             {
                 bool boundary = index < 0;
-                int vectorIdx = boundary ? ~index : index;
+                int vectorIndex = boundary ? ~index : index;
 
-                int materialIdx = materialMapper.GetItem(indexNo, polyIdx, vectorIdx);
+                int materialIndex = materialMapper.GetItem(indexNumber, polyIndex, vectorIndex);
 
-                if (materialIdx < 0 || materialIdx >= materials.Count)
-                    materialIdx = lastMaterialIdx; // Sanity, use last known good material index.
+                if (materialIndex < 0 || materialIndex >= materials.Count)
+                    materialIndex = lastMaterialIndex; // Sanity, use last known good material index.
 
-                lastMaterialIdx = materialIdx;
-                var material = materials[materialIdx];
+                if (vectorIndex >= vectors.Count)
+                    vectorIndex = lastVectorIndex; // Sanity, use last known good vector index.
 
-                current.Vectors.Add(vectors[vectorIdx]);
-                current.Normals.Add(normalMapper.GetItem(indexNo, polyIdx, vectorIdx));
-                current.TexCoord.Add(uvMapper.GetItem(indexNo, polyIdx, vectorIdx));
+                lastMaterialIndex = materialIndex;
+                lastVectorIndex = vectorIndex;
+
+                var material = materials[materialIndex];
+
+                current.Vectors.Add(vectors[vectorIndex]);
+                current.Normals.Add(normalMapper.GetItem(indexNumber, polyIndex, vectorIndex));
+                current.TexCoord.Add(uvMapper.GetItem(indexNumber, polyIndex, vectorIndex));
 
                 current.Material.Add(material.DiffuseColor);
 
@@ -155,11 +163,11 @@ namespace Tokamak.Readers.FBX.Readers
                     //normalMapper.FinalizeNormals(current);
                     yield return current;
 
-                    ++polyIdx;
+                    ++polyIndex;
                     current = new FBXPolygon();
                 }
 
-                ++indexNo;
+                ++indexNumber;
             }
 
             if (current.Vectors.Count > 2)

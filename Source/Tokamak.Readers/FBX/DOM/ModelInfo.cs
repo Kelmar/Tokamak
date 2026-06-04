@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-
-using Tokamak.Tritium.Rendering;
 
 namespace Tokamak.Readers.FBX.DOM
 {

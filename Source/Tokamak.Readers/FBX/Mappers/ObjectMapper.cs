@@ -31,7 +31,7 @@ namespace Tokamak.Readers.FBX.Mappers
 
                 string name = colAttr?.Name ?? typeProp.Name;
 
-                var fbxProp = fbxProps.FirstOrDefault(p => p.Name == name);
+                var fbxProp = fbxProps.FirstWithName(name);
 
                 if (fbxProp == null)
                     continue;

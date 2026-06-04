@@ -18,7 +18,7 @@ namespace Tokamak.Readers.FBX.DOM
 
             Id = ParseId();
             (Name, Class) = ParseNameClass();
-            SubClass = ParseSubClass();
+            SubClass = Node.StringProperty(2);
 
             Properties = ObjectProperty
                 .BuildAllFor(node)
@@ -30,10 +30,7 @@ namespace Tokamak.Readers.FBX.DOM
 
         private (string, string) ParseNameClass()
         {
-            if (Node.Properties.Count < 2)
-                return (String.Empty, String.Empty);
-
-            string name = Node.Properties[1].AsString();
+            string name = Node.StringProperty(1);
 
             int idx = name.IndexOf("::");
 
@@ -41,9 +38,6 @@ namespace Tokamak.Readers.FBX.DOM
                 (name.Substring(0, idx), name.Substring(idx + 2)) :
                 (name, String.Empty);
         }
-
-        private string ParseSubClass()
-            => Node.Properties.Count < 3 ? String.Empty : Node.Properties[2].AsString();
 
         /// <summary>
         /// The object graph for finding child objects.

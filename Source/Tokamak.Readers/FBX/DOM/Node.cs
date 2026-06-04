@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Tokamak.Readers.FBX.DOM
 {
@@ -23,5 +24,8 @@ namespace Tokamak.Readers.FBX.DOM
         public required List<Node> Children { get; init; }
 
         public override string ToString() => $"{Name}: C:{Children.Count} P:{Properties.Count}";
+
+        public string StringProperty(int index)
+            => index < Properties.Count ? Properties[index].AsString() : String.Empty;
     }
 }

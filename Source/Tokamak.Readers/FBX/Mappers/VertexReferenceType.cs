@@ -3,6 +3,6 @@
     internal enum VertexReferenceType
     {
         Direct,
-        Index
+        IndexToDirect
     }
 }

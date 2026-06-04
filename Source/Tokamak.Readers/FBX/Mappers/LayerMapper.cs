@@ -49,7 +49,7 @@ namespace Tokamak.Readers.FBX.Mappers
         /// <returns>The resulting item or a default value.</returns>
         public T GetItem(int indexNumber, int polyIndex, int vectorIndex)
         {
-            int i = m_indexMapper.MapIndex(polyIndex, indexNumber, vectorIndex);
+            int i = m_indexMapper.MapIndex(indexNumber, polyIndex, vectorIndex);
 
             if (i >= 0 && i < m_data.Count)
                 return m_data[i];

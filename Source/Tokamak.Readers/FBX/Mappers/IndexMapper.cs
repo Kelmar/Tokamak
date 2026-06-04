@@ -58,7 +58,7 @@ namespace Tokamak.Readers.FBX.Mappers
 
             return referenceTypeStr.ToLower() switch
             {
-                "indextodirect" => VertexReferenceType.Index, // Blender weirdness
+                "indextodirect" => VertexReferenceType.IndexToDirect,
                 "direct" => VertexReferenceType.Direct,
                 _ => VertexReferenceType.Direct
             };
@@ -81,16 +81,16 @@ namespace Tokamak.Readers.FBX.Mappers
             );
         }
 
-        public int MapIndex(int polyIdx, int indexNo, int index)
+        public int MapIndex(int indexNumber, int polyIndex, int vectorIndex)
         {
             if (MappingType == VertexMappingType.AllSame)
                 return 0; // Hard coded to first element.
 
             int i = MappingType switch
             {
-                VertexMappingType.Vertex => index,
-                VertexMappingType.PolyVertex => indexNo,
-                VertexMappingType.Polygon => polyIdx,
+                VertexMappingType.Vertex => vectorIndex,
+                VertexMappingType.PolyVertex => indexNumber,
+                VertexMappingType.Polygon => polyIndex,
 
                 VertexMappingType.AllSame => -1, // Not possible
                 VertexMappingType.None => -1,
@@ -98,10 +98,10 @@ namespace Tokamak.Readers.FBX.Mappers
                 _ => -1
             };
 
-            if (i != -1 && ReferenceType == VertexReferenceType.Index && m_indices.Count > 0)
-                return m_indices[i];
+            if (ReferenceType != VertexReferenceType.IndexToDirect || i < 0 || i >= m_indices.Count)
+                return i;
 
-            return i;
+            return m_indices[i];
         }
     }
 }
