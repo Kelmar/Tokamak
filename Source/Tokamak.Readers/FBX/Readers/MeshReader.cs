@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
@@ -81,9 +80,6 @@ namespace Tokamak.Readers.FBX.Readers
             var indices = ReadIndexData(obj);
             var vectors = ReadVertexData(obj);
 
-            var normalNodes = obj.Node.Children.WithName("LayerElementNormal");
-            var materialNodes = obj.Node.Children.WithName("LayerElementMaterial");
-
             var uvMapper = new LayerMapper<Vector2>(
                 obj.Node.Children.FirstWithName("LayerElementUV"),
                 "UV",
@@ -137,9 +133,9 @@ namespace Tokamak.Readers.FBX.Readers
             foreach (var index in indices)
             {
                 bool boundary = index < 0;
-                int i = boundary ? ~index : index;
+                int vectorIdx = boundary ? ~index : index;
 
-                int materialIdx = materialMapper.GetItem(polyIdx, indexNo, i);
+                int materialIdx = materialMapper.GetItem(indexNo, polyIdx, vectorIdx);
 
                 if (materialIdx < 0 || materialIdx >= materials.Count)
                     materialIdx = lastMaterialIdx; // Sanity, use last known good material index.
@@ -147,9 +143,9 @@ namespace Tokamak.Readers.FBX.Readers
                 lastMaterialIdx = materialIdx;
                 var material = materials[materialIdx];
 
-                current.Vectors.Add(vectors[i]);
-                current.Normals.Add(normalMapper.GetItem(polyIdx, indexNo, i));
-                current.TexCoord.Add(uvMapper.GetItem(polyIdx, indexNo, i));
+                current.Vectors.Add(vectors[vectorIdx]);
+                current.Normals.Add(normalMapper.GetItem(indexNo, polyIdx, vectorIdx));
+                current.TexCoord.Add(uvMapper.GetItem(indexNo, polyIdx, vectorIdx));
 
                 current.Material.Add(material.DiffuseColor);
 
