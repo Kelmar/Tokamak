@@ -69,10 +69,21 @@ namespace Tokamak.Readers.FBX
 
             foreach (var mesh in state.Meshes)
             {
-                m_builder.NewMesh(cfg => cfg
-                    .WithName(mesh.Name)
-                    // TODO: Add polys here when we figure out a good abstract way to do that.
-                );
+                m_builder.NewMesh(cfg =>
+                {
+                    cfg.WithName(mesh.Name);
+                    var polyBuilder = cfg.GetPolygonBuilder();
+
+                    foreach (var p in mesh.Polygons)
+                    {
+                        polyBuilder
+                            .AddVertices(p.Vectors)
+                            .AddNormals(p.Normals)
+                            .AddUVs(p.TexCoord)
+                            .AddColors(p.Material)
+                            .Close();
+                    }
+                });
             }
 
             foreach (var model in state.Models)

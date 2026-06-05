@@ -60,15 +60,12 @@ namespace Tokamak.Readers.FBX.Readers
                 {
                     var material = materials.FirstOrDefault(m => m.Id == id);
 
-                    if (material == null)
+                    // Replace with a default material.
+                    material ??= new MaterialInfo
                     {
-                        // Replace with a default material.
-                        material = new MaterialInfo
-                        {
-                            Id = -1,
-                            Name = "Default",
-                        };
-                    }
+                        Id = -1,
+                        Name = "Default",
+                    };
 
                     tmpList.Add(material);
                 }
@@ -124,7 +121,7 @@ namespace Tokamak.Readers.FBX.Readers
             };
         }
 
-        private IEnumerable<FBXPolygon> ToPolys(
+        private static IEnumerable<FBXPolygon> ToPolys(
             List<int> indices,
             List<Vector3> vectors,
             List<MaterialInfo> materials,
