@@ -57,7 +57,7 @@ namespace Tokamak.Tritium.Builders
                 if (Current.Vectors.Count == 0)
                     return this; // Nothing to do.
 
-                m_meshBuilder.Polygons.Add(Current);
+                m_meshBuilder.Polygons.AddRange(Current.SplitIntoTriangles());
 
                 Current = new();
                 return this;

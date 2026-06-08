@@ -74,8 +74,11 @@ namespace TestBed
 
         public void Dispose()
         {
-            m_scene.RemoveObject(m_mesh.Asset);
-            m_mesh.Dispose();
+            if (m_mesh != null)
+            {
+                m_scene.RemoveObject(m_mesh.Asset);
+                m_mesh.Dispose();
+            }
 
             m_scene?.Dispose();
             m_context?.Dispose();
@@ -125,8 +128,11 @@ namespace TestBed
             var reader = new FBXReader(m_builderFactory());
             reader.Import(FILE);
 
+            //m_mesh = m_assetManager.Find<SceneMeshObject>("Cube");
             m_mesh = m_assetManager.Find<SceneMeshObject>("Chest");
-            m_scene.AddObject(m_mesh.Asset);
+
+            if (m_mesh != null)
+                m_scene.AddObject(m_mesh.Asset);
         }
 
         Font LoadFont()
@@ -374,7 +380,7 @@ namespace TestBed
             while (m_rot >= 360)
                 m_rot -= 360;
 
-            m_mesh.Asset.Rotation = new Vector3(0, m_rot, 0);
+            m_mesh?.Asset.Rotation = new Vector3(0, m_rot, 0);
         }
 
         private void ComputeFPS()
