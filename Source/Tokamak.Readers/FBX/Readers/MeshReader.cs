@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 
 using Tokamak.Mathematics;
 
@@ -15,6 +16,8 @@ namespace Tokamak.Readers.FBX.Readers
     /// </summary>
     internal class MeshReader : IFBXObjectReader
     {
+        private int m_importCount = 0;
+
         public MeshReader(ReadState state)
         {
             State = state;
@@ -46,19 +49,41 @@ namespace Tokamak.Readers.FBX.Readers
                 .ToList();
         }
 
+        private string GetAssetName(FBXObject mesh, SceneObjectInfo? sceneObj)
+        {
+            string name = mesh.Name;
+
+            if (String.IsNullOrWhiteSpace(mesh.Name))
+            {
+                var nameBuilder = new StringBuilder();
+
+                if (!String.IsNullOrWhiteSpace(sceneObj?.Name))
+                    nameBuilder.Append(sceneObj.Name);
+                else
+                    nameBuilder.Append(State.FileName);
+
+                nameBuilder.Append("_mesh_");
+                nameBuilder.Append(m_importCount);
+
+                name = nameBuilder.ToString();
+            }
+
+            return name;
+        }
+
         public void ReadObject(FBXObject obj)
         {
-            var modelObj = State.SceneObjects.FirstOrDefault(m => obj.ParentIds.Contains(m.Id));
+            var sceneObj = State.SceneObjects.FirstOrDefault(m => obj.ParentIds.Contains(m.Id));
 
             // Use all available materials by default.
             var materials = State.Materials;
 
-            if (modelObj != null)
+            if (sceneObj != null)
             {
                 var tmpList = new List<MaterialInfo>();
 
                 // We need to make sure we preserve the order that we see in the model's defintion.
-                foreach (var id in modelObj.MaterialIds)
+                foreach (var id in sceneObj.MaterialIds)
                 {
                     var material = materials.FirstOrDefault(m => m.Id == id);
 
@@ -114,11 +139,13 @@ namespace Tokamak.Readers.FBX.Readers
             // Generate a list of polygons with flat data.
             var polygons = ToPolys(indices, vectors, materials, uvMapper, materialMapper, normalMapper).ToList();
 
+            ++m_importCount;
+
             var meshInfo = new MeshInfo
             {
                 Id = obj.Id,
-                Name = obj.Name,
-                ModelId = modelObj?.Id ?? 0,
+                Name = GetAssetName(obj, sceneObj),
+                ModelId = sceneObj?.Id ?? 0,
                 Polygons = polygons
             };
 

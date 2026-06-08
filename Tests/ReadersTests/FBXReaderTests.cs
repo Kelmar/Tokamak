@@ -36,14 +36,14 @@ namespace ReadersTests
 
             var reader = new FBXImportDirector(new RecordingAssetBuilder());
 
-            Assert.That(() => reader.Import(stream), Throws.TypeOf<NotImplementedException>());
+            Assert.That(() => reader.Import(stream, "Bogus.FBX"), Throws.TypeOf<NotImplementedException>());
         }
 
         [Test]
         public void Import_NullStream_Throws()
         {
             var reader = new FBXImportDirector(new RecordingAssetBuilder());
-            Assert.That(() => reader.Import((Stream)null), Throws.TypeOf<ArgumentNullException>());
+            Assert.That(() => reader.Import((Stream)null, "Bad.FBX"), Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace ReadersTests
 
             using var stream = File.OpenRead(path);
 
-            Assert.That(() => reader.Import(stream), Throws.Nothing,
+            Assert.That(() => reader.Import(stream, path), Throws.Nothing,
                 $"Importing '{Path.GetFileName(path)}' should not throw.");
 
             TestContext.Out.WriteLine(

@@ -8,6 +8,8 @@ namespace Tokamak.Readers.FBX.Readers
 {
     internal class ModelReader : IFBXObjectReader
     {
+        private int m_importCount = 0;
+
         public ModelReader(ReadState state)
         {
             State = state;
@@ -16,6 +18,14 @@ namespace Tokamak.Readers.FBX.Readers
         public string ObjectType => "model";
 
         public ReadState State { get; }
+
+        private string GetAssetName(FBXObject model)
+        {
+            if (String.IsNullOrEmpty(model.Name))
+                return $"{State.FileName}_{m_importCount}";
+
+            return model.Name;
+        }
 
         private void ReadSceneObject(FBXObject obj)
         {
@@ -32,10 +42,12 @@ namespace Tokamak.Readers.FBX.Readers
                 .Select(o => o.Id)
                 .ToList();
 
+            ++m_importCount;
+
             var sceneObject = new SceneObjectInfo
             {
                 Id = obj.Id,
-                Name = obj.Name,
+                Name = GetAssetName(obj),
                 MaterialIds = materialIds,
                 MeshIds = meshIds
             };

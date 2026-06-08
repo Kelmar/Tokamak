@@ -130,6 +130,7 @@ namespace TestBed
 
             //m_mesh = m_assetManager.Find<SceneMeshObject>("Cube");
             m_mesh = m_assetManager.Find<SceneMeshObject>("Chest");
+            //m_mesh = m_assetManager.Find<SceneMeshObject>("Ch46"); // Amy
 
             if (m_mesh != null)
                 m_scene.AddObject(m_mesh.Asset);

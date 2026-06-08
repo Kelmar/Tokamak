@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using Tokamak.Readers.FBX.DOM;
@@ -8,8 +9,11 @@ namespace Tokamak.Readers.FBX
 {
     internal class ReadState
     {
-        public ReadState(Node rootNode)
+        public ReadState(string filePath, Node rootNode)
         {
+            FilePath = filePath;
+            FileName = Path.GetFileNameWithoutExtension(FilePath);
+
             RootNode = rootNode;
             Settings = ReadSettings();
             ObjectGraph = new FBXObjectGraph(this, RootNode);
@@ -31,6 +35,10 @@ namespace Tokamak.Readers.FBX
 
             return result;
         }
+
+        public string FilePath { get; }
+
+        public string FileName { get; }
 
         public GlobalSettings Settings { get; }
 

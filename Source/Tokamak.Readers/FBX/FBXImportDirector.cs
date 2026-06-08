@@ -17,20 +17,20 @@ namespace Tokamak.Readers.FBX
 
         private readonly IAssetBuilder m_builder = builder;
 
-        public void Import(string filename)
+        public void Import(string fileName)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(filename, nameof(filename));
+            ArgumentException.ThrowIfNullOrWhiteSpace(fileName, nameof(fileName));
 
-            using var input = File.OpenRead(filename);
-            Import(input);
+            using var input = File.OpenRead(fileName);
+            Import(input, fileName);
         }
 
-        public void Import(Stream input)
+        public void Import(Stream input, string fileName)
         {
             ArgumentNullException.ThrowIfNull(input, nameof(input));
 
             var rootNode = ParseStream(input);
-            var state = new ReadState(rootNode);
+            var state = new ReadState(fileName, rootNode);
 
             /*
              * First pass:

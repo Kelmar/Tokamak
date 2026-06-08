@@ -10,5 +10,7 @@ namespace Tokamak.Readers.FBX
 
         [NotMapped]
         public string Name { get; set; } = String.Empty;
+
+        public override string ToString() => $"{Id} : {Name}";
     }
 }
