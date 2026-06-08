@@ -12,7 +12,7 @@ namespace Tokamak.Readers.FBX
         {
             RootNode = rootNode;
             Settings = ReadSettings();
-            ObjectGraph = new ObjectGraph(this, RootNode);
+            ObjectGraph = new FBXObjectGraph(this, RootNode);
         }
 
         private GlobalSettings ReadSettings()
@@ -36,7 +36,7 @@ namespace Tokamak.Readers.FBX
 
         public Node RootNode { get; }
 
-        public ObjectGraph ObjectGraph { get; }
+        public FBXObjectGraph ObjectGraph { get; }
 
         public List<MaterialInfo> Materials
         {

@@ -8,7 +8,7 @@ namespace Tokamak.Readers.FBX.Mappers
     /// <summary>
     /// Holds the mapping from the Connection/C nodes for the FBX object hierarchy.
     /// </summary>
-    internal class ObjectGraph
+    internal class FBXObjectGraph
     {
         private readonly Node m_rootNode;
 
@@ -28,7 +28,7 @@ namespace Tokamak.Readers.FBX.Mappers
 
         private readonly ILookup<long, long> m_propertyProperties;
 
-        public ObjectGraph(ReadState state, Node rootNode)
+        public FBXObjectGraph(ReadState state, Node rootNode)
         {
             m_rootNode = rootNode;
 

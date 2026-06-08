@@ -8,7 +8,7 @@ using Tokamak.Readers.FBX.DOM;
 
 namespace Tokamak.Readers.FBX.Mappers
 {
-    internal static class ObjectMapper
+    internal static class FBXObjectMapper
     {
         // TODO: Some sort of path mapping to make this cleaner? -- B.Simonds (June 2, 2026)
 

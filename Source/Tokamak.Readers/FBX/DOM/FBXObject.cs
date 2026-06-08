@@ -9,9 +9,14 @@ namespace Tokamak.Readers.FBX.DOM
     /// <summary>
     /// Represents a generic object from the /Objects node in an FBX file.
     /// </summary>
+    /// <remarks>
+    /// This "object" should not be confused with a scene object.  In an FBX
+    /// file this could represent anything found in the /Objects node.  Such
+    /// as materials; which are not objects in a scene for Tokamak.Tritium.
+    /// </remarks>
     internal class FBXObject
     {
-        public FBXObject(ObjectGraph objectGraph, Node node)
+        public FBXObject(FBXObjectGraph objectGraph, Node node)
         {
             ObjectGraph = objectGraph;
             Node = node;
@@ -42,7 +47,7 @@ namespace Tokamak.Readers.FBX.DOM
         /// <summary>
         /// The object graph for finding child objects.
         /// </summary>
-        public ObjectGraph ObjectGraph { get; }
+        public FBXObjectGraph ObjectGraph { get; }
 
         /// <summary>
         /// The unique ID of this object in the file.
