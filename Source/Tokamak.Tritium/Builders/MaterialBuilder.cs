@@ -15,5 +15,9 @@ namespace Tokamak.Tritium.Builders
             Name = name;
             return this;
         }
+
+        public void Build()
+        {
+        }
     }
 }

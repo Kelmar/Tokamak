@@ -97,6 +97,8 @@ namespace Tokamak.Readers.FBX
                     .AddMeshes(meshNames)
                 );
             }
+
+            m_builder.BuildAll();
         }
 
         private static string ReadString(Stream input, Encoding encoding, int length)

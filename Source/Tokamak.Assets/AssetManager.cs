@@ -74,17 +74,20 @@ namespace Tokamak.Assets
 
             if (!m_factories.TryGetValue(assetType, out var factory))
             {
-                m_log.Warn("No factory method registered for asset type {assetType}", assetType);
+                //m_log.Warn("No factory method registered for asset type {assetType}", assetType);
+                m_log.Warn("No factory method registered for asset type {0}", assetType);
                 m_assets.Remove(path);
                 return null;
             }
 
-            m_log.Debug("Loading {assetType} asset: {assetPath}", assetType, path);
+            //m_log.Debug("Loading {assetType} asset: {assetPath}", assetType, path);
+            m_log.Debug("Loading {assetType} asset: {0}", assetType, path);
             var result = (TAsset)factory.Build();
 
             if (result == null)
             {
-                m_log.Warn("Factory for asset type {assetType} returned null.", assetType);
+                //m_log.Warn("Factory for asset type {assetType} returned null.", assetType);
+                m_log.Warn("Factory for asset type {0} returned null.", assetType);
                 m_assets.Remove(path);
                 return null;
             }
@@ -122,12 +125,14 @@ namespace Tokamak.Assets
                     if (!overwrite)
                         return null;
 
-                    m_log.Warn("New asset over writing asset at: {assetPath}", path);
+                    //m_log.Warn("New asset over writing asset at: {assetPath}", path);
+                    m_log.Warn("New asset over writing asset at: {0}", path);
                     m_assets[path] = info = new AssetInfo();
                 }
             }
 
-            m_log.Debug("Setting {assetType} asset: {assetPath}", typeof(TAsset), path);
+            //m_log.Debug("Setting {assetType} asset: {assetPath}", typeof(TAsset), path);
+            m_log.Debug("Setting {0} asset: {1}", typeof(TAsset), path);
 
             info.Asset = asset;
             asset.ID = path;
@@ -153,7 +158,7 @@ namespace Tokamak.Assets
 
                 Debug.Assert(res >= 1, "Asset disposed multiple times?");
 
-                if (res <= 2)
+                if (res <= 1)
                 {
                     if (!create)
                     {

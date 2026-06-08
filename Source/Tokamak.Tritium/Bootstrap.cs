@@ -19,11 +19,7 @@ namespace Tokamak.Tritium
             container.Register<GraphicsLoader>();
             container.RegisterSingleton<NullAPI>();
 
-            container
-                .Register<IMaterialBuilder, MaterialBuilder>()
-                .Register<IMeshBuilder, MeshBuilder>()
-                .Register<ISceneObjectBuilder, SceneObjectBuilder>()
-            ;
+            container.Register<IAssetBuilder, TritiumAssetBuilder>();
 
             container.Register<IGraphicsLayer>(options => options
                 .WithSingletonLifetime()

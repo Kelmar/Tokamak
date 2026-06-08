@@ -7,6 +7,7 @@ using System.Numerics;
 
 using TestBed.Scenes;
 
+using Tokamak.Assets;
 using Tokamak.Graphite;
 using Tokamak.Hosting.Abstractions;
 using Tokamak.Logging.Abstractions;
@@ -16,6 +17,7 @@ using Tokamak.Readers.FBX;
 using Tokamak.Readers.SVG;
 
 using Tokamak.Tritium.APIs;
+using Tokamak.Tritium.Builders;
 using Tokamak.Tritium.Geometry;
 using Tokamak.Tritium.Scene;
 
@@ -25,7 +27,9 @@ namespace TestBed
 {
     public class TestGameApp : IGameApp
     {
+        private readonly AssetManager m_assetManager;
         private readonly IGraphicsLayer m_gfxLayer;
+        private readonly Func<IAssetBuilder> m_builderFactory;
 
         private const float ROT_AMOUNT = 1;//0.5f;
 
@@ -34,9 +38,9 @@ namespace TestBed
         private Font m_font = null;
         private SceneManager m_scene = null;
 
-        //private readonly List<IRenderable> m_renderers = new List<IRenderable>();
+        AssetReference<SceneMeshObject> m_mesh;
 
-        private readonly SceneMeshObject m_mesh = new();
+        //private readonly List<IRenderable> m_renderers = new List<IRenderable>();
 
         private int m_frameCount;
         private DateTime m_lastCheck = DateTime.UtcNow;
@@ -56,16 +60,22 @@ namespace TestBed
         //public const string FILE = "resources/xbot.fbx";
         //public const string FILE = "resources/amy.fbx";
 
-        public TestGameApp(ILogger log, IGraphicsLayer layer)
+        public TestGameApp(
+            ILogger log,
+            AssetManager assetManager,
+            IGraphicsLayer layer,
+            Func<IAssetBuilder> builderFactory)
         {
             m_log = log;
+            m_assetManager = assetManager;
             m_gfxLayer = layer;
+            m_builderFactory = builderFactory;
         }
 
         public void Dispose()
         {
-            //m_scene.RemoveObject(m_mesh);
-            //m_mesh.Dispose();
+            m_scene.RemoveObject(m_mesh.Asset);
+            m_mesh.Dispose();
 
             m_scene?.Dispose();
             m_context?.Dispose();
@@ -87,8 +97,8 @@ namespace TestBed
 
             LoadObject();
 
-            m_scene.Camera.Location = new Vector3(0, 125, 175);
-            //m_scene.Camera.Location = new Vector3(0, 0, 5);
+            //m_scene.Camera.Location = new Vector3(0, 125, 175);
+            m_scene.Camera.Location = new Vector3(0, 0, 5);
             //m_scene.Camera.LookAt = Vector3.Zero;
             m_scene.Camera.Forward = new Vector3(0, 0, -1);
 
@@ -112,8 +122,11 @@ namespace TestBed
 
             //m_scene.AddObject(m_mesh);
 
-            var reader = new FBXReader(null);
+            var reader = new FBXReader(m_builderFactory());
             reader.Import(FILE);
+
+            m_mesh = m_assetManager.Find<SceneMeshObject>("Chest");
+            m_scene.AddObject(m_mesh.Asset);
         }
 
         Font LoadFont()
@@ -361,7 +374,7 @@ namespace TestBed
             while (m_rot >= 360)
                 m_rot -= 360;
 
-            m_mesh.Rotation = new Vector3(0, m_rot, 0);
+            m_mesh.Asset.Rotation = new Vector3(0, m_rot, 0);
         }
 
         private void ComputeFPS()
