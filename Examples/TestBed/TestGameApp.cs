@@ -125,7 +125,7 @@ namespace TestBed
 
             //m_scene.AddObject(m_mesh);
 
-            var reader = new FBXReader(m_builderFactory());
+            var reader = new FBXImportDirector(m_builderFactory());
             reader.Import(FILE);
 
             //m_mesh = m_assetManager.Find<SceneMeshObject>("Cube");

@@ -11,7 +11,7 @@ using Tokamak.Readers.FBX.Readers;
 
 namespace Tokamak.Readers.FBX
 {
-    public sealed class FBXReader(IAssetBuilder builder)
+    public sealed class FBXImportDirector(IAssetBuilder builder)
     {
         internal const string BINARY_MAGIC = "Kaydara FBX Binary  ";
 

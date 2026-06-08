@@ -34,7 +34,7 @@ namespace ReadersTests
             byte[] bogus = Encoding.ASCII.GetBytes("This is definitely not an FBX file at all");
             using var stream = new MemoryStream(bogus);
 
-            var reader = new FBXReader(new RecordingAssetBuilder());
+            var reader = new FBXImportDirector(new RecordingAssetBuilder());
 
             Assert.That(() => reader.Import(stream), Throws.TypeOf<NotImplementedException>());
         }
@@ -42,14 +42,14 @@ namespace ReadersTests
         [Test]
         public void Import_NullStream_Throws()
         {
-            var reader = new FBXReader(new RecordingAssetBuilder());
+            var reader = new FBXImportDirector(new RecordingAssetBuilder());
             Assert.That(() => reader.Import((Stream)null), Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
         public void Import_BlankFilename_Throws()
         {
-            var reader = new FBXReader(new RecordingAssetBuilder());
+            var reader = new FBXImportDirector(new RecordingAssetBuilder());
             Assert.That(() => reader.Import("   "), Throws.TypeOf<ArgumentException>());
         }
 
@@ -57,7 +57,7 @@ namespace ReadersTests
         public void Import_SampleModel_ParsesWithoutError(string path)
         {
             var builder = new RecordingAssetBuilder();
-            var reader = new FBXReader(builder);
+            var reader = new FBXImportDirector(builder);
 
             using var stream = File.OpenRead(path);
 
