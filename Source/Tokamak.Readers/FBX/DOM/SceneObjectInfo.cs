@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tokamak.Readers.FBX.DOM
 {
-    internal class ModelInfo : ResultRecord
+    internal class SceneObjectInfo : ResultRecord
     {
         public long ParentId { get; set; } = 0;
 

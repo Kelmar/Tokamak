@@ -13,12 +13,14 @@ namespace Tokamak.Readers.FBX.Readers
     /// <summary>
     /// Class for building mesh objects from FBX node.
     /// </summary>
-    internal class MeshReader
+    internal class MeshReader : IFBXObjectReader
     {
         public MeshReader(ReadState state)
         {
             State = state;
         }
+
+        public string ObjectType => "geometry";
 
         public ReadState State { get; }
 
@@ -44,9 +46,9 @@ namespace Tokamak.Readers.FBX.Readers
                 .ToList();
         }
 
-        public MeshInfo ReadMesh(FBXObject obj)
+        public void ReadObject(FBXObject obj)
         {
-            var modelObj = State.Models.FirstOrDefault(m => obj.ParentIds.Contains(m.Id));
+            var modelObj = State.SceneObjects.FirstOrDefault(m => obj.ParentIds.Contains(m.Id));
 
             // Use all available materials by default.
             var materials = State.Materials;
@@ -112,13 +114,15 @@ namespace Tokamak.Readers.FBX.Readers
             // Generate a list of polygons with flat data.
             var polygons = ToPolys(indices, vectors, materials, uvMapper, materialMapper, normalMapper).ToList();
 
-            return new MeshInfo
+            var meshInfo = new MeshInfo
             {
                 Id = obj.Id,
                 Name = obj.Name,
                 ModelId = modelObj?.Id ?? 0,
                 Polygons = polygons
             };
+
+            State.Meshes.Add(meshInfo);
         }
 
         private static IEnumerable<FBXPolygon> ToPolys(

@@ -4,6 +4,8 @@ using System.Linq;
 
 using Tokamak.Readers.FBX.Mappers;
 
+using static System.StringComparison;
+
 namespace Tokamak.Readers.FBX.DOM
 {
     /// <summary>
@@ -81,6 +83,26 @@ namespace Tokamak.Readers.FBX.DOM
         /// The FBX node we read from.
         /// </summary>
         public Node Node { get; }
+
+        /// <summary>
+        /// Checks if the object is of the given class name.
+        /// </summary>
+        /// <remarks>
+        /// This does a case insenstive compare of the object's class.
+        /// </remarks>
+        /// <param name="name">The name of the class to check.</param>
+        public bool IsClass(string name)
+            => String.Equals(Class, name, OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Checks if the object is of the given subclass name.
+        /// </summary>
+        /// <remarks>
+        /// This does a case insenstive compare of the object's subclass.
+        /// </remarks>
+        /// <param name="name">The name of the subclass to check.</param>
+        public bool IsSubClass(string name)
+            => String.Equals(SubClass, name, OrdinalIgnoreCase);
 
         /// <summary>
         /// List of child FBXObjects that are owned by this object.

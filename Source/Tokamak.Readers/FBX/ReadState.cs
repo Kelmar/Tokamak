@@ -44,11 +44,7 @@ namespace Tokamak.Readers.FBX
             set => field = value ?? [];
         } = [];
 
-        public List<ModelInfo> Models
-        {
-            get;
-            set => field = value ?? [];
-        } = [];
+        public List<SceneObjectInfo> SceneObjects { get; } = [];
 
         public List<MeshInfo> Meshes
         {

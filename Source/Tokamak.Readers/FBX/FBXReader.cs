@@ -6,11 +6,8 @@ using System.Text;
 
 using Tokamak.Assets;
 
-using Tokamak.Utilities;
-
 using Tokamak.Readers.FBX.DOM;
 using Tokamak.Readers.FBX.Readers;
-using Tokamak.Readers.FBX.Mappers;
 
 namespace Tokamak.Readers.FBX
 {
@@ -43,11 +40,12 @@ namespace Tokamak.Readers.FBX
              * least easy to resolve references for our second pass.
              */
 
-            //var textures = ReadTextures(state);
+            //ReadTypes(state, new TextureReader(state));
 
-            state.Materials = ReadMaterials(state);
-            state.Models = ReadModels(state);
-            state.Meshes = ReadMeshes(state);
+            ReadTypes(state, new MaterialReader(state));
+            ReadTypes(state, new ModelReader(state));
+            ReadTypes(state, new MeshReader(state));
+            ReadTypes(state, new DeformerReader(state));
 
             /*
              * Second pass:
@@ -86,7 +84,7 @@ namespace Tokamak.Readers.FBX
                 });
             }
 
-            foreach (var model in state.Models)
+            foreach (var model in state.SceneObjects)
             {
                 var meshNames = state.Meshes
                     .Where(m => model.MeshIds.Contains(m.Id))
@@ -143,53 +141,12 @@ namespace Tokamak.Readers.FBX
             };
         }
 
-        private static List<T> ReadTypes<T>(ReadState state, string type, Func<FBXObject, T?> reader)
-            where T : ResultRecord
+        private static void ReadTypes(ReadState state, IFBXObjectReader reader)
         {
-            return state.ObjectGraph
-                .GetObjectsOfType(type)
-                .Select(reader)
-                .NotNull()
-                .ToList();
-        }
-
-        private MaterialInfo ReadMaterial(FBXObject obj)
-        {
-            var result = obj.MapTo<MaterialInfo>();
-
-            result.Id = obj.Id;
-            result.Name = obj.Name;
-
-            string? shading = obj.Node.Children
-                .WithName("ShadingModel")
-                .FirstOrDefault()
-                ?.Properties[0].AsString();
-
-            if (!String.IsNullOrWhiteSpace(shading))
-                result.ShadingModel = shading.ToLower();
-
-            return result;
-        }
-
-        private List<object> ReadTextures(ReadState state)
-        {
-            //ReadTypes(state, "texture", o => {});
-            return [];
-        }
-
-        private List<MaterialInfo> ReadMaterials(ReadState state) 
-            => ReadTypes(state, "material", ReadMaterial);
-
-        private List<ModelInfo> ReadModels(ReadState state)
-        {
-            var modelReader = new ModelReader(state);
-            return ReadTypes(state, "model", modelReader.ReadModel);
-        }
-
-        private List<MeshInfo> ReadMeshes(ReadState state)
-        {
-            var meshBuilder = new MeshReader(state);
-            return ReadTypes(state, "geometry", meshBuilder.ReadMesh);
+            state.ObjectGraph
+                .GetObjectsOfType(reader.ObjectType)
+                .ToList()
+                .ForEach(reader.ReadObject);
         }
     }
 }

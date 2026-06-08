@@ -1,26 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Tokamak.Readers.FBX.DOM;
 
 namespace Tokamak.Readers.FBX.Readers
 {
-    internal class ModelReader
+    internal class ModelReader : IFBXObjectReader
     {
         public ModelReader(ReadState state)
         {
             State = state;
         }
 
+        public string ObjectType => "model";
+
         public ReadState State { get; }
 
-        public ModelInfo? ReadModel(FBXObject obj)
+        private void ReadSceneObject(FBXObject obj)
         {
-            if (!StringComparer.OrdinalIgnoreCase.Equals(obj.SubClass, "Mesh"))
-                return null; // For now we only support reading "Mesh" models.
-
             if (obj.Parents.Any())
-                return null; // Only import root items.
+                return; // Only import root items.
 
             var materialIds = obj.Children
                 .WithFBXType("Material")
@@ -32,13 +32,25 @@ namespace Tokamak.Readers.FBX.Readers
                 .Select(o => o.Id)
                 .ToList();
 
-            return new ModelInfo
+            var sceneObject = new SceneObjectInfo
             {
                 Id = obj.Id,
                 Name = obj.Name,
                 MaterialIds = materialIds,
                 MeshIds = meshIds
             };
+
+            State.SceneObjects.Add(sceneObject);
+        }
+
+        public void ReadObject(FBXObject obj)
+        {
+            // For now we only support reading "Mesh" models.
+            if (obj.IsSubClass("Mesh"))
+            {
+                ReadSceneObject(obj);
+                return;
+            }
         }
     }
 }
