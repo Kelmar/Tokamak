@@ -143,7 +143,7 @@ namespace Tokamak.Mathematics
             /// </summary>
             /// <param name="v">The starting vector.</param>
             /// <returns>A vector that is perpendicular to the supplied vector.</returns>
-            public Vector2 LineNormal() => new Vector2(-vector.Y, vector.X);
+            public Vector2 LineNormal() => new(-vector.Y, vector.X);
 
             /// <summary>
             /// Performs Hermite interpolation between two vectors based on the given weighting.
@@ -193,6 +193,23 @@ namespace Tokamak.Mathematics
             /// </summary>
             /// <returns>An array of floats representing a vector of [X, Y]</returns>
             public float[] ToArray() => [vector.X, vector.Y];
+
+            /// <summary>
+            /// Convert to a <seealso cref="Vector4"/>
+            /// </summary>
+            /// <remarks>
+            /// The Z coordinate defaults to zero.
+            /// </remarks>
+            public Vector3 ToVector3() => new(vector.X, vector.Y, 0);
+
+            /// <summary>
+            /// Convert to a <seealso cref="Vector4"/>
+            /// </summary>
+            /// <remarks>
+            /// The Z and W coordinates default to zero.
+            /// </remarks>
+            /// <returns></returns>
+            public Vector4 ToVector4() => new(vector.X, vector.Y, 0, 0);
         }
 
         extension(in Vector3 vector)
@@ -213,7 +230,7 @@ namespace Tokamak.Mathematics
             public float DistanceTo(in Vector3 other) => (vector - other).Length();
 
             /// <summary>
-            /// Returns the distinace from the point to the surface of the given sphere.
+            /// Returns the distance from the point to the surface of the given sphere.
             /// </summary>
             /// <remarks>
             /// If the value is roughly equal to zero then the point lies on the surface of the sphere.
@@ -272,6 +289,25 @@ namespace Tokamak.Mathematics
             /// </summary>
             /// <returns>An array of floats representing a vector of [X, Y, Z]</returns>
             public float[] ToArray() => [vector.X, vector.Y, vector.Z];
+
+
+            /// <summary>
+            /// Convert to a <seealso cref="Vector2"/>
+            /// </summary>
+            /// <remarks>
+            /// The Z coordinate is dropped.
+            /// </remarks>
+            /// <returns></returns>
+            public Vector2 ToVector2() => new(vector.X, vector.Y);
+
+            /// <summary>
+            /// Convert to a <seealso cref="Vector4"/>
+            /// </summary>
+            /// <remarks>
+            /// The W coordinate defaults to zero.
+            /// </remarks>
+            /// <returns></returns>
+            public Vector4 ToVector4() => new(vector.X, vector.Y, vector.Z, 0);
         }
 
         extension(in Vector4 vector)
@@ -342,15 +378,33 @@ namespace Tokamak.Mathematics
             /// </summary>
             /// <returns>An array of floats representing a vector of [X, Y, Z, W]</returns>
             public float[] ToArray() => [vector.X, vector.Y, vector.Z, vector.W];
+
+            /// <summary>
+            /// Convert to a <seealso cref="Vector2"/>
+            /// </summary>
+            /// <remarks>
+            /// The Z and W coordinates are dropped.
+            /// </remarks>
+            /// <returns></returns>
+            public Vector2 ToVector2() => new(vector.X, vector.Y);
+
+            /// <summary>
+            /// Convert to a <seealso cref="Vector2"/>
+            /// </summary>
+            /// <remarks>
+            /// The W coordinate is dropped.
+            /// </remarks>
+            /// <returns></returns>
+            public Vector3 ToVector3() => new(vector.X, vector.Y, vector.Z);
         }
 
         /// <summary>
         /// Convert float array to a Vector2.
         /// </summary>
         /// <remarks>
-        /// If the array is not of sufficent length, then the vector will be initialized with zeros in the left over places.
+        /// If the array is not of sufficient length, then the vector will be initialized with zeros in the left over places.
         /// 
-        /// If you wish to validate that the array is sufficent length during conversion use the <seealso cref="TryFromArray(float[], out Vector2)"/>
+        /// If you wish to validate that the array is sufficient length during conversion use the <seealso cref="TryFromArray(float[], out Vector2)"/>
         /// </remarks>
         public static Vector2 ToVector2(this float[] a)
         {
@@ -361,9 +415,9 @@ namespace Tokamak.Mathematics
         /// Convert a float array to a Vector3.
         /// </summary>
         /// <remarks>
-        /// If the array is not of sufficent length, then the vector will be initialized with zeros in the left over places.
+        /// If the array is not of sufficient length, then the vector will be initialized with zeros in the left over places.
         /// 
-        /// If you wish to validate that the array is sufficent length during conversion use the <seealso cref="TryFromArray(float[], out Vector3)"/>
+        /// If you wish to validate that the array is sufficient length during conversion use the <seealso cref="TryFromArray(float[], out Vector3)"/>
         /// </remarks>
         public static Vector3 ToVector3(this float[] a)
         {
@@ -374,9 +428,9 @@ namespace Tokamak.Mathematics
         /// Convert a float array to a Vector4.
         /// </summary>
         /// <remarks>
-        /// If the array is not of sufficent length, then the vector will be initialized with zeros in the left over places.
+        /// If the array is not of sufficient length, then the vector will be initialized with zeros in the left over places.
         /// 
-        /// If you wish to validate that the array is sufficent length during conversion use the <seealso cref="TryFromArray(float[], out Vector4)"/>
+        /// If you wish to validate that the array is sufficient length during conversion use the <seealso cref="TryFromArray(float[], out Vector4)"/>
         /// </remarks>
         public static Vector4 ToVector4(this float[] a)
         {
