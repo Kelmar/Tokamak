@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 using Tokamak.Readers.FBX.DOM;
@@ -10,6 +9,7 @@ namespace Tokamak.Readers.FBX.Readers
 {
     internal class DeformerReader : IFBXObjectReader
     {
+        private int m_importSkelCount = 0;
         private int m_importBoneCount = 0;
 
         public DeformerReader(ReadState state)
@@ -39,6 +39,28 @@ namespace Tokamak.Readers.FBX.Readers
             return parentDeformer?.Id;
         }
 
+        private string GetSkeletonName(FBXObject skeleton, MeshInfo? mesh)
+        {
+            string name = skeleton.Name;
+
+            if (String.IsNullOrWhiteSpace(skeleton.Name))
+            {
+                var nameBuilder = new StringBuilder();
+
+                if (!String.IsNullOrWhiteSpace(mesh?.Name))
+                    nameBuilder.Append(mesh.Name);
+                else
+                    nameBuilder.Append(State.FileName);
+
+                nameBuilder.Append("_skel_");
+                nameBuilder.Append(m_importSkelCount);
+
+                name = nameBuilder.ToString();
+            }
+
+            return name;
+        }
+
         private string GetBoneName(FBXObject bone, FBXObject? limb)
         {
             if (!String.IsNullOrWhiteSpace(bone.Name))
@@ -58,7 +80,7 @@ namespace Tokamak.Readers.FBX.Readers
                 .Where(c => c.IsSubClass("LimbNode"))
                 .FirstOrDefault();
 
-            var indicies = bone.Node.Children.WithFBXType("Indexes")
+            var indices = bone.Node.Children.WithFBXType("Indexes")
                 .Where(n => n.Properties.Count > 0)
                 .SelectMany(n => n.Properties[0].AsEnumerable<int>())
                 .ToArray();
@@ -78,21 +100,39 @@ namespace Tokamak.Readers.FBX.Readers
                 Id = bone.Id,
                 ParentBoneId = parentId,
                 Name = GetBoneName(bone, limb),
-                Indicies = indicies,
+                Indices = indices,
                 Weights = weights
             };
 
             return boneInfo;
         }
 
-        private void ReadSkeleton(FBXObject obj)
+        private void ReadSkeleton(FBXObject skeleton)
         {
             var bones = new List<BoneInfo>();
 
-            foreach (var child in obj.Children.WithFBXType("deformer"))
+            foreach (var child in skeleton.Children.WithFBXType("deformer"))
             {
                 bones.Add(ReadBone(child));
             }
+
+            FBXObject? meshObj = skeleton.Parents.WithFBXType("Geometry").FirstOrDefault();
+            MeshInfo? mesh = null;
+
+            long? meshId = meshObj?.Id;
+            mesh = State.Meshes.FirstOrDefault(m => m.Id == meshId);
+
+            ++m_importSkelCount;
+
+            var result = new SkeletonInfo
+            {
+                Id = skeleton.Id,
+                Name = GetSkeletonName(skeleton, mesh),
+                MeshId = meshId,
+                Bones = bones
+            };
+
+            State.Skeletons.Add(result);
         }
 
         public void ReadObject(FBXObject obj)

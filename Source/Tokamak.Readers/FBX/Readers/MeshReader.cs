@@ -82,7 +82,7 @@ namespace Tokamak.Readers.FBX.Readers
             {
                 var tmpList = new List<MaterialInfo>();
 
-                // We need to make sure we preserve the order that we see in the model's defintion.
+                // We need to make sure we preserve the order that we see in the model's definition.
                 foreach (var id in sceneObj.MaterialIds)
                 {
                     var material = materials.FirstOrDefault(m => m.Id == id);
@@ -108,7 +108,7 @@ namespace Tokamak.Readers.FBX.Readers
             var vectors = ReadVertexData(obj);
 
             if (indices.Count == 0 || vectors.Count == 0)
-                throw new Exception("Mesh with no indicies or vectors in FBX file.");
+                throw new Exception("Mesh with no indices or vectors in FBX file.");
 
             var uvMapper = new LayerMapper<Vector2>(
                 obj.Node.Children.FirstWithName("LayerElementUV"),

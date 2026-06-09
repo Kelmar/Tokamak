@@ -7,8 +7,6 @@ using Tokamak.Mathematics;
 
 using Tokamak.Utilities;
 
-using Tokamak.Readers.FBX.Readers;
-
 namespace Tokamak.Readers.FBX.DOM
 {
     /// <summary>

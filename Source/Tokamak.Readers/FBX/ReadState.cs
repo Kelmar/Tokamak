@@ -46,18 +46,12 @@ namespace Tokamak.Readers.FBX
 
         public FBXObjectGraph ObjectGraph { get; }
 
-        public List<MaterialInfo> Materials
-        {
-            get;
-            set => field = value ?? [];
-        } = [];
+        public List<MaterialInfo> Materials { get; } = [];
 
         public List<SceneObjectInfo> SceneObjects { get; } = [];
 
-        public List<MeshInfo> Meshes
-        {
-            get;
-            set => field = value ?? [];
-        } = [];
+        public List<SkeletonInfo> Skeletons { get; } = [];
+
+        public List<MeshInfo> Meshes { get; } = [];
     }
 }
