@@ -132,7 +132,7 @@ namespace Tokamak.Assets
             }
 
             //m_log.Debug("Setting {assetType} asset: {assetPath}", typeof(TAsset), path);
-            m_log.Debug("Setting {0} asset: {1}", typeof(TAsset), path);
+            m_log.Debug("Setting {0} asset: {1}", typeof(TAsset).Name, path);
 
             info.Asset = asset;
             asset.ID = path;

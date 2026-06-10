@@ -77,18 +77,7 @@ namespace Tokamak.Readers.FBX
                 );
             }
 
-            foreach (var skeleton in state.Skeletons)
-            {
-                m_builder.NewSkeleton(cfg =>
-                {
-                    cfg.WithName(skeleton.Name);
-
-                    //foreach (var b in skeleton.Bones)
-                    //{
-
-                    //}
-                });
-            }
+            ProcessSkeletons(state);
 
             foreach (var model in state.SceneObjects)
             {
@@ -111,6 +100,8 @@ namespace Tokamak.Readers.FBX
 
             m_builder.BuildAll();
         }
+
+        #region Basic Reading
 
         private static string ReadString(Stream input, Encoding encoding, int length)
         {
@@ -154,6 +145,10 @@ namespace Tokamak.Readers.FBX
             };
         }
 
+        #endregion
+
+        #region Pass1 Traversal
+
         private static void ReadTypes(ReadState state, IFBXObjectReader reader)
         {
             state.ObjectGraph
@@ -161,5 +156,40 @@ namespace Tokamak.Readers.FBX
                 .ToList()
                 .ForEach(reader.ReadObject);
         }
+
+        #endregion
+
+        #region Skeleton Processing
+
+        private class SkeletonClosure(SkeletonInfo skeleton)
+        {
+            private readonly SkeletonInfo m_skeleton = skeleton;
+
+            public void ProcessBone(BoneInfo bone, IBoneBuilder builder)
+            {
+                var children = m_skeleton.Bones.Where(b => b.ParentBoneId == bone.Id);
+
+                builder
+                    .WithName(bone.Name)
+                    .WithTransform(bone.Transform)
+                    .WithChildBones(children, ProcessBone);
+            }
+        }
+
+        private void ProcessSkeletons(ReadState state)
+        {
+            foreach (var skeleton in state.Skeletons)
+            {
+                var closure = new SkeletonClosure(skeleton);
+                var roots = skeleton.Bones.Where(b => !b.ParentBoneId.HasValue);
+
+                m_builder.NewSkeleton(cfg => cfg
+                    .WithName(skeleton.Name)
+                    .WithBones(roots, closure.ProcessBone)
+                );
+            }
+        }
+
+        #endregion
     }
 }

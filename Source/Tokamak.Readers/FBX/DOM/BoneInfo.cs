@@ -20,6 +20,8 @@ namespace Tokamak.Readers.FBX.DOM
         [NotMapped]
         public required float[] Weights { get; init; }
 
+        public Matrix4x4 Transform { get; set; } = Matrix4x4.Identity;
+
         [Column("Lcl Translate")]
         public Vector3 Location { get; set; } = Vector3.Zero;
 

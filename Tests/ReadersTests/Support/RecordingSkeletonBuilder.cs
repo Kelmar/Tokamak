@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Tokamak.Assets;
 
@@ -11,6 +12,11 @@ namespace ReadersTests.Support
         public RecordingSkeletonBuilder(RecordingAssetBuilder assetBuilder)
         {
             m_assetBuilder = assetBuilder;
+        }
+
+        public ISkeletonBuilder WithBones<T>(IEnumerable<T> bones, BoneConfigurator<T> config)
+        {
+            return this;
         }
 
         public ISkeletonBuilder WithName(string name)

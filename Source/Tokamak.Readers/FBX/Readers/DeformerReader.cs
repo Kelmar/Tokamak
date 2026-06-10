@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
+using Tokamak.Mathematics;
 using Tokamak.Readers.FBX.DOM;
 using Tokamak.Readers.FBX.Mappers;
 
@@ -92,6 +94,19 @@ namespace Tokamak.Readers.FBX.Readers
                 .Select(d => (float)d) // .....
                 .ToArray();
 
+            var transformNode = bone.Node.Children.WithFBXType("Transform").FirstOrDefault();
+            Matrix4x4 transform = Matrix4x4.Identity;
+
+            if (transformNode != null && transformNode.Properties.Count > 0)
+            {
+                var matValues = transformNode.Properties[0]
+                    .AsEnumerable<double>()
+                    .Select(v => (float)v)
+                    .ToArray();
+
+                transform = Matrix4x4.CreateFromColumnArray(matValues);
+            }
+
             long? parentId = FindParentBoneID(bone, limb);
 
             ++m_importBoneCount;
@@ -102,7 +117,8 @@ namespace Tokamak.Readers.FBX.Readers
                 ParentBoneId = parentId,
                 Name = GetBoneName(bone, limb),
                 Indices = indices,
-                Weights = weights
+                Weights = weights,
+                Transform = transform
             };
 
             limb?.Properties.MapTo(boneInfo);

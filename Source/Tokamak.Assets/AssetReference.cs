@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 
 using Tokamak.Utilities;
@@ -67,5 +68,21 @@ namespace Tokamak.Assets
         /// The managed asset.
         /// </summary>
         public TAsset Asset { get; }
+
+        public override string ToString()
+        {
+            int cnt = m_refCount.Value;
+            var sb = new StringBuilder();
+
+            if (cnt > 1)
+            {
+                sb.Append(cnt);
+                sb.Append(": ");
+            }
+
+            sb.Append(Asset);
+
+            return sb.ToString();
+        }
     }
 }
