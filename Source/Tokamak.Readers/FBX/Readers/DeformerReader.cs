@@ -18,7 +18,7 @@ namespace Tokamak.Readers.FBX.Readers
             State = state;
         }
 
-        public string ObjectType => "deformer";
+        public string ObjectType => "Deformer";
 
         public ReadState State { get; }
 
@@ -28,13 +28,13 @@ namespace Tokamak.Readers.FBX.Readers
 
             // Next we need to find the parent Model/LimbNode of that object....
             var parentLimb = limb?.Parents
-                .WithFBXType("model")
+                .WithFBXType("Model")
                 .Where(p => p.IsSubClass("LimbNode"))
                 .FirstOrDefault();
 
             // Finally we see if we can find the deformer that owns that node, which should be our parent bone.
             var parentDeformer = parentLimb?.Parents
-                .WithFBXType("deformer")
+                .WithFBXType("Deformer")
                 .FirstOrDefault();
 
             return parentDeformer?.Id;
@@ -114,10 +114,8 @@ namespace Tokamak.Readers.FBX.Readers
         {
             var bones = new List<BoneInfo>();
 
-            foreach (var child in skeleton.Children.WithFBXType("deformer"))
-            {
+            foreach (var child in skeleton.Children.WithFBXType("Deformer"))
                 bones.Add(ReadBone(child));
-            }
 
             FBXObject? meshObj = skeleton.Parents.WithFBXType("Geometry").FirstOrDefault();
             MeshInfo? mesh = null;

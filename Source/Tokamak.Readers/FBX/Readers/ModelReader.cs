@@ -14,7 +14,7 @@ namespace Tokamak.Readers.FBX.Readers
             State = state;
         }
 
-        public string ObjectType => "model";
+        public string ObjectType => "Model";
 
         public ReadState State { get; }
 

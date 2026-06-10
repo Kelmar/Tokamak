@@ -23,13 +23,13 @@ namespace Tokamak.Readers.FBX.Readers
             State = state;
         }
 
-        public string ObjectType => "geometry";
+        public string ObjectType => "Geometry";
 
         public ReadState State { get; }
 
         public GlobalSettings Settings => State.Settings;
 
-        private List<int> ReadIndexData(FBXObject mesh)
+        private static List<int> ReadIndexData(FBXObject mesh)
         {
             return mesh.Node.Children
                 .WithName("PolygonVertexIndex")

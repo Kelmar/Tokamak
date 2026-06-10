@@ -24,10 +24,14 @@ namespace Tokamak.Tritium.Builders
 
         public string Name { get; private set; } = String.Empty;
 
+        public string SkeletonName { get; private set; } = String.Empty;
+
         public List<string> Meshes { get; private set; } = [];
 
         public ISceneObjectBuilder WithName(string name)
         {
+            ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(Name));
+
             Name = name;
             return this;
         }
@@ -35,6 +39,14 @@ namespace Tokamak.Tritium.Builders
         public ISceneObjectBuilder AddMeshes(params IEnumerable<string> names)
         {
             Meshes = names.Where(n => !String.IsNullOrWhiteSpace(n)).ToList();
+            return this;
+        }
+
+        public ISceneObjectBuilder WithSkeleton(string name)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(SkeletonName));
+
+            SkeletonName = name;
             return this;
         }
 

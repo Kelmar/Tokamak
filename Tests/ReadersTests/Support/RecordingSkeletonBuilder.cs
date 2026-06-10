@@ -1,23 +1,23 @@
-using System;
+﻿using System;
 
 using Tokamak.Assets;
 
 namespace ReadersTests.Support
 {
-    internal sealed class RecordingMaterialBuilder : IMaterialBuilder
+    internal class RecordingSkeletonBuilder : ISkeletonBuilder
     {
         private readonly RecordingAssetBuilder m_assetBuilder;
 
-        public RecordingMaterialBuilder(RecordingAssetBuilder assetBuilder)
+        public RecordingSkeletonBuilder(RecordingAssetBuilder assetBuilder)
         {
             m_assetBuilder = assetBuilder;
         }
 
-        public IMaterialBuilder WithName(string name)
+        public ISkeletonBuilder WithName(string name)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(name, "Name");
 
-            m_assetBuilder.Materials.Add(name);
+            m_assetBuilder.Skeletons.Add(name);
             return this;
         }
     }

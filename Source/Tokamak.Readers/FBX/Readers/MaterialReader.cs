@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using Tokamak.Readers.FBX.DOM;
 using Tokamak.Readers.FBX.Mappers;
@@ -15,7 +13,7 @@ namespace Tokamak.Readers.FBX.Readers
             State = state;
         }
 
-        public string ObjectType => "material";
+        public string ObjectType => "Material";
 
         public ReadState State { get; }
 

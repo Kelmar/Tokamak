@@ -115,7 +115,7 @@ namespace Tokamak.Readers.FBX.DOM
             return node.Properties[idx].Data;
         }
 
-        private static object ReadString(Node node)
+        private static string ReadString(Node node)
         {
             int idx = node.Properties.Count - 1;
             return node.Properties[idx].Data.ToString() ?? String.Empty;

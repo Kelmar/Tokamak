@@ -9,5 +9,7 @@ namespace Tokamak.Assets
         public ISceneObjectBuilder WithName(string name);
 
         public ISceneObjectBuilder AddMeshes(params IEnumerable<string> names);
+
+        public ISceneObjectBuilder WithSkeleton(string name);
     }
 }

@@ -4,7 +4,9 @@ namespace Tokamak.Assets
 {
     public interface IAssetBuilder
     {
-        void NewModel(Action<ISceneObjectBuilder> configure);
+        void NewSceneObject(Action<ISceneObjectBuilder> configure);
+
+        void NewSkeleton(Action<ISkeletonBuilder> configure);
 
         void NewMesh(Action<IMeshBuilder> configure);
 

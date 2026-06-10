@@ -1,3 +1,5 @@
+using System;
+
 using Tokamak.Assets;
 
 namespace ReadersTests.Support
@@ -17,6 +19,8 @@ namespace ReadersTests.Support
 
         public IMeshBuilder WithName(string name)
         {
+            ArgumentException.ThrowIfNullOrWhiteSpace(name, "Name");
+
             m_assetBuilder.Meshes.Add(name);
             return this;
         }

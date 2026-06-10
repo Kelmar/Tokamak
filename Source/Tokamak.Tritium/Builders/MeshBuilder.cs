@@ -83,7 +83,7 @@ namespace Tokamak.Tritium.Builders
 
         public IMeshBuilder WithName(string name)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(name));
+            ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(Name));
 
             Name = name;
             return this;

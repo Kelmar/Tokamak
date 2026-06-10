@@ -11,11 +11,13 @@ namespace ReadersTests.Support
     /// </summary>
     internal sealed partial class RecordingAssetBuilder : IAssetBuilder
     {
-        public List<string> Materials { get; } = [];
+        public HashSet<string> Materials { get; } = [];
 
-        public List<string> Meshes { get; } = [];
+        public HashSet<string> Meshes { get; } = [];
 
-        public List<string> Models { get; } = [];
+        public HashSet<string> Skeletons { get; } = [];
+
+        public HashSet<string> Models { get; } = [];
 
         public void NewMaterial(Action<IMaterialBuilder> configure)
             => configure(new RecordingMaterialBuilder(this));
@@ -23,8 +25,11 @@ namespace ReadersTests.Support
         public void NewMesh(Action<IMeshBuilder> configure)
             => configure(new RecordingMeshBuilder(this));
 
-        public void NewModel(Action<ISceneObjectBuilder> configure)
-            => configure(new RecordingModelBuilder(this));
+        public void NewSkeleton(Action<ISkeletonBuilder> configure)
+            => configure(new RecordingSkeletonBuilder(this));
+
+        public void NewSceneObject(Action<ISceneObjectBuilder> configure)
+            => configure(new RecordSceneObjectBuilder(this));
 
         public void BuildAll() { }
     }

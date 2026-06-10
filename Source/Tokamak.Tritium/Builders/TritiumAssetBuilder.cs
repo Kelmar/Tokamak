@@ -13,6 +13,7 @@ namespace Tokamak.Tritium.Builders
 
         private readonly List<Action<IMaterialBuilder>> m_materialConfig = [];
         private readonly List<Action<IMeshBuilder>> m_meshConfig = [];
+        private readonly List<Action<ISkeletonBuilder>> m_skeletonConfig = [];
         private readonly List<Action<ISceneObjectBuilder>> m_objectConfig = [];
 
         public TritiumAssetBuilder(AssetManager assetManager, IGraphicsLayer gfxLayer)
@@ -21,14 +22,17 @@ namespace Tokamak.Tritium.Builders
             m_gfxLayer = gfxLayer;
         }
 
+        public void NewSceneObject(Action<ISceneObjectBuilder> configure)
+           => m_objectConfig.Add(configure);
+
         public void NewMaterial(Action<IMaterialBuilder> configure)
             => m_materialConfig.Add(configure);
 
         public void NewMesh(Action<IMeshBuilder> configure)
             => m_meshConfig.Add(configure);
 
-        public void NewModel(Action<ISceneObjectBuilder> configure)
-            => m_objectConfig.Add(configure);
+        public void NewSkeleton(Action<ISkeletonBuilder> configure)
+            => m_skeletonConfig.Add(configure);
 
         public void BuildAll()
         {
@@ -44,6 +48,13 @@ namespace Tokamak.Tritium.Builders
                 var meshBuilder = new MeshBuilder(m_assetManager, m_gfxLayer);
                 config(meshBuilder);
                 meshBuilder.Build();
+            }
+
+            foreach (var config in m_skeletonConfig)
+            {
+                var skeletonBuilder = new SkeletonBuilder();
+                config(skeletonBuilder);
+                skeletonBuilder.Build();
             }
 
             foreach (var config in m_objectConfig)

@@ -90,10 +90,17 @@ namespace Tokamak.Readers.FBX
                     .Where(m => model.MeshIds.Contains(m.Id))
                     .Select(m => m.Name);
 
-                m_builder.NewModel(cfg => cfg
-                    .WithName(model.Name)
-                    .AddMeshes(meshNames)
-                );
+                var skeleton = state.Skeletons
+                    .FirstOrDefault(s => s.MeshId.HasValue && model.MeshIds.Contains(s.MeshId.Value));
+
+                m_builder.NewSceneObject(cfg =>
+                {
+                    cfg.WithName(model.Name)
+                        .AddMeshes(meshNames);
+
+                    if (skeleton != null)
+                        cfg.WithSkeleton(skeleton.Name);
+                });
             }
 
             m_builder.BuildAll();
