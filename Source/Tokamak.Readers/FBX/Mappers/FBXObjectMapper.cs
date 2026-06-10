@@ -12,13 +12,10 @@ namespace Tokamak.Readers.FBX.Mappers
     {
         // TODO: Some sort of path mapping to make this cleaner? -- B.Simonds (June 2, 2026)
 
-        public static T MapTo<T>(this IEnumerable<ObjectProperty> fbxProps)
-            where T : class, new()
+        public static void MapTo<T>(this IEnumerable<ObjectProperty> fbxProps, T obj)
         {
             Type type = typeof(T);
             var typeProps = type.GetProperties().Where(p => p.CanWrite && p.CanRead);
-
-            T result = new();
 
             foreach (var typeProp in typeProps)
             {
@@ -39,7 +36,7 @@ namespace Tokamak.Readers.FBX.Mappers
                 try
                 {
                     object data = Convert.ChangeType(fbxProp.Data, typeProp.PropertyType);
-                    typeProp.SetValue(result, data);
+                    typeProp.SetValue(obj, data);
                 }
                 catch
                 {
@@ -47,7 +44,13 @@ namespace Tokamak.Readers.FBX.Mappers
                     continue;
                 }
             }
+        }
 
+        public static T MapTo<T>(this IEnumerable<ObjectProperty> fbxProps)
+            where T : class, new()
+        {
+            T result = new();
+            fbxProps.MapTo(result);
             return result;
         }
 

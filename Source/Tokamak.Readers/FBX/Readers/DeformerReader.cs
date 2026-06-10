@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Tokamak.Readers.FBX.DOM;
+using Tokamak.Readers.FBX.Mappers;
 
 namespace Tokamak.Readers.FBX.Readers
 {
@@ -103,6 +104,8 @@ namespace Tokamak.Readers.FBX.Readers
                 Indices = indices,
                 Weights = weights
             };
+
+            limb?.Properties.MapTo(boneInfo);
 
             return boneInfo;
         }

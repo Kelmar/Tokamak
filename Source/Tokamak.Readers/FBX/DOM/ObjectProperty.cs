@@ -37,6 +37,9 @@ namespace Tokamak.Readers.FBX.DOM
             string name = node.StringProperty(0);
             string type = node.StringProperty(1);
 
+            // Property 2 = Label (maybe)
+            // Property 3 = Flags (of some sort)
+
             object? data = ReadData(node, type);
 
             if (data == null)
