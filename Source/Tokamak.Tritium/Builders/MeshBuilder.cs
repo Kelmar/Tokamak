@@ -4,7 +4,9 @@ using System.Linq;
 using System.Numerics;
 
 using Tokamak.Assets;
+
 using Tokamak.Mathematics;
+
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Geometry;
 
@@ -92,9 +94,14 @@ namespace Tokamak.Tritium.Builders
         public IPolygonBuilder GetPolygonBuilder()
             => m_polyBuilder;
 
-        public IMeshBuilder WithPolygons(IEnumerable<Polygon> polys)
+        public IMeshBuilder WithPolygons<T>(IEnumerable<T> polys, Action<T, IPolygonBuilder> config)
         {
-            Polygons = polys.SelectMany(p => p.SplitIntoTriangles()).ToList();
+            foreach (var p in polys)
+            {
+                config(p, m_polyBuilder);
+                m_polyBuilder.Close();
+            }
+
             return this;
         }
 

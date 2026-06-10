@@ -50,6 +50,10 @@ namespace Tokamak.Tritium.Scene
         /// </summary>
         public SceneObjectFlag Flags { get; set; } = 0;
 
+        public virtual void Update(float timeDelta)
+        {
+        }
+
         public abstract void Render(ICommandList commandList);
     }
 }

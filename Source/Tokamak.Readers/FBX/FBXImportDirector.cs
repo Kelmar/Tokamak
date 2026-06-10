@@ -67,20 +67,26 @@ namespace Tokamak.Readers.FBX
 
             foreach (var mesh in state.Meshes)
             {
-                m_builder.NewMesh(cfg =>
-                {
-                    cfg.WithName(mesh.Name);
-                    var polyBuilder = cfg.GetPolygonBuilder();
+                m_builder.NewMesh(cfg => cfg
+                    .WithName(mesh.Name)
+                    .WithPolygons(mesh.Polygons, (p, polyCfg) => polyCfg
+                        .AddVertices(p.Vectors)
+                        .AddNormals(p.Normals)
+                        .AddUVs(p.TexCoord)
+                        .AddColors(p.Material))
+                );
+            }
 
-                    foreach (var p in mesh.Polygons)
-                    {
-                        polyBuilder
-                            .AddVertices(p.Vectors)
-                            .AddNormals(p.Normals)
-                            .AddUVs(p.TexCoord)
-                            .AddColors(p.Material)
-                            .Close();
-                    }
+            foreach (var skeleton in state.Skeletons)
+            {
+                m_builder.NewSkeleton(cfg =>
+                {
+                    cfg.WithName(skeleton.Name);
+
+                    //foreach (var b in skeleton.Bones)
+                    //{
+
+                    //}
                 });
             }
 

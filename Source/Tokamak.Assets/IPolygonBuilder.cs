@@ -39,15 +39,5 @@ namespace Tokamak.Assets
         /// </summary>
         /// <param name="colors">List of colors to add.</param>
         public IPolygonBuilder AddColors(params IEnumerable<Vector4> colors);
-
-        /// <summary>
-        /// Closes the current polygon and starts a new one.
-        /// </summary>
-        /// <remarks>
-        /// After a polygon is closed it is added the the resulting mesh of the IMeshBuilder this
-        /// polygon builder was created by.  The same polygon builder can then be used to add
-        /// a new polygon to the mesh.
-        /// </remarks>
-        public IPolygonBuilder Close();
     }
 }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
 
 namespace Tokamak.Assets
 {
@@ -9,6 +7,6 @@ namespace Tokamak.Assets
     {
         IMeshBuilder WithName(string name);
 
-        IPolygonBuilder GetPolygonBuilder();
+        IMeshBuilder WithPolygons<T>(IEnumerable<T> source, Action<T, IPolygonBuilder> config);
     }
 }

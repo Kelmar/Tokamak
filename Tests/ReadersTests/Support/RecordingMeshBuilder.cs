@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using Tokamak.Assets;
 
@@ -22,6 +23,14 @@ namespace ReadersTests.Support
             ArgumentException.ThrowIfNullOrWhiteSpace(name, "Name");
 
             m_assetBuilder.Meshes.Add(name);
+            return this;
+        }
+
+        public IMeshBuilder WithPolygons<T>(IEnumerable<T> polys, Action<T, IPolygonBuilder> config)
+        {
+            foreach (var p in polys)
+                config(p, m_polyBuilder);
+
             return this;
         }
     }

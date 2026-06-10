@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Tokamak.Assets;
+
 using Tokamak.Tritium.APIs;
 
 namespace Tokamak.Tritium.Builders
@@ -52,7 +53,7 @@ namespace Tokamak.Tritium.Builders
 
             foreach (var config in m_skeletonConfig)
             {
-                var skeletonBuilder = new SkeletonBuilder();
+                var skeletonBuilder = new SkeletonBuilder(m_assetManager);
                 config(skeletonBuilder);
                 skeletonBuilder.Build();
             }
@@ -66,6 +67,7 @@ namespace Tokamak.Tritium.Builders
 
             m_materialConfig.Clear();
             m_meshConfig.Clear();
+            m_skeletonConfig.Clear();
             m_objectConfig.Clear();
         }
     }

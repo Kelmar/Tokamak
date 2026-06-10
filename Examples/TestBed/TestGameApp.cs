@@ -100,8 +100,8 @@ namespace TestBed
 
             LoadObject();
 
-            //m_scene.Camera.Location = new Vector3(0, 125, 175);
-            m_scene.Camera.Location = new Vector3(0, 0, 5);
+            //m_scene.Camera.Location = new Vector3(0, 75, 175);
+            m_scene.Camera.Location = new Vector3(0, 1, 5);
             //m_scene.Camera.LookAt = Vector3.Zero;
             m_scene.Camera.Forward = new Vector3(0, 0, -1);
 

@@ -82,6 +82,16 @@ namespace Tokamak.Tritium.Builders
                 if (loadCnt == 0)
                     throw new Exception("Unable to load any of the named meshes.");
 
+                if (!String.IsNullOrWhiteSpace(SkeletonName))
+                {
+                    AssetReference<Skeleton>? skeleton = m_assetManager.Find<Skeleton>(SkeletonName);
+
+                    if (skeleton == null)
+                        throw new Exception($"Unable to find skeleton '{SkeletonName}' for SceneObject '{Name}'.");
+
+                    obj.SetSkeleton(skeleton);
+                }
+
                 m_assetManager.RegisterAsset(Name, obj);
             }
             catch
