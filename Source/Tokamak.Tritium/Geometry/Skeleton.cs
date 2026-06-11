@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using Tokamak.Assets;
@@ -11,19 +11,12 @@ namespace Tokamak.Tritium.Geometry
 {
     public class Skeleton : Asset
     {
-        public Skeleton()
+        public Skeleton(Bone[] bones)
         {
+            Bones = bones.ToArray(); // Duplicate the array.
         }
 
-        public List<Bone> Bones
-        {
-            get;
-            set => field = value ?? [];
-        } = [];
-
-        public void Update(float timeDelta)
-        {
-        }
+        public Bone[] Bones { get; }
 
         public void DebugDraw(ICommandList commandList)
         {
@@ -34,11 +27,8 @@ namespace Tokamak.Tritium.Geometry
         {
             var sb = new StringBuilder(ID);
 
-            if (Bones.Count > 0)
-            {
-                sb.Append("->");
-                sb.Append(String.Join(":", Bones));
-            }
+            sb.Append(": ");
+            sb.Append(String.Join(", ", Bones));
 
             return sb.ToString().Truncate(32);
         }

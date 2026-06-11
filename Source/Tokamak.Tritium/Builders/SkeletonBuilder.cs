@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
+using System.Linq;
 
 using Tokamak.Assets;
 
@@ -10,52 +10,11 @@ namespace Tokamak.Tritium.Builders
 {
     internal class SkeletonBuilder : ISkeletonBuilder
     {
-        private class BoneBuilder : IBoneBuilder
-        {
-            public string Name { get; private set; } = String.Empty;
-
-            public Matrix4x4 Transform { get; private set; } = Matrix4x4.Identity;
-
-            public List<Bone> Children { get; } = [];
-
-            public IBoneBuilder WithName(string name)
-            {
-                Name = name;
-                return this;
-            }
-
-            public IBoneBuilder WithTransform(in Matrix4x4 transform)
-            {
-                Transform = transform;
-                return this;
-            }
-
-            public IBoneBuilder WithChildBones<T>(IEnumerable<T> children, BoneConfigurator<T> config)
-            {
-                foreach (var bone in children)
-                {
-                    var childBuilder = new BoneBuilder();
-                    config(bone, childBuilder);
-                    Children.Add(childBuilder.Build());
-                }
-
-                return this;
-            }
-
-            public Bone Build()
-            {
-                //Validate();
-
-                return new Bone
-                {
-                    Name = Name,
-                    Transform = Transform,
-                    Children = Children,
-                };
-            }
-        }
-
         private readonly AssetManager m_assetManager;
+
+        private readonly List<Action<IBoneBuilder>> m_boneConfig = [];
+
+        private int m_boneIndex = -1;
 
         public SkeletonBuilder(AssetManager assetManager)
         {
@@ -66,6 +25,8 @@ namespace Tokamak.Tritium.Builders
 
         public List<Bone> Bones { get; } = [];
 
+        internal int GetNextBoneIndex() => ++m_boneIndex;
+
         public ISkeletonBuilder WithName(string name)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(Name));
@@ -74,14 +35,16 @@ namespace Tokamak.Tritium.Builders
             return this;
         }
 
-        public ISkeletonBuilder WithBones<T>(IEnumerable<T> bones, BoneConfigurator<T> config)
+        public ISkeletonBuilder AddBone(Action<IBoneBuilder> config)
         {
-            foreach (var b in bones)
-            {
-                var bb = new BoneBuilder();
-                config(b, bb);
-                Bones.Add(bb.Build());
-            }
+            m_boneConfig.Add(config);
+            return this;
+        }
+
+        public ISkeletonBuilder WithBones<T>(IEnumerable<T> source, BoneConfigurator<T> config)
+        {
+            foreach (var item in source)
+                AddBone(bb => config(item, bb));
 
             return this;
         }
@@ -96,12 +59,16 @@ namespace Tokamak.Tritium.Builders
 
         public void Build()
         {
+            foreach (var config in m_boneConfig)
+            {
+                var builder = new BoneBuilder(this, -1);
+                config(builder);
+                builder.Build();
+            }
+
             Validate();
 
-            var skeleton = new Skeleton
-            {
-                Bones = Bones
-            };
+            var skeleton = new Skeleton(Bones.OrderBy(b => b.Index).ToArray());
 
             try
             {

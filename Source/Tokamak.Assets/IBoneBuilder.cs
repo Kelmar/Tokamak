@@ -9,6 +9,10 @@ namespace Tokamak.Assets
     {
         IBoneBuilder WithName(string name);
 
+        IBoneBuilder ForIndices(IEnumerable<int> indices);
+
+        IBoneBuilder WithWeights(IEnumerable<float> weights);
+
         IBoneBuilder WithTransform(in Matrix4x4 transform);
 
         IBoneBuilder WithChildBones<T>(IEnumerable<T> children, BoneConfigurator<T> config);

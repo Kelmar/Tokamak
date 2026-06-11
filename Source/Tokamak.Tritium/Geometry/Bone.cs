@@ -11,25 +11,22 @@ namespace Tokamak.Tritium.Geometry
     {
         public required string Name { get; init; }
 
-        public Matrix4x4 Transform { get; set; }
+        public int Index { get; set; }
 
-        public List<Bone> Children
-        {
-            get;
-            set => field = value ?? [];
-        } = [];
+        public int ParentIndex { get; set; }
+
+        public List<int> Indices { get; } = [];
+
+        public List<float> Weights { get; } = [];
+
+        public Matrix4x4 Transform { get; set; }
 
         public override string ToString()
         {
-            var sb = new StringBuilder(Name);
+            if (!String.IsNullOrWhiteSpace(Name))
+                return Name;
 
-            if (Children.Count > 0)
-            {
-                sb.Append("->");
-                sb.Append(String.Join(":", Children));
-            }
-
-            return sb.ToString().Truncate(32);
+            return Index.ToString();
         }
     }
 }

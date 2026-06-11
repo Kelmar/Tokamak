@@ -44,8 +44,6 @@ namespace Tokamak.Tritium.Scene
         {
             if (m_skeleton == null)
                 return;
-
-            m_skeleton.Asset.Update(timeDelta);
         }
 
         public override void Render(ICommandList commandList)

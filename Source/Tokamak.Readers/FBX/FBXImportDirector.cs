@@ -172,6 +172,8 @@ namespace Tokamak.Readers.FBX
                 builder
                     .WithName(bone.Name)
                     .WithTransform(bone.Transform)
+                    .ForIndices(bone.Indices)
+                    .WithWeights(bone.Weights)
                     .WithChildBones(children, ProcessBone);
             }
         }

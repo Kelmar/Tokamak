@@ -14,6 +14,11 @@ namespace ReadersTests.Support
             m_assetBuilder = assetBuilder;
         }
 
+        public ISkeletonBuilder AddBone(Action<IBoneBuilder> config)
+        {
+            return this;
+        }
+
         public ISkeletonBuilder WithBones<T>(IEnumerable<T> bones, BoneConfigurator<T> config)
         {
             return this;

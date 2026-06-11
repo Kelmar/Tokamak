@@ -7,6 +7,8 @@ namespace Tokamak.Assets
     {
         ISkeletonBuilder WithName(string name);
 
-        ISkeletonBuilder WithBones<T>(IEnumerable<T> bones, BoneConfigurator<T> config);
+        ISkeletonBuilder AddBone(Action<IBoneBuilder> config);
+
+        ISkeletonBuilder WithBones<T>(IEnumerable<T> source, BoneConfigurator<T> config);
     }
 }
