@@ -17,8 +17,6 @@ using Tokamak.Readers.FBX;
 using Tokamak.Readers.SVG;
 
 using Tokamak.Tritium.APIs;
-using Tokamak.Tritium.Builders;
-using Tokamak.Tritium.Geometry;
 using Tokamak.Tritium.Scene;
 
 using TTF = Tokamak.Quill.Readers.TTF;
@@ -162,6 +160,8 @@ namespace TestBed
                 r.Render();
             */
         }
+
+        #region UI Test
 
         private void RenderUI()
         {
@@ -356,6 +356,8 @@ namespace TestBed
             m_canvas.DrawText(pen, m_font, new Point(5, 60), String.Format("ROT: {0:0.000}", m_rot));
         }
         */
+
+        #endregion UI Test
 
         public void OnUpdate(double timeDelta)
         {

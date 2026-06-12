@@ -17,6 +17,7 @@
     <None Remove="appsettings.json" />
     <None Remove="shaders\basic.frag" />
     <None Remove="shaders\basic.vert" />
+    <None Remove="shaders\bone.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,6 +49,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="shaders\basic.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="shaders\bone.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

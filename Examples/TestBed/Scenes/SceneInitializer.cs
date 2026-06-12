@@ -11,6 +11,11 @@ namespace TestBed.Scenes
 {
     public class SceneInitializer : ISceneInitializer
     {
+        private const string VERTEX_SHADER = "shaders/basic.vert";
+        //private const string VERTEX_SHADER = "shaders/bone.vert";
+
+        private const string FRAGMENT_SHADER = "shaders/basic.frag";
+
         private readonly IGraphicsLayer m_gfxLayer;
 
         public SceneInitializer(IGraphicsLayer gfxLayer)
@@ -20,8 +25,8 @@ namespace TestBed.Scenes
 
         public IPipeline GetPipeline()
         {
-            string vertexShader = File.ReadAllText("shaders/basic.vert");
-            string fragmentShader = File.ReadAllText("shaders/basic.frag");
+            string vertexShader = File.ReadAllText(VERTEX_SHADER);
+            string fragmentShader = File.ReadAllText(FRAGMENT_SHADER);
 
             return m_gfxLayer.CreatePipeline(cfg =>
             {
