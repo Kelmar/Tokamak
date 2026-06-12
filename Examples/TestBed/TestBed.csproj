@@ -5,6 +5,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,6 +35,7 @@
     <ProjectReference Include="..\..\Source\Tokamak.OGL\Tokamak.OGL.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Quill\Tokamak.Quill.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Readers\Tokamak.Readers.csproj" />
+    <ProjectReference Include="..\..\Source\Tokamak.Silk.Input\Tokamak.Silk.Input.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.VFS\Tokamak.VFS.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Vulkan\Tokamak.Vulkan.csproj" />
   </ItemGroup>

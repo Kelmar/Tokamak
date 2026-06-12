@@ -1,17 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>disable</Nullable>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Silk.NET" Version="2.23.0" />
     <PackageReference Include="Silk.NET.Core" Version="2.23.0" />
     <PackageReference Include="Silk.NET.Maths" Version="2.23.0" />
-    <PackageReference Include="Silk.NET.OpenGL" Version="2.23.0" />
     <PackageReference Include="Silk.NET.Windowing" Version="2.23.0" />
     <PackageReference Include="Silk.NET.Windowing.Common" Version="2.23.0" />
     <PackageReference Include="Stashbox" Version="5.20.0" />
@@ -20,10 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Silk\Tokamak.Abstractions.Silk\Tokamak.Abstractions.Silk.csproj" />
     <ProjectReference Include="..\Tokamak.Abstractions\Tokamak.Abstractions.csproj" />
-    <ProjectReference Include="..\Tokamak.Mathematics.Silk\Tokamak.Mathematics.Silk.csproj" />
-    <ProjectReference Include="..\Tokamak.Mathematics\Tokamak.Mathematics.csproj" />
     <ProjectReference Include="..\Tokamak.Tritium\Tokamak.Tritium.csproj" />
-    <ProjectReference Include="..\Tokamak.Utilities\Tokamak.Utilities.csproj" />
   </ItemGroup>
-
+  
 </Project>

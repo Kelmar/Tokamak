@@ -9,6 +9,8 @@ using Silk.NET.Windowing;
 using Tokamak.Logging.Abstractions;
 using Tokamak.Hosting.Abstractions;
 
+using Tokamak.Abstractions.Silk;
+
 using Tokamak.Utilities;
 
 using Tokamak.Mathematics;
@@ -22,17 +24,16 @@ using Tokamak.Tritium.Buffers;
 using Monitor = Tokamak.Tritium.APIs.Monitor;
 using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
 
+using SilkWindow = Silk.NET.Windowing.Window;
+
 namespace Tokamak.OGL
 {
     [LogName("OpenGL")]
-    internal class OpenGLLayer : IGraphicsLayer, ITick
+    internal class OpenGLLayer : IGraphicsLayer, ITick, ISilkWindow
     {
         public event SimpleEvent<Point> OnResize;
         public event SimpleEvent<double> OnRender;
         public event SimpleEvent OnLoad;
-
-        private readonly IWindow m_window;
-        private readonly IView m_view;
 
         private readonly IGameLifetime m_gameLifetime;
 
@@ -45,15 +46,15 @@ namespace Tokamak.OGL
         {
             m_gameLifetime = gameLifetime;
 
-            if (Window.IsViewOnly)
+            if (SilkWindow.IsViewOnly)
             {
-                m_window = null;
-                m_view = Window.GetView();
+                Window = null;
+                View = SilkWindow.GetView();
             }
             else
             {
-                m_window = InitWindowedMode(hostEnvironment);
-                m_view = m_window;
+                Window = InitWindowedMode(hostEnvironment);
+                View = Window;
             }
 
             InitEvents();
@@ -78,7 +79,7 @@ namespace Tokamak.OGL
 
                 CleanupEvents();
 
-                m_window?.Dispose();
+                Window?.Dispose();
             }
         }
 
@@ -88,13 +89,17 @@ namespace Tokamak.OGL
             GC.SuppressFinalize(this);
         }
 
+        public IView View { get; }
+
+        public IWindow? Window { get; }
+
         public GL GL { get; private set; } = null;
 
         public Point ViewBounds { get; private set; }
 
         public IEnumerable<Monitor> GetMonitors()
         {
-            var platform = Window.GetWindowPlatform(Window.IsViewOnly);
+            var platform = SilkWindow.GetWindowPlatform(SilkWindow.IsViewOnly);
 
             if (platform == null)
                 throw new Exception("Unable to get window platform.");
@@ -120,21 +125,21 @@ namespace Tokamak.OGL
 
         private void InitEvents()
         {
-            m_view.Load += OnViewLoad;
-            m_view.Resize += OnViewResized;
-            m_view.Render += OnViewRender;
-            m_view.Closing += OnViewClosing;
+            View.Load += OnViewLoad;
+            View.Resize += OnViewResized;
+            View.Render += OnViewRender;
+            View.Closing += OnViewClosing;
         }
 
         private void CleanupEvents()
         {
-            m_view.DoEvents();
-            m_view.Reset();
+            View.DoEvents();
+            View.Reset();
 
-            m_view.Closing -= OnViewClosing;
-            m_view.Render -= OnViewRender;
-            m_view.Resize -= OnViewResized;
-            m_view.Load -= OnViewLoad;
+            View.Closing -= OnViewClosing;
+            View.Render -= OnViewRender;
+            View.Resize -= OnViewResized;
+            View.Load -= OnViewLoad;
 
             m_gameLifetime.RemoveTick(this);
         }
@@ -149,13 +154,13 @@ namespace Tokamak.OGL
             options.VSync = false;
             options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(4, 1));
 
-            return Window.Create(options);
+            return SilkWindow.Create(options);
         }
 
         private void OnViewLoad()
         {
             // Initialize OpenGL now.
-            GL = GL.GetApi(m_view);
+            GL = GL.GetApi(View);
 
             m_vba = GL.GenVertexArray();
             GL.BindVertexArray(m_vba);
@@ -166,7 +171,7 @@ namespace Tokamak.OGL
             Array.Fill<byte>(m_whiteTexture.Bitmap.Data, 255);
             m_whiteTexture.Refresh();
 
-            OnViewResized(m_view.FramebufferSize);
+            OnViewResized(View.FramebufferSize);
 
             OnLoad?.Invoke();
         }
@@ -199,24 +204,24 @@ namespace Tokamak.OGL
                  * firing them.
                  */
 
-                m_view.Initialize();
+                View.Initialize();
                 m_firstCall = false;
             }
             else
             {
-                m_view.DoEvents();
+                View.DoEvents();
 
-                if (!m_view.IsClosing)
-                    m_view.DoUpdate();
+                if (!View.IsClosing)
+                    View.DoUpdate();
 
-                if (!m_view.IsClosing)
-                    m_view.DoRender();
+                if (!View.IsClosing)
+                    View.DoRender();
             }
         }
 
         public void SwapBuffers()
         {
-            m_view.SwapBuffers();
+            View.SwapBuffers();
         }
 
         public ICommandList CreateCommandList()

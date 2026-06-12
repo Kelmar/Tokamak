@@ -7,6 +7,7 @@ using System.Numerics;
 
 using TestBed.Scenes;
 
+using Tokamak.Abstractions.Input;
 using Tokamak.Assets;
 using Tokamak.Graphite;
 using Tokamak.Hosting.Abstractions;
@@ -27,16 +28,21 @@ namespace TestBed
     {
         private readonly AssetManager m_assetManager;
         private readonly IGraphicsLayer m_gfxLayer;
+        private readonly IInputManager m_inputManager;
+        private readonly IGameLifetime m_gameLifetime;
+
         private readonly Func<IAssetBuilder> m_builderFactory;
 
         private const float ROT_AMOUNT = 1;//0.5f;
 
         private ILogger m_log;
-        private Canvas m_context = null;
-        private Font m_font = null;
-        private SceneManager m_scene = null;
+        private Canvas? m_context = null;
+        private Font? m_font = null;
+        private SceneManager? m_scene = null;
 
-        AssetReference<SceneMeshObject> m_mesh;
+        AssetReference<SceneMeshObject>? m_mesh;
+
+        private PlayerController? m_playerController;
 
         //private readonly List<IRenderable> m_renderers = new List<IRenderable>();
 
@@ -62,19 +68,26 @@ namespace TestBed
             ILogger log,
             AssetManager assetManager,
             IGraphicsLayer layer,
+            IInputManager inputManager,
+            IGameLifetime gameLifetime,
             Func<IAssetBuilder> builderFactory)
         {
             m_log = log;
             m_assetManager = assetManager;
             m_gfxLayer = layer;
+            m_inputManager = inputManager;
+            m_gameLifetime = gameLifetime;
+
             m_builderFactory = builderFactory;
+
+            m_playerController = null;
         }
 
         public void Dispose()
         {
             if (m_mesh != null)
             {
-                m_scene.RemoveObject(m_mesh.Asset);
+                m_scene!.RemoveObject(m_mesh.Asset);
                 m_mesh.Dispose();
             }
 
@@ -98,10 +111,12 @@ namespace TestBed
 
             LoadObject();
 
+            m_playerController = new PlayerController(m_scene, m_inputManager, m_gameLifetime);
+
             //m_scene.Camera.Location = new Vector3(0, 75, 175);
-            m_scene.Camera.Location = new Vector3(0, 1, 5);
+            //m_scene.Camera.Location = new Vector3(0, 1, 5);
             //m_scene.Camera.LookAt = Vector3.Zero;
-            m_scene.Camera.Forward = new Vector3(0, 0, -1);
+            //m_scene.Camera.Forward = new Vector3(0, 0, -1);
 
             //m_renderers.Add(m_scene);
             //m_renderers.Add(m_canvas);
@@ -131,7 +146,7 @@ namespace TestBed
             //m_mesh = m_assetManager.Find<SceneMeshObject>("Ch46"); // Amy
 
             if (m_mesh != null)
-                m_scene.AddObject(m_mesh.Asset);
+                m_scene!.AddObject(m_mesh.Asset);
         }
 
         Font LoadFont()
@@ -152,8 +167,8 @@ namespace TestBed
         {
             RenderUI();
 
-            m_scene.RenderAll();
-            m_context.Render();
+            m_scene!.RenderAll();
+            m_context!.Render();
 
             /*
             foreach (var r in m_renderers)
@@ -267,7 +282,7 @@ namespace TestBed
             path.ArcTo(new Vector2(300, 500), 50, 0, MathF.Tau);
             path.Close();
 
-            m_context.Fill(window, fill);
+            m_context!.Fill(window, fill);
 
             m_context.Stroke(path, pen);
 
@@ -320,7 +335,7 @@ namespace TestBed
             pac.ArcTo(center, radius, m2, start);
             pac.Close();
 
-            m_context.Fill(pac, fillPen);
+            m_context!.Fill(pac, fillPen);
             m_context.Stroke(pac, outlinePen);
         }
 
@@ -334,7 +349,7 @@ namespace TestBed
 
             //m_context.DrawText(new Vector2(50, 50), "G", m_font, fillPen);
             //m_context.DrawText(new Vector2(50, 50), "A", m_font, fillPen);
-            m_context.DrawText(new Vector2(50, 50), "C", m_font, fillPen);
+            m_context!.DrawText(new Vector2(50, 50), "C", m_font!, fillPen);
         }
 
         //private void DrawSingleSquare()
@@ -361,6 +376,8 @@ namespace TestBed
 
         public void OnUpdate(double timeDelta)
         {
+            m_playerController?.Update(timeDelta);
+
             ComputeFPS();
 
             //if (KeyboardState.IsKeyDown(Keys.Escape))
