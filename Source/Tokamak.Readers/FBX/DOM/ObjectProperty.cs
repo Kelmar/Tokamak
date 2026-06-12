@@ -149,21 +149,21 @@ namespace Tokamak.Readers.FBX.DOM
         {
             int idx = node.Properties.Count - 2;
             var value = ReadValues(node, idx, 2).ToArray();
-            return VectorEx.ToVector2(value);
+            return value.ToVector2();
         }
 
         private static Vector3 ReadVector3(Node node)
         {
             int idx = node.Properties.Count - 3;
             var value = ReadValues(node, idx, 3).ToArray();
-            return VectorEx.ToVector3(value);
+            return value.ToVector3();
         }
 
         private static Vector4 ReadVector4(Node node)
         {
             int idx = node.Properties.Count - 4;
             var value = ReadValues(node, idx, 4).ToArray();
-            return VectorEx.ToVector4(value);
+            return value.ToVector4();
         }
     }
 }

@@ -38,7 +38,14 @@ namespace Tokamak.Mathematics
             /// Create a 3x2 matrix from row major data.
             /// </summary>
             /// <param name="a">Array of row major data.</param>
-            public static Matrix3x2 CreateFromRowArray(float[] a)
+            public static Matrix3x2 CreateFromRowArray(in ReadOnlyMemory<float> a)
+                => CreateFromRowArray(a.Span);
+
+            /// <summary>
+            /// Create a 3x2 matrix from row major data.
+            /// </summary>
+            /// <param name="a">Array of row major data.</param>
+            public static Matrix3x2 CreateFromRowArray(in ReadOnlySpan<float> a)
             {
                 return new Matrix3x2(
                     a.Length > 0 ? a[0] : 0,
@@ -53,7 +60,14 @@ namespace Tokamak.Mathematics
             /// Create a 3x2 matrix from column major data.
             /// </summary>
             /// <param name="a">Array of column major data.</param>
-            public static Matrix3x2 CreateFromColumnArray(float[] a)
+            public static Matrix3x2 CreateFromColumnArray(in ReadOnlyMemory<float> a)
+                => CreateFromColumnArray(a.Span);
+
+            /// <summary>
+            /// Create a 3x2 matrix from column major data.
+            /// </summary>
+            /// <param name="a">Array of column major data.</param>
+            public static Matrix3x2 CreateFromColumnArray(in ReadOnlySpan<float> a)
             {
                 return new Matrix3x2(
                     a.Length > 0 ? a[0] : 0,

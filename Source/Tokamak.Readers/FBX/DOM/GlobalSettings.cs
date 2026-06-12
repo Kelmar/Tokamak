@@ -27,7 +27,7 @@ namespace Tokamak.Readers.FBX.DOM
             float[] data = [0, 0, 0, 0];
             data[axis] = 1;
 
-            return VectorEx.ToVector4(data);
+            return data.ToVector4();
         }
 
         public void BuildSwizzleMatrix()

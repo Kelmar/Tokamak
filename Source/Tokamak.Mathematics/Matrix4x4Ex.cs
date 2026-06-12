@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Tokamak.Mathematics
 {
@@ -10,7 +11,14 @@ namespace Tokamak.Mathematics
             /// Create a 4x4 matrix from row major data.
             /// </summary>
             /// <param name="a">Array of row major data.</param>
-            public static Matrix4x4 CreateFromRowArray(float[] a)
+            public static Matrix4x4 CreateFromRowArray(in ReadOnlyMemory<float> a)
+                => CreateFromRowArray(a.Span);
+
+            /// <summary>
+            /// Create a 4x4 matrix from row major data.
+            /// </summary>
+            /// <param name="a">Array of row major data.</param>
+            public static Matrix4x4 CreateFromRowArray(in ReadOnlySpan<float> a)
             {
                 return new Matrix4x4(
                     a.Length > 0  ? a[0]  : 0,
@@ -38,7 +46,14 @@ namespace Tokamak.Mathematics
             /// Create a 4x4 matrix from column major data.
             /// </summary>
             /// <param name="a">Array of column major data.</param>
-            public static Matrix4x4 CreateFromColumnArray(float[] a)
+            public static Matrix4x4 CreateFromColumnArray(in ReadOnlyMemory<float> a)
+                => CreateFromColumnArray(a.Span);
+
+            /// <summary>
+            /// Create a 4x4 matrix from column major data.
+            /// </summary>
+            /// <param name="a">Array of column major data.</param>
+            public static Matrix4x4 CreateFromColumnArray(in ReadOnlySpan<float> a)
             {
                 return new Matrix4x4(
                     a.Length > 0  ? a[0]  : 0,

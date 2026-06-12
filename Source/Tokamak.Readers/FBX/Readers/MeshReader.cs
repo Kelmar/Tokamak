@@ -44,7 +44,7 @@ namespace Tokamak.Readers.FBX.Readers
                 .SelectMany(v => v.Properties[0].AsEnumerable<float>())
                 .ToList() // Chunk needs the list to be realized first.
                 .Chunk(3) // Group into threes
-                .Select(VectorEx.ToVector3) // Convert to vertex
+                .Select(a => a.ToVector3()) // Convert to vertex
                 .Select(Settings.SwizzleAxes) // Swizzle axes
                 .ToList();
         }
@@ -114,7 +114,10 @@ namespace Tokamak.Readers.FBX.Readers
                 obj.Node.Children.FirstWithName("LayerElementUV"),
                 "UV",
                 "UVIndex",
-                p => p.SelectMany(p => p.AsEnumerable<float>()).ToList().Chunk(2).Select(VectorEx.ToVector2)
+                p => p.SelectMany(p => p.AsEnumerable<float>())
+                    .ToList()
+                    .Chunk(2)
+                    .Select(a => a.ToVector2())
             );
 
             var normalMapper = new LayerMapper<Vector3>(
@@ -125,7 +128,7 @@ namespace Tokamak.Readers.FBX.Readers
                     .SelectMany(p => p.AsEnumerable<float>())
                     .ToList()
                     .Chunk(3)
-                    .Select(VectorEx.ToVector3) // To vector
+                    .Select(a => a.ToVector3()) // To vector
                     .Select(Settings.SwizzleAxes) // Swizzle axes
             );
 

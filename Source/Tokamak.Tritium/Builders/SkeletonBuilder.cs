@@ -8,18 +8,13 @@ using Tokamak.Tritium.Geometry;
 
 namespace Tokamak.Tritium.Builders
 {
-    internal class SkeletonBuilder : ISkeletonBuilder
+    internal class SkeletonBuilder(AssetManager assetManager) : ISkeletonBuilder
     {
-        private readonly AssetManager m_assetManager;
+        private readonly AssetManager m_assetManager = assetManager;
 
         private readonly List<Action<IBoneBuilder>> m_boneConfig = [];
 
         private int m_boneIndex = -1;
-
-        public SkeletonBuilder(AssetManager assetManager)
-        {
-            m_assetManager = assetManager;
-        }
 
         public string Name { get; private set; } = String.Empty;
 
