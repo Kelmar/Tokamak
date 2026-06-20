@@ -9,18 +9,14 @@ using TestBed.Scenes;
 
 using Tokamak.Abstractions.Input;
 using Tokamak.Assets;
-using Tokamak.Graphite;
 using Tokamak.Hosting.Abstractions;
 using Tokamak.Logging.Abstractions;
 using Tokamak.Mathematics;
-using Tokamak.Quill;
+
 using Tokamak.Readers.FBX;
-using Tokamak.Readers.SVG;
 
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Scene;
-
-using TTF = Tokamak.Quill.Readers.TTF;
 
 namespace TestBed
 {
@@ -35,9 +31,8 @@ namespace TestBed
 
         private const float ROT_AMOUNT = 1;//0.5f;
 
-        private ILogger m_log;
-        private Canvas? m_context = null;
-        private Font? m_font = null;
+        //private ILogger m_log;
+        
         private SceneManager? m_scene = null;
 
         AssetReference<SceneMeshObject>? m_mesh;
@@ -46,9 +41,6 @@ namespace TestBed
 
         //private readonly List<IRenderable> m_renderers = new List<IRenderable>();
 
-        private int m_frameCount;
-        private DateTime m_lastCheck = DateTime.UtcNow;
-        private float m_fps;
         private float m_rot;
 
         //public const string FILE = "resources/cube.fbx";
@@ -65,14 +57,14 @@ namespace TestBed
         //public const string FILE = "resources/amy.fbx";
 
         public TestGameApp(
-            ILogger log,
+            //ILogger log,
             AssetManager assetManager,
             IGraphicsLayer layer,
             IInputManager inputManager,
             IGameLifetime gameLifetime,
             Func<IAssetBuilder> builderFactory)
         {
-            m_log = log;
+            //m_log = log;
             m_assetManager = assetManager;
             m_gfxLayer = layer;
             m_inputManager = inputManager;
@@ -92,7 +84,6 @@ namespace TestBed
             }
 
             m_scene?.Dispose();
-            m_context?.Dispose();
         }
 
         public void OnShutdown()
@@ -101,10 +92,6 @@ namespace TestBed
 
         public void OnLoad()
         {
-            m_context = new Canvas(m_gfxLayer);
-
-            //m_font = LoadFont();
-
             var initializer = new SceneInitializer(m_gfxLayer);
 
             m_scene = new SceneManager(m_gfxLayer, initializer);
@@ -149,26 +136,12 @@ namespace TestBed
                 m_scene!.AddObject(m_mesh.Asset);
         }
 
-        Font LoadFont()
-        {
-            //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/arial.ttf");
-            //string path = Path.Combine(Environment.SystemDirectory, "../Fonts/dnk.ttf");
-            string path = System.IO.Path.Combine(Environment.SystemDirectory, "../Fonts/segoeui.ttf");
-
-            using var s = File.OpenRead(path);
-
-            var monitor = m_gfxLayer.GetMonitors().FirstOrDefault();
-            var dpi = monitor?.DPI ?? new Point(72, 72);
-
-            return TTF.Reader.LoadFrom(s, 120, dpi);
-        }
 
         public void OnRender(double timeDelta)
         {
-            RenderUI();
+            //RenderUI();
 
             m_scene!.RenderAll();
-            m_context!.Render();
 
             /*
             foreach (var r in m_renderers)
@@ -176,212 +149,9 @@ namespace TestBed
             */
         }
 
-        #region UI Test
-
-        private void RenderUI()
-        {
-            //PathTest();
-            //PacTest();
-
-            //FontTest();
-
-            //DrawSingleSquare();
-
-            //DrawFrameRate();
-        }
-
-        private void PathTest()
-        {
-            Pen pen = new Pen
-            {
-                Width = 20,
-                //Color = Color.Grey
-                Color = new Color(192, 192, 192, 192)
-                //Color = Color.White
-                //Color = Color.DarkGreen
-                //, LineJoin = LineJoin.Bevel
-            };
-
-            Pen fill = new Pen
-            {
-                Width = 1,
-                Color = new Color(0, 0, 192, 192)
-            };
-
-            var window = new Tokamak.Graphite.Path();
-            // Rectangle Test
-            //path.Rectangle(new Vector2(50, 50), new Vector2(1000, 1000));
-            window.RoundRect(new Vector2(50, 50), new Vector2(1000, 1000), 50);
-
-            var path = new Tokamak.Graphite.Path();
-
-            // Line Test
-            //path.MoveTo(10, 10);
-            //path.LineTo(1000, 1000);
-
-            // Triangle Test
-            //path.MoveTo(50, 50);
-            //path.LineTo(250, 50);
-            //path.LineTo(450, 50);
-            //path.LineTo(450, 250);
-            //path.LineTo(450, 450);
-            //path.LineTo(250, 250);
-            //path.Close();
-
-            // Complex Test 1
-            //path.MoveTo(40, 40);   // 1
-            //path.LineTo(80, 30);   // 2
-            //path.LineTo(80, 60);   // 3
-            //path.LineTo(125, 33);  // 4
-            //path.LineTo(115, 100); // 5
-            //path.LineTo(50, 120);  // 6
-            //path.LineTo(70, 150);  // 7
-
-            // Complex Test 2
-            //path.MoveTo(40, 40);
-            //path.LineTo(80, 30);
-            //path.LineTo(80, 60);
-            //path.LineTo(125, 33);
-            //path.LineTo(115, 100);
-            //path.LineTo(50, 120);
-            //path.LineTo(30, 100);
-            //path.Close();
-
-            // Complex Test 2 (scaled)
-            //float scale = 4;
-            //path.MoveTo(new Vector2(40, 40) * scale);
-            //path.LineTo(new Vector2(80, 30) * scale);
-            //path.LineTo(new Vector2(80, 60) * scale);
-            //path.LineTo(new Vector2(125, 33) * scale);
-            //path.LineTo(new Vector2(115, 100) * scale);
-            //path.LineTo(new Vector2(50, 120) * scale);
-            //path.LineTo(new Vector2(30, 100) * scale);
-            //path.Close();
-
-            // Quadradic Bezier Curve Test
-            //path.MoveTo(50, 400);
-            //path.BezierQuadradicCurveTo(
-            //    new Vector2(250, 50),
-            //    new Vector2(500, 400)
-            //);
-
-            // Cubic Bezier Curve Test
-            //path.MoveTo(50, 50);
-            //path.BezierCubicCurveTo(
-            //    new Vector2(200, 200),
-            //    new Vector2(1000, 275),
-            //    new Vector2(250, 400)
-            //);
-
-            //m_context.Stroke(path, pen);
-
-            // Arc Test
-            path.ArcTo(new Vector2(300, 500), new Vector2(100, 250), 0, MathF.Tau);
-            path.Close();
-
-            path.ArcTo(new Vector2(300, 500), 50, 0, MathF.Tau);
-            path.Close();
-
-            m_context!.Fill(window, fill);
-
-            m_context.Stroke(path, pen);
-
-            var path2 = new Tokamak.Graphite.Path();
-            path2.ArcTo(new Vector2(300, 500), 50, 0, MathF.Tau);
-            path2.Close();
-
-            var pen2 = new Pen
-            {
-                Color = Color.DarkRed,
-                Width = 10
-            };
-
-            m_context.Stroke(path2, pen2);
-        }
-
-        private void PacTest()
-        {
-            Pen fillPen = new Pen
-            {
-                Width = 3,
-                //Color = Color.Yellow
-                Color = new Color(192, 192, 0, 255)
-                //Color = new Color(255, 255, 0, 64)
-            };
-
-            Pen outlinePen = new Pen
-            {
-                Width = 3,
-                Color = Color.Yellow
-            };
-
-            var pac = new Tokamak.Graphite.Path();
-
-            Vector2 center = new Vector2(160, 160);
-            float radius = 50;
-
-            float start = MathX.Deg2Rad(270);
-            float m1 = start + MathX.Deg2Rad(45);
-            float m2 = (m1 + MathX.Deg2Rad(90)) - (MathF.PI * 2);
-
-            // Draw a PacMan like shape
-            //pac.MoveTo(110, 110);
-            pac.ArcTo(center, radius, start, m1);
-            pac.LineTo(center);
-
-            Vector2 m2v = new Vector2(MathF.Cos(m2) * radius, MathF.Sin(m2) * radius);
-
-            pac.LineTo(center + m2v);
-            pac.ArcTo(center, radius, m2, start);
-            pac.Close();
-
-            m_context!.Fill(pac, fillPen);
-            m_context.Stroke(pac, outlinePen);
-        }
-
-        private void FontTest()
-        {
-            Pen fillPen = new Pen
-            {
-                Width = 1,
-                Color = Color.White
-            };
-
-            //m_context.DrawText(new Vector2(50, 50), "G", m_font, fillPen);
-            //m_context.DrawText(new Vector2(50, 50), "A", m_font, fillPen);
-            m_context!.DrawText(new Vector2(50, 50), "C", m_font!, fillPen);
-        }
-
-        //private void DrawSingleSquare()
-        //{
-        //    Vector2[] points = [
-        //        new Vector2( 10,  10),  // Top Left
-        //        new Vector2(100,  10),  // Top Right
-        //        new Vector2( 10, 100),  // Bottom Left
-        //        new Vector2(100, 100)   // Bottom Right
-        //    ];
-
-        //    m_context.Draw(Tokamak.Tritium.Geometry.PrimitiveType.TriangleStrip, points, Color.White);
-        //}
-
-        /*
-        private void DrawFrameRate()
-        {
-            m_canvas.DrawText(pen, m_font, new Point(5, 30), String.Format("FPS: {0:000.0}", m_fps));
-            m_canvas.DrawText(pen, m_font, new Point(5, 60), String.Format("ROT: {0:0.000}", m_rot));
-        }
-        */
-
-        #endregion UI Test
-
         public void OnUpdate(double timeDelta)
         {
             m_playerController?.Update(timeDelta);
-
-            ComputeFPS();
-
-            //if (KeyboardState.IsKeyDown(Keys.Escape))
-            //    Close();
 
             /*
             if (KeyboardState.IsKeyReleased(Keys.W))
@@ -391,9 +161,6 @@ namespace TestBed
                 m_render.Debug = !m_render.Debug;
             */
 
-            //if (KeyboardState.IsKeyReleased(Keys.T))
-            //    m_trans = !m_trans;
-
             m_rot += (float)(ROT_AMOUNT * timeDelta);
             //m_rot += 1;
 
@@ -401,23 +168,6 @@ namespace TestBed
                 m_rot -= 360;
 
             m_mesh?.Asset.Rotation = new Vector3(0, m_rot, 0);
-        }
-
-        private void ComputeFPS()
-        {
-            ++m_frameCount;
-
-            if (m_lastCheck.Second != DateTime.UtcNow.Second)
-            {
-                var diff = DateTime.UtcNow - m_lastCheck;
-                m_fps = (float)(m_frameCount / diff.TotalSeconds);
-                m_frameCount = 0;
-                m_lastCheck = DateTime.UtcNow;
-
-                //int secs = (int)diff.TotalSeconds;
-                //if ((secs % 10) == 0)
-                //    m_log.Debug("FPS: {0}", m_fps);
-            }
         }
     }
 }
