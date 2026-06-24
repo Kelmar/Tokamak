@@ -11,8 +11,8 @@ namespace Tokamak.Silk.Input
 {
     internal sealed class SilkInputManager : IInputManager, IDisposable
     {
-        public event KeyUp KeyUp;
-        public event KeyDown KeyDown;
+        public event KeyUp? KeyUp;
+        public event KeyDown? KeyDown;
 
         private ISilkWindow m_window;
         private IInputContext? m_input = null;

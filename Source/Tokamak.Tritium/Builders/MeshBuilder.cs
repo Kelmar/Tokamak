@@ -1,70 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 
 using Tokamak.Assets;
-
-using Tokamak.Mathematics;
 
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Geometry;
 
 namespace Tokamak.Tritium.Builders
 {
-    internal class MeshBuilder : IMeshBuilder
+    internal partial class MeshBuilder : IMeshBuilder
     {
-        private class PolygonBuilder : IPolygonBuilder
-        {
-            private MeshBuilder m_meshBuilder;
-
-            public PolygonBuilder(MeshBuilder meshBuilder)
-            {
-                m_meshBuilder = meshBuilder;
-            }
-
-            public Polygon Current { get; set; } = new();
-
-            public IPolygonBuilder AddVertices(params IEnumerable<Vector3> vertices)
-            {
-                Current.Vectors.AddRange(vertices);
-                return this;
-            }
-
-            public IPolygonBuilder AddNormals(params IEnumerable<Vector3> normals)
-            {
-                Current.Normals.AddRange(normals);
-                return this;
-            }
-
-            public IPolygonBuilder AddUVs(params IEnumerable<Vector2> uvs)
-            {
-                Current.TexCoord.AddRange(uvs);
-                return this;
-            }
-
-            public IPolygonBuilder AddColors(params IEnumerable<Color> colors)
-                => AddColors(colors.Select(c => c.ToVector()));
-
-            public IPolygonBuilder AddColors(params IEnumerable<Vector4> colors)
-            {
-                Current.Colors.AddRange(colors);
-                return this;
-            }
-
-            public IPolygonBuilder Close()
-            {
-                // TODO: Fully validate polygon
-
-                if (Current.Vectors.Count == 0)
-                    return this; // Nothing to do.
-
-                m_meshBuilder.Polygons.AddRange(Current.SplitIntoTriangles());
-
-                Current = new();
-                return this;
-            }
-        }
 
         private readonly PolygonBuilder m_polyBuilder;
 

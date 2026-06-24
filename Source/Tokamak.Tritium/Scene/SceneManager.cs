@@ -16,7 +16,7 @@ namespace Tokamak.Tritium.Scene
 {
     public class SceneManager : IDisposable
     {
-        // TODO: Review the name of this class, does it make more sense to call it a Scene? -- B.Simonds (Jun 20, 2025)
+        // TODO: Review the name of this class, does it make more sense to call it a Scene? -- B.Simonds (Jun 20, 2026)
 
         private readonly IGraphicsLayer m_gfxLayer;
 
