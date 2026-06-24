@@ -17,7 +17,7 @@ using Tokamak.Import.Builders;
 
 using Tokamak.Mathematics;
 
-using Tokamak.Readers.FBX;
+using Tokamak.Import.FBX;
 
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Scene;

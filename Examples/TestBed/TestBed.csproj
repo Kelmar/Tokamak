@@ -31,6 +31,8 @@
     <ProjectReference Include="..\..\Source\Tokamak.Assets\Tokamak.Assets.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Graphite\Tokamak.Graphite.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Hosting\Tokamak.Hosting.csproj" />
+    <ProjectReference Include="..\..\Source\Tokamak.Import.FBX\Tokamak.Import.FBX.csproj" />
+    <ProjectReference Include="..\..\Source\Tokamak.Import\Tokamak.Import.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Logging\Tokamak.Logging.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.OGL\Tokamak.OGL.csproj" />
     <ProjectReference Include="..\..\Source\Tokamak.Quill\Tokamak.Quill.csproj" />

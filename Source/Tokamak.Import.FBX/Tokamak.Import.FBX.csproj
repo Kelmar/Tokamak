@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tokamak.Import\Tokamak.Import.csproj" />
+    <ProjectReference Include="..\Tokamak.Mathematics\Tokamak.Mathematics.csproj" />
+    <ProjectReference Include="..\Tokamak.Tritium\Tokamak.Tritium.csproj" />
+    <ProjectReference Include="..\Tokamak.Utilities\Tokamak.Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ImportFBXTests" />
+  </ItemGroup>
+</Project>
