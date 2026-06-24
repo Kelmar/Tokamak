@@ -13,7 +13,7 @@ namespace ImportFBXTests
     [TestFixture]
     public class ObjectMapperTests
     {
-        private static ObjectProperty BuildProp(string name, string type, params NodeProperty[] values)
+        private static ObjectProperty? BuildProp(string name, string type, params NodeProperty[] values)
         {
             var props = new List<NodeProperty> { Str(name), Str(type), Str(""), Str("") };
             props.AddRange(values);
@@ -29,7 +29,9 @@ namespace ImportFBXTests
                 BuildProp("AmbientFactor", "double", Dbl(0.5)),
             };
 
-            var material = props.MapTo<MaterialInfo>();
+            Assert.That(props, Is.All.Not.Null);
+
+            var material = props!.MapTo<MaterialInfo>();
 
             Assert.That(material.AmbientFactor, Is.EqualTo(0.5f).Within(1e-5));
 
@@ -48,7 +50,9 @@ namespace ImportFBXTests
                 BuildProp("ShadingModel", "string", Str("blinn")),
             };
 
-            var material = props.MapTo<MaterialInfo>();
+            Assert.That(props, Is.All.Not.Null);
+
+            var material = props!.MapTo<MaterialInfo>();
 
             Assert.That(material.ShadingModel, Is.EqualTo("phong"));
         }
@@ -61,8 +65,10 @@ namespace ImportFBXTests
                 BuildProp("SomePropertyThatDoesNotExist", "double", Dbl(99)),
             };
 
+            Assert.That(props, Is.All.Not.Null);
+
             // Should simply produce a default-initialized instance without throwing.
-            var material = props.MapTo<MaterialInfo>();
+            var material = props!.MapTo<MaterialInfo>();
 
             Assert.That(material, Is.Not.Null);
             Assert.That(material.DiffuseColor, Is.EqualTo(Vector4.One));

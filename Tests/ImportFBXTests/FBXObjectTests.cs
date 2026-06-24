@@ -11,7 +11,11 @@ namespace ImportFBXTests
     {
         // The ObjectGraph is only stored for lazy child/parent lookups; the
         // constructor never dereferences it, so null is fine for these tests.
-        private static FBXObject Build(Node node) => new FBXObject(null, node);
+        private static FBXObject Build(Node node)
+        {
+            // TODO: Fix this null here.
+            return new FBXObject(null!, node);
+        }
 
         [Test]
         public void ParsesId_Name_Class_AndSubClass()

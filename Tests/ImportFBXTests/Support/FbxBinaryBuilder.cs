@@ -148,7 +148,7 @@ namespace ImportFBXTests.Support
         private byte[] Serialize(NodeSpec node, long start)
         {
             byte[] nameBytes = Encoding.UTF8.GetBytes(node.Name ?? string.Empty);
-            byte[] propBytes = node.Props.SelectMany(p => p.Bytes).ToArray();
+            byte[] propBytes = node.Props.SelectMany(p => p.Bytes ?? []).ToArray();
 
             int headerLen = SizeFieldLength * 3 + 1 + nameBytes.Length;
             long childStart = start + headerLen + propBytes.Length;

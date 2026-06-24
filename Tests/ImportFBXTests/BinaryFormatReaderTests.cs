@@ -14,7 +14,7 @@ namespace ImportFBXTests
     [TestFixture]
     public class BinaryFormatReaderTests
     {
-        private static Node ReadSingleNode(byte[] bytes)
+        private static Node? ReadSingleNode(byte[] bytes)
         {
             var stream = new MemoryStream(bytes);
             var reader = new BinaryFormatReader(stream, Encoding.UTF8);
@@ -37,7 +37,7 @@ namespace ImportFBXTests
                 }
             });
 
-            Node node = ReadSingleNode(bytes);
+            Node? node = ReadSingleNode(bytes);
 
             Assert.That(node, Is.Not.Null);
             Assert.That(node.Name, Is.EqualTo("Test"));
@@ -58,8 +58,9 @@ namespace ImportFBXTests
                 Props = { FbxBinaryBuilder.Str("Geometry\0\x01Mesh") }
             });
 
-            Node node = ReadSingleNode(bytes);
+            Node? node = ReadSingleNode(bytes);
 
+            Assert.That(node, Is.Not.Null);
             Assert.That(node.Properties[0].AsString(), Is.EqualTo("Geometry::Mesh"));
         }
 
@@ -77,8 +78,9 @@ namespace ImportFBXTests
                 }
             });
 
-            Node node = ReadSingleNode(bytes);
+            Node? node = ReadSingleNode(bytes);
 
+            Assert.That(node, Is.Not.Null);
             Assert.That(node.Properties[0].AsEnumerable<int>().ToArray(), Is.EqualTo(new[] { 1, 2, 3, 4 }));
             Assert.That(node.Properties[1].AsEnumerable<double>().ToArray(),
                 Is.EqualTo(new[] { 1.5, 2.5, 3.5 }).Within(1e-9));
@@ -99,8 +101,9 @@ namespace ImportFBXTests
                 }
             });
 
-            Node node = ReadSingleNode(bytes);
+            Node? node = ReadSingleNode(bytes);
 
+            Assert.That(node, Is.Not.Null);
             Assert.That(node.Name, Is.EqualTo("Parent"));
             Assert.That(node.Children, Has.Count.EqualTo(2));
             Assert.That(node.Children[0].Name, Is.EqualTo("ChildA"));
@@ -118,8 +121,9 @@ namespace ImportFBXTests
                 Props = { FbxBinaryBuilder.Int(7) }
             });
 
-            Node node = ReadSingleNode(bytes);
+            Node? node = ReadSingleNode(bytes);
 
+            Assert.That(node, Is.Not.Null);
             Assert.That(node.Name, Is.EqualTo("Versioned"));
             Assert.That(node.Properties[0].AsInt(), Is.EqualTo(7));
         }

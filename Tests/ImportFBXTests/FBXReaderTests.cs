@@ -43,7 +43,9 @@ namespace ImportFBXTests
         public void Import_NullStream_Throws()
         {
             var reader = new FBXImportDirector(new RecordingAssetBuilder());
-            Assert.That(() => reader.Import((Stream)null, "Bad.FBX"), Throws.TypeOf<ArgumentNullException>());
+
+            // We know we're passing a NULL here, we are checking that it fails correctly.
+            Assert.That(() => reader.Import((Stream)null!, "Bad.FBX"), Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]

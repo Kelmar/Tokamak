@@ -18,6 +18,7 @@ namespace Tokamak.Import.FBX.DOM
     /// </remarks>
     internal class FBXObject
     {
+        // TODO: Remove hard dependency on FBXObjectGraph?
         public FBXObject(FBXObjectGraph objectGraph, Node node)
         {
             ObjectGraph = objectGraph;
