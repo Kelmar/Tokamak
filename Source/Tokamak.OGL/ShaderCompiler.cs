@@ -81,7 +81,7 @@ namespace Tokamak.OGL
 
             if (status == 0)
             {
-                string infoLog = m_gl   .GetShaderInfoLog(m_handle);
+                string infoLog = m_gl.GetShaderInfoLog(m_handle);
                 throw new Exception($"Error compiling shader {Type}: {infoLog}");
             }
         }

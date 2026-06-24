@@ -72,7 +72,7 @@ namespace Tokamak.OGL
         {
             Shader glShader = GetGlShader();
 
-            var rval = new Pipeline(m_gl, glShader)
+            return new Pipeline(m_gl, glShader)
             {
                 DepthTest = m_config.DepthTest,
                 Culling = m_config.Culling,
@@ -83,8 +83,6 @@ namespace Tokamak.OGL
                 SourceAlphaFactor = m_config.SourceBlendFactorAlpha.ToGLBlendFact(),
                 DestinationAlphaFactor = m_config.DestinationAlphaBlendFactor.ToGLBlendFact(),
             };
-
-            return rval;
         }
     }
 }

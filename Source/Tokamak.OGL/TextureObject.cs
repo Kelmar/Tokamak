@@ -8,7 +8,7 @@ using Silk.NET.OpenGL;
 
 using GlPixelFormat = Silk.NET.OpenGL.PixelFormat;
 using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
-using System.Diagnostics;
+
 
 namespace Tokamak.OGL
 {
