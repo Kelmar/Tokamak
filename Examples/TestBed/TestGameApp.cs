@@ -8,9 +8,10 @@ using System.Numerics;
 using TestBed.Scenes;
 
 using Tokamak.Abstractions.Input;
-using Tokamak.Assets;
 using Tokamak.Hosting.Abstractions;
 using Tokamak.Logging.Abstractions;
+
+using Tokamak.Assets;
 using Tokamak.Mathematics;
 
 using Tokamak.Readers.FBX;
@@ -136,7 +137,6 @@ namespace TestBed
                 m_scene!.AddObject(m_mesh.Asset);
         }
 
-
         public void OnRender(double timeDelta)
         {
             //RenderUI();
@@ -152,14 +152,6 @@ namespace TestBed
         public void OnUpdate(double timeDelta)
         {
             m_playerController?.Update(timeDelta);
-
-            /*
-            if (KeyboardState.IsKeyReleased(Keys.W))
-                m_render.WireFrame = !m_render.WireFrame;
-
-            if (KeyboardState.IsKeyReleased(Keys.D))
-                m_render.Debug = !m_render.Debug;
-            */
 
             m_rot += (float)(ROT_AMOUNT * timeDelta);
             //m_rot += 1;

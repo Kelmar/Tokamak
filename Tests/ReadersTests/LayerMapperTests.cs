@@ -14,18 +14,42 @@ namespace ReadersTests
     [TestFixture]
     public class LayerMapperTests
     {
+        private Node MakeMaterialLayer()
+        {
+            return MakeNode("LayerElementMaterial", props: null, children:
+            [
+                StringNode("MappingInformationType", "ByPolygonVertex"),
+                StringNode("ReferenceInformationType", "Direct"),
+                MakeNode("Materials", new[] { IntArray(7, 8, 9) }),
+            ]);
+        }
+
+        private Node MakeUVLayer()
+        {
+            return MakeNode("LayerElementUV", props: null, children: new[]
+            {
+                MakeNode("UV", [ DoubleArray(0.5, 0.5) ]),
+            });
+        }
+
+        private Node MakeTestMeshNode()
+        {
+            return MakeNode("Mesh", props: null, children:
+            [
+                StringNode("Foo", "Bar"),
+                MakeMaterialLayer(),
+                MakeUVLayer()
+            ]);
+        }
+
         [Test]
         public void GetItem_ResolvesDataThroughMapping()
         {
-            var node = Make("LayerElementMaterial", props: null, children: new[]
-            {
-                StringNode("MappingInformationType", "ByPolygonVertex"),
-                StringNode("ReferenceInformationType", "Direct"),
-                Make("Materials", new[] { IntArray(7, 8, 9) }),
-            });
+            var testMesh = MakeTestMeshNode();
 
             var mapper = new LayerMapper<int>(
-                node,
+                testMesh.Children,
+                "LayerElementMaterial",
                 "Materials",
                 "MaterialIndex",
                 props => props.SelectMany(p => p.AsEnumerable<int>()));
@@ -37,15 +61,11 @@ namespace ReadersTests
         [Test]
         public void GetItem_OutOfRange_ReturnsDefault()
         {
-            var node = Make("LayerElementMaterial", props: null, children: new[]
-            {
-                StringNode("MappingInformationType", "ByPolygonVertex"),
-                StringNode("ReferenceInformationType", "Direct"),
-                Make("Materials", new[] { IntArray(7, 8, 9) }),
-            });
+            var testMesh = MakeTestMeshNode();
 
             var mapper = new LayerMapper<int>(
-                node,
+                testMesh.Children,
+                "LayerElementMaterial",
                 "Materials",
                 "MaterialIndex",
                 props => props.SelectMany(p => p.AsEnumerable<int>()));
@@ -57,13 +77,11 @@ namespace ReadersTests
         public void NoMappingInformation_YieldsDefault()
         {
             // No MappingInformationType node -> mapping type None -> no data loaded.
-            var node = Make("LayerElementUV", props: null, children: new[]
-            {
-                Make("UV", new[] { DoubleArray(0.5, 0.5) }),
-            });
+            var testMesh = MakeTestMeshNode();
 
             var mapper = new LayerMapper<Vector2>(
-                node,
+                testMesh.Children,
+                "LayerElementUV",
                 "UV",
                 "UVIndex",
                 props => props.SelectMany(p => p.AsEnumerable<float>()).ToList().Chunk(2)

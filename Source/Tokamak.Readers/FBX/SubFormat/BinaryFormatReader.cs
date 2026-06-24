@@ -8,7 +8,7 @@ using System.Text;
 
 using Tokamak.Readers.FBX.DOM;
 
-namespace Tokamak.Readers.FBX.Readers
+namespace Tokamak.Readers.FBX.SubFormat
 {
     internal class BinaryFormatReader : IParser
     {

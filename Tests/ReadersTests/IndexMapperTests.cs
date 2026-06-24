@@ -21,9 +21,9 @@ namespace ReadersTests
             };
 
             if (indexName != null && indices != null)
-                children.Add(Make(indexName, new[] { IntArray(indices) }));
+                children.Add(MakeNode(indexName, new[] { IntArray(indices) }));
 
-            return Make("LayerElementNormal", props: null, children: children);
+            return MakeNode("LayerElementNormal", props: null, children: children);
         }
 
         [Test]

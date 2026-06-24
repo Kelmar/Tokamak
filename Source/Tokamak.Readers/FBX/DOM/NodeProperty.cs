@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+
+using Tokamak.Mathematics;
 
 namespace Tokamak.Readers.FBX.DOM
 {
@@ -41,6 +44,19 @@ namespace Tokamak.Readers.FBX.DOM
                 PropertyType.BoolArray => DumpArray<bool>(),
                 _ => Data.ToString() ?? "[NULL]",
             };
+        }
+
+        public IEnumerable<Vector2> AsVector2s() => MapTo<float, Vector2>(2, a => a.ToVector2());
+
+        public IEnumerable<Vector3> AsVector3s() => MapTo<float, Vector3>(3, a => a.ToVector3());
+
+        public IEnumerable<TResult> MapTo<TBase, TResult>(int chunk, Func<TBase[], TResult> map)
+            where TBase : unmanaged
+        {
+            return AsEnumerable<TBase>()
+                .ToList() // Chunk needs the list to be realized first.
+                .Chunk(chunk)
+                .Select(map);
         }
 
         public IEnumerable<T> AsEnumerable<T>()

@@ -9,6 +9,13 @@ namespace Tokamak.Readers.FBX.DOM
         public long ModelId { get; set; }
 
         [NotMapped]
+        public List<VertexInfo> Vertices
+        {
+            get;
+            set => field = value ?? [];
+        } = [];
+
+        [NotMapped]
         public List<FBXPolygon> Polygons
         {
             get;

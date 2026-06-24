@@ -16,12 +16,14 @@ namespace Tokamak.Readers.FBX.Mappers
         private readonly List<T> m_data = [];
 
         public LayerMapper(
-            Node? node,
+            IEnumerable<Node> nodeList,
+            string name,
             string childNodeName,
             string indexName, 
-            Func<IEnumerable<NodeProperty>, IEnumerable<T>> dataLoader)
+            Func<IEnumerable<NodeProperty>, IEnumerable<T>> mapFn)
         {
-            m_node = node;
+            m_node = nodeList.FirstWithName(name);
+
             m_childNodeName = childNodeName;
 
             m_indexMapper = new IndexMapper(m_node, indexName);
@@ -37,7 +39,7 @@ namespace Tokamak.Readers.FBX.Mappers
                 .Where(n => n.Properties.Count > 0)
                 .Select(n => n.Properties[0]);
 
-            m_data = dataLoader(props).ToList();
+            m_data = mapFn(props).ToList();
         }
 
         /// <summary>

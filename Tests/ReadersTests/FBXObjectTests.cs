@@ -16,7 +16,7 @@ namespace ReadersTests
         [Test]
         public void ParsesId_Name_Class_AndSubClass()
         {
-            var node = Make("Geometry", new[]
+            var node = MakeNode("Geometry", new[]
             {
                 Long(12345),
                 Str("myMesh\0\x01Geometry".Replace("\0\x01", "::")), // already-resolved binary delimiter
@@ -35,7 +35,7 @@ namespace ReadersTests
         [Test]
         public void Name_WithoutClassDelimiter_LeavesClassEmpty()
         {
-            var node = Make("Model", new[] { Long(1), Str("justAName"), Str("Light") });
+            var node = MakeNode("Model", new[] { Long(1), Str("justAName"), Str("Light") });
 
             var obj = Build(node);
 
@@ -47,7 +47,7 @@ namespace ReadersTests
         [Test]
         public void MissingProperties_FallBackToDefaults()
         {
-            var node = Make("Empty");
+            var node = MakeNode("Empty");
 
             var obj = Build(node);
 

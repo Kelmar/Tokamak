@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 using Tokamak.Assets;
 
 using Tokamak.Readers.FBX.DOM;
-using Tokamak.Readers.FBX.Readers;
+using Tokamak.Readers.FBX.Passes;
+using Tokamak.Readers.FBX.SubFormat;
 
 namespace Tokamak.Readers.FBX
 {
@@ -32,73 +32,15 @@ namespace Tokamak.Readers.FBX
             var rootNode = ParseStream(input);
             var state = new ReadState(fileName, rootNode);
 
-            /*
-             * First pass:
-             * 
-             * Simplify FBXObjects into C# objects for second pass, this will flatten
-             * out some of the FBX indirect references into (mostly) concrete or at
-             * least easy to resolve references for our second pass.
-             */
+            List<IReadPass> passes =
+            [
+                new ParseDataPass(state),
+                new ResolvePass(state),
+                new BuildPass(m_builder, state)
+            ];
 
-            //ReadTypes(state, new TextureReader(state));
-
-            ReadTypes(state, new MaterialReader(state));
-            ReadTypes(state, new ModelReader(state));
-            ReadTypes(state, new MeshReader(state));
-            ReadTypes(state, new DeformerReader(state));
-
-            /*
-             * Second pass:
-             * In some cases (e.g. mesh index of model) we need details of the first
-             * pass to do a final lookup for import.
-             * 
-             * Here we'll make calls to the IAssetBuilder to actually start constructing
-             * the imports.  Note that for textures that refer to external files; then
-             * they will get deferred to those files.
-             */
-
-            foreach (var material in state.Materials)
-            {
-                m_builder.NewMaterial(cfg => cfg
-                    .WithName(material.Name)
-                    // TODO: Add material details here when we figure out a good interface for that.
-                );
-            }
-
-            foreach (var mesh in state.Meshes)
-            {
-                m_builder.NewMesh(cfg => cfg
-                    .WithName(mesh.Name)
-                    .WithPolygons(mesh.Polygons, (p, polyCfg) => polyCfg
-                        .AddVertices(p.Vectors)
-                        .AddNormals(p.Normals)
-                        .AddUVs(p.TexCoord)
-                        .AddColors(p.Material))
-                );
-            }
-
-            ProcessSkeletons(state);
-
-            foreach (var model in state.SceneObjects)
-            {
-                var meshNames = state.Meshes
-                    .Where(m => model.MeshIds.Contains(m.Id))
-                    .Select(m => m.Name);
-
-                var skeleton = state.Skeletons
-                    .FirstOrDefault(s => s.MeshId.HasValue && model.MeshIds.Contains(s.MeshId.Value));
-
-                m_builder.NewSceneObject(cfg =>
-                {
-                    cfg.WithName(model.Name)
-                        .AddMeshes(meshNames);
-
-                    if (skeleton != null)
-                        cfg.WithSkeleton(skeleton.Name);
-                });
-            }
-
-            m_builder.BuildAll();
+            foreach (var pass in passes)
+                pass.Execute();
         }
 
         #region Basic Reading
@@ -143,53 +85,6 @@ namespace Tokamak.Readers.FBX
                 Properties = [],
                 Children = children
             };
-        }
-
-        #endregion
-
-        #region Pass1 Traversal
-
-        private static void ReadTypes(ReadState state, IFBXObjectReader reader)
-        {
-            state.ObjectGraph
-                .GetObjectsOfType(reader.ObjectType)
-                .ToList()
-                .ForEach(reader.ReadObject);
-        }
-
-        #endregion
-
-        #region Skeleton Processing
-
-        private class SkeletonClosure(SkeletonInfo skeleton)
-        {
-            private readonly SkeletonInfo m_skeleton = skeleton;
-
-            public void ProcessBone(BoneInfo bone, IBoneBuilder builder)
-            {
-                var children = m_skeleton.Bones.Where(b => b.ParentBoneId == bone.Id);
-
-                builder
-                    .WithName(bone.Name)
-                    .WithTransform(bone.Transform)
-                    .ForIndices(bone.Indices)
-                    .WithWeights(bone.Weights)
-                    .WithChildBones(children, ProcessBone);
-            }
-        }
-
-        private void ProcessSkeletons(ReadState state)
-        {
-            foreach (var skeleton in state.Skeletons)
-            {
-                var closure = new SkeletonClosure(skeleton);
-                var roots = skeleton.Bones.Where(b => !b.ParentBoneId.HasValue);
-
-                m_builder.NewSkeleton(cfg => cfg
-                    .WithName(skeleton.Name)
-                    .WithBones(roots, closure.ProcessBone)
-                );
-            }
         }
 
         #endregion

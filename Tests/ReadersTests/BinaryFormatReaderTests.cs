@@ -5,7 +5,7 @@ using System.Text;
 using NUnit.Framework;
 
 using Tokamak.Readers.FBX.DOM;
-using Tokamak.Readers.FBX.Readers;
+using Tokamak.Readers.FBX.SubFormat;
 
 using ReadersTests.Support;
 

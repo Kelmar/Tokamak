@@ -7,59 +7,47 @@ namespace Tokamak.Readers.FBX.Readers
 {
     internal class ModelReader : IFBXObjectReader
     {
-        private int m_importCount = 0;
+        private readonly ReadState m_state;
+        private readonly FBXObject m_fbxObject;
 
-        public ModelReader(ReadState state)
+        public ModelReader(ReadState state, FBXObject obj)
         {
-            State = state;
+            m_state = state;
+            m_fbxObject = obj;
         }
 
-        public string ObjectType => "Model";
-
-        public ReadState State { get; }
-
-        private string GetAssetName(FBXObject model)
+        private void ReadSceneObject()
         {
-            if (String.IsNullOrEmpty(model.Name))
-                return $"{State.FileName}_{m_importCount}";
-
-            return model.Name;
-        }
-
-        private void ReadSceneObject(FBXObject obj)
-        {
-            if (obj.Parents.Any())
+            if (m_fbxObject.Parents.Any())
                 return; // Only import root items.
 
-            var materialIds = obj.Children
+            var materialIds = m_fbxObject.Children
                 .WithFBXType("Material")
                 .Select(o => o.Id)
                 .ToList();
 
-            var meshIds = obj.Children
+            var meshIds = m_fbxObject.Children
                 .WithFBXType("Geometry")
                 .Select(o => o.Id)
                 .ToList();
 
-            ++m_importCount;
-
             var sceneObject = new SceneObjectInfo
             {
-                Id = obj.Id,
-                Name = GetAssetName(obj),
+                Id = m_fbxObject.Id,
+                Name = m_fbxObject.Name,
                 MaterialIds = materialIds,
                 MeshIds = meshIds
             };
 
-            State.SceneObjects.Add(sceneObject);
+            m_state.SceneObjects.Add(sceneObject);
         }
 
-        public void ReadObject(FBXObject obj)
+        public void Process()
         {
             // For now we only support reading "Mesh" models.
-            if (obj.IsSubClass("Mesh"))
+            if (m_fbxObject.IsSubClass("Mesh"))
             {
-                ReadSceneObject(obj);
+                ReadSceneObject();
                 return;
             }
         }

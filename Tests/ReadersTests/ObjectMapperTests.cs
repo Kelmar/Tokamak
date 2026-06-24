@@ -17,7 +17,7 @@ namespace ReadersTests
         {
             var props = new List<NodeProperty> { Str(name), Str(type), Str(""), Str("") };
             props.AddRange(values);
-            return ObjectProperty.Build(Make("P", props));
+            return ObjectProperty.Build(MakeNode("P", props));
         }
 
         [Test]

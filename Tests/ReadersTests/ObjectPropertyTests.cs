@@ -21,7 +21,7 @@ namespace ReadersTests
                 Str(name), Str(type), Str(""), Str(""),
             };
             props.AddRange(values);
-            return Make("P", props);
+            return MakeNode("P", props);
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace ReadersTests
         {
             // Truncated P node: only name + type, so the "count from the end" start
             // index goes negative and must be clamped instead of crashing or hanging.
-            var node = Make("P", new[] { Str("DiffuseColor"), Str("Color") });
+            var node = MakeNode("P", new[] { Str("DiffuseColor"), Str("Color") });
 
             var op = ObjectProperty.Build(node);
 

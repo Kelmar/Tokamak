@@ -8,23 +8,23 @@ namespace Tokamak.Readers.FBX.Readers
 {
     internal class MaterialReader : IFBXObjectReader
     {
-        public MaterialReader(ReadState state)
+        private readonly ReadState m_state;
+        private readonly FBXObject m_fbxObject;
+
+        public MaterialReader(ReadState state, FBXObject obj)
         {
-            State = state;
+            m_state = state;
+            m_fbxObject = obj;
         }
 
-        public string ObjectType => "Material";
-
-        public ReadState State { get; }
-
-        public void ReadObject(FBXObject obj)
+        public void Process()
         {
-            var result = obj.MapTo<MaterialInfo>();
+            var result = m_fbxObject.MapTo<MaterialInfo>();
 
-            result.Id = obj.Id;
-            result.Name = obj.Name;
+            result.Id = m_fbxObject.Id;
+            result.Name = m_fbxObject.Name;
 
-            string? shading = obj.Node.Children
+            string? shading = m_fbxObject.Node.Children
                 .WithName("ShadingModel")
                 .FirstOrDefault()
                 ?.Properties[0].AsString();
@@ -32,7 +32,7 @@ namespace Tokamak.Readers.FBX.Readers
             if (!String.IsNullOrWhiteSpace(shading))
                 result.ShadingModel = shading.ToLower();
 
-            State.Materials.Add(result);
+            m_state.Materials.Add(result);
         }
     }
 }

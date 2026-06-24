@@ -4,12 +4,10 @@ using System.Text;
 
 using Tokamak.Readers.FBX.DOM;
 
-namespace Tokamak.Readers.FBX
+namespace Tokamak.Readers.FBX.Readers
 {
     internal interface IFBXObjectReader
     {
-        string ObjectType { get; }
-
-        void ReadObject(FBXObject obj);
+        void Process();
     }
 }

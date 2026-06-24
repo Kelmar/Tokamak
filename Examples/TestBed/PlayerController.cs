@@ -34,6 +34,7 @@ namespace TestBed
             m_gameLifetime = gameLifetime;
 
             m_scene.Camera.Location = new Vector3(0, 1, 5);
+            //m_scene.Camera.Location = new Vector3(0, 75, 175);
             m_scene.Camera.Forward = new Vector3(0, 0, -1);
 
             m_inputManager.KeyDown += OnKeyDown;
@@ -63,6 +64,14 @@ namespace TestBed
             case Key.S: m_uDelta = 1; break;
             case Key.D: m_vDelta = 1; break;
             }
+
+            /*
+            if (KeyboardState.IsKeyReleased(Keys.W))
+                m_render.WireFrame = !m_render.WireFrame;
+
+            if (KeyboardState.IsKeyReleased(Keys.D))
+                m_render.Debug = !m_render.Debug;
+            */
         }
 
         private void OnKeyUp(int key)

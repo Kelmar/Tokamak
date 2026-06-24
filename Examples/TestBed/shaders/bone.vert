@@ -30,9 +30,9 @@ layout(location = 3) out vec3 fsin_Position;
 void main()
 {
     mat4 m = model *
-        bones[BoneIndices[0]] * BoneWeights[0] *
-        bones[BoneIndices[1]] * BoneWeights[1] *
-        bones[BoneIndices[2]] * BoneWeights[2] *
+        bones[BoneIndices[0]] * BoneWeights[0] +
+        bones[BoneIndices[1]] * BoneWeights[1] +
+        bones[BoneIndices[2]] * BoneWeights[2] +
         bones[BoneIndices[3]] * BoneWeights[3];
 
     //gl_Position = view * projection * model * vec4(Point, 1.0);

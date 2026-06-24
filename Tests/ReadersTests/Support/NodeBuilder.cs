@@ -31,7 +31,7 @@ namespace ReadersTests.Support
         public static NodeProperty DoubleArray(params double[] values)
             => Prop(PropertyType.DoubleArray, values);
 
-        public static Node Make(string name, IEnumerable<NodeProperty> props = null, IEnumerable<Node> children = null)
+        public static Node MakeNode(string name, IEnumerable<NodeProperty> props = null, IEnumerable<Node> children = null)
         {
             return new Node
             {
@@ -45,6 +45,6 @@ namespace ReadersTests.Support
         /// Builds a single string-valued child node (e.g. MappingInformationType / ReferenceInformationType).
         /// </summary>
         public static Node StringNode(string name, string value)
-            => Make(name, [ Str(value) ]);
+            => MakeNode(name, [ Str(value) ]);
     }
 }
