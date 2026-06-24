@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Tokamak.Assets;
+using Tokamak.Import.Builders;
 
 namespace ReadersTests.Support
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Tokamak.Assets
+﻿namespace Tokamak.Import.Builders
 {
     public interface IMaterialBuilder
     {

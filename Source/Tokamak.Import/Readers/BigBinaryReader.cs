@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace Tokamak.Readers
+namespace Tokamak.Import
 {
     public class BigBinaryReader : BinaryReader
     {

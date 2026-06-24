@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using System.Threading;
 
 using Tokamak.Mathematics;
 
-namespace Tokamak.Assets
+namespace Tokamak.Import.Builders
 {
     public interface IPolygonBuilder
     {

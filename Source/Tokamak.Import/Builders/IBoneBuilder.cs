@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace Tokamak.Assets
+namespace Tokamak.Import.Builders
 {
     public delegate void BoneConfigurator<T>(T bone, IBoneBuilder builder);
 

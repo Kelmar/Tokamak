@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Tokamak.Assets;
+using Tokamak.Import.Builders;
 
 using Tokamak.Tritium.APIs;
 

@@ -1,6 +1,6 @@
 using System;
 
-using Tokamak.Assets;
+using Tokamak.Import.Builders;
 
 namespace ReadersTests.Support
 {

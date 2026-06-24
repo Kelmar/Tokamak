@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace Tokamak.Assets
+namespace Tokamak.Import.Builders
 {
     public interface ISceneObjectBuilder
     {

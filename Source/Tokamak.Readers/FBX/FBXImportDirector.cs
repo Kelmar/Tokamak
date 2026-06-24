@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using Tokamak.Assets;
+using Tokamak.Import.Builders;
 
 using Tokamak.Readers.FBX.DOM;
 using Tokamak.Readers.FBX.Passes;

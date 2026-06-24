@@ -4,7 +4,8 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 
-using Tokamak.Assets;
+using Tokamak.Import.Builders;
+
 using Tokamak.Readers.FBX.DOM;
 using Tokamak.Tritium.Geometry;
 

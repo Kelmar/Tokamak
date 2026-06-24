@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\docs\tokamak_logo_outlined_128x128.png" Link="tokamak_logo_outlined_128x128.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Builders\" />
+    <Folder Include="Readers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tokamak.Mathematics\Tokamak.Mathematics.csproj" />
+  </ItemGroup>
+
+</Project>

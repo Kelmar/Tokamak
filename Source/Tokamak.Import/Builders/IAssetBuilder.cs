@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tokamak.Assets
+namespace Tokamak.Import.Builders
 {
     public interface IAssetBuilder
     {
