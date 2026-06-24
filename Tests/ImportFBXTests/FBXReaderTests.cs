@@ -17,7 +17,7 @@ namespace ImportFBXTests
         private static string ResourceDir
             => Path.Combine(AppContext.BaseDirectory, "resources");
 
-        public static IEnumerable<string> SampleFiles()
+        private static IEnumerable<string> SampleFiles()
         {
             if (!Directory.Exists(ResourceDir))
                 yield break;

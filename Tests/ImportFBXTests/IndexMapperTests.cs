@@ -21,7 +21,7 @@ namespace ImportFBXTests
             };
 
             if (indexName != null && indices != null)
-                children.Add(MakeNode(indexName, new[] { IntArray(indices) }));
+                children.Add(MakeNode(indexName, [IntArray(indices)]));
 
             return MakeNode("LayerElementNormal", props: null, children: children);
         }
@@ -31,8 +31,11 @@ namespace ImportFBXTests
         {
             var mapper = new IndexMapper(LayerNode("ByPolygonVertex", "Direct"), "NormalsIndex");
 
-            Assert.That(mapper.MappingType, Is.EqualTo(VertexMappingType.PolyVertex));
-            Assert.That(mapper.ReferenceType, Is.EqualTo(VertexReferenceType.Direct));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(mapper.MappingType, Is.EqualTo(VertexMappingType.PolyVertex));
+                Assert.That(mapper.ReferenceType, Is.EqualTo(VertexReferenceType.Direct));
+            }
         }
 
         [TestCase("ByVertice", VertexMappingType.Vertex)]   // Blender spelling
@@ -52,7 +55,7 @@ namespace ImportFBXTests
         {
             var mapper = new IndexMapper(LayerNode("AllSame", "Direct"), "NormalsIndex");
 
-            Assert.That(mapper.MapIndex(5, 7, 9), Is.EqualTo(0));
+            Assert.That(mapper.MapIndex(5, 7, 9), Is.Zero);
         }
 
         [Test]
@@ -79,10 +82,13 @@ namespace ImportFBXTests
                 LayerNode("ByPolygonVertex", "IndexToDirect", "NormalsIndex", [ 10, 20, 30 ]),
                 "NormalsIndex");
 
-            Assert.That(mapper.ReferenceType, Is.EqualTo(VertexReferenceType.IndexToDirect));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(mapper.ReferenceType, Is.EqualTo(VertexReferenceType.IndexToDirect));
 
-            // running index 1 -> indices[1] == 20
-            Assert.That(mapper.MapIndex(0, 1, 0), Is.EqualTo(10));
+                // running index 1 -> indices[1] == 20
+                Assert.That(mapper.MapIndex(0, 1, 0), Is.EqualTo(10));
+            }
         }
     }
 }

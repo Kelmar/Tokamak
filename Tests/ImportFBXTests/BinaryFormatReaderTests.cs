@@ -40,11 +40,19 @@ namespace ImportFBXTests
             Node? node = ReadSingleNode(bytes);
 
             Assert.That(node, Is.Not.Null);
-            Assert.That(node.Name, Is.EqualTo("Test"));
-            Assert.That(node.Properties, Has.Count.EqualTo(3));
-            Assert.That(node.Properties[0].AsInt(), Is.EqualTo(42));
-            Assert.That((double)node.Properties[1].Data, Is.EqualTo(3.5).Within(1e-9));
-            Assert.That(node.Properties[2].AsString(), Is.EqualTo("hello"));
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(node.Name, Is.EqualTo("Test"));
+                Assert.That(node.Properties, Has.Count.EqualTo(3));
+            }
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(node.Properties[0].AsInt(), Is.EqualTo(42));
+                Assert.That((double)node.Properties[1].Data, Is.EqualTo(3.5).Within(1e-9));
+                Assert.That(node.Properties[2].AsString(), Is.EqualTo("hello"));
+            }
         }
 
         [Test]
@@ -81,9 +89,14 @@ namespace ImportFBXTests
             Node? node = ReadSingleNode(bytes);
 
             Assert.That(node, Is.Not.Null);
-            Assert.That(node.Properties[0].AsEnumerable<int>().ToArray(), Is.EqualTo(new[] { 1, 2, 3, 4 }));
-            Assert.That(node.Properties[1].AsEnumerable<double>().ToArray(),
-                Is.EqualTo(new[] { 1.5, 2.5, 3.5 }).Within(1e-9));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(node.Properties[0].AsEnumerable<int>().ToArray(), Is.EqualTo([1, 2, 3, 4]));
+                Assert.That(
+                    node.Properties[1].AsEnumerable<double>().ToArray(),
+                    Is.EqualTo([1.5, 2.5, 3.5]).Within(1e-9)
+                );
+            }
         }
 
         [Test]
@@ -104,10 +117,18 @@ namespace ImportFBXTests
             Node? node = ReadSingleNode(bytes);
 
             Assert.That(node, Is.Not.Null);
-            Assert.That(node.Name, Is.EqualTo("Parent"));
-            Assert.That(node.Children, Has.Count.EqualTo(2));
-            Assert.That(node.Children[0].Name, Is.EqualTo("ChildA"));
-            Assert.That(node.Children[1].Properties[0].AsInt(), Is.EqualTo(20));
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(node.Name, Is.EqualTo("Parent"));
+                Assert.That(node.Children, Has.Count.EqualTo(2));
+            }
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(node.Children[0].Name, Is.EqualTo("ChildA"));
+                Assert.That(node.Children[1].Properties[0].AsInt(), Is.EqualTo(20));
+            }
         }
 
         [TestCase(7400u)] // 32-bit node lengths
@@ -124,8 +145,12 @@ namespace ImportFBXTests
             Node? node = ReadSingleNode(bytes);
 
             Assert.That(node, Is.Not.Null);
-            Assert.That(node.Name, Is.EqualTo("Versioned"));
-            Assert.That(node.Properties[0].AsInt(), Is.EqualTo(7));
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(node.Name, Is.EqualTo("Versioned"));
+                Assert.That(node.Properties[0].AsInt(), Is.EqualTo(7));
+            }
         }
     }
 }

@@ -2,8 +2,6 @@ using NUnit.Framework;
 
 using Tokamak.Import.FBX.Mappers;
 
-using ImportFBXTests.Support;
-
 using static ImportFBXTests.Support.NodeBuilder;
 
 namespace ImportFBXTests
@@ -14,33 +12,41 @@ namespace ImportFBXTests
         [Test]
         public void Build_WithThreeProperties_ParsesTypeFromToAndUppercasesType()
         {
-            var node = MakeNode("C", new[] { Str("oo"), Long(100), Long(200) });
+            var node = MakeNode("C", [Str("oo"), Long(100), Long(200)]);
 
             var connection = Connection.Build(node);
 
             Assert.That(connection, Is.Not.Null);
-            Assert.That(connection.Type, Is.EqualTo("OO"));
-            Assert.That(connection.From, Is.EqualTo(100));
-            Assert.That(connection.To, Is.EqualTo(200));
-            Assert.That(connection.PropertyName, Is.Empty);
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(connection.Type, Is.EqualTo("OO"));
+                Assert.That(connection.From, Is.EqualTo(100));
+                Assert.That(connection.To, Is.EqualTo(200));
+                Assert.That(connection.PropertyName, Is.Empty);
+            }
         }
 
         [Test]
         public void Build_WithFourProperties_ReadsPropertyName()
         {
-            var node = MakeNode("C", new[] { Str("OP"), Long(1), Long(2), Str("DiffuseColor") });
+            var node = MakeNode("C", [Str("OP"), Long(1), Long(2), Str("DiffuseColor")]);
 
             var connection = Connection.Build(node);
 
             Assert.That(connection, Is.Not.Null);
-            Assert.That(connection.Type, Is.EqualTo("OP"));
-            Assert.That(connection.PropertyName, Is.EqualTo("DiffuseColor"));
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(connection.Type, Is.EqualTo("OP"));
+                Assert.That(connection.PropertyName, Is.EqualTo("DiffuseColor"));
+            }
         }
 
         [Test]
         public void Build_WithFewerThanThreeProperties_ReturnsNull()
         {
-            var node = MakeNode("C", new[] { Str("OO"), Long(1) });
+            var node = MakeNode("C", [Str("OO"), Long(1)]);
 
             Assert.That(Connection.Build(node), Is.Null);
         }

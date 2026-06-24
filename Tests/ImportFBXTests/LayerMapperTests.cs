@@ -14,25 +14,25 @@ namespace ImportFBXTests
     [TestFixture]
     public class LayerMapperTests
     {
-        private Node MakeMaterialLayer()
+        private static Node MakeMaterialLayer()
         {
             return MakeNode("LayerElementMaterial", props: null, children:
             [
                 StringNode("MappingInformationType", "ByPolygonVertex"),
                 StringNode("ReferenceInformationType", "Direct"),
-                MakeNode("Materials", new[] { IntArray(7, 8, 9) }),
+                MakeNode("Materials", [IntArray(7, 8, 9)]),
             ]);
         }
 
-        private Node MakeUVLayer()
+        private static Node MakeUVLayer()
         {
-            return MakeNode("LayerElementUV", props: null, children: new[]
-            {
+            return MakeNode("LayerElementUV", props: null, children:
+            [
                 MakeNode("UV", [ DoubleArray(0.5, 0.5) ]),
-            });
+            ]);
         }
 
-        private Node MakeTestMeshNode()
+        private static Node MakeTestMeshNode()
         {
             return MakeNode("Mesh", props: null, children:
             [
@@ -70,7 +70,7 @@ namespace ImportFBXTests
                 "MaterialIndex",
                 props => props.SelectMany(p => p.AsEnumerable<int>()));
 
-            Assert.That(mapper.GetItem(99, 0, 0), Is.EqualTo(0));
+            Assert.That(mapper.GetItem(99, 0, 0), Is.Zero);
         }
 
         [Test]

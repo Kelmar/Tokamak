@@ -36,8 +36,12 @@ namespace ImportFBXTests
             Assert.That(material.AmbientFactor, Is.EqualTo(0.5f).Within(1e-5));
 
             var c = material.DiffuseColor;
-            Assert.That(c.X, Is.EqualTo(0.1f).Within(1e-5));
-            Assert.That(c.W, Is.EqualTo(1.0f).Within(1e-5));
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(c.X, Is.EqualTo(0.1f).Within(1e-5));
+                Assert.That(c.W, Is.EqualTo(1.0f).Within(1e-5));
+            }
         }
 
         [Test]

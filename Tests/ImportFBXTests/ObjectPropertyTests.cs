@@ -20,6 +20,7 @@ namespace ImportFBXTests
             {
                 Str(name), Str(type), Str(""), Str(""),
             };
+
             props.AddRange(values);
             return MakeNode("P", props);
         }
@@ -30,9 +31,13 @@ namespace ImportFBXTests
             var op = ObjectProperty.Build(P("MyInt", "int", Int(42)));
 
             Assert.That(op, Is.Not.Null);
-            Assert.That(op.Name, Is.EqualTo("MyInt"));
-            Assert.That(op.Type, Is.EqualTo("int"));
-            Assert.That(Convert.ToInt32(op.Data), Is.EqualTo(42));
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(op.Name, Is.EqualTo("MyInt"));
+                Assert.That(op.Type, Is.EqualTo("int"));
+                Assert.That(Convert.ToInt32(op.Data), Is.EqualTo(42));
+            }
         }
 
         [Test]
@@ -41,8 +46,12 @@ namespace ImportFBXTests
             var op = ObjectProperty.Build(P("Pos", "Vector3D", Dbl(1.0), Dbl(2.0), Dbl(3.0)));
 
             Assert.That(op, Is.Not.Null);
-            Assert.That(op.Data, Is.TypeOf<Vector3>());
-            Assert.That((Vector3)op.Data, Is.EqualTo(new Vector3(1, 2, 3)));
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(op.Data, Is.TypeOf<Vector3>());
+                Assert.That((Vector3)op.Data, Is.EqualTo(new Vector3(1, 2, 3)));
+            }
         }
 
         [Test]
@@ -54,10 +63,14 @@ namespace ImportFBXTests
             Assert.That(op.Data, Is.TypeOf<Vector4>());
 
             var v = (Vector4)op.Data;
-            Assert.That(v.X, Is.EqualTo(0.1f).Within(1e-5));
-            Assert.That(v.Y, Is.EqualTo(0.2f).Within(1e-5));
-            Assert.That(v.Z, Is.EqualTo(0.3f).Within(1e-5));
-            Assert.That(v.W, Is.EqualTo(1.0f).Within(1e-5));
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(v.X, Is.EqualTo(0.1f).Within(1e-5));
+                Assert.That(v.Y, Is.EqualTo(0.2f).Within(1e-5));
+                Assert.That(v.Z, Is.EqualTo(0.3f).Within(1e-5));
+                Assert.That(v.W, Is.EqualTo(1.0f).Within(1e-5));
+            }
         }
 
         [Test]
@@ -77,7 +90,12 @@ namespace ImportFBXTests
             var op = ObjectProperty.Build(P("DiffuseColor", "Color"));
 
             Assert.That(op, Is.Not.Null);
-            Assert.That((Vector4)op.Data, Is.EqualTo(Vector4.Zero));
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(op, Is.Not.Null);
+                Assert.That((Vector4)op.Data, Is.EqualTo(Vector4.Zero));
+            }
         }
 
         [Test]
@@ -85,12 +103,17 @@ namespace ImportFBXTests
         {
             // Truncated P node: only name + type, so the "count from the end" start
             // index goes negative and must be clamped instead of crashing or hanging.
-            var node = MakeNode("P", new[] { Str("DiffuseColor"), Str("Color") });
+            var node = MakeNode("P", [Str("DiffuseColor"), Str("Color")]);
 
             var op = ObjectProperty.Build(node);
 
             Assert.That(op, Is.Not.Null);
-            Assert.That((Vector4)op.Data, Is.EqualTo(Vector4.Zero));
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(op, Is.Not.Null);
+                Assert.That((Vector4)op.Data, Is.EqualTo(Vector4.Zero));
+            }
         }
 
         [Test]
@@ -100,7 +123,12 @@ namespace ImportFBXTests
             var op = ObjectProperty.Build(P("Pos", "Vector3D", Dbl(1.0), Dbl(2.0)));
 
             Assert.That(op, Is.Not.Null);
-            Assert.That((Vector3)op.Data, Is.EqualTo(new Vector3(1, 2, 0)));
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(op, Is.Not.Null);
+                Assert.That((Vector3)op.Data, Is.EqualTo(new Vector3(1, 2, 0)));
+            }
         }
     }
 }
