@@ -4,17 +4,19 @@ using Tokamak.Utilities;
 
 using Tokamak.Tritium.Pipelines;
 
+using Silk.NET.OpenGL;
+
 namespace Tokamak.OGL
 {
     internal class PipelineFactory : IFactory<IPipeline>
     {
         private readonly PipelineConfig m_config;
 
-        private OpenGLLayer m_apiLayer;
+        private readonly GL m_gl;
         
-        public PipelineFactory(OpenGLLayer apiLayer, PipelineConfig config)
+        public PipelineFactory(GL gl, PipelineConfig config)
         {
-            m_apiLayer = apiLayer;
+            m_gl = gl;
             m_config = config;
         }
 
@@ -25,7 +27,7 @@ namespace Tokamak.OGL
         private Shader GetGlShader()
         {
             var compilers = new List<ShaderCompiler>();
-            var glShader = new Shader(m_apiLayer);
+            var glShader = new Shader(m_gl);
             bool disposeShader = true;
 
             try
@@ -35,13 +37,13 @@ namespace Tokamak.OGL
                     ShaderCompiler comp;
 
                     if (shaderSource.Precompiled)
-                        comp = new ShaderCompiler(m_apiLayer, shaderSource.Type, shaderSource.GetData());
+                        comp = new ShaderCompiler(m_gl, shaderSource.Type, shaderSource.GetData());
                     else
-                        comp = new ShaderCompiler(m_apiLayer, shaderSource.Type, shaderSource.GetSourceCode());
+                        comp = new ShaderCompiler(m_gl, shaderSource.Type, shaderSource.GetSourceCode());
 
                     compilers.Add(comp);
 
-                    m_apiLayer.GL.AttachShader(glShader.Handle, comp.Handle);
+                    m_gl.AttachShader(glShader.Handle, comp.Handle);
                 }
 
                 glShader.Link();
@@ -56,7 +58,7 @@ namespace Tokamak.OGL
                 // Always dispose of the compilers.
                 foreach (var comp in compilers)
                 {
-                    m_apiLayer.GL.DetachShader(glShader.Handle, comp.Handle);
+                    m_gl.DetachShader(glShader.Handle, comp.Handle);
                     comp.Dispose();
                 }
 
@@ -70,7 +72,7 @@ namespace Tokamak.OGL
         {
             Shader glShader = GetGlShader();
 
-            var rval = new Pipeline(m_apiLayer, glShader)
+            var rval = new Pipeline(m_gl, glShader)
             {
                 DepthTest = m_config.DepthTest,
                 Culling = m_config.Culling,

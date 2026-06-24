@@ -16,14 +16,14 @@ namespace Tokamak.OGL
 {
     internal sealed class Pipeline : IPipeline
     {
-        private readonly OpenGLLayer m_apiLayer;
+        private readonly GL m_gl;
 
         private readonly Shader m_shader;
         private readonly Vector4 m_clearColor;
 
-        public Pipeline(OpenGLLayer apiLayer, Shader shader)
+        public Pipeline(GL gl, Shader shader)
         {
-            m_apiLayer = apiLayer;
+            m_gl = gl;
             m_shader = shader;
 
             Uniforms = new UniformBinder(m_shader);
@@ -61,57 +61,56 @@ namespace Tokamak.OGL
 
         private void SetClearColor()
         {
-            m_apiLayer.GL.ClearColor(m_clearColor.X, m_clearColor.Y, m_clearColor.Z, m_clearColor.W);
+            m_gl.ClearColor(m_clearColor.X, m_clearColor.Y, m_clearColor.Z, m_clearColor.W);
         }
 
         private void SetBlendMode()
         {
             if (EnableBlend)
             {
-                m_apiLayer.GL.Enable(EnableCap.Blend);
-                m_apiLayer.GL.BlendFuncSeparate(
+                m_gl.Enable(EnableCap.Blend);
+                m_gl.BlendFuncSeparate(
                     SourceColorFactor, DestinationColorFactor,
                     SourceAlphaFactor, DestinationAlphaFactor);
             }
             else
             {
-                m_apiLayer.GL.Disable(EnableCap.Blend);
+                m_gl.Disable(EnableCap.Blend);
             }
         }
 
         private void SetDepthTest()
         {
             if (DepthTest)
-                m_apiLayer.GL.Enable(EnableCap.DepthTest);
+                m_gl.Enable(EnableCap.DepthTest);
             else
-                m_apiLayer.GL.Disable(EnableCap.DepthTest);
+                m_gl.Disable(EnableCap.DepthTest);
         }
 
         private void SetCullingMode()
         {
             if (Culling == CullMode.None)
-                m_apiLayer.GL.Disable(EnableCap.CullFace);
+                m_gl.Disable(EnableCap.CullFace);
             else
             {
-                m_apiLayer.GL.Enable(EnableCap.CullFace);
+                m_gl.Enable(EnableCap.CullFace);
 
                 switch (Culling)
                 {
                 case CullMode.Back:
-                    m_apiLayer.GL.CullFace(TriangleFace.Back);
+                    m_gl.CullFace(TriangleFace.Back);
                     break;
 
                 case CullMode.Front:
-                    m_apiLayer.GL.CullFace(TriangleFace.Front);
+                    m_gl.CullFace(TriangleFace.Front);
                     break;
 
                 case CullMode.FrontAndBack:
-                    m_apiLayer.GL.CullFace(TriangleFace.FrontAndBack);
+                    m_gl.CullFace(TriangleFace.FrontAndBack);
                     break;
                 }
             }
         }
-
         public void Activate(ICommandList buffer)
         {
             var cmdBuffer = (CommandList)buffer;

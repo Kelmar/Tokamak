@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 
 using Silk.NET.Maths;
@@ -31,14 +32,14 @@ namespace Tokamak.OGL
     [LogName("OpenGL")]
     internal class OpenGLLayer : IGraphicsLayer, ITick, ISilkWindow
     {
-        public event SimpleEvent<Point> OnResize;
-        public event SimpleEvent<double> OnRender;
-        public event SimpleEvent OnLoad;
+        public event SimpleEvent<Point>? OnResize;
+        public event SimpleEvent<double>? OnRender;
+        public event SimpleEvent? OnLoad;
 
         private readonly IGameLifetime m_gameLifetime;
 
         private bool m_firstCall = true;
-        private TextureObject m_whiteTexture = null;
+        private TextureObject? m_whiteTexture = null;
 
         private uint m_vba = 0;
 
@@ -93,7 +94,7 @@ namespace Tokamak.OGL
 
         public IWindow? Window { get; }
 
-        public GL GL { get; private set; } = null;
+        public GL? GL { get; private set; } = null;
 
         public Point ViewBounds { get; private set; }
 
@@ -166,7 +167,7 @@ namespace Tokamak.OGL
             GL.BindVertexArray(m_vba);
 
             // Create a default 1x1 white texture as not all OpenGL implementations will do this for us.
-            m_whiteTexture = new TextureObject(this, TPixelFormat.FormatR8G8B8A8, new Point(1, 1));
+            m_whiteTexture = new TextureObject(GL, TPixelFormat.FormatR8G8B8A8, new Point(1, 1));
 
             Array.Fill<byte>(m_whiteTexture.Bitmap.Data, 255);
             m_whiteTexture.Refresh();
@@ -178,6 +179,8 @@ namespace Tokamak.OGL
 
         private void OnViewResized(Vector2D<int> bounds)
         {
+            Debug.Assert(GL != null, "OnViewResized() called before GL initialization?");
+
             ViewBounds = new Point(bounds.X, bounds.Y);
             GL.Viewport(0, 0, (uint)bounds.X, (uint)bounds.Y);
             OnResize?.Invoke(ViewBounds);
@@ -190,6 +193,8 @@ namespace Tokamak.OGL
 
         private void OnViewRender(double delta)
         {
+            Debug.Assert(GL != null, "OnViewRender() called before GL initialization?");
+
             GL.BindVertexArray(m_vba);
             OnRender?.Invoke(delta);
         }
@@ -226,28 +231,39 @@ namespace Tokamak.OGL
 
         public ICommandList CreateCommandList()
         {
+            Debug.Assert(GL != null, "CreateCommandList() called before OpenGL initialization?");
+            Debug.Assert(m_whiteTexture != null, "CreateCommandList() called before OnViewLoad()");
+
             return new CommandList(GL, m_whiteTexture);
         }
 
         public IFactory<IPipeline> GetPipelineFactory(PipelineConfig config)
         {
-            return new PipelineFactory(this, config);
+            Debug.Assert(GL != null, "GetPipelineFactory() called before OpenGL initialization?");
+
+            return new PipelineFactory(GL, config);
         }
 
         public IVertexBuffer<T> GetVertexBuffer<T>(BufferUsage usage)
             where T : unmanaged
         {
-            return new VertexBuffer<T>(this, usage);
+            Debug.Assert(GL != null, "GetVertexBuffer() called before OpenGL initialization?");
+
+            return new VertexBuffer<T>(GL, usage);
         }
 
         public IElementBuffer GetElementBuffer(BufferUsage usage)
         {
-            return new ElementBuffer(this, usage);
+            Debug.Assert(GL != null, "GetElementBuffer() called before OpenGL initialization?");
+
+            return new ElementBuffer(GL, usage);
         }
 
         public ITextureObject GetTextureObject(TPixelFormat format, Point size)
         {
-            return new TextureObject(this, format, size);
+            Debug.Assert(GL != null, "GetTextureObject() called before OpenGL initialization?");
+
+            return new TextureObject(GL, format, size);
         }
     }
 }

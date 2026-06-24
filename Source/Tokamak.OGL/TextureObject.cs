@@ -8,6 +8,7 @@ using Silk.NET.OpenGL;
 
 using GlPixelFormat = Silk.NET.OpenGL.PixelFormat;
 using TPixelFormat = Tokamak.Tritium.Buffers.Formats.PixelFormat;
+using System.Diagnostics;
 
 namespace Tokamak.OGL
 {
@@ -15,16 +16,17 @@ namespace Tokamak.OGL
     {
         private readonly uint m_handle;
 
-        private readonly OpenGLLayer m_layer;
+        private readonly GL m_gl;
 
         private readonly GlPixelFormat m_glFormat;
         private readonly PixelType m_glType;
         private readonly InternalFormat m_glInternal;
 
-        public TextureObject(OpenGLLayer layer, TPixelFormat format, Point size)
+        public TextureObject(GL gl, TPixelFormat format, Point size)
         {
-            m_layer = layer;
-            m_handle = m_layer.GL.GenTexture();
+            m_gl = gl;
+
+            m_handle = m_gl.GenTexture();
 
             Format = format;
             Size = new Point(MathX.NextPow2(size.X), MathX.NextPow2(size.Y));
@@ -38,7 +40,7 @@ namespace Tokamak.OGL
 
         public void Dispose()
         {
-            m_layer.GL.DeleteTexture(m_handle);
+            m_gl.DeleteTexture(m_handle);
             Bitmap.Dispose();
         }
 
@@ -50,20 +52,20 @@ namespace Tokamak.OGL
 
         public void Activate()
         {
-            m_layer.GL.ActiveTexture(TextureUnit.Texture0);
-            m_layer.GL.BindTexture(TextureTarget.Texture2D, m_handle);
+            m_gl.ActiveTexture(TextureUnit.Texture0);
+            m_gl.BindTexture(TextureTarget.Texture2D, m_handle);
         }
 
         public void Refresh()
         {
             Activate();
 
-            m_layer.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            m_layer.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            m_gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            m_gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
             var span = new ReadOnlySpan<byte>(Bitmap.Data);
 
-            m_layer.GL.TexImage2D(
+            m_gl.TexImage2D(
                 TextureTarget.Texture2D,
                 0,
                 m_glInternal,

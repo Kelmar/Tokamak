@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 using Silk.NET.OpenGL;
 
@@ -8,18 +9,19 @@ namespace Tokamak.OGL
 {
     internal class ElementBuffer : IElementBuffer
     {
+        private readonly GL m_gl;
+
         private readonly uint m_ebo;
-        private readonly OpenGLLayer m_apiLayer;
 
         private readonly BufferUsageARB m_usageHint;
 
-        public ElementBuffer(OpenGLLayer apiLayer, BufferUsage usage)
+        public ElementBuffer(GL gl, BufferUsage usage)
         {
-            m_apiLayer = apiLayer;
+            m_gl = gl;
 
             m_usageHint = usage.ToGLUsage();
 
-            m_ebo = m_apiLayer.GL.GenBuffer();
+            m_ebo = m_gl.GenBuffer();
 
             IsEmpty = true;
         }
@@ -27,14 +29,14 @@ namespace Tokamak.OGL
         public void Dispose()
         {
             if (m_ebo != 0)
-                m_apiLayer.GL.DeleteBuffer(m_ebo);
+                m_gl.DeleteBuffer(m_ebo);
         }
 
         public bool IsEmpty { get; private set; }
 
         public void Activate()
         {
-            m_apiLayer.GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, m_ebo);
+            m_gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, m_ebo);
         }
 
         public unsafe void Set(in ReadOnlySpan<uint> data)
@@ -44,7 +46,7 @@ namespace Tokamak.OGL
 
             Activate();
 
-            m_apiLayer.GL.BufferData(BufferTargetARB.ElementArrayBuffer, data, m_usageHint);
+            m_gl.BufferData(BufferTargetARB.ElementArrayBuffer, data, m_usageHint);
 
             IsEmpty = false;
         }

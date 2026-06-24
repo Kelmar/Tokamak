@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Numerics;
 
 using Silk.NET.OpenGL;
 
-using Tokamak.Utilities;
-
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Pipelines;
+using Tokamak.Utilities;
 
 namespace Tokamak.OGL
 {
@@ -14,7 +14,7 @@ namespace Tokamak.OGL
     {
         private readonly TextureObject m_whiteTexture;
 
-        private Pipeline m_pipeline;
+        private Pipeline? m_pipeline;
 
         public CommandList(GL gl, TextureObject whiteTexture)
         {
@@ -27,8 +27,6 @@ namespace Tokamak.OGL
         }
 
         public GL GL { get; }
-
-        public IPipeline Pipeline { get; set; }
 
         public Vector4 ClearColor { get; set; }
 
@@ -57,11 +55,15 @@ namespace Tokamak.OGL
 
         public void DrawArrays(int vertexOffset, int vertexCount)
         {
+            Debug.Assert(m_pipeline != null, "No pipeline selected!");
+
             GL.DrawArrays(m_pipeline.Primitive, vertexOffset, (uint)vertexCount);
         }
 
         public unsafe void DrawElements(int length)
         {
+            Debug.Assert(m_pipeline != null, "No pipeline selected!");
+
             GL.DrawElements(m_pipeline.Primitive, (uint)length, DrawElementsType.UnsignedInt, null);
         }
 
