@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Tokamak.Abstractions\Tokamak.Abstractions.csproj" />
     <ProjectReference Include="..\Tokamak.Import\Tokamak.Import.csproj" />
     <ProjectReference Include="..\Tokamak.Mathematics\Tokamak.Mathematics.csproj" />
     <ProjectReference Include="..\Tokamak.Tritium\Tokamak.Tritium.csproj" />

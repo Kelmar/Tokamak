@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using Tokamak.Logging.Abstractions;
+
 using Tokamak.Import.Builders;
 
 using Tokamak.Import.FBX.DOM;
@@ -11,9 +13,12 @@ using Tokamak.Import.FBX.SubFormat;
 
 namespace Tokamak.Import.FBX
 {
-    public sealed class FBXImportDirector(IAssetBuilder builder)
+    [LogName("Tokamak.Import.FBX")]
+    public sealed class FBXImportDirector(ILogger<FBXImportDirector> log, IAssetBuilder builder)
     {
-        internal const string BINARY_MAGIC = "Kaydara FBX Binary  ";
+        private const string BINARY_MAGIC = "Kaydara FBX Binary  ";
+
+        private readonly ILogger m_log = log;
 
         private readonly IAssetBuilder m_builder = builder;
 
@@ -35,7 +40,7 @@ namespace Tokamak.Import.FBX
             List<IReadPass> passes =
             [
                 new ParseDataPass(state),
-                new ResolvePass(state),
+                new ResolvePass(m_log, state),
                 new BuildPass(m_builder, state)
             ];
 

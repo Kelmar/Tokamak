@@ -5,9 +5,13 @@ using System.Text;
 
 using NUnit.Framework;
 
+using Stashbox;
+
 using Tokamak.Import.FBX;
 
 using ImportFBXTests.Support;
+
+using TestUtilities;
 
 namespace ImportFBXTests
 {
@@ -16,6 +20,15 @@ namespace ImportFBXTests
     {
         private static string ResourceDir
             => Path.Combine(AppContext.BaseDirectory, "resources");
+
+        protected IStashboxContainer InitContainer()
+        {
+            var container = new StashboxContainer();
+
+            container.AddLogging();
+            
+            return container;
+        }
 
         private static IEnumerable<string> SampleFiles()
         {
@@ -33,8 +46,11 @@ namespace ImportFBXTests
             // surface that clearly rather than silently mis-parsing.
             byte[] bogus = Encoding.ASCII.GetBytes("This is definitely not an FBX file at all");
             using var stream = new MemoryStream(bogus);
+            
+            using var container = InitContainer();
+            using var scope = container.BeginScope();
 
-            var reader = new FBXImportDirector(new RecordingAssetBuilder());
+            var reader = container.Activate<FBXImportDirector>([new RecordingAssetBuilder()]);
 
             Assert.That(() => reader.Import(stream, "Bogus.FBX"), Throws.TypeOf<NotImplementedException>());
         }
@@ -42,7 +58,10 @@ namespace ImportFBXTests
         [Test]
         public void Import_NullStream_Throws()
         {
-            var reader = new FBXImportDirector(new RecordingAssetBuilder());
+            using var container = InitContainer();
+            using var scope = container.BeginScope();
+            
+            var reader = container.Activate<FBXImportDirector>([new RecordingAssetBuilder()]);
 
             // We know we're passing a NULL here, we are checking that it fails correctly.
             Assert.That(() => reader.Import((Stream)null!, "Bad.FBX"), Throws.TypeOf<ArgumentNullException>());
@@ -51,15 +70,21 @@ namespace ImportFBXTests
         [Test]
         public void Import_BlankFilename_Throws()
         {
-            var reader = new FBXImportDirector(new RecordingAssetBuilder());
+            using var container = InitContainer();
+            using var scope = container.BeginScope();
+            
+            var reader = container.Activate<FBXImportDirector>([new RecordingAssetBuilder()]);
             Assert.That(() => reader.Import("   "), Throws.TypeOf<ArgumentException>());
         }
 
         [TestCaseSource(nameof(SampleFiles))]
         public void Import_SampleModel_ParsesWithoutError(string path)
         {
+            using var container = InitContainer();
+            using var scope = container.BeginScope();
+            
             var builder = new RecordingAssetBuilder();
-            var reader = new FBXImportDirector(builder);
+            var reader = container.Activate<FBXImportDirector>([builder]);
 
             using var stream = File.OpenRead(path);
 

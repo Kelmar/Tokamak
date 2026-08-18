@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Linq;
 
+using Tokamak.Logging.Abstractions;
+
 using Tokamak.Mathematics;
+
 using Tokamak.Import.FBX.DOM;
 
 using BoneWeighting = Tokamak.Import.Builders.BoneWeighting;
@@ -20,8 +23,10 @@ namespace Tokamak.Import.FBX.Passes
     /// This pass also handles creating any names for assets where needed
     /// for the asset manager.
     /// </remarks>
-    internal class ResolvePass(ReadState state) : IReadPass
+    internal class ResolvePass(ILogger log, ReadState state) : IReadPass
     {
+        private ILogger m_log = log;
+
         private readonly ReadState m_state = state;
 
         public void Execute()
@@ -96,10 +101,10 @@ namespace Tokamak.Import.FBX.Passes
                 return;
 
             foreach (var bone in skeleton.Bones)
-                MapBoneWeights(bone, mesh);
+                MapBoneWeights(skeleton, bone, mesh);
         }
 
-        private void MapBoneWeights(BoneInfo bone, MeshInfo mesh)
+        private void MapBoneWeights(SkeletonInfo skeleton, BoneInfo bone, MeshInfo mesh)
         {
             for (int i = 0; i < bone.Indices.Length; ++i)
             {
@@ -113,7 +118,7 @@ namespace Tokamak.Import.FBX.Passes
 
                 if (vert == null)
                 {
-                    //Debug.WriteLine("Unable to find vertex with FBX index {0}", index);
+                    m_log.Warn("Unable to find vertex with FBX index {0} for skeleton {1}->bone {2}", index, skeleton.Name, bone.Name);
                     continue;
                 }
 
