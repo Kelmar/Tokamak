@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 using Tokamak.Import.FBX.DOM;
 using Tokamak.Import.FBX.Readers;

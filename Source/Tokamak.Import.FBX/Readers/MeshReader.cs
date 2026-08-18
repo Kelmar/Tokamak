@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 
@@ -17,10 +17,13 @@ namespace Tokamak.Import.FBX.Readers
     internal class MeshReader : IFBXObjectReader
     {
         private readonly ReadState m_state;
+
         private readonly FBXObject m_fbxObject;
 
         private readonly LayerMapper<Vector2> m_uvMapper;
+
         private readonly LayerMapper<Vector3> m_normalMapper;
+
         private readonly LayerMapper<int> m_materialMapper;
 
         public MeshReader(ReadState state, FBXObject obj)
@@ -70,9 +73,7 @@ namespace Tokamak.Import.FBX.Readers
             var vectors = ReadVertexData();
 
             if (indices.Count == 0 || vectors.Count == 0)
-                throw new Exception("Mesh with no indices or vectors in FBX file.");
-
-            int lastVectorIndex = 0;
+                throw new InvalidDataException($"Mesh '{m_fbxObject.Name}' with no indices or vectors in FBX file.");
 
             var polygons = new List<FBXPolygon>(indices.Count(i => i < 0));
 
@@ -98,15 +99,8 @@ namespace Tokamak.Import.FBX.Readers
 
                 int materialIndex = m_materialMapper.GetItem(indexNumber, currentPoly.Index, vectorIndex);
 
-                if (vectorIndex >= vectors.Count)
-                {
-                    // Sanity, use last known good vector index.
-                    // Wondering if it makes more sense to throw out this mesh and report it as corrupt.
-                    Debug.WriteLine("Sanity check fail, using lastVectorIndex for vectorIndex >= vectors.Count");
-                    vectorIndex = lastVectorIndex;
-                }
-
-                lastVectorIndex = vectorIndex;
+                if (vectorIndex >= vectors.Count) // Sanity check against bad files.
+                    throw new InvalidDataException($"Mesh '{m_fbxObject.Name}' has invalid index in it's data.");
 
                 var vertex = new VertexInfo
                 {
@@ -119,20 +113,14 @@ namespace Tokamak.Import.FBX.Readers
 
                 vertex.Index = vertices.Add(vertex);
 
-                /*
-                 * So this is a bit of a conundrum here.  The normals could be split.  I.e. a single positional vertex could
-                 * have multiple normals; like for example with a cube, where depending on which face that's render the normal
-                 * should be considered differently to keep the sharp edge in smooth shading.
-                 * 
-                 * To the shader/driver, that situation would be considered a new vertex; but that would change the index that
-                 * the polygon is referring to.
-                 */
-
                 currentPoly.Vertices.Add(vertex.Index);
 
                 if (boundary)
                 {
-                    // TODO: Perform sanity check that poly has at least 3 verts.
+                    // Ensure that poly has at least 3 verts.
+
+                    if (currentPoly.Vertices.Count < 3)
+                        throw new InvalidDataException($"Mesh '{m_fbxObject.Name}' has polygon with less than 3 verts.");
 
                     polygons.Add(currentPoly);
 
@@ -147,6 +135,10 @@ namespace Tokamak.Import.FBX.Readers
             {
                 //normalMapper.FinalizeNormals(current);
                 polygons.Add(currentPoly);
+            }
+            else if (currentPoly.Vertices.Count > 0)
+            {
+                throw new InvalidDataException($"Mesh '{m_fbxObject.Name}' has polygon with less than 3 verts.");
             }
 
             // TODO: Perform sanity check on discovered verts.
