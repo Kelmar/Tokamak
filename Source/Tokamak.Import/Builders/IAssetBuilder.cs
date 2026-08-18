@@ -8,7 +8,7 @@ namespace Tokamak.Import.Builders
 
         void NewSkeleton(Action<ISkeletonBuilder> configure);
 
-        void NewMesh(Action<IMeshBuilder> configure);
+        void NewMesh(MeshInfo mesh);
 
         void NewMaterial(Action<IMaterialBuilder> configure);
 

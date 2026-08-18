@@ -98,7 +98,7 @@ namespace Tokamak.Tritium.Geometry
                 }
             }
 
-            SetData(vectorFilter.Keys, indexList.Span);
+            SetData(vectorFilter.Keys, indexList.Span.Slice(0, i));
         }
 
         private IEnumerable<VectorFormatPNCT> ToVectorFormat(Polygon poly)

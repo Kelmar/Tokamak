@@ -8,8 +8,7 @@ using Tokamak.Import.Builders;
 
 using Tokamak.Import.FBX.DOM;
 
-// TODO: Remove this dependency, we do not want direct references to Tritium here.
-using Tokamak.Tritium.Geometry;
+using Builder = Tokamak.Import.Builders;
 
 namespace Tokamak.Import.FBX.Passes
 {
@@ -83,27 +82,43 @@ namespace Tokamak.Import.FBX.Passes
             }
         }
 
+        private static Builder.VertexInfo ToBuilderVert(DOM.VertexInfo vert, List<Vector4> colors)
+        {
+            Vector4 clr =
+                (vert.MaterialIndex < 0 || (vert.MaterialIndex >= colors.Count)) ?
+                Vector4.One :
+                colors[vert.MaterialIndex];
+
+            return new Builder.VertexInfo
+            {
+                Vector = vert.Vertex,
+                Normal = vert.Normal,
+                TexCoord = vert.TexCoord,
+                Color = clr,
+                BoneWeights = vert.BoneWeights
+            };
+        }
+
+        private static PolygonInfo ToBuilderPoly(FBXPolygon poly)
+        {
+            return new PolygonInfo
+            {
+                Vertices = poly.Vertices
+            };
+        }
+
         private void ProcessMeshes()
         {
             foreach (var mesh in m_state.Meshes)
             {
                 var colors = GetMeshColors(mesh.Id).ToList();
 
-                //m_builder.NewMesh(cfg => cfg
-                //    .WithName(mesh.Name)
-                //    .WithPolygons(mesh.Polygons, (p, polyCfg) => polyCfg
-                //        .AddVertices(p.Vertices.Select(v => v.Vertex))
-                //        .AddNormals(p.Vertices.Select(v => v.Normal))
-                //        .AddUVs(p.Vertices.Select(v => v.TexCoord))
-                //        .AddColors(p.Vertices.Select(v =>
-                //        {
-                //            if (v.MaterialIndex < 0 || v.MaterialIndex >= colors.Count)
-                //                return Vector4.One;
-
-                //            return colors[v.MaterialIndex];
-                //        }))
-                //    )
-                //);
+                m_builder.NewMesh(new Builder.MeshInfo
+                {
+                    Name = mesh.Name,
+                    Vertices = mesh.Vertices.OrderBy(v => v.Index).Select(v => ToBuilderVert(v, colors)).ToList(),
+                    Polygons = mesh.Polygons.Select(ToBuilderPoly).ToList()
+                });
             }
         }
 

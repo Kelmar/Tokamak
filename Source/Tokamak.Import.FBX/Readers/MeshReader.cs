@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
 using Tokamak.Import.FBX.DOM;
 using Tokamak.Import.FBX.Mappers;
+
+using Tokamak.Utilities;
 
 namespace Tokamak.Import.FBX.Readers
 {
@@ -71,8 +74,11 @@ namespace Tokamak.Import.FBX.Readers
 
             int lastVectorIndex = 0;
 
-            var vertices = new Dictionary<int, VertexInfo>(vectors.Count);
             var polygons = new List<FBXPolygon>(indices.Count(i => i < 0));
+
+            int sizeEst = Math.Max(vectors.Count, m_normalMapper.Count);
+
+            var vertices = new SetList<VertexInfo>(sizeEst);
 
             var currentPoly = new FBXPolygon
             {
@@ -96,26 +102,33 @@ namespace Tokamak.Import.FBX.Readers
                 {
                     // Sanity, use last known good vector index.
                     // Wondering if it makes more sense to throw out this mesh and report it as corrupt.
+                    Debug.WriteLine("Sanity check fail, using lastVectorIndex for vectorIndex >= vectors.Count");
                     vectorIndex = lastVectorIndex;
                 }
 
                 lastVectorIndex = vectorIndex;
 
-                if (!vertices.TryGetValue(vectorIndex, out VertexInfo? vertex))
+                var vertex = new VertexInfo
                 {
-                    vertex = new VertexInfo
-                    {
-                        Index = vectorIndex,
-                        Vertex = vectors[vectorIndex],
-                        Normal = m_normalMapper.GetItem(indexNumber, currentPoly.Index, vectorIndex),
-                        TexCoord = m_uvMapper.GetItem(indexNumber, currentPoly.Index, vectorIndex),
-                        MaterialIndex = materialIndex
-                    };
+                    FBXIndex = vectorIndex,
+                    Vertex = vectors[vectorIndex],
+                    Normal = m_normalMapper.GetItem(indexNumber, currentPoly.Index, vectorIndex),
+                    TexCoord = m_uvMapper.GetItem(indexNumber, currentPoly.Index, vectorIndex),
+                    MaterialIndex = materialIndex
+                };
 
-                    vertices[vectorIndex] = vertex;
-                }
+                vertex.Index = vertices.Add(vertex);
 
-                currentPoly.Vertices.Add(vectorIndex);
+                /*
+                 * So this is a bit of a conundrum here.  The normals could be split.  I.e. a single positional vertex could
+                 * have multiple normals; like for example with a cube, where depending on which face that's render the normal
+                 * should be considered differently to keep the sharp edge in smooth shading.
+                 * 
+                 * To the shader/driver, that situation would be considered a new vertex; but that would change the index that
+                 * the polygon is referring to.
+                 */
+
+                currentPoly.Vertices.Add(vertex.Index);
 
                 if (boundary)
                 {
@@ -144,7 +157,7 @@ namespace Tokamak.Import.FBX.Readers
                 Name = m_fbxObject.Name,
                 ModelId = sceneObj?.Id ?? 0,
                 Polygons = polygons,
-                Vertices = vertices.Values.ToList()
+                Vertices = vertices.ToList()
             };
 
             m_state.Meshes.Add(meshInfo);

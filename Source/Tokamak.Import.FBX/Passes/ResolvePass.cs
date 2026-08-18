@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using Tokamak.Mathematics;
 using Tokamak.Import.FBX.DOM;
+
+using BoneWeighting = Tokamak.Import.Builders.BoneWeighting;
 
 namespace Tokamak.Import.FBX.Passes
 {
@@ -109,7 +109,15 @@ namespace Tokamak.Import.FBX.Passes
                 if (float.AlmostEquals(weight, 0))
                     continue; // Ignore superfluous weights
 
-                mesh.Vertices[index].BoneWeights.Add(new VertexInfo.BoneWeighting
+                var vert = mesh.Vertices.FirstOrDefault(v => v.FBXIndex == index);
+
+                if (vert == null)
+                {
+                    //Debug.WriteLine("Unable to find vertex with FBX index {0}", index);
+                    continue;
+                }
+
+                vert.BoneWeights.Add(new BoneWeighting
                 {
                     BoneIndex = bone.Index,
                     BoneWeight = weight

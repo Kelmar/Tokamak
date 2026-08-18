@@ -6,7 +6,7 @@ namespace Tokamak.Import.FBX.DOM
     /// <summary>
     /// A single polygon inside of a MeshInfo.
     /// </summary>
-    internal class FBXPolygon
+    internal record FBXPolygon
     {
         public int Index { get; set; }
 

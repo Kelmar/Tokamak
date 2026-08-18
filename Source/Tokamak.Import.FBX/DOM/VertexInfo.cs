@@ -1,18 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
+
+using Tokamak.Import.Builders;
 
 namespace Tokamak.Import.FBX.DOM
 {
     internal class VertexInfo
     {
-        public class BoneWeighting
-        {
-            public long BoneIndex { get; set; }
-
-            public float BoneWeight { get; set; }
-        }
-
         public int Index { get; set; }
+
+        public int FBXIndex { get; set; }
 
         public Vector3 Vertex { get; set; }
 
@@ -31,5 +29,8 @@ namespace Tokamak.Import.FBX.DOM
             get;
             set => field = value ?? [];
         } = [];
+
+        public override int GetHashCode()
+            => HashCode.Combine(Vertex, Normal, TexCoord, MaterialIndex, BoneWeights);
     }
 }

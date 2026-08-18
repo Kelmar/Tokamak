@@ -43,6 +43,11 @@ namespace Tokamak.Import.FBX.Mappers
         }
 
         /// <summary>
+        /// Get the number of data items read from the file.
+        /// </summary>
+        public int Count => m_data.Count;
+
+        /// <summary>
         /// Fetch mapped item
         /// </summary>
         /// <param name="indexNumber">The index number currently being fetched.</param>

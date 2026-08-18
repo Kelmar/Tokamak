@@ -22,8 +22,10 @@ namespace ImportFBXTests.Support
         public void NewMaterial(Action<IMaterialBuilder> configure)
             => configure(new RecordingMaterialBuilder(this));
 
-        public void NewMesh(Action<IMeshBuilder> configure)
-            => configure(new RecordingMeshBuilder(this));
+        public void NewMesh(MeshInfo mesh)
+        {
+            //=> configure(new RecordingMeshBuilder(this));
+        }
 
         public void NewSkeleton(Action<ISkeletonBuilder> configure)
             => configure(new RecordingSkeletonBuilder(this));
