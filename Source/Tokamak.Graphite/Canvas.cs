@@ -90,20 +90,20 @@ void main()
         }
 
         private readonly List<RenderCall> m_calls = new (128);
-        private readonly List<VectorFormatPCT> m_vectors = new (128);
+        private readonly List<VertexFormatPCT> m_vectors = new (128);
 
         private readonly IGraphicsLayer m_apiLayer;
 
         private readonly IPipeline m_pipeline;
         private readonly ICommandList m_commandList;
-        private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
+        private readonly IVertexBuffer<VertexFormatPCT> m_vertexBuffer;
 
         public Canvas(IGraphicsLayer apiLayer)
         {
             m_apiLayer = apiLayer;
 
             m_pipeline = m_apiLayer.CreatePipeline(cfg => cfg
-                .UseInputFormat<VectorFormatPCT>()
+                .UseInputFormat<VertexFormatPCT>()
                 //.UsePrimitive(PrimitiveType.TriangleStrip)
                 .UsePrimitive(PrimitiveType.TriangleList)
                 .EnableDepthTest(false)
@@ -118,7 +118,7 @@ void main()
 
             m_commandList = m_apiLayer.CreateCommandList();
 
-            m_vertexBuffer = m_apiLayer.GetVertexBuffer<VectorFormatPCT>(BufferUsage.Dynamic);
+            m_vertexBuffer = m_apiLayer.GetVertexBuffer<VertexFormatPCT>(BufferUsage.Dynamic);
         }
 
         public void Dispose()
@@ -228,9 +228,9 @@ void main()
             AddCall(primitiveType, vectorList, texture);
         }
 
-        private static VectorFormatPCT BuildPointPCT(in Point p, in Color color, in Vector2 uv)
+        private static VertexFormatPCT BuildPointPCT(in Point p, in Color color, in Vector2 uv)
         {
-            return new VectorFormatPCT
+            return new VertexFormatPCT
             {
                 Point = new Vector3(p.X, p.Y, 0),
                 Color = color.ToVector(),
@@ -238,9 +238,9 @@ void main()
             };
         }
 
-        private static VectorFormatPCT BuildVectorPCT(in Vector2 v, Color color, Vector2 uv)
+        private static VertexFormatPCT BuildVectorPCT(in Vector2 v, Color color, Vector2 uv)
         {
-            return new VectorFormatPCT
+            return new VertexFormatPCT
             {
                 Point = new Vector3(v.X, v.Y, 0),
                 Color = color.ToVector(),
@@ -248,7 +248,7 @@ void main()
             };
         }
 
-        internal void AddCall(PrimitiveType type, IEnumerable<VectorFormatPCT> vectors, ITextureObject? texture = null)
+        internal void AddCall(PrimitiveType type, IEnumerable<VertexFormatPCT> vectors, ITextureObject? texture = null)
         {
             var vectorList = vectors.ToList();
 

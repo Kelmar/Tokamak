@@ -25,7 +25,7 @@ namespace Graphite
             Render();
         }
 
-        public List<VectorFormatPCT> Vectors { get; private set; }
+        public List<VertexFormatPCT> Vectors { get; private set; }
 
         private void Flatten()
         {
@@ -64,7 +64,7 @@ namespace Graphite
 
         private void AddVector(Vector2 vector)
         {
-            Vectors.Add(new VectorFormatPCT
+            Vectors.Add(new VertexFormatPCT
             {
                 Point = new Vector3(vector.X, vector.Y, 0),
                 Color = m_stroke.Pen.Color.ToVector(),
@@ -158,7 +158,7 @@ namespace Graphite
             else
                 cnt += ButtCapGetVectorCount();
 
-            Vectors = new List<VectorFormatPCT>(cnt * 2);
+            Vectors = new List<VertexFormatPCT>(cnt * 2);
         }
 
         private void ChooseBevel(bool bevel, StrokePoint p0, StrokePoint p1, float width, out Vector2 v0, out Vector2 v1)
@@ -304,8 +304,8 @@ namespace Graphite
             else
             {
                 // Close the stroke
-                VectorFormatPCT v0 = Vectors[0];
-                VectorFormatPCT v1 = Vectors[1];
+                VertexFormatPCT v0 = Vectors[0];
+                VertexFormatPCT v1 = Vectors[1];
 
                 Vectors.Add(v0);
                 Vectors.Add(v1);

@@ -30,7 +30,7 @@ namespace TestBed.Scenes
 
             return m_gfxLayer.CreatePipeline(cfg =>
             {
-                cfg.UseInputFormat<VectorFormatPNCT>();
+                cfg.UseInputFormat<VertexFormatPNCT>();
 
                 cfg.UseCulling(CullMode.None);
                 cfg.EnableDepthTest(true);

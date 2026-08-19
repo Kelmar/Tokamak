@@ -20,7 +20,7 @@ namespace Tokamak.Tritium.Pipelines
 
         public IEnumerable<IShaderSource> ShaderSources => m_shaders;
 
-        public VectorFormat.Info? InputFormat { get; private set; }
+        public VertexFormat.Info? InputFormat { get; private set; }
 
         /// <summary>
         /// Gets/sets the type of drawing primitive to use for this pipeline.
@@ -87,7 +87,7 @@ namespace Tokamak.Tritium.Pipelines
         public PipelineConfig UseInputFormat<T>()
             where T : struct
         {
-            InputFormat = VectorFormat.GetLayoutOf<T>();
+            InputFormat = VertexFormat.GetLayoutOf<T>();
             return this;
         }
 

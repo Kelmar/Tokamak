@@ -14,7 +14,7 @@ namespace Tokamak.OGL
 
         private readonly uint m_vbo;
 
-        private readonly VectorFormat.Info m_layoutInfo;
+        private readonly VertexFormat.Info m_layoutInfo;
         
 
         private readonly BufferUsageARB m_usageHint;
@@ -23,7 +23,7 @@ namespace Tokamak.OGL
         {
             m_gl = gl;
 
-            m_layoutInfo = VectorFormat.GetLayoutOf<T>();
+            m_layoutInfo = VertexFormat.GetLayoutOf<T>();
 
             m_usageHint = usage.ToGLUsage();
 

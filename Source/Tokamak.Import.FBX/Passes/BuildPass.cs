@@ -42,7 +42,7 @@ internal class BuildPass : IReadPass
                 // TODO: Add material details here when we figure out a good interface for that.
             );
             
-            m_log.Info("Added {0} matierlal", material.Name);
+            m_log.Info("Added {0} material", material.Name);
         }
 
         ProcessMeshes();
@@ -129,6 +129,8 @@ internal class BuildPass : IReadPass
                     .ToList(),
                 Polygons = mesh.Polygons.Select(ToBuilderPoly).ToList()
             });
+            
+            m_log.Info("Added {0} mesh", mesh.Name);
         }
     }
 
@@ -165,6 +167,8 @@ internal class BuildPass : IReadPass
                 Name = skeleton.Name,
                 Bones = BuildBones(skeleton).ToList()
             });
+            
+            m_log.Info("Added {0} skeleton", skeleton.Name);
         }
     }
 

@@ -79,21 +79,21 @@ void main()
         }
 
         private readonly List<CanvasCall> m_calls = new List<CanvasCall>(128);
-        private readonly List<VectorFormatPCT> m_vectors = new List<VectorFormatPCT>(128);
+        private readonly List<VertexFormatPCT> m_vectors = new List<VertexFormatPCT>(128);
 
         private readonly IGraphicsLayer m_apiLayer;
 
         private readonly IPipeline m_pipeline;
         private readonly ICommandList m_commandList;
 
-        private readonly IVertexBuffer<VectorFormatPCT> m_vertexBuffer;
+        private readonly IVertexBuffer<VertexFormatPCT> m_vertexBuffer;
 
         public Canvas(IGraphicsLayer apiLayer)
         {
             m_apiLayer = apiLayer;
 
             m_pipeline = m_apiLayer.CreatePipeline(cfg => cfg
-                .UseInputFormat<VectorFormatPCT>()
+                .UseInputFormat<VertexFormatPCT>()
                 .EnableDepthTest(false)
                 .EnableBlending(
                     // A good blending function for 2D font antialiasing.
@@ -107,7 +107,7 @@ void main()
 
             m_commandList = m_apiLayer.CreateCommandList();
 
-            m_vertexBuffer = m_apiLayer.GetVertexBuffer<VectorFormatPCT>(BufferUsage.Dynamic);
+            m_vertexBuffer = m_apiLayer.GetVertexBuffer<VertexFormatPCT>(BufferUsage.Dynamic);
         }
 
         public void Dispose()
@@ -133,7 +133,7 @@ void main()
             m_pipeline.Uniforms.projection = mat;
         }
 
-        private void AddCall(PrimitiveType type, IEnumerable<VectorFormatPCT> vectors, ITextureObject texture = null)
+        private void AddCall(PrimitiveType type, IEnumerable<VertexFormatPCT> vectors, ITextureObject texture = null)
         {
             var vects = vectors.ToList();
 
@@ -150,9 +150,9 @@ void main()
             m_calls.Add(call);
         }
 
-        private VectorFormatPCT BuildVector(Pen pen, Point p, Vector2 texCoord)
+        private VertexFormatPCT BuildVector(Pen pen, Point p, Vector2 texCoord)
         {
-            return new VectorFormatPCT
+            return new VertexFormatPCT
             {
                 Point = new Vector3(p.X, p.Y, 0),
                 Color = (pen?.Color ?? Color.White).ToVector(),
@@ -160,9 +160,9 @@ void main()
             };
         }
 
-        private VectorFormatPCT BuildVector(Pen pen, int x, int y, Vector2 texCoord)
+        private VertexFormatPCT BuildVector(Pen pen, int x, int y, Vector2 texCoord)
         {
-            return new VectorFormatPCT
+            return new VertexFormatPCT
             {
                 Point = new Vector3(x, y, 0),
                 Color = (pen?.Color ?? Color.White).ToVector(),
@@ -192,27 +192,27 @@ void main()
         {
             Vector4 color = Color.White.ToVector();
 
-            var vects = new VectorFormatPCT[4]
+            var vects = new VertexFormatPCT[4]
             {
-                new VectorFormatPCT
+                new VertexFormatPCT
                 {
                     Point = p,
                     Color = color,
                     TexCoord = new Vector2(0, 0),
                 },
-                new VectorFormatPCT
+                new VertexFormatPCT
                 {
                     Point = new Vector3(p.X + texture.Size.X, p.Y, 0),
                     Color = color,
                     TexCoord = new Vector2(1, 0),
                 },
-                new VectorFormatPCT
+                new VertexFormatPCT
                 {
                     Point = new Vector3(p.X, p.Y + texture.Size.Y, 0),
                     Color = color,
                     TexCoord = new Vector2(0, 1)
                 },
-                new VectorFormatPCT
+                new VertexFormatPCT
                 {
                     Point = new Vector3(p.X + texture.Size.X, p.Y + texture.Size.Y, 0),
                     Color = color,
@@ -228,9 +228,9 @@ void main()
             Point cursor = location;
             char prev = '\0';
 
-            var glyphPolys = new List<Tuple<Glyph, VectorFormatPCT[]>>(text.Length);
+            var glyphPolys = new List<Tuple<Glyph, VertexFormatPCT[]>>(text.Length);
 
-            var vectors = new List<VectorFormatPCT>(text.Length * 6);
+            var vectors = new List<VertexFormatPCT>(text.Length * 6);
 
             foreach (var c in text)
             {
@@ -243,7 +243,7 @@ void main()
 
                 var p = new Point(cursor.X + g.Bearing.X, cursor.Y - g.Bearing.Y);
 
-                var detail = new Tuple<Glyph, VectorFormatPCT[]>(g, 
+                var detail = new Tuple<Glyph, VertexFormatPCT[]>(g, 
                     [
                         BuildVector(pen, p.X, p.Y, tl),
                         BuildVector(pen, p.X, p.Y + g.Size.Y, new Vector2(tl.X, br.Y)),

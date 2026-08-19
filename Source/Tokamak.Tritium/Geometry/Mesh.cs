@@ -60,7 +60,7 @@ namespace Tokamak.Tritium.Geometry
         }
     }
 
-    public class Mesh : Mesh<VectorFormatPNCT>
+    public class Mesh : Mesh<VertexFormatPNCT>
     {
         public Mesh(IGraphicsLayer graphicsLayer)
             : base(graphicsLayer)
@@ -75,7 +75,7 @@ namespace Tokamak.Tritium.Geometry
 
             // Dictionary is used to filter out duplicate vectors.
             int preAllocate = polyData.Sum(p => p.Vectors.Count);
-            var vectorFilter = new Dictionary<VectorFormatPNCT, uint>(preAllocate);
+            var vectorFilter = new Dictionary<VertexFormatPNCT, uint>(preAllocate);
             
             // TODO: Double check the resulting vert counts after splitting into triangles.
             // TODO: (ALSO ALSO, maybe rework this whole function so that verts aren't directly stored in polys)
@@ -104,11 +104,11 @@ namespace Tokamak.Tritium.Geometry
             SetData(vectorFilter.Keys, indexList.Span.Slice(0, i));
         }
 
-        private IEnumerable<VectorFormatPNCT> ToVectorFormat(Polygon poly)
+        private IEnumerable<VertexFormatPNCT> ToVectorFormat(Polygon poly)
         {
             for (int i = 0; i < poly.Vectors.Count; ++i)
             {
-                yield return new VectorFormatPNCT
+                yield return new VertexFormatPNCT
                 {
                     Point = poly.Vectors[i],
                     Color = poly.Colors[i],
