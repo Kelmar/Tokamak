@@ -25,14 +25,21 @@ namespace ImportFBXTests.Support
         public void NewMesh(MeshInfo mesh)
         {
             //=> configure(new RecordingMeshBuilder(this));
+            Meshes.Add(mesh.Name);
         }
 
-        public void NewSkeleton(Action<ISkeletonBuilder> configure)
-            => configure(new RecordingSkeletonBuilder(this));
+        public void NewSkeleton(SkeletonInfo skeleton)
+        {
+            //=> configure(new RecordingSkeletonBuilder(this));
+            Skeletons.Add(skeleton.Name);
+        }
 
-        public void NewSceneObject(Action<ISceneObjectBuilder> configure)
-            => configure(new RecordSceneObjectBuilder(this));
-
+        public void NewSceneObject(string name, Action<ISceneObjectBuilder> configure)
+        {
+            Models.Add(name);
+            configure(new RecordSceneObjectBuilder(this));
+        }
+        
         public void BuildAll() { }
     }
 }

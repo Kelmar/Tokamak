@@ -36,7 +36,7 @@ namespace Tokamak.Import.FBX.Readers
             return parentDeformer?.Id;
         }
 
-        private BoneInfo ReadBone(FBXObject bone)
+        private FBXBone ReadBone(FBXObject bone)
         {
             // We have a bit of a long walk through the tree to find the parent of this bone.
 
@@ -74,7 +74,7 @@ namespace Tokamak.Import.FBX.Readers
 
             string? name = String.IsNullOrWhiteSpace(bone.Name) ? limb?.Name : bone.Name;
 
-            var boneInfo = new BoneInfo
+            var boneInfo = new FBXBone
             {
                 Id = bone.Id,
                 ParentBoneId = parentId,
@@ -89,7 +89,7 @@ namespace Tokamak.Import.FBX.Readers
             return boneInfo;
         }
 
-        private static IEnumerable<BoneInfo> SortBones(IEnumerable<BoneInfo> allBones, long? parentId)
+        private static IEnumerable<FBXBone> SortBones(IEnumerable<FBXBone> allBones, long? parentId)
         {
             var children = allBones
                 .Where(b => b.ParentBoneId == parentId)
@@ -104,13 +104,13 @@ namespace Tokamak.Import.FBX.Readers
             }
         }
 
-        private BoneInfo SetBoneIndex(BoneInfo bone, int index)
+        private FBXBone SetBoneIndex(FBXBone fbxBone, int index)
         {
-            bone.Index = index;
-            return bone;
+            fbxBone.Index = index;
+            return fbxBone;
         }
 
-        private List<BoneInfo> GetSortedBones()
+        private List<FBXBone> GetSortedBones()
         {
             var bones = m_fbxObject.Children
                 .WithFBXType("Deformer")
@@ -122,12 +122,12 @@ namespace Tokamak.Import.FBX.Readers
                 .Select(SetBoneIndex)
                 .ToList();
 
-            foreach (BoneInfo bone in bones)
+            foreach (FBXBone bone in bones)
             {
                 if (!bone.ParentBoneId.HasValue)
                     continue;
 
-                BoneInfo? parent = bones.FirstOrDefault(b => b.Id == bone.ParentBoneId);
+                FBXBone? parent = bones.FirstOrDefault(b => b.Id == bone.ParentBoneId);
 
                 if (parent == null)
                 {
@@ -147,7 +147,7 @@ namespace Tokamak.Import.FBX.Readers
                 .WithFBXType("Geometry")
                 .FirstOrDefault();
 
-            var result = new SkeletonInfo
+            var result = new FBXSkeleton
             {
                 Id = m_fbxObject.Id,
                 Name = m_fbxObject.Name,
@@ -161,10 +161,7 @@ namespace Tokamak.Import.FBX.Readers
         public void Process()
         {
             if (m_fbxObject.IsClass("Deformer"))
-            {
                 ReadSkeleton();
-                return;
-            }
         }
     }
 }

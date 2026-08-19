@@ -15,23 +15,26 @@ namespace Tokamak.Tritium.Builders
         private readonly AssetManager m_assetManager;
         private readonly IGraphicsLayer m_gfxLayer;
 
-        private readonly List<Action<IMaterialBuilder>> m_materialConfig = [];
-
-        private readonly List<Action<ISkeletonBuilder>> m_skeletonConfig = [];
-
-        private readonly List<Action<ISceneObjectBuilder>> m_objectConfig = [];
-
         public TritiumAssetBuilder(AssetManager assetManager, IGraphicsLayer gfxLayer)
         {
             m_assetManager = assetManager;
             m_gfxLayer = gfxLayer;
         }
 
-        public void NewSceneObject(Action<ISceneObjectBuilder> configure)
-           => m_objectConfig.Add(configure);
+        public void NewSceneObject(string name, Action<ISceneObjectBuilder> configure)
+        {
+            var objectBuilder = new SceneObjectBuilder(m_assetManager, m_gfxLayer);
+            objectBuilder.WithName(name);
+            configure(objectBuilder);
+            objectBuilder.Build();
+        }
 
         public void NewMaterial(Action<IMaterialBuilder> configure)
-            => m_materialConfig.Add(configure);
+        {
+            var materialBuilder = new MaterialBuilder();
+            configure(materialBuilder);
+            materialBuilder.Build();
+        }
 
         private IEnumerable<Polygon> ToTriPolygon(MeshInfo mesh, PolygonInfo p, int index)
         {
@@ -65,35 +68,24 @@ namespace Tokamak.Tritium.Builders
             }
         }
 
-        public void NewSkeleton(Action<ISkeletonBuilder> configure)
-            => m_skeletonConfig.Add(configure);
-
-        public void BuildAll()
+        public void NewSkeleton(SkeletonInfo info)
         {
-            foreach (var config in m_materialConfig)
-            {
-                var materialBuilder = new MaterialBuilder();
-                config(materialBuilder);
-                materialBuilder.Build();
-            }
+            var builder = new SkeletonBuilder();
+            
+            foreach (var bone in info.Bones)
+                builder.AddBone(bone);
 
-            foreach (var config in m_skeletonConfig)
-            {
-                var skeletonBuilder = new SkeletonBuilder(m_assetManager);
-                config(skeletonBuilder);
-                skeletonBuilder.Build();
-            }
+            Skeleton skeleton = builder.Build();
 
-            foreach (var config in m_objectConfig)
+            try
             {
-                var objectBuilder = new SceneObjectBuilder(m_assetManager, m_gfxLayer);
-                config(objectBuilder);
-                objectBuilder.Build();
+                m_assetManager.RegisterAsset(info.Name, skeleton);
             }
-
-            m_materialConfig.Clear();
-            m_skeletonConfig.Clear();
-            m_objectConfig.Clear();
+            catch
+            {
+                skeleton.Dispose();
+                throw;
+            }
         }
     }
 }

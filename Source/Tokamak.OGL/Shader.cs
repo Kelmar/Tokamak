@@ -111,7 +111,7 @@ namespace Tokamak.OGL
             Span<float> s = stackalloc float[6];
             m_gl.GetUniform(Handle, location, s);
 
-            // May need to double check this, might not be in the order we expect.
+            // May need to double-check this, might not be in the order we expect.
             return new SNum.Matrix3x2(
                 s[0], s[2], s[4],
                 s[1], s[3], s[5]
@@ -123,7 +123,7 @@ namespace Tokamak.OGL
             Span<float> s = stackalloc float[16];
             m_gl.GetUniform(Handle, location, s);
 
-            // May need to double check this, might not be in the order we expect.
+            // May need to double-check this, might not be in the order we expect.
             return new SNum.Matrix4x4(
                 s[ 0], s[ 4], s[ 8], s[12],
                 s[ 1], s[ 5], s[ 9], s[13],

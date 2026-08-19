@@ -7,7 +7,7 @@ namespace Tokamak.Tritium.Buffers.Formats
     /// Format containing only vertex positional info.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct VectorFormatP
+    public record struct VectorFormatP
     {
         /// <summary>
         /// Vertex position in 3D space.

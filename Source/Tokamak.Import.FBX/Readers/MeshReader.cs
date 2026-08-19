@@ -79,7 +79,7 @@ namespace Tokamak.Import.FBX.Readers
 
             int sizeEst = Math.Max(vectors.Count, m_normalMapper.Count);
 
-            var vertices = new SetList<VertexInfo>(sizeEst);
+            var vertices = new SetList<FBXVertex>(sizeEst);
 
             var currentPoly = new FBXPolygon
             {
@@ -102,7 +102,7 @@ namespace Tokamak.Import.FBX.Readers
                 if (vectorIndex >= vectors.Count) // Sanity check against bad files.
                     throw new InvalidDataException($"Mesh '{m_fbxObject.Name}' has invalid index in it's data.");
 
-                var vertex = new VertexInfo
+                var vertex = new FBXVertex
                 {
                     FBXIndex = vectorIndex,
                     Vertex = vectors[vectorIndex],
@@ -143,7 +143,7 @@ namespace Tokamak.Import.FBX.Readers
 
             // TODO: Perform sanity check on discovered verts.
 
-            var meshInfo = new MeshInfo
+            var meshInfo = new FBXMesh
             {
                 Id = m_fbxObject.Id,
                 Name = m_fbxObject.Name,

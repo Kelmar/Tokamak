@@ -1,32 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
-
-using Tokamak.Utilities;
+﻿using System.Numerics;
 
 namespace Tokamak.Tritium.Geometry
 {
-    public class Bone
+    public readonly record struct Bone
     {
-        public required string Name { get; init; }
+        public required int Index { get; init; }
 
-        public int Index { get; set; }
+        public required int ParentIndex { get; init; }
 
-        public int ParentIndex { get; set; }
+        public required Matrix4x4 Transform { get; init; }
 
-        public List<int> Indices { get; } = [];
-
-        public List<float> Weights { get; } = [];
-
-        public Matrix4x4 Transform { get; set; }
-
-        public override string ToString()
-        {
-            if (!String.IsNullOrWhiteSpace(Name))
-                return Name;
-
-            return Index.ToString();
-        }
+        public override string ToString() => $"B:{Index}";
     }
 }

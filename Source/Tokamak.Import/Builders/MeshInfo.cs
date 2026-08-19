@@ -1,21 +1,20 @@
 ﻿using System.Collections.Generic;
 
-namespace Tokamak.Import.Builders
+namespace Tokamak.Import.Builders;
+
+public record MeshInfo
 {
-    public record MeshInfo
+    public required string Name { get; init; }
+
+    public required List<VertexInfo> Vertices
     {
-        public required string Name { get; set; }
+        get;
+        init => field = value ?? [];
+    }
 
-        public required List<VertexInfo> Vertices
-        {
-            get;
-            set => field = value ?? [];
-        }
-
-        public required List<PolygonInfo> Polygons
-        {
-            get;
-            init => field = value ?? [];
-        }
+    public required List<PolygonInfo> Polygons
+    {
+        get;
+        init => field = value ?? [];
     }
 }

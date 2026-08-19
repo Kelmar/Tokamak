@@ -76,6 +76,9 @@ namespace Tokamak.Tritium.Geometry
             // Dictionary is used to filter out duplicate vectors.
             int preAllocate = polyData.Sum(p => p.Vectors.Count);
             var vectorFilter = new Dictionary<VectorFormatPNCT, uint>(preAllocate);
+            
+            // TODO: Double check the resulting vert counts after splitting into triangles.
+            // TODO: (ALSO ALSO, maybe rework this whole function so that verts aren't directly stored in polys)
 
             using var lease = MemoryPool<uint>.Shared.Rent(preAllocate);
             var indexList = lease.Memory;

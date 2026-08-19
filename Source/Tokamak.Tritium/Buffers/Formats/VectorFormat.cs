@@ -64,7 +64,7 @@ namespace Tokamak.Tritium.Buffers.Formats
                     }
                 ).ToList();
 
-                if (firstPass.Count() == 0)
+                if (firstPass.Count == 0)
                     throw new Exception($"Type {Type.FullName ?? Type.Name} doesn't have any fields to map.");
 
                 /*

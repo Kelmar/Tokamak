@@ -85,46 +85,46 @@ namespace Tokamak.Import.FBX.Passes
             }
         }
 
-        private void SetSkeletonName(SkeletonInfo skeleton, MeshInfo? parentMesh)
+        private void SetSkeletonName(FBXSkeleton fbxSkeleton, FBXMesh? parentMesh)
         {
-            if (!String.IsNullOrWhiteSpace(skeleton.Name))
+            if (!String.IsNullOrWhiteSpace(fbxSkeleton.Name))
                 return;
 
-            skeleton.Name = parentMesh != null ?
-                $"{parentMesh.Name}_skeleton_{skeleton.Id}" :
-                $"{m_state.FileName}_skeleton_{skeleton.Id}";
+            fbxSkeleton.Name = parentMesh != null ?
+                $"{parentMesh.Name}_skeleton_{fbxSkeleton.Id}" :
+                $"{m_state.FileName}_skeleton_{fbxSkeleton.Id}";
         }
 
-        private void MapSkeletonWeights(SkeletonInfo skeleton, MeshInfo? mesh)
+        private void MapSkeletonWeights(FBXSkeleton fbxSkeleton, FBXMesh? mesh)
         {
             if (mesh == null)
                 return;
 
-            foreach (var bone in skeleton.Bones)
-                MapBoneWeights(skeleton, bone, mesh);
+            foreach (var bone in fbxSkeleton.Bones)
+                MapBoneWeights(fbxSkeleton, bone, mesh);
         }
 
-        private void MapBoneWeights(SkeletonInfo skeleton, BoneInfo bone, MeshInfo mesh)
+        private void MapBoneWeights(FBXSkeleton fbxSkeleton, FBXBone fbxBone, FBXMesh fbxMesh)
         {
-            for (int i = 0; i < bone.Indices.Length; ++i)
+            for (int i = 0; i < fbxBone.Indices.Length; ++i)
             {
-                int index = bone.Indices[i];
-                float weight = bone.Weights[i];
+                int index = fbxBone.Indices[i];
+                float weight = fbxBone.Weights[i];
 
                 if (float.AlmostEquals(weight, 0))
                     continue; // Ignore superfluous weights
 
-                var vert = mesh.Vertices.FirstOrDefault(v => v.FBXIndex == index);
+                var vert = fbxMesh.Vertices.FirstOrDefault(v => v.FBXIndex == index);
 
                 if (vert == null)
                 {
-                    m_log.Warn("Unable to find vertex with FBX index {0} for skeleton {1}->bone {2}", index, skeleton.Name, bone.Name);
+                    m_log.Warn("Unable to find vertex with FBX index {0} for skeleton {1}->bone {2}", index, fbxSkeleton.Name, fbxBone.Name);
                     continue;
                 }
 
                 vert.BoneWeights.Add(new BoneWeighting
                 {
-                    BoneIndex = bone.Index,
+                    BoneIndex = fbxBone.Index,
                     BoneWeight = weight
                 });
             }

@@ -7,7 +7,7 @@ namespace Tokamak.Tritium.Buffers.Formats
     /// Format containing vertex positional info, vertex normals, color, and texture coordinates.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct VectorFormatPNCT
+    public record struct VectorFormatPNCT
     {
         /// <summary>
         /// Vertex position in 3D space.

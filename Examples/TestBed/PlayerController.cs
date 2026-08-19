@@ -63,6 +63,10 @@ namespace TestBed
             case Key.A: m_vDelta = -1; break;
             case Key.S: m_uDelta = 1; break;
             case Key.D: m_vDelta = 1; break;
+
+            case Key.ShiftLeft:
+                m_speed = 20;
+                break;
             }
 
             /*
@@ -84,6 +88,10 @@ namespace TestBed
             case Key.A: m_vDelta = 0; break;
             case Key.S: m_uDelta = 0; break;
             case Key.D: m_vDelta = 0; break;
+
+            case Key.ShiftLeft:
+                m_speed = 2;
+                break;
             }
         }
 

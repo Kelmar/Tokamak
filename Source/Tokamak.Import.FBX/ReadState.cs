@@ -50,8 +50,8 @@ namespace Tokamak.Import.FBX
 
         public List<SceneObjectInfo> SceneObjects { get; } = [];
 
-        public List<SkeletonInfo> Skeletons { get; } = [];
+        public List<FBXSkeleton> Skeletons { get; } = [];
 
-        public List<MeshInfo> Meshes { get; } = [];
+        public List<FBXMesh> Meshes { get; } = [];
     }
 }

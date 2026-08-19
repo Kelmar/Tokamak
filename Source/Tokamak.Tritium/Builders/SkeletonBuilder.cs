@@ -1,80 +1,34 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
-using Tokamak.Assets;
 using Tokamak.Import.Builders;
 
 using Tokamak.Tritium.Geometry;
 
-namespace Tokamak.Tritium.Builders
+namespace Tokamak.Tritium.Builders;
+
+public class SkeletonBuilder
 {
-    internal class SkeletonBuilder(AssetManager assetManager) : ISkeletonBuilder
+    private readonly Dictionary<string, int> m_nameIndexMap = [];
+    private readonly List<Bone> m_bones = [];
+    
+    public void AddBone(BoneInfo info, int parentIndex = -1)
     {
-        private readonly AssetManager m_assetManager = assetManager;
-
-        private readonly List<Action<IBoneBuilder>> m_boneConfig = [];
-
-        private int m_boneIndex = -1;
-
-        public string Name { get; private set; } = String.Empty;
-
-        public List<Bone> Bones { get; } = [];
-
-        internal int GetNextBoneIndex() => ++m_boneIndex;
-
-        public ISkeletonBuilder WithName(string name)
+        var bone = new Bone
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(Name));
+            Index = m_bones.Count,
+            ParentIndex = parentIndex,
+            Transform = info.Transform
+        };
+        
+        m_bones.Add(bone);
+        m_nameIndexMap[info.Name] = bone.Index;
+        
+        foreach (var child in info.Children)
+            AddBone(child, bone.Index);
+    }
 
-            Name = name;
-            return this;
-        }
-
-        public ISkeletonBuilder AddBone(Action<IBoneBuilder> config)
-        {
-            m_boneConfig.Add(config);
-            return this;
-        }
-
-        public ISkeletonBuilder WithBones<T>(IEnumerable<T> source, BoneConfigurator<T> config)
-        {
-            foreach (var item in source)
-                AddBone(bb => config(item, bb));
-
-            return this;
-        }
-
-        private void Validate()
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(Name, nameof(Name));
-
-            if (Bones.Count == 0)
-                throw new Exception($"Skeleton '{Name}' has no bones");
-        }
-
-        public void Build()
-        {
-            foreach (var config in m_boneConfig)
-            {
-                var builder = new BoneBuilder(this, -1);
-                config(builder);
-                builder.Build();
-            }
-
-            Validate();
-
-            var skeleton = new Skeleton(Bones.OrderBy(b => b.Index).ToArray());
-
-            try
-            {
-                m_assetManager.RegisterAsset(Name, skeleton);
-            }
-            catch
-            {
-                skeleton.Dispose();
-                throw;
-            }
-        }
+    public Skeleton Build()
+    {
+        return new Skeleton(m_nameIndexMap, m_bones);
     }
 }

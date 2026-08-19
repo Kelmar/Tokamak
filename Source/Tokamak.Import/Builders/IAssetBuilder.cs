@@ -4,14 +4,12 @@ namespace Tokamak.Import.Builders
 {
     public interface IAssetBuilder
     {
-        void NewSceneObject(Action<ISceneObjectBuilder> configure);
+        void NewSceneObject(string name, Action<ISceneObjectBuilder> configure);
 
-        void NewSkeleton(Action<ISkeletonBuilder> configure);
+        void NewSkeleton(SkeletonInfo skeleton);
 
         void NewMesh(MeshInfo mesh);
 
         void NewMaterial(Action<IMaterialBuilder> configure);
-
-        void BuildAll();
     }
 }

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Buffers;
+using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 
 using Tokamak.Assets;
-
-using Tokamak.Mathematics;
 
 using Tokamak.Utilities;
 
@@ -14,33 +11,31 @@ namespace Tokamak.Tritium.Geometry
 {
     public class Skeleton : Asset
     {
-        private IMemoryOwner<Matrix4x4> m_matrices;
-
-        public Skeleton(Bone[] bones)
+        private readonly Dictionary<string, int> m_boneNameIndexMap;
+        
+        public Skeleton(Dictionary<string, int> boneNameIndexMap, IEnumerable<Bone> bones)
         {
-            // Duplicate the bone array so it can be reused by caller if they want.
+            m_boneNameIndexMap = boneNameIndexMap;
             Bones = bones.ToArray();
-
-            // Build flat list of bone matrices for access by shaders.
-            m_matrices = MemoryPool<Matrix4x4>.Shared.Rent(Bones.Length);
-
-            var mem = m_matrices.Memory.Span;
-
-            for (int i = 0; i < Bones.Length; ++i)
-                mem[i] = Bones[i].Transform;
         }
 
-        protected override void Dispose(bool disposing)
+        /// <summary>
+        /// Get a bone's index from its name.
+        /// </summary>
+        /// <param name="name">The name of the bone to get the index for.</param>
+        /// <returns>-1 if not found, otherwise the index of the bone.</returns>
+        /// <exception cref="ArgumentException">Throw if the name parameter is invalid.</exception>
+        public int BoneIndexByName(string name)
         {
-            if (disposing)
-                m_matrices.Dispose();
+            ArgumentException.ThrowIfNullOrEmpty(name);
+            
+            if (!m_boneNameIndexMap.TryGetValue(name, out int index))
+                return -1;
 
-            base.Dispose(disposing);
+            return index;
         }
 
         public Bone[] Bones { get; }
-
-        public ReadOnlyMemory<Matrix4x4> Matrices => m_matrices.Memory;
 
         public override string ToString()
         {
