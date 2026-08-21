@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using Tokamak.Assets;
-using Tokamak.Mathematics;
 
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Buffers;
@@ -76,9 +76,12 @@ namespace Tokamak.Tritium.Geometry
             // Dictionary is used to filter out duplicate vectors.
             int preAllocate = polyData.Sum(p => p.Vectors.Count);
             var vectorFilter = new Dictionary<VertexFormatPNCT, uint>(preAllocate);
-            
-            // TODO: Double check the resulting vert counts after splitting into triangles.
+
+            int origVertCount = polygons.Sum(p => p.Vectors.Count);
+            int newVertCount = polyData.Sum(p => p.Vectors.Count);
+
             // TODO: (ALSO ALSO, maybe rework this whole function so that verts aren't directly stored in polys)
+            Debug.Assert(origVertCount == newVertCount, $"WARNING: {origVertCount} != {newVertCount} vert counts after triangulation.");
 
             using var lease = MemoryPool<uint>.Shared.Rent(preAllocate);
             var indexList = lease.Memory;

@@ -15,7 +15,6 @@ namespace Tokamak.OGL
         private readonly uint m_vbo;
 
         private readonly VertexFormat.Info m_layoutInfo;
-        
 
         private readonly BufferUsageARB m_usageHint;
 

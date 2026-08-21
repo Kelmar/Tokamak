@@ -22,13 +22,20 @@ using Tokamak.Import.FBX;
 using Tokamak.Tritium.APIs;
 using Tokamak.Tritium.Scene;
 
+using Stashbox;
+
 namespace TestBed
 {
     public class TestGameApp : IGameApp
     {
+        private readonly IDependencyResolver m_resolver;
+
         private readonly AssetManager m_assetManager;
+
         private readonly IGraphicsLayer m_gfxLayer;
+
         private readonly IInputManager m_inputManager;
+
         private readonly IGameLifetime m_gameLifetime;
 
         private readonly Func<IAssetBuilder> m_builderFactory;
@@ -47,11 +54,11 @@ namespace TestBed
 
         private float m_rot;
 
-        //public const string FILE = "resources/cube.fbx";
+        public const string FILE = "resources/cube.fbx";
         //public const string FILE = "resources/blox.fbx";
         //public const string FILE = "resources/susan.fbx";
         //public const string FILE = "resources/plane.fbx";
-        public const string FILE = "resources/chest.fbx";
+        //public const string FILE = "resources/chest.fbx";
 
         /*
          * This is the X Bot model from Maxima.
@@ -62,6 +69,7 @@ namespace TestBed
 
         public TestGameApp(
             //ILogger log,
+            IDependencyResolver resolver,
             AssetManager assetManager,
             IGraphicsLayer layer,
             IInputManager inputManager,
@@ -69,6 +77,7 @@ namespace TestBed
             Func<IAssetBuilder> builderFactory)
         {
             //m_log = log;
+            m_resolver = resolver;
             m_assetManager = assetManager;
             m_gfxLayer = layer;
             m_inputManager = inputManager;
@@ -129,11 +138,16 @@ namespace TestBed
 
             //m_scene.AddObject(m_mesh);
 
-            var reader = new FBXImportDirector(m_builderFactory());
+            //var reader = new FBXImportDirector(m_builderFactory());
+            var reader = m_resolver.Activate<FBXImportDirector>([m_builderFactory()]);
             reader.Import(FILE);
 
-            //m_mesh = m_assetManager.Find<SceneMeshObject>("Cube");
-            m_mesh = m_assetManager.Find<SceneMeshObject>("Chest");
+            // X-Bot has two....
+            //m_mesh = m_assetManager.Find<SceneMeshObject>("Beta_Surface");
+            //m_mesh = m_assetManager.Find<SceneMeshObject>("Beta_Joints");
+
+            m_mesh = m_assetManager.Find<SceneMeshObject>("Cube");
+            //m_mesh = m_assetManager.Find<SceneMeshObject>("Chest");
             //m_mesh = m_assetManager.Find<SceneMeshObject>("Ch46"); // Amy
 
             if (m_mesh != null)
